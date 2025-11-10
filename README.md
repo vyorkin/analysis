@@ -2,6 +2,8 @@
 
 Здраствуйте. Это перевод и мои конспекты книги профессора Теренса Тао. Я не рассчитываю, что их будет читать кто-либо кроме меня, поэтому снимаю себя ответственность за что бы то ни было. При переводе я активно пользуюсь LLM. До свидания.
 
+EDIT after 5 mins: Забил, утопичная идея, ребилд книги слишком долгий. Буду с нуля делать.
+
 The files in this directory contain a formalization of my text [_Analysis I_](https://terrytao.wordpress.com/books/analysis-i/) into [Lean](https://lean-lang.org/). The formalization is intended to be as faithful a paraphrasing as possible to the original text, while also showcasing Lean's features and syntax. In particular, the formalization is _not_ optimized for efficiency, and in some cases may deviate from idiomatic Lean usage.
 
 Portions of the text that were left as exercises to the reader are rendered in this translation as `sorry`s. Readers are welcome to fork the repository here to try their hand at these exercises, but I do not intend to place solutions in this repository directly.
