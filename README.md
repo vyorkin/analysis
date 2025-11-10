@@ -1,18 +1,20 @@
-# Lean formalization of _Analysis I_
+# Формализация книги _Анализ I_ в Lean
 
-The files in this directory contain a formalization of my text [_Analysis I_](https://terrytao.wordpress.com/books/analysis-i/) into [Lean](https://lean-lang.org/). The formalization is intended to be as faithful a paraphrasing as possible to the original text, while also showcasing Lean's features and syntax.  In particular, the formalization is _not_ optimized for efficiency, and in some cases may deviate from idiomatic Lean usage.
+Здраствуйте. Это перевод и мои конспекты книги профессора Теренса Тао. Я не рассчитываю, что их будет читать кто-либо кроме меня, поэтому снимаю себя ответственность за что бы то ни было. При переводе я активно пользуюсь LLM. До свидания.
 
-Portions of the text that were left as exercises to the reader are rendered in this translation as `sorry`s.  Readers are welcome to fork the repository here to try their hand at these exercises, but I do not intend to place solutions in this repository directly.
+The files in this directory contain a formalization of my text [_Analysis I_](https://terrytao.wordpress.com/books/analysis-i/) into [Lean](https://lean-lang.org/). The formalization is intended to be as faithful a paraphrasing as possible to the original text, while also showcasing Lean's features and syntax. In particular, the formalization is _not_ optimized for efficiency, and in some cases may deviate from idiomatic Lean usage.
 
-While the arrangement of definitions, theorems, and proofs here are closely paraphrasing the textbook, I am refraining from directly quoting material from the textbook, instead providing references to the original text where appropriate.  As such, this formalization should be viewed as an annotated companion to the primary text, rather than a replacement for it.
+Portions of the text that were left as exercises to the reader are rendered in this translation as `sorry`s. Readers are welcome to fork the repository here to try their hand at these exercises, but I do not intend to place solutions in this repository directly.
 
-Much of the material in this text is duplicated in Lean's standard math library [Mathlib](https://leanprover-community.github.io/mathlib4_docs/), though with slightly different definitions.  To reconcile these discrepancies, this formalization will gradually transition from the textbook-provided definitions to the Mathlib-provided definitions as one progresses further into the text, thus sacrificing the self-containedness of the formalization in favor of compatibility with Mathlib.  For instance, Chapter 2 develops a theory of the natural numbers independent of Mathlib, but all subsequent chapters will use the Mathlib natural numbers instead.  (An epilogue to Chapter 2 is provided to show that the two notions of the natural numbers are isomorphic.)  As such, this formalization can also be used as an introduction to various portions of Mathlib.
+While the arrangement of definitions, theorems, and proofs here are closely paraphrasing the textbook, I am refraining from directly quoting material from the textbook, instead providing references to the original text where appropriate. As such, this formalization should be viewed as an annotated companion to the primary text, rather than a replacement for it.
 
-In order to align the formalization with Mathlib conventions, a small number of technical changes have been made to some of the definitions as compared with the textbook version.  Most notably:
+Much of the material in this text is duplicated in Lean's standard math library [Mathlib](https://leanprover-community.github.io/mathlib4_docs/), though with slightly different definitions. To reconcile these discrepancies, this formalization will gradually transition from the textbook-provided definitions to the Mathlib-provided definitions as one progresses further into the text, thus sacrificing the self-containedness of the formalization in favor of compatibility with Mathlib. For instance, Chapter 2 develops a theory of the natural numbers independent of Mathlib, but all subsequent chapters will use the Mathlib natural numbers instead. (An epilogue to Chapter 2 is provided to show that the two notions of the natural numbers are isomorphic.) As such, this formalization can also be used as an introduction to various portions of Mathlib.
+
+In order to align the formalization with Mathlib conventions, a small number of technical changes have been made to some of the definitions as compared with the textbook version. Most notably:
 
 - Sequences are indexed to start from zero rather than from one, as Mathlib has much more support for the 0-based natural numbers `ℕ` than the 1-based natural numbers.
-- Many operations that are left undefined in the text, such as division by zero, or taking the formal limit of a non-Cauchy sequence, are instead assigned a "junk" value (e.g., `0`) to make the operation totally defined.  This is because Lean has better support for total functions than partial functions (indiscriminate use of the latter can lead into "dependent type hell" in which even very basic manipulations require quite subtle and delicate proofs).  See for instance [this blog post](https://xenaproject.wordpress.com/2020/07/05/division-by-zero-in-type-theory-a-faq/) by Kevin Buzzard for more discussion.
-- The Chapter 2 natural numbers are constructed by an inductive type, rather than via a purely axiomatic approach.  However, the Peano Axioms are formalized in [the epilogue to this chapter](https://teorth.github.io/analysis/sec2e/).
+- Many operations that are left undefined in the text, such as division by zero, or taking the formal limit of a non-Cauchy sequence, are instead assigned a "junk" value (e.g., `0`) to make the operation totally defined. This is because Lean has better support for total functions than partial functions (indiscriminate use of the latter can lead into "dependent type hell" in which even very basic manipulations require quite subtle and delicate proofs). See for instance [this blog post](https://xenaproject.wordpress.com/2020/07/05/division-by-zero-in-type-theory-a-faq/) by Kevin Buzzard for more discussion.
+- The Chapter 2 natural numbers are constructed by an inductive type, rather than via a purely axiomatic approach. However, the Peano Axioms are formalized in [the epilogue to this chapter](https://teorth.github.io/analysis/sec2e/).
 
 ## Sections
 
@@ -140,7 +142,7 @@ I am using this repository to host some other minor Lean content unrelated to th
   - [The Lean community Zulip chat](https://leanprover.zulipchat.com/)
   - [Learning Lean4](https://leanprover-community.github.io/learn.html)
     - [The natural number game](https://adam.math.hhu.de/)
-    - [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/)  - Lean textbook by Jeremy Avigad and Patrick Massot
+    - [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/) - Lean textbook by Jeremy Avigad and Patrick Massot
 - [Mathlib documentation](https://leanprover-community.github.io/mathlib4_docs/)
   - [Mathlib help files](https://seasawher.github.io/mathlib4-help/)
   - [Moogle](https://moogle-morphlabs.vercel.app/) - semantic search engine for Mathlib
@@ -185,12 +187,13 @@ This can be served as a webpage by executing `python3 serve.py`
 
 Because this project uses a deprecated method to conditionally require `doc-gen4`
 in order to update the version of Lean and Mathlib used in the project you need to:
-* edit the `analysis/lakefile.lean` to change the `require` lines for Mathlib and doc-gen4,
+
+- edit the `analysis/lakefile.lean` to change the `require` lines for Mathlib and doc-gen4,
   to pin to the tag corresponding to the next Lean version
   (it is highly recommended that you update in incremental steps)
-* edit the `analysis/lean-toolchain` to change the Lean version to the next version
-* in `analysis/`, run `lake update -R -Kenv=dev`
-* this may have the side effect of setting your `lean-toolchain` to the *latest* Lean version;
+- edit the `analysis/lean-toolchain` to change the Lean version to the next version
+- in `analysis/`, run `lake update -R -Kenv=dev`
+- this may have the side effect of setting your `lean-toolchain` to the _latest_ Lean version;
   if so, revert it to the intended version
 
 It is essential that the dependencies on `subverso` in the `analysis/` and `book/` directories
