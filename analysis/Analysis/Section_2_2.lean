@@ -32,37 +32,53 @@ Users of the companion who have completed the exercises in this section are welc
 
 namespace Chapter2
 
+/-
+У нас есть только одна операция - прибавление единицы (икрементирование) и
+несколько аксиом.
+
+Понятно, что 3 + 5 это тоже самое, что и ((5 + 1) + 1) + 1,
+ну или в нашей нотации это ((5++)++)++. Таким образом мы можем определить
+сложение, используя нашу рекурсивную схему Nat.recurse.
+
+Рекурсивное определение сложения.
+-/
+
 /-- Definition 2.2.1. (Addition of natural numbers).
     Compare with Mathlib's `Nat.add` -/
 abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ s ↦ s++) m n
 
 -- Вот эта (fun _ s ↦ s++) она как бы "накидывает единичку снаружи".
+-- Ну а `match n++` он как бы "снимает единичку". Вот и получается
+-- такое "перебрасывание единичек наружу" n-раз на каждой итерации Nat.recurse.
 
 -- 0 + m = add 0 m
 -- n   m       n m
 --
 -- add 0 m = Nat.recurse (fun _ s ↦ s++) 0 m
 --     n m                               n m
--- add zero (succ zero) = Nat.recurse (fun _ s ↦ s++) zero (succ zero)
---      n        m                                     c=n      m
 --
--- match (succ zero):
+-- 0 + 1 = 1:
 --
--- zero++ = (succ zero) => (fun _ s ↦ s++) zero (recurse (fun _ s ↦ s++) zero zero)
---  (n)++          n
+-- add 0 (0++) = Nat.recurse (fun _ s ↦ s++) 0  (0++)
+--     n   m                                c=n   m
 --
--- (recurse (fun _ s ↦ s++) zero zero) => c = zero
+-- match 0++ => (fun _ s ↦ s++) 0 (recurse (fun _ s ↦ s++) 0 0)
+--       n                      n                            n
 --
--- zero++ = (succ zero) => (fun _ s ↦ s++) zero zero
--- zero++ => zero++
+-- (recurse (fun _ s ↦ s++) 0 0) => 0
+-- match 0 => 0
+--
+-- match 0++ => (fun _ s ↦ s++) 0 0 => 0++ = 1
+
 
 -- 2 + 3 = 5
 -- Nat.recurse (fun _ s ↦ s++) (0++)++ ((0++)++)++
 --                            m = c = 2   n = 3
 --
 -- n = ((0++)++) = 2:
+--
 --    2 + 1            2                    2
--- ((0++)++)++ => f (0++)++ (recurse f 2 (0++)++) =>
+-- match ((0++)++)++ => f (0++)++ (recurse f 2 (0++)++) =>
 -- (fun _ s ↦ s++) ((0++)++) (recurse f 2 (0++)++) =>
 -- (recurse f 2 (0++)++)++ =>
 -- (f 0++ (recurse f 2 0++))++ =>
@@ -77,15 +93,15 @@ abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ s ↦ s++) m n
 -- n = 0++ = 1:
 --     2
 --   1 + 1       1                1
--- (0++)++ => f 0++ (recurse f 2 0++)
+-- match (0++)++ => f 0++ (recurse f 2 0++)
 --
--- ((0++)++)++ => f (0++)++ (f 0++ (recurse f 2 0++))
+-- match ((0++)++)++ => f (0++)++ (f 0++ (recurse f 2 0++))
 --
 -- recurse f 2 0++ = f 0 (recurse f 2 0) = f 0 2 = f 0 (0++)++:
 --
 --   1
 -- 0 + 1                           2
---  0++ => f 0 (recurse f 2 0) = f 0 2 =
+-- match 0++ => f 0 (recurse f 2 0) = f 0 2 =
 --
 -- match 0 => c = 2 = (0++)++
 --
@@ -99,8 +115,19 @@ instance Nat.instAdd : Add Nat where
 theorem Nat.zero_add (m : Nat) : 0 + m = m :=
   recurse_zero (fun _ s ↦ s++) m -- Nat.recurse f m 0 = m
 
+/-
+2.2.1. Сложение натуральных чисел.
+Предположим идуктивно, что мы определили, как прибавить n к m.
+Тогда можно определить:
+-/
+
 /-- Compare with Mathlib's `Nat.succ_add`. -/
 theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
+
+-- Это верно, тк из рекурсии (2.1.16: Nat.recurse) в предыдущем разделе:
+-- aₙ = n + m
+-- fₙ(aₙ) = aₙ++
+-- aₙ++ = (n + m)++
 
 -- Итак, мы сейчас знаем про наши числа только вот это:
 -- 1. 0 + m = m
@@ -112,9 +139,7 @@ theorem Nat.one_add (m : Nat) : 1 + m = m++ := by
   rw [show 1 = 0++ from rfl, succ_add, zero_add]
 
 theorem Nat.two_add (m : Nat) : 2 + m = (m++)++ := by
-  rw [show 2 = 1++ from rfl]
-  rw [succ_add]
-  rw [one_add]
+  rw [show 2 = 1++ from rfl, succ_add, one_add]
 
 example : (2 : Nat) + 3 = 5 := by
   rw [Nat.two_add, show 3++ = 4 from rfl, show 4++ = 5 from rfl]
