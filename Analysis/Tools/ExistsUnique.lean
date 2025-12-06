@@ -47,4 +47,4 @@ theorem ExistsUnique.iff_subsingleton_nonempty  {α: Sort*} {p: α → Prop} :
   apply ExistsUnique.intro _ hx₀; intro y hy
   exact Subtype.mk.injEq _ _ _ _ ▸ (hsing.elim ⟨ _, hy ⟩ ⟨ _, hx₀ ⟩)
 
-#print axioms ExistsUnique.iff_subsingleton_nonempty 
+#print axioms ExistsUnique.iff_subsingleton_nonempty
