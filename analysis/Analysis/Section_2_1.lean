@@ -49,7 +49,6 @@ inductive Nat where
 | succ : Nat → Nat
 deriving Repr, DecidableEq  -- this allows `decide` to work on `Nat`
 
-
 /-- Axiom 2.1 (0 is a natural number) -/
 instance Nat.instZero : Zero Nat := ⟨ zero ⟩
 #check (0 : Nat)
@@ -95,7 +94,6 @@ lemma Nat.one_succ : 1++ = 2 := by rfl
 lemma Nat.two_succ : 2++ = 3 := by rfl
 #check (3 : Nat)
 
-
 /--
   Axiom 2.3 (0 is not the successor of any natural number).
   Compare with Lean's `Nat.succ_ne_zero`.
@@ -135,13 +133,13 @@ theorem Nat.succ_cancel {n m:Nat} (hnm: n++ = m++) : n = m := by
   Axiom 2.4 (Different natural numbers have different successors).
   Compare with Mathlib's `Nat.succ_ne_succ`.
 -/
-theorem Nat.succ_ne_succ (n m:Nat) : n ≠ m → n++ ≠ m++ := by
+theorem Nat.succ_ne_succ (n m : Nat) : n ≠ m → n++ ≠ m++ := by
   intro h
   contrapose! h
   exact succ_cancel h
 
 /-- Proposition 2.1.8 (6 is not equal to 2) -/
-theorem Nat.six_ne_two : (6:Nat) ≠ 2 := by
+theorem Nat.six_ne_two : (6 : Nat) ≠ 2 := by
 -- this proof is written to follow the structure of the original text.
   by_contra h
   change 5++ = 1++ at h

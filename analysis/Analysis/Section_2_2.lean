@@ -47,9 +47,9 @@ namespace Chapter2
     Compare with Mathlib's `Nat.add` -/
 abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ s ↦ s++) m n
 
--- Вот эта (fun _ s ↦ s++) она как бы "накидывает единичку снаружи".
--- Ну а `match n++` он как бы "снимает единичку". Вот и получается
--- такое "перебрасывание единичек наружу" n-раз на каждой итерации Nat.recurse.
+-- Вот эта (fun _ s ↦ s++) она как бы "накидывает единичку снаружи" m.
+-- Ну а `match n++` он как бы "снимает единичку" c n. Вот и получается
+-- такое "перебрасывание единичек c n наружу m" n-раз на каждой итерации Nat.recurse.
 
 -- 0 + m = add 0 m
 -- n   m       n m
@@ -138,6 +138,13 @@ theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
 theorem Nat.one_add (m : Nat) : 1 + m = m++ := by
   rw [show 1 = 0++ from rfl, succ_add, zero_add]
 
+/-
+rfl более мощная теорема, чем может показаться на первый взгляд.
+Хотя формулировка теоремы звучит как a = a, Lean позволяет использовать всё, что
+является равным этому типу по определению. Например, утверждение 2 + 2 = 4 доказывается
+при помощи rfl, потому что обе стороны одинаковы с точки зрения определённого равенства.
+-/
+
 theorem Nat.two_add (m : Nat) : 2 + m = (m++)++ := by
   rw [show 2 = 1++ from rfl, succ_add, one_add]
 
@@ -169,9 +176,7 @@ lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
     rw [succ_add, ih]
     rw [succ_add]
 
-/-- Lemma 2.2.3 (n+(m++) = (n+m)++). Compare with Mathlib's `Nat.add_succ`. -/
 lemma Nat.add_succ' (n m : Nat) : n + (m++) = (n + m)++ := by
-  -- this proof is written to follow the structure of the original text.
   revert n
   apply induction
   · rw [zero_add, zero_add]
@@ -183,36 +188,61 @@ lemma Nat.add_succ' (n m : Nat) : n + (m++) = (n + m)++ := by
       _ = (n++ + m)++ := by rw [succ_add]
 
 /-- n++ = n + 1 (Why?). Compare with Mathlib's `Nat.succ_eq_add_one` -/
-theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
+theorem Nat.succ_eq_add_one (n : Nat) : n++ = n + 1 := by
   revert n
   apply induction
   · rw [zero_add]
-    rfl
+    rw [show 1 = 0++ from rfl]
   · intro n ih
     nth_rw 1 [ih]
     rw [succ_add]
 
 /-- Proposition 2.2.4 (Addition is commutative). Compare with Mathlib's `Nat.add_comm` -/
 theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
-  -- this proof is written to follow the structure of the original text.
   revert n
+  -- Будем использовать индукцию по n
   apply induction
-  . rw [zero_add, add_zero]
+  . show 0 + m = m + 0
+    rw [zero_add] -- 0 + m = m : по определению сложения
+    rw [add_zero] -- m = 0 = m : по лемме 2.2.3
   · intro n ih
-    rw [succ_add]
-    rw [add_succ, ih]
+    -- Предположим индуктивно, что n + m = m + n
+    -- И покажем следующее:
+    show n++ + m = m + n++
+    rw [succ_add]     -- n++ + m = (n + m)++    : по определению сложения
+    rw [add_succ]     -- m + n++ = (m + n)++    : по лемме 2.2.3
+    rw [ih]           -- (n + m)++ = (n + m)++  : применяем гипотезу индукции
+    -- ∎
 
 /-- Proposition 2.2.5 (Addition is associative) / Exercise 2.2.1
     Compare with Mathlib's `Nat.add_assoc`. -/
 theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
   revert a
+  -- Будем использовать индукцию по a
   apply induction
-  · show (0 + b) + c = 0 + (b + c)
+  · -- Сначала рассмотрим базовый случай:
+    show (0 + b) + c = 0 + (b + c)
+    -- По определению сложения:
+    -- (0 + b) + c = b + c
+    -- 0 + (b + c) = b + c
     rw [zero_add, zero_add]
   · intro a ih
+    -- Предположим индуктивно: a + b + c = a + (b + c)
+    -- Чтобы завершить индукцию нам нужно доказать следующее
     show (a++ + b) + c = a++ + (b + c)
+    -- По определению сложения:
+    -- a++ + b + c  = (a + b)++ + c = (a + b + c)++
     rw [succ_add, succ_add]
-    rw [ih, succ_add]
+    show (a + b + c)++ = a++ + (b + c)
+    rw [ih] -- Применяем гипотезу индукции
+    -- (a + b + c)++ = a + (b + c)
+    -- Осталось показать, что
+    show (a + (b + c))++ = a++ + (b + c)
+    -- Но это верно по определению сложения
+    rw [succ_add]
+    -- ∎
+
+-- 2.2.6 Закон сокращения
 
 /-- Proposition 2.2.6 (Cancellation law).
     Compare with Mathlib's `Nat.add_left_cancel`. -/
@@ -225,11 +255,12 @@ theorem Nat.add_left_cancel (a b c : Nat) (habc: a + b = a + c) : b = c := by
   · intro a ih
     intro hbc
     rw [succ_add, succ_add] at hbc
-    replace hbc := succ_cancel hbc
+    replace hbc := succ_cancel hbc -- По аксиоме 2.4: n++ = m++ → n = m
     exact ih hbc
 
 /-- (Not from textbook) Nat can be given the structure of a commutative additive monoid.
-This permits tactics such as `abel` to apply to the Chapter 2 natural numbers. -/
+    This permits tactics such as `abel` to apply to the Chapter 2 natural numbers.
+-/
 instance Nat.addCommMonoid : AddCommMonoid Nat where
   add_assoc := add_assoc
   add_comm := add_comm
@@ -237,8 +268,7 @@ instance Nat.addCommMonoid : AddCommMonoid Nat where
   add_zero := add_zero
   nsmul := nsmulRec
 
-/-- This illustration of the `abel` tactic is not from the
-    textbook. -/
+/-- This illustration of the `abel` tactic is not from the textbook. -/
 example (a b c d : Nat) : (a + b) + (c + 0 + d) = (b + c) + (d + a) := by abel
 
 example (a b c d e f : Nat)
@@ -260,29 +290,45 @@ theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := b
     assumption
   · intro b hab
     rw [add_succ]
-    have : (a+b)++ ≠ 0 := succ_ne _
+    have : (a + b)++ ≠ 0 := succ_ne _
     exact this
 
 /-- Compare with Mathlib's `Nat.add_pos_right`.
 
-This theorem is a consequence of the previous theorem and `add_comm`, and `grind` can automatically discover such proofs.
+This theorem is a consequence of the previous theorem and `add_comm`,
+and `grind` can automatically discover such proofs.
 -/
-theorem Nat.add_pos_right {a:Nat} (b:Nat) (ha: a.IsPos) : (b + a).IsPos := by
+theorem Nat.add_pos_right {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
   grind [add_comm, add_pos_left]
+
+theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
+  rw [add_comm]
+  apply add_pos_left
+  assumption
 
 /-- Corollary 2.2.9 (if sum vanishes, then summands vanish).
     Compare with Mathlib's `Nat.add_eq_zero`. -/
-theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
+theorem Nat.add_eq_zero (a b : Nat) (hab : a + b = 0) : a = 0 ∧ b = 0 := by
   -- This proof is written to follow the structure of the original text.
+  -- Доказательство от противного:
+  -- Предположим, что a ≠ 0 или b ≠ 0
   by_contra h
+  -- Перепишем гипотезу
   simp only [not_and_or, ←ne_eq] at h
   obtain ha | hb := h
-  . rw [← isPos_iff] at ha
-    observe : (a + b).IsPos
+  .  -- a ≠ 0 → a.IsPos (положительно) : по 2.2.7 (определению положительного натурального)
+    rw [← isPos_iff] at ha
+    observe : (a + b).IsPos -- по 2.2.8 (слева положительное, справа натуральное)
+    -- ^ эта тактика эквивалентна:
+    -- have : (a + b).IsPos := by exact?
+    -- have : (a + b).IsPos := by exact add_pos_left b ha
     contradiction
-  rw [← isPos_iff] at hb
-  observe : (a + b).IsPos
-  contradiction
+    -- exact absurd hab this
+  · rw [← isPos_iff] at hb  -- b ≠ 0 → b.isPos : по 2.2.7
+    observe : (a + b).IsPos -- a + b : по 2.2.8
+    contradiction
+
+/- Теперь, когда у нас есть понятие сложения, мы можем определить отношение порядка. -/
 
 /-
 The API in `Tools/ExistsUnique.Lean`, and the method `existsUnique_of_exists_of_unique` in
@@ -293,14 +339,37 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 
 #check existsUnique_of_exists_of_unique
 
+-- Пусть a ∈ ℕ, тогда существует единственное
+-- положительное число b такое, что b++ = a.
+
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
-lemma Nat.uniq_succ_eq (a:Nat) (ha: a.IsPos) : ∃! b, b++ = a := by
-  sorry
+lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
+  -- Использовать индукцию
+  revert a
+  apply induction
+  · rw [isPos_iff]
+    intro h
+    exists 0
+  · intro n ih hn
+    rw [succ_eq_add_one] at hn
+    exists n
+    simp
+    -- simp only [succ.injEq, imp_self, implies_true, and_self]
+
+/-
+Отношение (не строгого) порядка натуральных чисел.
+Мы говорим, что n ≤ m, если m = n + a для некоторого a ∈ ℕ.
+-/
 
 /-- Definition 2.2.11 (Ordering of the natural numbers).
     This defines the `≤` notation on the natural numbers. -/
 instance Nat.instLE : LE Nat where
-  le n m := ∃ a:Nat, m = n + a
+  le n m := ∃ a : Nat, m = n + a
+
+/-
+Отношение строгого порядка.
+Мы говорим, что n < m, если n ≤ m и n ≠ m.
+-/
 
 /-- Definition 2.2.11 (Ordering of the natural numbers).
     This defines the `<` notation on the natural numbers. -/
@@ -308,67 +377,117 @@ instance Nat.instLT : LT Nat where
   lt n m := n ≤ m ∧ n ≠ m
 
 /-- Compare with Mathlib's `le_iff_exists_add`. -/
-lemma Nat.le_iff (n m:Nat) : n ≤ m ↔ ∃ a:Nat, m = n + a := by rfl
+lemma Nat.le_iff (n m : Nat) : n ≤ m ↔ ∃ a : Nat, m = n + a := by rfl
 
-lemma Nat.lt_iff (n m:Nat) : n < m ↔ (∃ a:Nat, m = n + a) ∧ n ≠ m := by rfl
+lemma Nat.lt_iff (n m : Nat) : n < m ↔ (∃ a : Nat, m = n + a) ∧ n ≠ m := by rfl
 
 /-- Compare with Mathlib's `ge_iff_le`. -/
 @[symm]
-lemma Nat.ge_iff_le (n m:Nat) : n ≥ m ↔ m ≤ n := by rfl
+lemma Nat.ge_iff_le (n m : Nat) : n ≥ m ↔ m ≤ n := by rfl
 
 /-- Compare with Mathlib's `gt_iff_lt`. -/
 @[symm]
-lemma Nat.gt_iff_lt (n m:Nat) : n > m ↔ m < n := by rfl
+lemma Nat.gt_iff_lt (n m : Nat) : n > m ↔ m < n := by rfl
 
 /-- Compare with Mathlib's `Nat.le_of_lt`. -/
-lemma Nat.le_of_lt {n m:Nat} (hnm: n < m) : n ≤ m := hnm.1
+lemma Nat.le_of_lt {n m : Nat} (hnm : n < m) : n ≤ m := hnm.1
+
+-- Можно и такую ввести, если хочется. Здесь я для себя ещё раз
+-- показал, что строгое неравенство это конъюнкция n ≤ m ∧ n ≠ m.
+lemma Nat.ne_of_lt {n m : Nat} (hnm : n < m) : n ≠ m := hnm.2
 
 /-- Compare with Mathlib's `Nat.le_iff_lt_or_eq`. -/
-lemma Nat.le_iff_lt_or_eq (n m:Nat) : n ≤ m ↔ n < m ∨ n = m := by
-  rw [Nat.le_iff, Nat.lt_iff]
+lemma Nat.le_iff_lt_or_eq (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
+  rw [Nat.le_iff]
+  rw [Nat.lt_iff]
   by_cases h : n = m
   . simp [h]
     use 0
     rw [add_zero]
-  simp [h]
+  · simp [h]
 
-example : (8:Nat) > 5 := by
+/-- Compare with Mathlib's `Nat.le_iff_lt_or_eq`. -/
+lemma Nat.le_iff_lt_or_eq' (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
+  rw [Nat.le_iff]
+  rw [Nat.lt_iff]
+  by_cases h : n = m
+  . show (∃ a, m = n + a) ↔ (∃ a, m = n + a) ∧ n ≠ m ∨ n = m
+    rw [ne_eq] -- (a ≠ b) = ¬a = b
+    --               ^ Раскрываем нотацию "≠":
+    -- ne_eq (a b : α) : (a ≠ b) = ¬(a = b)
+    --
+    show (∃ a, m = n + a) ↔ (∃ a, m = n + a) ∧ ¬n = m ∨ n = m
+    rw [h]
+    show (∃ a, m = m + a) ↔ (∃ a, m = m + a) ∧ ¬m = m ∨ m = m
+    simp only [not_true_eq_false] -- (¬ True) = False
+    show (∃ a, m = m + a) ↔ (∃ a, m = m + a) ∧ False ∨ True
+    rw [and_false]
+    rw [or_true]
+    rw [iff_true]
+    show ∃ a, m = m + a
+    use 0
+    rw [add_zero]
+  · simp [h]
+
+example : (8 : Nat) > 5 := by
   rw [Nat.gt_iff_lt, Nat.lt_iff]
   constructor
-  . have : (8:Nat) = 5 + 3 := by rfl
+  . have : (8 : Nat) = 5 + 3 := by rfl
     rw [this]
     use 3
-  decide
+  · decide
+
+example : (7 : Nat) > 3 := by
+  rw [Nat.gt_iff_lt, Nat.lt_iff]
+  constructor
+  . exists 4
+  · decide
 
 /-- Compare with Mathlib's `Nat.lt_succ_self`. -/
-theorem Nat.succ_gt_self (n:Nat) : n++ > n := by
-  sorry
+theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
+  rw [Nat.gt_iff_lt]
+  rw [Nat.lt_iff]
+  constructor
+  · exists 1
+    rw [succ_eq_add_one]
+  · revert n
+    apply induction
+    · rw [succ_eq_add_one]
+      rw [zero_add]
+      decide
+    · intro n ih
+      apply succ_ne_succ
+      assumption
 
 /-- Proposition 2.2.12 (Basic properties of order for natural numbers) / Exercise 2.2.3
 
 (a) (Order is reflexive). Compare with Mathlib's `Nat.le_refl`.-/
-theorem Nat.ge_refl (a:Nat) : a ≥ a := by
-  sorry
+theorem Nat.ge_refl (a : Nat) : a ≥ a := by
+  rw [Nat.ge_iff_le]
+  rw [Nat.le_iff]
+  exists 0
+  rw [add_zero]
 
 @[refl]
-theorem Nat.le_refl (a:Nat) : a ≤ a := a.ge_refl
+theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
 
 /-- The refl tag allows for the `rfl` tactic to work for inequalities. -/
-example (a b:Nat): a+b ≥ a+b := by rfl
+example (a b : Nat): a + b ≥ a + b := by rfl
 
 /-- (b) (Order is transitive).  The `obtain` tactic will be useful here.
     Compare with Mathlib's `Nat.le_trans`. -/
-theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
+theorem Nat.ge_trans {a b c : Nat} (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by
   sorry
 
-theorem Nat.le_trans {a b c:Nat} (hab: a ≤ b) (hbc: b ≤ c) : a ≤ c := Nat.ge_trans hbc hab
+theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
+  Nat.ge_trans hbc hab
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's `Nat.le_antisymm`. -/
-theorem Nat.ge_antisymm {a b:Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
+theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
   sorry
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
-theorem Nat.add_ge_add_right (a b c:Nat) : a ≥ b ↔ a + c ≥ b + c := by
+theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
   sorry
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_left`.  -/
