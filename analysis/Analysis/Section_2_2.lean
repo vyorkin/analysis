@@ -34,7 +34,61 @@ namespace Chapter2
 
 /-- Definition 2.2.1. (Addition of natural numbers).
     Compare with Mathlib's `Nat.add` -/
-abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ sum ↦ sum++) m n
+abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ s ↦ s++) m n
+
+-- Вот эта (fun _ s ↦ s++) она как бы "накидывает единичку снаружи".
+
+-- 0 + m = add 0 m
+-- n   m       n m
+--
+-- add 0 m = Nat.recurse (fun _ s ↦ s++) 0 m
+--     n m                               n m
+-- add zero (succ zero) = Nat.recurse (fun _ s ↦ s++) zero (succ zero)
+--      n        m                                     c=n      m
+--
+-- match (succ zero):
+--
+-- zero++ = (succ zero) => (fun _ s ↦ s++) zero (recurse (fun _ s ↦ s++) zero zero)
+--  (n)++          n
+--
+-- (recurse (fun _ s ↦ s++) zero zero) => c = zero
+--
+-- zero++ = (succ zero) => (fun _ s ↦ s++) zero zero
+-- zero++ => zero++
+
+-- 2 + 3 = 5
+-- Nat.recurse (fun _ s ↦ s++) (0++)++ ((0++)++)++
+--                            m = c = 2   n = 3
+--
+-- n = ((0++)++) = 2:
+--    2 + 1            2                    2
+-- ((0++)++)++ => f (0++)++ (recurse f 2 (0++)++) =>
+-- (fun _ s ↦ s++) ((0++)++) (recurse f 2 (0++)++) =>
+-- (recurse f 2 (0++)++)++ =>
+-- (f 0++ (recurse f 2 0++))++ =>
+-- (f 0++ ((0++)++)++)++ =>
+-- (f (fun _ s ↦ s++) ((0++)++)++)++ =>
+-- ((((0++)++)++)++)++ = 5
+--
+-- recurse f 2 (0++)++ =>
+-- (recurse (fun _ s ↦ s++) 2 0++)++ =>
+-- ((0++)++)++ = 3
+--
+-- n = 0++ = 1:
+--     2
+--   1 + 1       1                1
+-- (0++)++ => f 0++ (recurse f 2 0++)
+--
+-- ((0++)++)++ => f (0++)++ (f 0++ (recurse f 2 0++))
+--
+-- recurse f 2 0++ = f 0 (recurse f 2 0) = f 0 2 = f 0 (0++)++:
+--
+--   1
+-- 0 + 1                           2
+--  0++ => f 0 (recurse f 2 0) = f 0 2 =
+--
+-- match 0 => c = 2 = (0++)++
+--
 
 /-- This instance allows for the `+` notation to be used for natural number addition. -/
 instance Nat.instAdd : Add Nat where
@@ -42,76 +96,112 @@ instance Nat.instAdd : Add Nat where
 
 /-- Compare with Mathlib's `Nat.zero_add`. -/
 @[simp]
-theorem Nat.zero_add (m: Nat) : 0 + m = m := recurse_zero (fun _ sum ↦ sum++) _
+theorem Nat.zero_add (m : Nat) : 0 + m = m :=
+  recurse_zero (fun _ s ↦ s++) m -- Nat.recurse f m 0 = m
 
 /-- Compare with Mathlib's `Nat.succ_add`. -/
-theorem Nat.succ_add (n m: Nat) : n++ + m = (n+m)++ := by rfl
+theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
+
+-- Итак, мы сейчас знаем про наши числа только вот это:
+-- 1. 0 + m = m
+-- 2. (n++) + m = (n + m)++
+-- Из этого можно получить всё остальное.
 
 /-- Compare with Mathlib's `Nat.one_add`. -/
-theorem Nat.one_add (m:Nat) : 1 + m = m++ := by
+theorem Nat.one_add (m : Nat) : 1 + m = m++ := by
   rw [show 1 = 0++ from rfl, succ_add, zero_add]
 
-theorem Nat.two_add (m:Nat) : 2 + m = (m++)++ := by
-  rw [show 2 = 1++ from rfl, succ_add, one_add]
+theorem Nat.two_add (m : Nat) : 2 + m = (m++)++ := by
+  rw [show 2 = 1++ from rfl]
+  rw [succ_add]
+  rw [one_add]
 
-example : (2:Nat) + 3 = 5 := by
-  rw [Nat.two_add, show 3++=4 from rfl, show 4++=5 from rfl]
+example : (2 : Nat) + 3 = 5 := by
+  rw [Nat.two_add, show 3++ = 4 from rfl, show 4++ = 5 from rfl]
 
 -- The sum of two natural numbers is again a natural number.
-#check (fun (n m:Nat) ↦ n + m)
+#check (fun (n m : Nat) ↦ n + m)
 
 /-- Lemma 2.2.2 (n + 0 = n). Compare with Mathlib's `Nat.add_zero`. -/
 @[simp]
-lemma Nat.add_zero (n:Nat) : n + 0 = n := by
+lemma Nat.add_zero (n : Nat) : n + 0 = n := by
   -- This proof is written to follow the structure of the original text.
-  revert n; apply induction
+  revert n
+  apply induction
   . exact zero_add 0
-  intro n ih
-  calc
-    (n++) + 0 = (n + 0)++ := by rfl
-    _ = n++ := by rw [ih]
+  · intro n ih
+    calc
+      (n++) + 0 = (n + 0)++ := by rfl -- По определению сложения
+      _ = n++ := by rw [ih]
 
 /-- Lemma 2.2.3 (n+(m++) = (n+m)++). Compare with Mathlib's `Nat.add_succ`. -/
-lemma Nat.add_succ (n m:Nat) : n + (m++) = (n + m)++ := by
+lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
   -- this proof is written to follow the structure of the original text.
-  revert n; apply induction
+  revert n
+  apply induction
   . rw [zero_add, zero_add]
-  intro n ih
-  rw [succ_add, ih]
-  rw [succ_add]
+  · intro n ih
+    rw [succ_add, ih]
+    rw [succ_add]
 
+/-- Lemma 2.2.3 (n+(m++) = (n+m)++). Compare with Mathlib's `Nat.add_succ`. -/
+lemma Nat.add_succ' (n m : Nat) : n + (m++) = (n + m)++ := by
+  -- this proof is written to follow the structure of the original text.
+  revert n
+  apply induction
+  · rw [zero_add, zero_add]
+  · intro n ih
+    calc
+      -- succ_add: n++ + m = (n + m)++
+      n++ + m++ = (n + m++)++ := by rfl
+      _ = (n + m)++++ := by rw [ih]
+      _ = (n++ + m)++ := by rw [succ_add]
 
 /-- n++ = n + 1 (Why?). Compare with Mathlib's `Nat.succ_eq_add_one` -/
 theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
-  sorry
+  revert n
+  apply induction
+  · rw [zero_add]
+    rfl
+  · intro n ih
+    nth_rw 1 [ih]
+    rw [succ_add]
 
 /-- Proposition 2.2.4 (Addition is commutative). Compare with Mathlib's `Nat.add_comm` -/
 theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
   -- this proof is written to follow the structure of the original text.
-  revert n; apply induction
+  revert n
+  apply induction
   . rw [zero_add, add_zero]
-  intro n ih
-  rw [succ_add]
-  rw [add_succ, ih]
+  · intro n ih
+    rw [succ_add]
+    rw [add_succ, ih]
 
 /-- Proposition 2.2.5 (Addition is associative) / Exercise 2.2.1
     Compare with Mathlib's `Nat.add_assoc`. -/
-theorem Nat.add_assoc (a b c:Nat) : (a + b) + c = a + (b + c) := by
-  sorry
+theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
+  revert a
+  apply induction
+  · show (0 + b) + c = 0 + (b + c)
+    rw [zero_add, zero_add]
+  · intro a ih
+    show (a++ + b) + c = a++ + (b + c)
+    rw [succ_add, succ_add]
+    rw [ih, succ_add]
 
 /-- Proposition 2.2.6 (Cancellation law).
     Compare with Mathlib's `Nat.add_left_cancel`. -/
-theorem Nat.add_left_cancel (a b c:Nat) (habc: a + b = a + c) : b = c := by
+theorem Nat.add_left_cancel (a b c : Nat) (habc: a + b = a + c) : b = c := by
   -- This proof is written to follow the structure of the original text.
-  revert a; apply induction
+  revert a
+  apply induction
   . intro hbc
     rwa [zero_add, zero_add] at hbc
-  intro a ih
-  intro hbc
-  rw [succ_add, succ_add] at hbc
-  replace hbc := succ_cancel hbc
-  exact ih hbc
-
+  · intro a ih
+    intro hbc
+    rw [succ_add, succ_add] at hbc
+    replace hbc := succ_cancel hbc
+    exact ih hbc
 
 /-- (Not from textbook) Nat can be given the structure of a commutative additive monoid.
 This permits tactics such as `abel` to apply to the Chapter 2 natural numbers. -/
@@ -124,23 +214,29 @@ instance Nat.addCommMonoid : AddCommMonoid Nat where
 
 /-- This illustration of the `abel` tactic is not from the
     textbook. -/
-example (a b c d:Nat) : (a+b)+(c+0+d) = (b+c)+(d+a) := by abel
+example (a b c d : Nat) : (a + b) + (c + 0 + d) = (b + c) + (d + a) := by abel
+
+example (a b c d e f : Nat)
+        : (a + b + 0 + f) + (e + c + d + 0) + 0 =
+        0 + (b + 0 + a + c) + (0 + e + f + d) := by abel
 
 /-- Definition 2.2.7 (Positive natural numbers).-/
-def Nat.IsPos (n:Nat) : Prop := n ≠ 0
+def Nat.IsPos (n : Nat) : Prop := n ≠ 0
 
-theorem Nat.isPos_iff (n:Nat) : n.IsPos ↔ n ≠ 0 := by rfl
+theorem Nat.isPos_iff (n : Nat) : n.IsPos ↔ n ≠ 0 := by rfl
 
 /-- Proposition 2.2.8 (positive plus natural number is positive).
     Compare with Mathlib's `Nat.add_pos_left`. -/
-theorem Nat.add_pos_left {a:Nat} (b:Nat) (ha: a.IsPos) : (a + b).IsPos := by
+theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := by
   -- This proof is written to follow the structure of the original text.
-  revert b; apply induction
-  . rwa [add_zero]
-  intro b hab
-  rw [add_succ]
-  have : (a+b)++ ≠ 0 := succ_ne _
-  exact this
+  revert b
+  apply induction
+  . rw [add_zero]
+    assumption
+  · intro b hab
+    rw [add_succ]
+    have : (a+b)++ ≠ 0 := succ_ne _
+    exact this
 
 /-- Compare with Mathlib's `Nat.add_pos_right`.
 

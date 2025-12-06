@@ -43,12 +43,14 @@ deriving Repr, DecidableEq  -- this allows `decide` to work on `Nat`
 
 /-- Axiom 2.1 (0 is a natural number) -/
 instance Nat.instZero : Zero Nat := ⟨ zero ⟩
-#check (0:Nat)
+#check (0 : Nat)
 
 /-- Axiom 2.2 (Successor of a natural number is a natural number) -/
 postfix:100 "++" => Nat.succ
 #check (fun n ↦ n++)
+-- #check ((fun n ↦ n++) 0 : Nat)
 
+#check ((0++)++ : Nat)
 
 /--
   Definition 2.1.3 (Definition of the numerals 0, 1, 2, etc.). Note: to avoid ambiguity, one may
@@ -59,23 +61,27 @@ instance Nat.instOfNat {n:_root_.Nat} : OfNat Nat n where
   ofNat := _root_.Nat.rec 0 (fun _ n ↦ n++) n
 
 instance Nat.instOne : One Nat := ⟨ 1 ⟩
+
 lemma Nat.zero_succ : 0++ = 1 := by rfl
-#check (1:Nat)
+#check (1 : Nat)
 
 lemma Nat.one_succ : 1++ = 2 := by rfl
-#check (2:Nat)
+#check (2 : Nat)
 
 /-- Proposition 2.1.4 (3 is a natural number)-/
 lemma Nat.two_succ : 2++ = 3 := by rfl
-#check (3:Nat)
+#check (3 : Nat)
+
 
 /--
   Axiom 2.3 (0 is not the successor of any natural number).
   Compare with Lean's `Nat.succ_ne_zero`.
 -/
-theorem Nat.succ_ne (n:Nat) : n++ ≠ 0 := by
+theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
   by_contra h
   injection h
+
+-- По определению тоже самое, что и Nat.succ_ne_zero
 
 /-- Proposition 2.1.6 (4 is not equal to zero) -/
 theorem Nat.four_ne : (4:Nat) ≠ 0 := by
@@ -84,12 +90,23 @@ theorem Nat.four_ne : (4:Nat) ≠ 0 := by
   -- By axiom 2.3, 3++ is not zero.
   exact succ_ne _
 
+/-
+Идея в том, чтобы начать с минимального набора аксиом.
+Рассматривать различные конкретные примеры систем, построенных на
+этой аксиоматической базе и врубаться насколько они противоречат
+интуитивным представлениям. Если противоречат, то добавлять
+минимально необходимые аксиомы, чтобы "залатать" косяки.
+-/
+
 /--
   Axiom 2.4 (Different natural numbers have different successors).
   Compare with Mathlib's `Nat.succ_inj`.
 -/
 theorem Nat.succ_cancel {n m:Nat} (hnm: n++ = m++) : n = m := by
   injection hnm
+
+-- ^ Это следствие того, что ниже по закону контрапозиции:
+-- https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D0%B8
 
 /--
   Axiom 2.4 (Different natural numbers have different successors).
@@ -115,31 +132,89 @@ theorem Nat.six_ne_two : (6:Nat) ≠ 2 := by
 theorem Nat.six_ne_two' : (6:Nat) ≠ 2 := by
   decide
 
+-- m, n ∈ ℕ
+-- hbase : P 0 = (0 + 0) ∈ ℕ
+-- hind : ∀ n m, P (n + m) → P ((m + n)++)
+--
+-- Известно: P (n + m)   ∈ ℕ
+-- Показать: P (n + m)++ ∈ ℕ
+-- По аксиоме 2.2: Successor of a natural number is a natural number ∎
+
 /--
-  Axiom 2.5 (Principle of mathematical induction). The `induction` (or `induction'`) tactic in
-  Mathlib serves as a substitute for this axiom.
+  Axiom 2.5 (Principle of mathematical induction). The `induction`
+  (or `induction'`) tactic in Mathlib serves as a substitute for this axiom.
 -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) :
     ∀ n, P n := by
   intro n
   induction n with
   | zero => exact hbase
-  | succ n ih => exact hind _ ih
+  | succ n hi => exact hind n hi
+
+/-
+c = a₀ -(f₀)→ a₁ -(f₁)→ a₂ ... aₙ -(fₙ)→ aₙ++
+a₀ := c
+a₁ := f₀(a₀)
+a₂ := f₁(a₁)
+...
+aₙ++ := fₙ(aₙ)
+-/
+
+/-
+Утверждение 2.1.16 (ресурсинвые определения):
+
+Для каждого n ∈ ℕ существует некоторая ф-ция fₙ : ℕ → ℕ,
+которая сопоставляет этому n какое-то натуральное число.
+Пусть c ∈ ℕ, тогда каждого n ∈ ℕ существует уникальное aₙ такое,
+что a₀ = c и aₙ++ = f(aₙ).
+
+Проще говоря: a₀ = c ∧ ∀ n ∈ ℕ, aₙ++ = fₙ(aₙ)
+-/
 
 /--
   Recursion. Analogous to the inbuilt Mathlib method `Nat.rec` associated to
   the Mathlib natural numbers
 -/
-abbrev Nat.recurse (f: Nat → Nat → Nat) (c: Nat) : Nat → Nat := fun n ↦ match n with
-| 0 => c
-| n++ => f n (recurse f c n)
+abbrev Nat.recurse (f: Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
+  fun n ↦
+    match n with
+    | 0 => c
+    | n++ => f n (recurse f c n)
+
+/- Тут Nat.recurse это как бы схема определения числовой
+   последовательности рекурсивным способом.
+
+   abbrev по сути эквивалентно def.
+
+   Для каждого n ∈ ℕ она конструирует ф-цию fₙ : ℕ → ℕ, которая
+   сопоставляет этому n какое-то натуральное число.
+
+   c ∈ N - то, что она вернёт для n = 0
+   f - ф-ция, которая для данного n ∈ ℕ и aₙ возвращает fₙ(aₙ),
+
+       Во второй ветке паттерн-матчина, чтобы получить aₙ она рекурсивно
+       вызывает сама себя (recurse f c n),
+       где с n как бы "снимется" ещё одна единичка и так до нуля (0 => c).
+       Короче, она делает вот это: aₙ++ = fₙ(aₙ).
+
+       Второй параметр, который мы передаём в f это предыдущее число,
+       (которое мы должны сконструировать).
+
+   Итак, используя аксиомы 2.1 и 2.2 мы можем конструировать числа.
+   Благодаря аксиоме 2.3 мы знаем, что мы не зациклим такую числовую систему в 0.
+   Аксиома 2.4 не допускает переопределение чисел.
+-/
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's `Nat.rec_zero`. -/
 theorem Nat.recurse_zero (f: Nat → Nat → Nat) (c: Nat) : Nat.recurse f c 0 = c := by rfl
+-- ^ c - нулевой эл. числ. посл. или
+--   Nat.recurse натуральному числу 0 сопоставляет число c
+--   По сути это базовый кейс паттер-матчинга определения Nat.recurse.
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's `Nat.rec_add_one`. -/
 theorem Nat.recurse_succ (f: Nat → Nat → Nat) (c: Nat) (n: Nat) :
     recurse f c (n++) = f n (recurse f c n) := by rfl
+-- ^ Это второй кейс паттерн-матчинга определения Nat.recurse
 
 /-- Proposition 2.1.16 (recursive definitions). -/
 theorem Nat.eq_recurse (f: Nat → Nat → Nat) (c: Nat) (a: Nat → Nat) :
@@ -147,15 +222,18 @@ theorem Nat.eq_recurse (f: Nat → Nat → Nat) (c: Nat) (a: Nat → Nat) :
   constructor
   . intro ⟨ h0, hsucc ⟩
     -- this proof is written to follow the structure of the original text.
-    apply funext; apply induction
+    apply funext
+    apply induction
     . exact h0
-    intro n hn
-    rw [hsucc n, recurse_succ, hn]
-  intro h
-  rw [h]
-  constructor -- could also use `split_ands` or `and_intros` here
-  . exact recurse_zero _ _
-  exact recurse_succ _ _
+    · intro n hn
+      rw [hsucc n]
+      rw [recurse_succ]
+      rw [hn]
+  · intro h
+    rw [h]
+    constructor -- could also use `split_ands` or `and_intros` here
+    . exact recurse_zero _ _
+    · exact recurse_succ _ _
 
 
 /-- Proposition 2.1.16 (recursive definitions). -/
