@@ -38,7 +38,7 @@ namespace Chapter2
 
 Понятно, что 3 + 5 это тоже самое, что и ((5 + 1) + 1) + 1,
 ну или в нашей нотации это ((5++)++)++. Таким образом мы можем определить
-сложение, используя нашу рекурсивную схему Nat.recurse.
+сложение, используя наш рекурсор Nat.recurse.
 
 Рекурсивное определение сложения.
 -/
@@ -136,10 +136,13 @@ theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
 
 /-- Compare with Mathlib's `Nat.one_add`. -/
 theorem Nat.one_add (m : Nat) : 1 + m = m++ := by
-  rw [show 1 = 0++ from rfl, succ_add, zero_add]
+  have h := show 1 = 0++ from rfl
+  rw [h]
+  rw [succ_add, zero_add]
 
 /-
-rfl более мощная теорема, чем может показаться на первый взгляд.
+    ^^^^^^^^^^^^^^^^^^^^^
+rfl более мощная тактика, чем может показаться на первый взгляд.
 Хотя формулировка теоремы звучит как a = a, Lean позволяет использовать всё, что
 является равным этому типу по определению. Например, утверждение 2 + 2 = 4 доказывается
 при помощи rfl, потому что обе стороны одинаковы с точки зрения определённого равенства.
@@ -167,7 +170,7 @@ lemma Nat.add_zero (n : Nat) : n + 0 = n := by
       _ = n++ := by rw [ih]
 
 /-- Lemma 2.2.3 (n+(m++) = (n+m)++). Compare with Mathlib's `Nat.add_succ`. -/
-lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
+lemma Nat.add_succ (n m : Nat) : n + m++ = (n + m)++ := by
   -- this proof is written to follow the structure of the original text.
   revert n
   apply induction
@@ -241,6 +244,15 @@ theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
     -- Но это верно по определению сложения
     rw [succ_add]
     -- ∎
+
+-- Можно сделать индукцию по c вместо a.
+theorem Nat.add_assoc' (a b c : Nat) : (a + b) + c = a + (b + c) := by
+  revert c
+  apply induction
+  · rw [add_zero, add_zero]
+  · intro c ih
+    rw [add_succ, add_succ, add_succ]
+    rw [ih]
 
 -- 2.2.6 Закон сокращения
 
