@@ -196,8 +196,8 @@ theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
   · rw [zero_add]
     rw [show 1 = 0++ from rfl]
   · intro n ih
-    nth_rw 1 [ih]
     rw [succ_add]
+    rw [← ih]
 
 /-- Proposition 2.2.4 (Addition is commutative). Compare with Mathlib's {name}`Nat.add_comm` -/
 theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
@@ -266,6 +266,9 @@ theorem Nat.add_left_cancel (a b c:Nat) (habc: a + b = a + c) : b = c := by
   · intro a ih
     intro hbc
     rw [succ_add, succ_add] at hbc
+    -- Тоже самое, что have hbd := succ_cancel hbc,
+    -- только заменяет исходную гипотезу,
+    -- вместо того, чтобы создавать ещё одну
     replace hbc := succ_cancel hbc -- По аксиоме 2.4: n++ = m++ → n = m
     exact ih hbc
 
@@ -324,11 +327,13 @@ theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
   -- Предположим, что a ≠ 0 или b ≠ 0
   by_contra h
   -- Перепишем гипотезу
-  simp only [not_and_or, ←ne_eq] at h
+  rw [not_and_or] at h
+  repeat rw [←ne_eq] at h
   obtain ha | hb := h
-  .  -- a ≠ 0 → a.IsPos (положительно) : по 2.2.7 (определению положительного натурального)
+  . -- a ≠ 0 → a.IsPos (положительно) : по 2.2.7 (определению положительного натурального)
     rw [← isPos_iff] at ha
-    observe : (a + b).IsPos -- по 2.2.8 (слева положительное, справа натуральное)
+    have : (a + b).IsPos := by exact add_pos_left b ha
+    -- observe : (a + b).IsPos -- по 2.2.8 (слева положительное, справа натуральное)
     -- ^ эта тактика эквивалентна:
     -- have : (a + b).IsPos := by exact?
     -- have : (a + b).IsPos := by exact add_pos_left b ha
@@ -352,19 +357,26 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 -- Пусть a ∈ ℕ, тогда существует единственное
 -- положительное число b такое, что b++ = a.
 
+-- {α : Sort u_1} {p : α → Prop}
+--
+-- (hex : ∃ x, p x)
+-- (hu  : ∀ (y₁ y₂ : α), p y₁ → p y₂ → y₁ = y₂)
+--
+-- : ∃! x, p x
+
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
 lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
-  -- Использовать индукцию
-  revert a
-  apply induction
-  · rw [isPos_iff]
-    intro h
-    exists 0
-  · intro n ih hn
-    rw [succ_eq_add_one] at hn
-    exists n
-    simp
-    -- simp only [succ.injEq, imp_self, implies_true, and_self]
+  apply existsUnique_of_exists_of_unique
+  · revert a
+    apply induction
+    · intro h
+      have : 0 = 0 := rfl
+      contradiction
+    · intro n h₁ h₂
+      use n
+  · intro y₁ y₂ h₁ h₂
+    apply succ_cancel
+    rw [h₁, h₂]
 
 /-
 Отношение (не строгого) порядка натуральных чисел.
@@ -407,29 +419,6 @@ lemma Nat.le_iff_lt_or_eq (n m:Nat) : n ≤ m ↔ n < m ∨ n = m := by
   rw [Nat.le_iff, Nat.lt_iff]
   by_cases h : n = m
   . simp [h]
-    use 0
-    rw [add_zero]
-  · simp [h]
-
-/-- Compare with Mathlib's `Nat.le_iff_lt_or_eq`. -/
-lemma Nat.le_iff_lt_or_eq' (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
-  rw [Nat.le_iff]
-  rw [Nat.lt_iff]
-  by_cases h : n = m
-  . show (∃ a, m = n + a) ↔ (∃ a, m = n + a) ∧ n ≠ m ∨ n = m
-    rw [ne_eq] -- (a ≠ b) = ¬a = b
-    --               ^ Раскрываем нотацию "≠":
-    -- ne_eq (a b : α) : (a ≠ b) = ¬(a = b)
-    --
-    show (∃ a, m = n + a) ↔ (∃ a, m = n + a) ∧ ¬n = m ∨ n = m
-    rw [h]
-    show (∃ a, m = m + a) ↔ (∃ a, m = m + a) ∧ ¬m = m ∨ m = m
-    simp only [not_true_eq_false] -- (¬ True) = False
-    show (∃ a, m = m + a) ↔ (∃ a, m = m + a) ∧ False ∨ True
-    rw [and_false]
-    rw [or_true]
-    rw [iff_true]
-    show ∃ a, m = m + a
     use 0
     rw [add_zero]
   · simp [h]
