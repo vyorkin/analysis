@@ -433,6 +433,33 @@ lemma Nat.le_iff_lt_or_eq (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
     rw [add_zero]
   · simp [h]
 
+-- Более детальное докательство с микро-шагами.
+lemma Nat.le_iff_lt_or_eq' (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
+  rw [Nat.le_iff]
+  rw [Nat.lt_iff]
+  by_cases h : n = m
+  . show (∃ a, m = n + a) ↔ ((∃ a, m = n + a) ∧ n ≠ m) ∨ n = m
+    constructor
+    · intro ha
+      show ((∃ a, m = n + a) ∧ n ≠ m) ∨ n = m
+      right
+      exact h
+    · intro hh
+      use 0
+      rw [add_zero]
+      rw [h]
+  · rw [ne_eq]
+    constructor
+    · intro hh
+      left
+      exact ⟨hh, h⟩
+    · intro (hh : ((∃ a, m = n + a) ∧ ¬n = m) ∨ n = m)
+      obtain h₁ | h₂ := hh
+      · exact h₁.left
+      · use 0
+        rw [add_zero]
+        rw [h₂]
+
 example : (8 : Nat) > 5 := by
   rw [Nat.gt_iff_lt, Nat.lt_iff]
   constructor
