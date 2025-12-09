@@ -242,6 +242,9 @@ abbrev Nat.recurse (f: Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
     | 0 => c
     | n++ => f n (recurse f c n)
 
+-- Сравни c:
+#check Nat.rec
+
 /- Тут Nat.recurse это схема определения числовой последовательности рекурсивным способом.
    abbrev по сути эквивалентно def.
 
@@ -272,25 +275,30 @@ theorem Nat.recurse_zero (f: Nat → Nat → Nat) (c: Nat) : Nat.recurse f c 0 =
 -- ^ c - нулевой эл. числ. посл. или
 --   Nat.recurse натуральному числу 0 сопоставляет число c
 --   По сути это базовый кейс паттер-матчинга определения Nat.recurse.
+-- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's `Nat.rec_add_one`. -/
 theorem Nat.recurse_succ (f: Nat → Nat → Nat) (c: Nat) (n: Nat) :
     recurse f c (n++) = f n (recurse f c n) := by rfl
--- ^ Это второй кейс паттерн-матчинга определения Nat.recurse
+-- ^ Это второй кейс паттерн-матчинга определения Nat.recurse.
+-- Тоже доказывается одной редукцией Nat.recurse.
 
 /-- Proposition 2.1.16 (recursive definitions). -/
-theorem Nat.eq_recurse (f: Nat → Nat → Nat) (c: Nat) (a: Nat → Nat) :
-    (a 0 = c ∧ ∀ n, a (n++) = f n (a n)) ↔ a = recurse f c := by
+theorem Nat.eq_recurse
+        (f: Nat → Nat → Nat)
+        (c: Nat)
+        (a: Nat → Nat) :
+        (a 0 = c ∧ ∀ n, a (n++) = f n (a n)) ↔ (a = recurse f c) := by
   constructor
-  . intro ⟨ h0, hsucc ⟩
+  . intro ⟨h0, hsucc⟩
     -- this proof is written to follow the structure of the original text.
     apply funext
     apply induction
     . exact h0
-    · intro n hn
+    · intro n ih
       rw [hsucc n]
       rw [recurse_succ]
-      rw [hn]
+      rw [ih]
   · intro h
     rw [h]
     constructor -- could also use `split_ands` or `and_intros` here
