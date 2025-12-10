@@ -49,6 +49,12 @@ inductive Nat where
 | succ : Nat → Nat
 deriving Repr, DecidableEq  -- this allows `decide` to work on `Nat`
 
+-- Постулируем разрешимость равенства натуральных чисел.
+
+-- Propositional equality is Decidable for all elements of a type.
+-- In other words, an instance of DecidableEq α is a means of
+-- deciding the proposition a = b is for all a b : α.
+
 /-- Axiom 2.1 (0 is a natural number) -/
 instance Nat.instZero : Zero Nat := ⟨ zero ⟩
 #check (0 : Nat)
