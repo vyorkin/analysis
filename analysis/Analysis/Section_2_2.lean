@@ -525,6 +525,8 @@ theorem Nat.ge_trans {a b c : Nat} (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := 
   assumption
   -- apply h0
 
+#check Eq.symm
+
 theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
 
@@ -536,6 +538,7 @@ theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
 theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
   by_contra h
   · rw [←ne_eq] at h
+
     sorry
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
