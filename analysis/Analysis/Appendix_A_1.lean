@@ -45,6 +45,7 @@ Showcases some basic tactics and Lean syntax.
 -- тактика падает с ошибкой, а если нет — полностью закрывает цель
 -- (поэтому её и называют finishing tactic: либо всё, либо ничего).
 
+
 /-- Every well-formed statement is either true or false... -/
 example (P : Prop) : (P = true) ∨ (P = false) := by
   simp
