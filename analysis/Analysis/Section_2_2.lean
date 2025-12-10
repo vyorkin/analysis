@@ -434,6 +434,8 @@ lemma Nat.le_iff_lt_or_eq (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
   · simp [h]
 
 -- Более детальное докательство с микро-шагами.
+-- Со временем необходимость и желание приводить настолько подробные
+-- доказательства должны исчезнуть.
 lemma Nat.le_iff_lt_or_eq' (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
   rw [Nat.le_iff]
   rw [Nat.lt_iff]
@@ -468,18 +470,24 @@ example : (8 : Nat) > 5 := by
     use 3
   · decide
 
+example : (8 : Nat) > 5 := by
+  rw [Nat.gt_iff_lt, Nat.lt_iff]
+  constructor
+  . use 3; rfl
+  · decide
+
 example : (7 : Nat) > 3 := by
   rw [Nat.gt_iff_lt, Nat.lt_iff]
   constructor
-  . exists 4
-  · decide
+  . exists 4 -- это супер-мощная тактика
+  · decide   -- тоже нихуёвая
 
 /-- Compare with Mathlib's `Nat.lt_succ_self`. -/
 theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
   rw [Nat.gt_iff_lt]
   rw [Nat.lt_iff]
   constructor
-  · exists 1
+  · use 1
     rw [succ_eq_add_one]
   · revert n
     apply induction
@@ -496,7 +504,7 @@ theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
 theorem Nat.ge_refl (a : Nat) : a ≥ a := by
   rw [Nat.ge_iff_le]
   rw [Nat.le_iff]
-  exists 0
+  use 0 -- exists 0
   rw [add_zero]
 
 @[refl]
@@ -508,14 +516,27 @@ example (a b : Nat): a + b ≥ a + b := by rfl
 /-- (b) (Order is transitive).  The `obtain` tactic will be useful here.
     Compare with Mathlib's `Nat.le_trans`. -/
 theorem Nat.ge_trans {a b c : Nat} (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by
-  sorry
+  obtain ⟨y, h0⟩ := hab
+  obtain ⟨x, h1⟩ := hbc
+  rw [h1] at h0
+  rw [Nat.ge_iff_le, Nat.le_iff]
+  use x + y
+  rw [add_assoc] at h0
+  assumption
+  -- apply h0
 
 theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
 
+-- Nat.le_iff (n m : Nat) : n ≤ m ↔ ∃ a : Nat, m = n + a := by rfl
+
+#check Nat.add_left_cancel -- (a b c : Nat) (habc : a + b = a + c) : b = c
+
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's `Nat.le_antisymm`. -/
 theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
-  sorry
+  by_contra h
+  · rw [←ne_eq] at h
+    sorry
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
 theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
