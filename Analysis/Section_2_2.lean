@@ -515,6 +515,8 @@ theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
   assumption
   -- apply h0
 
+#check Eq.symm
+
 theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
 
