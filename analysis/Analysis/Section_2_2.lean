@@ -536,10 +536,37 @@ theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's `Nat.le_antisymm`. -/
 theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
-  by_contra h
-  · rw [←ne_eq] at h
+  obtain ⟨y, hb_eq⟩ := hba
+  obtain ⟨x, ha_eq⟩ := hab
+  have ha_eq_s := ha_eq.symm
+  rw [←add_zero a] at ha_eq_s
+  rw [hb_eq] at ha_eq_s
+  rw [add_assoc] at ha_eq_s
+  apply add_left_cancel at ha_eq_s
+  match y with
+  | 0 =>
+    rw [zero_add] at ha_eq_s
+    rw [ha_eq_s] at ha_eq
+    rw [add_zero] at ha_eq
+    exact ha_eq
+  | z++ =>
+    rw [Nat.succ_add] at ha_eq_s
+    have hz := Nat.succ_ne (z + x)
+    -- У нас в контексте ha_eq_s : (z + x)++ = 0, но это невозможно
+    -- по аксиоме Axiom 2.3 (0 is not the successor of any natural number)
+    contradiction
 
-    sorry
+-- Помни:
+-- 1) Можно применять (apply) теоремы не только к цели, но и к гипотезам.
+-- 2) Иногда всё же полезнее использовать match вместо тактики cases.
+--    Хотя бы потому, что на наших числах Nat cases не будет использовать
+--    нотации, что может быть сложнее для восприятия (слова, вместо чисел).
+-- 3) Ты можешь применять теорем к гипотезам как бы "вызывая их на гипотезах" через точку.
+--    Ну типа, вот есть такая теорема: Eq.symm : a = b → b = a.
+--    Если у тебя есть гипотеза вида h1: a = b, то
+--    ты можешь написать: have h2 := h1.symm
+-- 4) Прежде, чем пробовать доказывать по индукции, попробуй match/cases.
+-- 5) Иногда доказательством могут быть 2 противоречащие друг другу гипотезы в контексте.
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
 theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
