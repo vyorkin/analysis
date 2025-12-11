@@ -478,14 +478,14 @@ theorem Nat.succ_gt_self (n:Nat) : n++ > n := by
   rw [Nat.lt_iff]
   constructor
   · use 1
-    rw [succ_eq_add_one]
+    rw [Nat.succ_eq_add_one]
   · revert n
     apply induction
-    · rw [succ_eq_add_one]
-      rw [zero_add]
+    · rw [Nat.succ_eq_add_one]
+      rw [Nat.zero_add]
       decide
     · intro n ih
-      apply succ_ne_succ
+      apply Nat.succ_ne_succ
       assumption
 
 /-- Proposition 2.2.12 (Basic properties of order for natural numbers) / Exercise 2.2.3
@@ -495,7 +495,7 @@ theorem Nat.ge_refl (a:Nat) : a ≥ a := by
   rw [Nat.ge_iff_le]
   rw [Nat.le_iff]
   use 0 -- exists 0
-  rw [add_zero]
+  rw [Nat.add_zero]
 
 @[refl]
 theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
@@ -511,9 +511,9 @@ theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
   rw [h1] at h0
   rw [Nat.ge_iff_le, Nat.le_iff]
   use x + y
-  rw [add_assoc] at h0
+  rw [Nat.add_assoc] at h0
   assumption
-  -- apply h0
+  -- exact h0
 
 #check Eq.symm
 
@@ -522,14 +522,61 @@ theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's {name}`Nat.le_antisymm`. -/
 theorem Nat.ge_antisymm {a b:Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
-  sorry
+  obtain ⟨x, ha⟩ := hab
+  obtain ⟨y, hb⟩ := hba
+  have hb' := hb
+  rw [ha] at hb'
+  nth_rw 1 [← Nat.add_zero b] at hb'
+  rw [Nat.add_assoc b x y] at hb'
+  apply Nat.add_left_cancel at hb'
+  match x with
+  | 0 =>
+    rw [Nat.add_zero] at ha
+    exact ha
+  | x++ =>
+    rw [Nat.succ_add] at hb'
+    have hbn' := (Nat.succ_ne (x + y)).symm
+    contradiction
+
+-- Помни:
+-- 1) Можно применять (apply) теоремы не только к цели, но и к гипотезам.
+-- 2) Иногда всё же полезнее применить match вместо тактики cases.
+--    Хотя бы потому, что на наших числах Nat cases не будет использовать
+--    нотации, что может быть сложнее для восприятия (слова, вместо чисел).
+-- 3) Ты можешь применять теоремы к гипотезам как бы "вызывая их на гипотезах" через точку.
+--    Ну типа, вот есть такая теорема: Eq.symm : a = b → b = a.
+--    Если у тебя есть гипотеза вида h1: a = b, то
+--    ты можешь написать: have h2 := h1.symm
+-- 4) Прежде, чем пробовать доказывать по индукции, попробуй match/cases.
+-- 5) Иногда доказательством могут быть 2 противоречащие друг другу гипотезы в контексте.
+-- 6) Иногда есть смысл "склонировать" какую-то гипотезу в её оригинальном виде:
+--    have h' := h. Потому что она может тебе пригодиться позже именно в таком
+--    нетронутом виде.
+
+/-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
+theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
+  repeat rw [Nat.ge_iff_le]
+  constructor
+  · intro hab
+    obtain ⟨x, ha⟩ := hab
+    rw [ha]
+    use x
+    rw [Nat.add_assoc]
+    rw [Nat.add_comm x c]
+    rw [← Nat.add_assoc]
+  · intro h
+    rw [Nat.le_iff] at *
+    obtain ⟨x, h⟩ := h
+    rw [Nat.add_comm b c] at h
+    rw [Nat.add_comm a c] at h
+    rw [← Nat.add_zero (c + a)] at h
+    repeat rw [Nat.add_assoc] at h
+    apply Nat.add_left_cancel at h
+    rw [Nat.add_zero] at h
+    use x
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_right`. -/
 theorem Nat.add_ge_add_right (a b c:Nat) : a ≥ b ↔ a + c ≥ b + c := by
-  sorry
-
-/-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_left`.  -/
-theorem Nat.add_ge_add_left (a b c:Nat) : a ≥ b ↔ c + a ≥ c + b := by
   simp only [add_comm]
   exact add_ge_add_right _ _ _
 
