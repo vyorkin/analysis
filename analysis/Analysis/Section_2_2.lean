@@ -488,14 +488,14 @@ theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
   rw [Nat.lt_iff]
   constructor
   · use 1
-    rw [succ_eq_add_one]
+    rw [Nat.succ_eq_add_one]
   · revert n
     apply induction
-    · rw [succ_eq_add_one]
-      rw [zero_add]
+    · rw [Nat.succ_eq_add_one]
+      rw [Nat.zero_add]
       decide
     · intro n ih
-      apply succ_ne_succ
+      apply Nat.succ_ne_succ
       assumption
 
 /-- Proposition 2.2.12 (Basic properties of order for natural numbers) / Exercise 2.2.3
@@ -505,7 +505,7 @@ theorem Nat.ge_refl (a : Nat) : a ≥ a := by
   rw [Nat.ge_iff_le]
   rw [Nat.le_iff]
   use 0 -- exists 0
-  rw [add_zero]
+  rw [Nat.add_zero]
 
 @[refl]
 theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
@@ -521,16 +521,14 @@ theorem Nat.ge_trans {a b c : Nat} (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := 
   rw [h1] at h0
   rw [Nat.ge_iff_le, Nat.le_iff]
   use x + y
-  rw [add_assoc] at h0
+  rw [Nat.add_assoc] at h0
   assumption
-  -- apply h0
+  -- exact h0
 
 #check Eq.symm
 
 theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
-
--- Nat.le_iff (n m : Nat) : n ≤ m ↔ ∃ a : Nat, m = n + a := by rfl
 
 #check Nat.add_left_cancel -- (a b c : Nat) (habc : a + b = a + c) : b = c
 
@@ -540,16 +538,16 @@ theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
   obtain ⟨y, hb⟩ := hba
   have hb' := hb
   rw [ha] at hb'
-  nth_rw 1 [← add_zero b] at hb'
-  rw [add_assoc b x y] at hb'
-  apply add_left_cancel at hb'
+  nth_rw 1 [← Nat.add_zero b] at hb'
+  rw [Nat.add_assoc b x y] at hb'
+  apply Nat.add_left_cancel at hb'
   match x with
   | 0 =>
-    rw [add_zero] at ha
+    rw [Nat.add_zero] at ha
     exact ha
   | x++ =>
-    rw [succ_add] at hb'
-    have hbn' := (succ_ne (x + y)).symm
+    rw [Nat.succ_add] at hb'
+    have hbn' := (Nat.succ_ne (x + y)).symm
     contradiction
 
 -- Помни:
@@ -569,10 +567,28 @@ theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
 theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
-  sorry
+  repeat rw [Nat.ge_iff_le]
+  constructor
+  · intro hab
+    obtain ⟨x, ha⟩ := hab
+    rw [ha]
+    use x
+    rw [Nat.add_assoc]
+    rw [Nat.add_comm x c]
+    rw [← Nat.add_assoc]
+  · intro h
+    rw [Nat.le_iff] at *
+    obtain ⟨x, h⟩ := h
+    rw [Nat.add_comm b c] at h
+    rw [Nat.add_comm a c] at h
+    rw [← Nat.add_zero (c + a)] at h
+    repeat rw [Nat.add_assoc] at h
+    apply Nat.add_left_cancel at h
+    rw [Nat.add_zero] at h
+    use x
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_left`.  -/
-theorem Nat.add_ge_add_left (a b c:Nat) : a ≥ b ↔ c + a ≥ c + b := by
+theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
   simp only [add_comm]
   exact add_ge_add_right _ _ _
 
