@@ -109,7 +109,7 @@ theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
 -- По определению тоже самое, что и Nat.succ_ne_zero
 
 /-- Proposition 2.1.6 (4 is not equal to zero) -/
-theorem Nat.four_ne : (4:Nat) ≠ 0 := by
+theorem Nat.four_ne : (4 : Nat) ≠ 0 := by
   -- By definition, 4 = 3++.
   change 3++ ≠ 0
   -- By axiom 2.3, 3++ is not zero.
@@ -127,7 +127,7 @@ theorem Nat.four_ne : (4:Nat) ≠ 0 := by
   Axiom 2.4 (Different natural numbers have different successors).
   Compare with Mathlib's {name}`Nat.succ_inj`.
 -/
-theorem Nat.succ_cancel {n m:Nat} (hnm: n++ = m++) : n = m := by
+theorem Nat.succ_cancel {n m : Nat} (hnm : n++ = m++) : n = m := by
   injection hnm
 
 -- ^ Это следствие того, что ниже по закону контрапозиции:
