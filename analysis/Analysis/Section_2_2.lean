@@ -593,14 +593,36 @@ theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
   exact add_ge_add_right _ _ _
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`.  -/
-theorem Nat.add_le_add_right (a b c:Nat) : a ≤ b ↔ a + c ≤ b + c := add_ge_add_right _ _ _
+theorem Nat.add_le_add_right (a b c : Nat) : a ≤ b ↔ a + c ≤ b + c :=
+  add_ge_add_right _ _ _
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_left`.  -/
-theorem Nat.add_le_add_left (a b c:Nat) : a ≤ b ↔ c + a ≤ c + b := add_ge_add_left _ _ _
+theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b :=
+  add_ge_add_left _ _ _
+
+#check Nat.le_iff_lt_or_eq -- n ≤ m ↔ n < m ∨ n = m
+#check Nat.succ_gt_self    -- n++ > n
+
+-- Вроде бы полезная, пока оставлю, вдруг пригодится.
+lemma Nat.succ_ne_self (n : Nat) : n++ ≠ n := by
+  revert n
+  apply induction
+  · decide
+  · intro n ih
+    apply Nat.succ_ne_succ
+    exact ih
 
 /-- (e) a < b iff a++ ≤ b.  Compare with Mathlib's `Nat.succ_le_iff`. -/
-theorem Nat.lt_iff_succ_le (a b:Nat) : a < b ↔ a++ ≤ b := by
-  sorry
+theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
+  constructor
+  · intro h
+    rw [Nat.le_iff]
+    -- use 0
+    rw [Nat.lt_iff] at h
+    obtain ⟨h0, h1⟩ := h
+    obtain ⟨x, h0⟩ := h0
+    sorry
+  · sorry
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
 theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d:Nat, d.IsPos ∧ b = a + d := by
