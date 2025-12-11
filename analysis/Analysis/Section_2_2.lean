@@ -536,24 +536,20 @@ theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's `Nat.le_antisymm`. -/
 theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
-  obtain ⟨y, hb⟩ := hba
   obtain ⟨x, ha⟩ := hab
-  have ha' := ha.symm
-  rw [←add_zero a] at ha'
-  rw [hb] at ha'
-  rw [add_assoc] at ha'
-  apply add_left_cancel at ha'
-  match y with
+  obtain ⟨y, hb⟩ := hba
+  have hb' := hb
+  rw [ha] at hb'
+  nth_rw 1 [← add_zero b] at hb'
+  rw [add_assoc b x y] at hb'
+  apply add_left_cancel at hb'
+  match x with
   | 0 =>
-    rw [zero_add] at ha'
-    rw [ha'] at ha
     rw [add_zero] at ha
     exact ha
-  | z++ =>
-    rw [Nat.succ_add] at ha'
-    have hz := Nat.succ_ne (z + x)
-    -- У нас в контексте ha' : (z + x)++ = 0, но это невозможно
-    -- по аксиоме Axiom 2.3 (0 is not the successor of any natural number)
+  | x++ =>
+    rw [succ_add] at hb'
+    have hbn' := (succ_ne (x + y)).symm
     contradiction
 
 -- Помни:
@@ -567,6 +563,9 @@ theorem Nat.ge_antisymm {a b : Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
 --    ты можешь написать: have h2 := h1.symm
 -- 4) Прежде, чем пробовать доказывать по индукции, попробуй match/cases.
 -- 5) Иногда доказательством могут быть 2 противоречащие друг другу гипотезы в контексте.
+-- 6) Иногда есть смысл "склонировать" какую-то гипотезу в её оригинальном виде:
+--    have h' := h. Потому что она может тебе пригодиться позже именно в таком
+--    нетронутом виде.
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
 theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
