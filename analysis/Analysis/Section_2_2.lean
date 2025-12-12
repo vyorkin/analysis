@@ -621,7 +621,28 @@ theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
     rw [Nat.lt_iff] at h
     obtain ⟨h0, h1⟩ := h
     obtain ⟨x, h0⟩ := h0
-    sorry
+    use x
+    revert x
+    apply induction
+    · repeat rw [Nat.add_zero]
+      intro h
+      have := h.symm
+      contradiction
+    · intro n ih h
+      rw [Nat.add_succ] at h
+      rw [h]
+      rw [Nat.succ_add, Nat.add_succ]
+      sorry
+
+    -- match x with
+    -- | 0 =>
+    --   rw [Nat.add_zero] at *
+    --   have h0 := h0.symm
+    --   contradiction
+    -- | x++ =>
+    --   rw [Nat.succ_add]
+    --   rw [← h0]
+    --   sorry
   · sorry
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
