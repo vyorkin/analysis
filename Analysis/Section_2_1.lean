@@ -76,7 +76,7 @@ postfix:100 "++" => Nat.succ
 -- понятие об их мощности. Идея в том, что все возможные натуральные числовые системы,
 -- построенные из разных математических объектов/структур должны подчиняться всем
 -- необходимым аксиомам и допускать необходимые действие.
--- Короче - первчина аксиоматическая система, а не выбранный объект/структура.
+-- Короче - первична аксиоматическая система, а не выбранный объект/структура.
 -- Вообще, одно из великих открытий 19 века в том, что числа можно понимать абстрактно,
 -- через аксиомы, не нуждаясь в конкретной модели.
 
@@ -105,6 +105,22 @@ lemma Nat.two_succ : 2++ = 3 := by rfl
 theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
   by_contra h
   injection h
+
+/- 
+  Тактика injection умеет обнаруживать противоречия в контексте.
+
+  Under the hood, every inductive type in Lean gets a
+  `noConfusion` theorem generated automatically. Auto-generated, roughly:
+
+  Nat.noConfusion : n++ = zero → False
+
+  When injection sees h : n++ = zero, it recognizes this as a constructor mismatch.
+  It then:
+
+  - Looks up the auto-generated no-confusion principle for `Nat`
+  - Applies it to `h`, which directly yields `False`
+  - The goal `False` is closed, completing the proof
+-/
 
 -- По определению тоже самое, что и Nat.succ_ne_zero
 
@@ -173,11 +189,6 @@ theorem Nat.six_ne_two' : (6:Nat) ≠ 2 := by
 Это и будет нашей пятой аксиомой.
 -/
 
-/--
-  Axiom 2.5 (Principle of mathematical induction). The `induction`
-  (or `induction'`) tactic in Mathlib serves as a substitute for this axiom.
--/
-
 /-- Axiom 2.5 (Principle of mathematical induction). The {tactic}`induction` (or
   {tactic}`induction'`) tactic in Mathlib serves as a substitute for this axiom.  -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) :
@@ -190,7 +201,7 @@ theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P 
 /-
 Мы хотим построить последовательность вида {a₀, a₁, a₂, ...}. Суть в том,
 что мы хотим сделать возможным переход от одного элемента последовательности к другому
-только с помощью какой-то одной функциеи (у нас это операция прибавления единицы).
+только с помощью какой-то одной функции (у нас это операция прибавления единицы).
 
 Используя мат. индукцию мы можем убедиться, что такая последовательность может
 быть построена только одним способом, в котором переход от некоторого
