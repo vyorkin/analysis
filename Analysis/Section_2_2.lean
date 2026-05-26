@@ -116,6 +116,14 @@ instance Nat.instAdd : Add Nat where add := add
 theorem Nat.zero_add (m : Nat) : 0 + m = m :=
   recurse_zero (fun _ s ↦ s++) m -- Nat.recurse f m 0 = m
 
+-- Nat.recurse_zero (f: Nat → Nat → Nat) (c: Nat) : Nat.recurse f c 0 = c := by rfl
+
+-- abbrev Nat.recurse (f: Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
+--   fun n ↦
+--     match n with
+--     | 0 => c
+--     | n++ => f n (recurse f c n)
+
 /-
 2.2.1. Сложение натуральных чисел.
 Предположим идуктивно, что мы определили, как прибавить n к m.
@@ -257,14 +265,13 @@ theorem Nat.add_assoc' (a b c : Nat) : (a + b) + c = a + (b + c) := by
 
 /-- Proposition 2.2.6 (Cancellation law).
     Compare with Mathlib's {name}`Nat.add_left_cancel`. -/
-theorem Nat.add_left_cancel (a b c:Nat) (habc: a + b = a + c) : b = c := by
+theorem Nat.add_left_cancel (a b c : Nat) (habc: a + b = a + c) : b = c := by
   -- This proof is written to follow the structure of the original text.
   revert a
   apply induction
   . intro hbc
     rwa [zero_add, zero_add] at hbc
-  · intro a ih
-    intro hbc
+  · intro a ih hbc
     rw [succ_add, succ_add] at hbc
     -- Тоже самое, что have hbd := succ_cancel hbc,
     -- только заменяет исходную гипотезу,
@@ -296,7 +303,7 @@ theorem Nat.isPos_iff (n : Nat) : n.IsPos ↔ n ≠ 0 := by rfl
 
 /-- Proposition 2.2.8 (positive plus natural number is positive).
     Compare with Mathlib's {name}`Nat.add_pos_left`. -/
-theorem Nat.add_pos_left {a:Nat} (b:Nat) (ha: a.IsPos) : (a + b).IsPos := by
+theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := by
   -- This proof is written to follow the structure of the original text.
   revert b
   apply induction
@@ -304,7 +311,8 @@ theorem Nat.add_pos_left {a:Nat} (b:Nat) (ha: a.IsPos) : (a + b).IsPos := by
     assumption
   · intro b hab
     rw [add_succ]
-    have : (a + b)++ ≠ 0 := succ_ne _
+    let n : Nat := a + b
+    have : (a + b)++ ≠ 0 := succ_ne n
     exact this
 
 /-- Compare with Mathlib's {name}`Nat.add_pos_right`.
@@ -330,14 +338,19 @@ theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
   rw [not_and_or] at h
   repeat rw [←ne_eq] at h
   obtain ha | hb := h
-  . -- a ≠ 0 → a.IsPos (положительно) : по 2.2.7 (определению положительного натурального)
+  . -- a ≠ 0 → a.IsPos (положительно) : по 2.2.7 (определению положительного ℕ)
     rw [← isPos_iff] at ha
     have : (a + b).IsPos := by exact add_pos_left b ha
     -- observe : (a + b).IsPos -- по 2.2.8 (слева положительное, справа натуральное)
     -- ^ эта тактика эквивалентна:
-    -- have : (a + b).IsPos := by exact?
     -- have : (a + b).IsPos := by exact add_pos_left b ha
+    --
+    -- have : (a + b).IsPos := by exact?
+    --
+    -- Тактика contradiction здесь доказывает подцель
+    -- потому, что (a + b).IsPos это (a + b) ≠ 0
     contradiction
+    -- Либо можно явно так:
     -- exact absurd hab this
   · rw [← isPos_iff] at hb  -- b ≠ 0 → b.isPos : по 2.2.7
     observe : (a + b).IsPos -- a + b : по 2.2.8
@@ -352,10 +365,10 @@ useful for extracting witnesses from existential statements; for instance, `obta
 extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis `h : ∃ x, P x`.
 -/
 
-#check existsUnique_of_exists_of_unique
+-- Обрати внимание на ∃!, это не "not exists", а специальная нотация для "exists unique":
+-- def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
--- Пусть a ∈ ℕ, тогда существует единственное
--- положительное число b такое, что b++ = a.
+#check existsUnique_of_exists_of_unique
 
 -- {α : Sort u_1} {p : α → Prop}
 --
@@ -364,15 +377,22 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 --
 -- : ∃! x, p x
 
+-- Пусть a ∈ ℕ, тогда существует единственное
+-- положительное число b такое, что b++ = a.
+
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
 lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
   apply existsUnique_of_exists_of_unique
+  -- Обратное рассуждение -- нужно доказать две посылки,
+  -- которые образуют наши новые две подцели
   · revert a
     apply induction
     · intro h
       have : 0 = 0 := rfl
+      -- Сделаем противоречие более наглядным
+      unfold Nat.IsPos at h
       contradiction
-    · intro n h₁ h₂
+    · intro n _ _
       use n
   · intro y₁ y₂ h₁ h₂
     apply succ_cancel
@@ -399,7 +419,7 @@ instance Nat.instLT : LT Nat where
   lt n m := n ≤ m ∧ n ≠ m
 
 /-- Compare with Mathlib's {name}`le_iff_exists_add`. -/
-lemma Nat.le_iff (n m:Nat) : n ≤ m ↔ ∃ a:Nat, m = n + a := by rfl
+lemma Nat.le_iff (n m : Nat) : n ≤ m ↔ ∃ a : Nat, m = n + a := by rfl
 
 lemma Nat.lt_iff (n m : Nat) : n < m ↔ (∃ a : Nat, m = n + a) ∧ n ≠ m := by rfl
 
@@ -412,7 +432,7 @@ lemma Nat.ge_iff_le (n m : Nat) : n ≥ m ↔ m ≤ n := by rfl
 lemma Nat.gt_iff_lt (n m : Nat) : n > m ↔ m < n := by rfl
 
 /-- Compare with Mathlib's {name}`Nat.le_of_lt`. -/
-lemma Nat.le_of_lt {n m:Nat} (hnm: n < m) : n ≤ m := hnm.1
+lemma Nat.le_of_lt {n m : Nat} (hnm: n < m) : n ≤ m := hnm.1
 
 /-- Compare with Mathlib's {name}`Nat.le_iff_lt_or_eq`. -/
 lemma Nat.le_iff_lt_or_eq (n m:Nat) : n ≤ m ↔ n < m ∨ n = m := by
@@ -448,7 +468,8 @@ lemma Nat.le_iff_lt_or_eq' (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
     · intro (hh : ((∃ a, m = n + a) ∧ ¬n = m) ∨ n = m)
       obtain h₁ | h₂ := hh
       · exact h₁.left
-      · use 0
+      · -- contradiction
+        use 0
         rw [add_zero]
         rw [h₂]
 
@@ -469,16 +490,20 @@ example : (8 : Nat) > 5 := by
 example : (7 : Nat) > 3 := by
   rw [Nat.gt_iff_lt, Nat.lt_iff]
   constructor
-  . exists 4 -- это супер-мощная тактика
-  · decide   -- тоже нихуёвая
+  . -- use 4; rfl
+    -- ^ эквивалентно
+    exists 4 -- это супер-мощная тактика
+  · decide   -- тоже нихуёвая, можем использовать потому,
+             -- что Nat ... deriving DecidableEq
 
 /-- Compare with Mathlib's {name}`Nat.lt_succ_self`. -/
-theorem Nat.succ_gt_self (n:Nat) : n++ > n := by
+theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
   rw [Nat.gt_iff_lt]
   rw [Nat.lt_iff]
   constructor
   · use 1
     rw [Nat.succ_eq_add_one]
+    -- exact Nat.succ_eq_add_one n
   · revert n
     apply induction
     · rw [Nat.succ_eq_add_one]
@@ -501,7 +526,7 @@ theorem Nat.ge_refl (a:Nat) : a ≥ a := by
 theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
 
 /-- The refl tag allows for the {tactic}`rfl` tactic to work for inequalities. -/
-example (a b:Nat): a+b ≥ a+b := by rfl
+example (a b : Nat): a + b ≥ a + b := by rfl
 
 /-- (b) (Order is transitive).  The {tactic}`obtain` tactic will be useful here.
     Compare with Mathlib's {name}`Nat.le_trans`. -/
@@ -511,19 +536,22 @@ theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
   rw [h1] at h0
   rw [Nat.ge_iff_le, Nat.le_iff]
   use x + y
-  rw [Nat.add_assoc] at h0
+  -- rw [Nat.add_assoc] at h0
+  rw [← Nat.add_assoc]
   assumption
   -- exact h0
 
 #check Eq.symm
 
+-- Зеркальная лемма, получается путём подстановки аргументов в обратном порядке
 theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's {name}`Nat.le_antisymm`. -/
-theorem Nat.ge_antisymm {a b:Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
+theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   obtain ⟨x, ha⟩ := hab
   obtain ⟨y, hb⟩ := hba
+  -- Сохранили копию, пригодится дальше
   have hb' := hb
   rw [ha] at hb'
   nth_rw 1 [← Nat.add_zero b] at hb'
@@ -537,6 +565,19 @@ theorem Nat.ge_antisymm {a b:Nat} (hab: a ≥ b) (hba: b ≥ a) : a = b := by
     rw [Nat.succ_add] at hb'
     have hbn' := (Nat.succ_ne (x + y)).symm
     contradiction
+
+theorem Nat.ge_antisymm' {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
+  obtain ⟨x, ha⟩ := hab   -- ha : a = b + x
+  obtain ⟨y, hb⟩ := hba   -- hb : b = a + y
+  rw [ha] at hb
+  nth_rw 1 [← Nat.add_zero b] at hb
+  rw [Nat.add_assoc b x y] at hb
+  apply Nat.add_left_cancel at hb
+  rw [Nat.add_comm] at hb
+  obtain ⟨hy, hx⟩ := Nat.add_eq_zero y x hb.symm
+  rw [hx, add_zero] at ha
+  exact ha
+
 
 -- Помни:
 -- 1) Можно применять (apply) теоремы не только к цели, но и к гипотезам.
@@ -560,6 +601,9 @@ theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
   · intro hab
     obtain ⟨x, ha⟩ := hab
     rw [ha]
+    -- Тут можно сразу сказать что a = x при помощи `use x`,
+    -- просто потому что мы помним определение `≤`:
+    -- n ≤ m := le n m := ∃ a : Nat, m = n + a
     use x
     rw [Nat.add_assoc]
     rw [Nat.add_comm x c]
@@ -576,22 +620,27 @@ theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
     use x
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_right`. -/
-theorem Nat.add_ge_add_right (a b c:Nat) : a ≥ b ↔ a + c ≥ b + c := by
-  simp only [add_comm]
-  exact add_ge_add_right _ _ _
+theorem Nat.add_le_add_right (a b c : Nat) : a ≤ b ↔ a + c ≤ b + c := add_ge_add_right b a c
 
-/-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_right`.  -/
-theorem Nat.add_le_add_right (a b c:Nat) : a ≤ b ↔ a + c ≤ b + c := add_ge_add_right _ _ _
+/-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_left`. -/
+theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
+  simp only [add_comm]
+  exact add_ge_add_right a b c
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_left`.  -/
-theorem Nat.add_le_add_left (a b c:Nat) : a ≤ b ↔ c + a ≤ c + b := add_ge_add_left _ _ _
+theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b := add_ge_add_left b a c
 
 /-- (e) a < b iff a++ ≤ b.  Compare with Mathlib's {name}`Nat.succ_le_iff`. -/
-theorem Nat.lt_iff_succ_le (a b:Nat) : a < b ↔ a++ ≤ b := by
-  sorry
+theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
+  constructor
+  · intro h
+    obtain ⟨⟨x, h₁⟩, h₂⟩ := h
+    use x
+    sorry
+  · sorry
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
-theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d:Nat, d.IsPos ∧ b = a + d := by
+theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
   sorry
 
 /-- If a < b then a ̸= b,-/
