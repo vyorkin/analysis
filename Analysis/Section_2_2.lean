@@ -376,6 +376,18 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 -- (hu  : ∀ (y₁ y₂ : α), p y₁ → p y₂ → y₁ = y₂)
 --
 -- : ∃! x, p x
+--
+-- Стратегия existsUnique_of_exists_of_unique:
+-- разбить ∃! на два независимых обязательства —
+-- существование и единственность — и доказывать их по отдельности.
+--
+-- Вместо того, чтобы самому разворачивать `∃! x, p x` в
+--   ∃ x, p x ∧ ∀ y, p y → y = x
+-- и склеивать всё вручную, можно передать:
+--   · hex : ∃ x, p x               -- доказательство существования
+--   · hu  : p y₁ → p y₂ → y₁ = y₂  -- доказательство единственности
+-- и лемма сама собирает из них ∃! x, p x.
+-- Так apply existsUnique_of_exists_of_unique создаёт ровно две подцели.
 
 -- Пусть a ∈ ℕ, тогда существует единственное
 -- положительное число b такое, что b++ = a.
@@ -566,7 +578,7 @@ theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := b
     have hbn' := (Nat.succ_ne (x + y)).symm
     contradiction
 
-theorem Nat.ge_antisymm' {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
+theorem Nat.ge_antisymm₁ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   obtain ⟨x, ha⟩ := hab   -- ha : a = b + x
   obtain ⟨y, hb⟩ := hba   -- hb : b = a + y
   rw [ha] at hb
@@ -578,6 +590,16 @@ theorem Nat.ge_antisymm' {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := 
   rw [hx, add_zero] at ha
   exact ha
 
+theorem Nat.ge_antisymm₂ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
+  obtain ⟨x, ha⟩ := hab
+  cases x with
+  | zero => exact ha.trans (Nat.add_zero b)
+  | succ x =>
+    obtain ⟨y, hb⟩ := hba
+    rw [ha, Nat.add_assoc] at hb
+    nth_rw 1 [← Nat.add_zero b] at hb
+    apply Nat.add_left_cancel at hb
+    exact absurd (Nat.add_eq_zero (x++) y hb.symm).1 (Nat.succ_ne x)
 
 -- Помни:
 -- 1) Можно применять (apply) теоремы не только к цели, но и к гипотезам.
@@ -609,7 +631,7 @@ theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
     rw [Nat.add_comm x c]
     rw [← Nat.add_assoc]
   · intro h
-    rw [Nat.le_iff] at *
+    -- rw [Nat.le_iff] at *
     obtain ⟨x, h⟩ := h
     rw [Nat.add_comm b c] at h
     rw [Nat.add_comm a c] at h
@@ -620,7 +642,8 @@ theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
     use x
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_right`. -/
-theorem Nat.add_le_add_right (a b c : Nat) : a ≤ b ↔ a + c ≤ b + c := add_ge_add_right b a c
+theorem Nat.add_le_add_right (a b c : Nat) : a ≤ b ↔ a + c ≤ b + c :=
+  add_ge_add_right b a c
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_left`. -/
 theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
@@ -628,16 +651,70 @@ theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
   exact add_ge_add_right a b c
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's {name}`Nat.add_le_add_left`.  -/
-theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b := add_ge_add_left b a c
+theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b :=
+  add_ge_add_left b a c
+
+-- lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
+
+#check Nat.add_pos_left -- (b : Nat) (ha : a.IsPos) : (a + b).IsPos
+-- isPos_iff
 
 /-- (e) a < b iff a++ ≤ b.  Compare with Mathlib's {name}`Nat.succ_le_iff`. -/
 theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
   constructor
-  · intro h
-    obtain ⟨⟨x, h₁⟩, h₂⟩ := h
-    use x
-    sorry
-  · sorry
+  · -- Направление →: a < b → a++ ≤ b
+    rintro ⟨⟨x, h₀⟩, h₁⟩
+    -- После rintro имеем:
+    --   h₀ : b = a + x    (из определения ≤)
+    --   h₁ : a ≠ b        (из определения <)
+    rw [Nat.le_iff]
+    -- x ≠ 0: если бы x = 0, то b = a + 0 = a, что противоречит h₁
+    have hx : x ≠ 0 := by
+      intro hx0
+      apply h₁
+      rw [h₀, hx0, Nat.add_zero]
+    -- x положительно, значит у него есть предшественник y, т.е. x = y++
+    obtain ⟨y, he, _⟩ := Nat.uniq_succ_eq x hx
+    -- he : y++ = x
+    use y
+    -- Нужно: b = a++ + y. Строим цепочку равенств:
+    calc b = a + x    := h₀               -- по h₀
+      _ = a + y++     := by rw [← he]     -- x = y++ (из he)
+      _ = (a + y)++   := Nat.add_succ a y -- по лемме add_succ
+      _ = a++ + y     := (Nat.succ_add a y).symm  -- по лемме succ_add
+  · -- Направление ←: a++ ≤ b → a < b
+    intro h
+    rw [Nat.le_iff] at h
+    obtain ⟨y, hy⟩ := h
+    -- hy : b = a++ + y
+    constructor
+    · -- Часть 1: существование, т.е. ∃ x, b = a + x.
+      -- Свидетель: y++ (потому что a++ + y = (a + y)++ = a + y++)
+      -- Скобки нужны: без них Lean парсит y++ как конкатенацию списков
+      use (y++)
+      calc b = a++ + y  := hy
+        _ = (a + y)++   := Nat.succ_add a y
+        _ = a + y++     := (Nat.add_succ a y).symm
+    · -- Часть 2: a ≠ b
+      intro hab
+      -- Если a = b, то из hy: a = a++ + y
+      have haa : a = a++ + y := hab.trans hy
+      -- Строим равенство a + 0 = a + y++ через calc,
+      -- чтобы rw не заменил a с обеих сторон одновременно
+      have h_eq : a + 0 = a + y++ :=
+        calc
+          a + 0 = a := by rw [Nat.add_zero]
+          _ = a++ + y := by rw [← haa]
+          _ = (a + y)++ := by rw [Nat.succ_add]
+          _ = (y + a)++ := by rw [Nat.add_comm]
+          _ = y++ + a := by rw [← Nat.succ_add]
+          _ = a + y++ := by rw [Nat.add_comm]
+      -- По закону сокращения (add_left_cancel): 0 = y++
+      have h_zero : (0 : Nat) = y++ := Nat.add_left_cancel a 0 (y++) h_eq
+      -- Но y++ ≠ 0 по аксиоме (Nat.succ_ne)
+      have h_ne_zero : (0 : Nat) ≠ y++ := (Nat.succ_ne y).symm
+      contradiction
+      -- exact Nat.succ_ne y h_zero.symm
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
 theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
