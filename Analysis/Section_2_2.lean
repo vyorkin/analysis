@@ -717,8 +717,43 @@ theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
       -- exact Nat.succ_ne y h_zero.symm
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
-theorem Nat.lt_iff_add_pos (a b:Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
-  sorry
+theorem Nat.lt_iff_add_pos (a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
+  constructor
+  · intro ⟨⟨x, h₀⟩, h₁⟩
+    have hx : x ≠ 0 := by
+      intro h
+      rw [h, Nat.add_zero] at h₀
+      symm at h₀
+      contradiction
+    use x
+    constructor
+    · exact hx
+    · exact h₀
+  · rintro ⟨d, hd, hb⟩
+    constructor
+    · use d
+    · intro h₀
+      have h₁ : a ≠ b := by
+        obtain ⟨x, hx, _⟩ := Nat.uniq_succ_eq d hd
+        rw [← hx, ← h₀] at hb
+        have hc : a + 0 = a + x++ := by
+          nth_rw 1 [Nat.add_zero]
+          exact hb
+        have : (0 : Nat) = x++ := Nat.add_left_cancel a 0 (x++) hc
+        have hne := (succ_ne x).symm
+        contradiction
+      contradiction
+
+theorem Nat.lt_iff_add_pos₁ (a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
+  rw [lt_iff]
+  constructor
+  · rintro ⟨⟨x, hx⟩, hne⟩
+    refine ⟨x, ?_, hx⟩
+    intro h; rw [h, add_zero] at hx; exact hne hx.symm
+  · rintro ⟨d, hd, hb⟩
+    refine ⟨⟨d, hb⟩, ?_⟩
+    intro hab
+    exact hd (add_left_cancel a 0 d (by rw [add_zero]; exact hab.trans hb)).symm
 
 /-- If a < b then a ̸= b,-/
 theorem Nat.ne_of_lt (a b:Nat) : a < b → a ≠ b := by
