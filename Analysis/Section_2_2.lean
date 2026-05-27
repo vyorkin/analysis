@@ -324,7 +324,7 @@ theorem Nat.add_pos_right {a:Nat} (b:Nat) (ha: a.IsPos) : (b + a).IsPos := by
 
 theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
   rw [add_comm]
-  apply add_pos_left
+  apply add_pos_left -- (b : Nat) (ha : a.IsPos) : (a + b).IsPos
   assumption
 
 /-- Corollary 2.2.9 (if sum vanishes, then summands vanish).
@@ -744,55 +744,82 @@ theorem Nat.lt_iff_add_pos (a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = 
         contradiction
       contradiction
 
+-- Чуть более красивое/идимотичное доказательство для той же теоремы
 theorem Nat.lt_iff_add_pos₁ (a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
   rw [lt_iff]
   constructor
   · rintro ⟨⟨x, hx⟩, hne⟩
-    refine ⟨x, ?_, hx⟩
-    intro h; rw [h, add_zero] at hx; exact hne hx.symm
+    refine ⟨x, ?_, hx⟩ -- Вот тут refine подходит идеально
+    intro h
+    rw [h, add_zero] at hx
+    symm at hx
+    exact hne hx
   · rintro ⟨d, hd, hb⟩
     refine ⟨⟨d, hb⟩, ?_⟩
     intro hab
-    exact hd (add_left_cancel a 0 d (by rw [add_zero]; exact hab.trans hb)).symm
+    have heq : a = a + d := hab.trans hb
+    have hadd : a + 0 = a + d := by
+      rw [add_zero]
+      exact heq
+    have h0 : 0 = d := add_left_cancel a 0 d hadd
+    unfold IsPos at hd
+    symm at h0
+    -- d = 0
+    -- d ≠ 0
+    contradiction -- exact hd h0
 
 /-- If a < b then a ̸= b,-/
-theorem Nat.ne_of_lt (a b:Nat) : a < b → a ≠ b := by
+theorem Nat.ne_of_lt (a b : Nat) : a < b → a ≠ b := by
   intro h; exact h.2
 
 /-- if a > b then a ̸= b. -/
-theorem Nat.ne_of_gt (a b:Nat) : a > b → a ≠ b := by
+theorem Nat.ne_of_gt (a b : Nat) : a > b → a ≠ b := by
   intro h; exact h.2.symm
 
 /-- If a > b and a < b then contradiction -/
-theorem Nat.not_lt_of_gt (a b:Nat) : a < b ∧ a > b → False := by
+theorem Nat.not_lt_of_gt (a b : Nat) : a < b ∧ a > b → False := by
   intro h
-  have := (ge_antisymm (le_of_lt h.1) (le_of_lt h.2)).symm
-  have := ne_of_lt _ _ h.1
+  -- lt n m := n ≤ m ∧ n ≠ m
+  have hab₀ := (ge_antisymm (le_of_lt h.1) (le_of_lt h.2)).symm
+  have hab₁ := ne_of_lt a b h.1
   contradiction
 
 theorem Nat.not_lt_self {a: Nat} (h : a < a) : False := by
-  apply not_lt_of_gt a a
-  simp [h]
+  apply not_lt_of_gt a a -- a < b ∧ a > b → False
+  -- simp [h]
+  constructor
+  · exact h
+  · assumption
 
 theorem Nat.lt_of_le_of_lt {a b c : Nat} (hab: a ≤ b) (hbc: b < c) : a < c := by
-  rw [lt_iff_add_pos] at *
-  choose d hd using hab
-  choose e he1 he2 using hbc
-  use d + e; split_ands
-  . exact add_pos_right d he1
+  rw [lt_iff_add_pos] at * -- : a < b ↔ ∃ d, d.IsPos ∧ b = a + d
+  rw [le_iff] at hab
+  obtain ⟨d, hd⟩ := hab
+  obtain ⟨e, he1, he2⟩ := hbc
+  -- choose d hd using hab
+  -- choose e he1 he2 using hbc
+  use d + e
+  split_ands -- constructor
+  . exact add_pos_right d he1 -- (b : Nat) (ha : a.IsPos) : (b + a).IsPos
   . rw [he2, hd, add_assoc]
 
 /-- This lemma was a {lit}`why?` statement from Proposition 2.2.13,
 but is more broadly useful, so is extracted here. -/
-theorem Nat.zero_le (a:Nat) : 0 ≤ a := by
-  sorry
+theorem Nat.zero_le (a : Nat) : 0 ≤ a := by
+  rw [le_iff]
+  use a
+  exact Nat.zero_add a
+
+-- Закон трихотомии
+-- Трихотомия для отношения `<`
 
 /-- Proposition 2.2.13 (Trichotomy of order for natural numbers) / Exercise 2.2.4
     Compare with Mathlib's {name}`trichotomous`.  Parts of this theorem have been placed
     in the preceding Lean theorems. -/
-theorem Nat.trichotomous (a b:Nat) : a < b ∨ a = b ∨ a > b := by
+theorem Nat.trichotomous (a b : Nat) : (a < b) ∨ (a = b) ∨ (a > b) := by
   -- This proof is written to follow the structure of the original text.
-  revert a; apply induction
+  revert a
+  apply induction
   . observe why : 0 ≤ b
     rw [le_iff_lt_or_eq] at why
     tauto
