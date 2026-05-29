@@ -447,7 +447,7 @@ lemma Nat.gt_iff_lt (n m : Nat) : n > m ↔ m < n := by rfl
 lemma Nat.le_of_lt {n m : Nat} (hnm: n < m) : n ≤ m := hnm.1
 
 /-- Compare with Mathlib's {name}`Nat.le_iff_lt_or_eq`. -/
-lemma Nat.le_iff_lt_or_eq (n m:Nat) : n ≤ m ↔ n < m ∨ n = m := by
+lemma Nat.le_iff_lt_or_eq (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
   rw [Nat.le_iff, Nat.lt_iff]
   by_cases h : n = m
   . simp [h]
@@ -561,6 +561,20 @@ theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's {name}`Nat.le_antisymm`. -/
 theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
+  obtain ⟨x, ha⟩ := hab -- ha : a = b + x
+  obtain ⟨y, hb⟩ := hba -- hb : b = a + y
+  rw [ha] at hb
+  nth_rw 1 [← Nat.add_zero b] at hb
+  rw [Nat.add_assoc b x y] at hb
+  apply Nat.add_left_cancel at hb
+  rw [Nat.add_comm] at hb
+  obtain ⟨hy, hx⟩ := Nat.add_eq_zero y x hb.symm
+  rw [hx, add_zero] at ha
+  exact ha
+
+theorem Nat.ge_antisymm₁ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
+  -- rw [Nat.ge_iff_le, Nat.le_iff] at hab
+  -- rw [Nat.ge_iff_le, Nat.le_iff] at hba
   obtain ⟨x, ha⟩ := hab
   obtain ⟨y, hb⟩ := hba
   -- Сохранили копию, пригодится дальше
@@ -577,18 +591,6 @@ theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := b
     rw [Nat.succ_add] at hb'
     have hbn' := (Nat.succ_ne (x + y)).symm
     contradiction
-
-theorem Nat.ge_antisymm₁ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
-  obtain ⟨x, ha⟩ := hab   -- ha : a = b + x
-  obtain ⟨y, hb⟩ := hba   -- hb : b = a + y
-  rw [ha] at hb
-  nth_rw 1 [← Nat.add_zero b] at hb
-  rw [Nat.add_assoc b x y] at hb
-  apply Nat.add_left_cancel at hb
-  rw [Nat.add_comm] at hb
-  obtain ⟨hy, hx⟩ := Nat.add_eq_zero y x hb.symm
-  rw [hx, add_zero] at ha
-  exact ha
 
 theorem Nat.ge_antisymm₂ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   obtain ⟨x, ha⟩ := hab
@@ -811,6 +813,7 @@ theorem Nat.zero_le (a : Nat) : 0 ≤ a := by
   exact Nat.zero_add a
 
 -- Закон трихотомии
+-- или
 -- Трихотомия для отношения `<`
 
 /-- Proposition 2.2.13 (Trichotomy of order for natural numbers) / Exercise 2.2.4
@@ -821,17 +824,40 @@ theorem Nat.trichotomous (a b : Nat) : (a < b) ∨ (a = b) ∨ (a > b) := by
   revert a
   apply induction
   . observe why : 0 ≤ b
-    rw [le_iff_lt_or_eq] at why
+    -- have why : 0 ≤ b := zero_le b
+    rw [le_iff_lt_or_eq] at why -- : n ≤ m ↔ n < m ∨ n = m
+    -- rcases why with hl | hr
+    -- · left; exact hl
+    -- · right; left; exact hr
     tauto
   intro a ih
   obtain case1 | case2 | case3 := ih
   . rw [lt_iff_succ_le] at case1
     rw [le_iff_lt_or_eq] at case1
+    -- obtain c1 | c2 := case1
+    -- · left; exact c1
+    -- · right; left; exact c2
     tauto
-  . have why : a++ > b := by sorry
+  . have why : a++ > b := by
+      rw [case2]
+      exact Nat.succ_gt_self b
+    -- have why : a++ > b := by
+    --   have h := Nat.succ_gt_self a
+    --   nth_rw 2 [case2] at h
+    --   exact h
+    right; right; exact why
+    -- tauto
+  · have why : a++ > b := by
+      have he : b ≤ a := Nat.le_of_lt case3
+      exact Nat.lt_of_le_of_lt he (Nat.succ_gt_self a)
+    --   have ha := Nat.succ_gt_self a
+    --   rw [Nat.gt_iff_lt] at ha
+    --   have he := Nat.le_of_lt case3
+    --   have hr := Nat.lt_of_le_of_lt he ha
+    --   rw [←Nat.gt_iff_lt] at hr
+    --   exact hr
+
     tauto
-  have why : a++ > b := by sorry
-  tauto
 
 /--
   (Not from textbook) Establish the decidability of this order computably.  The portion of the proof
@@ -845,20 +871,31 @@ theorem Nat.trichotomous (a b : Nat) : (a < b) ∨ (a = b) ∨ (a > b) := by
 def Nat.decLe : (a b : Nat) → Decidable (a ≤ b)
   | 0, b => by
     apply isTrue
-    sorry
+    exact Nat.zero_le b
   | a++, b => by
     cases decLe a b with
     | isTrue h =>
       cases decEq a b with
-      | isTrue h =>
+      | isTrue h₀ =>
         apply isFalse
-        sorry
+        rw [← h₀]
+        intro h_contra -- a++ ≤ a - невозможно, поищем опровержение
+        have h₁ : a++ > a := succ_gt_self a
+        rw [gt_iff_lt] at h₁ -- a < a++
+        -- (hab : a ≤ b) (hbc : b < c) : a < c
+        have h₂ : a++ < a++ := Nat.lt_of_le_of_lt h_contra h₁
+        -- (h : a < a) : False
+        exact Nat.not_lt_self h₂
       | isFalse h =>
         apply isTrue
-        sorry
+        rw [← lt_iff_succ_le] --  a < b ↔ a++ ≤ b
+        tauto
     | isFalse h =>
       apply isFalse
-      sorry
+      intro h
+      rw [← lt_iff_succ_le] at h
+      obtain ⟨x, hx⟩ := h
+      contradiction
 
 instance Nat.decidableRel : DecidableRel (· ≤ · : Nat → Nat → Prop) := Nat.decLe
 
