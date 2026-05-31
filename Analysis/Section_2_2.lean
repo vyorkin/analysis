@@ -131,7 +131,7 @@ theorem Nat.zero_add (m : Nat) : 0 + m = m :=
 -/
 
 /-- Compare with Mathlib's {name}`Nat.succ_add`. -/
-theorem Nat.succ_add (n m: Nat) : n++ + m = (n+m)++ := by rfl
+theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
 
 -- Это верно, тк из рекурсии (2.1.16: Nat.recurse) в предыдущем разделе:
 -- aₙ = n + m
@@ -226,6 +226,21 @@ theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
 
 /-- Proposition 2.2.5 (Addition is associative) / Exercise 2.2.1
 Compare with Mathlib's {name}`Nat.add_assoc`. -/
+/-
+Бумажное доказательство.
+
+Индукция по a.
+
+База (a = 0): (0 + b) + c = b + c = 0 + (b + c) — по определению сложения (0 + x = x).
+
+Шаг: предположим (a + b) + c = a + (b + c) (гипотеза индукции).
+Тогда:
+  (a++ + b) + c
+    = ((a + b)++) + c   [по определению: a++ + b = (a + b)++]
+    = ((a + b) + c)++   [по определению: n++ + m = (n + m)++, применённому к (a+b) и c]
+    = (a + (b + c))++   [по гипотезе индукции]
+    = a++ + (b + c)     [по определению в обратную сторону]  ∎
+-/
 theorem Nat.add_assoc (a b c:Nat) : (a + b) + c = a + (b + c) := by
   revert a
   -- Будем использовать индукцию по a
@@ -319,7 +334,7 @@ theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := b
 
 This theorem is a consequence of the previous theorem and {name}`add_comm`, and {tactic}`grind` can
 automatically discover such proofs. -/
-theorem Nat.add_pos_right {a:Nat} (b:Nat) (ha: a.IsPos) : (b + a).IsPos := by
+theorem Nat.add_pos_right {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
   grind [add_comm, add_pos_left]
 
 theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
@@ -329,7 +344,7 @@ theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos :=
 
 /-- Corollary 2.2.9 (if sum vanishes, then summands vanish).
 Compare with Mathlib's {name}`Nat.add_eq_zero`. -/
-theorem Nat.add_eq_zero (a b:Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
+theorem Nat.add_eq_zero (a b : Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
   -- This proof is written to follow the structure of the original text.
   -- Доказательство от противного:
   -- Предположим, что a ≠ 0 или b ≠ 0
@@ -393,6 +408,18 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 -- положительное число b такое, что b++ = a.
 
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
+/-
+Бумажное доказательство.
+
+Нужно показать: если a > 0, то существует единственное b такое, что b++ = a.
+
+Существование. Индукция по a.
+  База (a = 0): противоречие с условием a > 0, случай не рассматривается.
+  Шаг (a = n++): берём b := n, тогда b++ = n++ = a. ✓
+
+Единственность. Пусть y₁++ = a и y₂++ = a.
+  Тогда y₁++ = y₂++, и по аксиоме Пеано (инъективность следователя) y₁ = y₂. ∎
+-/
 lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
   apply existsUnique_of_exists_of_unique
   -- Обратное рассуждение -- нужно доказать две посылки,
@@ -528,6 +555,10 @@ theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
 /-- Proposition 2.2.12 (Basic properties of order for natural numbers) / Exercise 2.2.3
 
 (a) (Order is reflexive). Compare with Mathlib's {name}`Nat.le_refl`.-/
+/-
+(a) Рефлексивность: a ≥ a.
+Положим d := 0. Тогда a = a + 0, значит ∃ d, a = a + d — по определению a ≤ a. ∎
+-/
 theorem Nat.ge_refl (a:Nat) : a ≥ a := by
   rw [Nat.ge_iff_le]
   rw [Nat.le_iff]
@@ -542,7 +573,12 @@ example (a b : Nat): a + b ≥ a + b := by rfl
 
 /-- (b) (Order is transitive).  The {tactic}`obtain` tactic will be useful here.
     Compare with Mathlib's {name}`Nat.le_trans`. -/
-theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
+/-
+(b) Транзитивность: a ≥ b и b ≥ c ⟹ a ≥ c.
+Из a ≥ b: a = b + y; из b ≥ c: b = c + x.
+Подставляем: a = (c + x) + y = c + (x + y), значит a ≥ c. ∎
+-/
+theorem Nat.ge_trans {a b c : Nat} (hab : a ≥ b) (hbc : b ≥ c) : a ≥ c := by
   obtain ⟨y, h0⟩ := hab
   obtain ⟨x, h1⟩ := hbc
   rw [h1] at h0
@@ -556,10 +592,17 @@ theorem Nat.ge_trans {a b c:Nat} (hab: a ≥ b) (hbc: b ≥ c) : a ≥ c := by
 #check Eq.symm
 
 -- Зеркальная лемма, получается путём подстановки аргументов в обратном порядке
-theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc: b ≤ c) : a ≤ c :=
+theorem Nat.le_trans {a b c : Nat} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c :=
   Nat.ge_trans hbc hab
 
 /-- (c) (Order is anti-symmetric). Compare with Mathlib's {name}`Nat.le_antisymm`. -/
+/-
+(c) Антисимметричность: a ≥ b и b ≥ a ⟹ a = b.
+Из a ≥ b: a = b + x; из b ≥ a: b = a + y.
+Подставляем второе в первое: a = (a + y) + x = a + (y + x).
+По закону сокращения (a + 0 = a + (y + x)): y + x = 0, значит y = 0 и x = 0.
+Тогда a = b + 0 = b. ∎
+-/
 theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   obtain ⟨x, ha⟩ := hab -- ha : a = b + x
   obtain ⟨y, hb⟩ := hba -- hb : b = a + y
@@ -619,6 +662,11 @@ theorem Nat.ge_antisymm₂ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b :
 --    нетронутом виде.
 
 /-- (d) (Addition preserves order).  Compare with Mathlib's `Nat.add_le_add_right`. -/
+/-
+(d) Сложение сохраняет порядок: a ≥ b ↔ a + c ≥ b + c.
+(→) Из a = b + x: a + c = (b + x) + c = (b + c) + x  (по ассоциативности/коммутативности), значит a + c ≥ b + c.
+(←) Из a + c = (b + c) + x: переставляем скобки и применяем закон сокращения (сокращаем c слева), получаем a = b + x. ∎
+-/
 theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
   repeat rw [Nat.ge_iff_le]
   constructor
@@ -662,6 +710,14 @@ theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b :=
 -- isPos_iff
 
 /-- (e) a < b iff a++ ≤ b.  Compare with Mathlib's {name}`Nat.succ_le_iff`. -/
+/-
+(e) a < b ↔ a++ ≤ b.
+(→) Из a < b: b = a + x и a ≠ b, значит x ≠ 0 (иначе b = a).
+    По лемме 2.2.10 (единственный предшественник) x = y++ для некоторого y.
+    Тогда b = a + y++ = (a + y)++ = a++ + y, значит a++ ≤ b.
+(←) Из a++ ≤ b: b = a++ + y = a + y++, значит a ≤ b со свидетелем y++.
+    При этом a ≠ b: если a = b, то a = a + y++, по закону сокращения 0 = y++ — противоречие с аксиомой Пеано. ∎
+-/
 theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
   constructor
   · -- Направление →: a < b → a++ ≤ b
@@ -719,6 +775,12 @@ theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
       -- exact Nat.succ_ne y h_zero.symm
 
 /-- (f) a < b if and only if b = a + d for positive d. -/
+/-
+(f) a < b ↔ ∃ d > 0, b = a + d.
+(→) Из a < b: ∃ x, b = a + x и a ≠ b. Если x = 0, то b = a + 0 = a — противоречие. Значит x > 0.
+(←) Из d > 0 и b = a + d: свидетель d даёт a ≤ b. Неравенство a ≠ b: если a = b,
+    то a + 0 = a = b = a + d, по закону сокращения d = 0 — противоречие с d > 0. ∎
+-/
 theorem Nat.lt_iff_add_pos (a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d := by
   constructor
   · intro ⟨⟨x, h₀⟩, h₁⟩
@@ -819,12 +881,37 @@ theorem Nat.zero_le (a : Nat) : 0 ≤ a := by
 /-- Proposition 2.2.13 (Trichotomy of order for natural numbers) / Exercise 2.2.4
     Compare with Mathlib's {name}`trichotomous`.  Parts of this theorem have been placed
     in the preceding Lean theorems. -/
+/-
+Бумажное доказательство.
+
+Нужно показать: для любых a и b ровно одно из трёх верно: a < b, a = b, a > b.
+
+Сначала покажем, что хотя бы одно выполнено; несовместность будет ниже.
+
+Индукция по a.
+
+База (a = 0): из леммы 0 ≤ b. По лемме le_iff_lt_or_eq: либо 0 < b, либо 0 = b (т.е. a = b).
+
+Шаг: предположим, что для a ровно одно из трёх выполнено. Рассмотрим три случая.
+
+  Случай a < b: по пункту (e) a++ ≤ b. По лемме le_iff_lt_or_eq: либо a++ < b, либо a++ = b.
+    В обоих случаях нужное выполнено для a++.
+
+  Случай a = b: тогда a++ > a = b (по лемме succ_gt_self, применённой к b после подстановки a = b).
+    Значит a++ > b.
+
+  Случай a > b: из b ≤ a и a < a++ (по лемме succ_gt_self).
+    По транзитивности (lt_of_le_of_lt): b < a++, значит a++ > b.
+
+Несовместность: a < b и a = b — противоречие (ne_of_lt); a < b и a > b —
+из антисимметричности a = b, что противоречит a < b. ∎
+-/
 theorem Nat.trichotomous (a b : Nat) : (a < b) ∨ (a = b) ∨ (a > b) := by
   -- This proof is written to follow the structure of the original text.
   revert a
   apply induction
-  . observe why : 0 ≤ b
-    -- have why : 0 ≤ b := zero_le b
+  . -- observe why : 0 ≤ b
+    have why : 0 ≤ b := zero_le b -- (a : Nat) : 0 ≤ a
     rw [le_iff_lt_or_eq] at why -- : n ≤ m ↔ n < m ∨ n = m
     -- rcases why with hl | hr
     -- · left; exact hl
@@ -899,23 +986,28 @@ def Nat.decLe : (a b : Nat) → Decidable (a ≤ b)
 
 instance Nat.decidableRel : DecidableRel (· ≤ · : Nat → Nat → Prop) := Nat.decLe
 
+-- Здесь `Nat` наделяется структурой линейного порядка.
+-- Это позволяет применять тактики `order` и `calc` к натуральным числам из главы 2.
+
 /-- (Not from textbook) {name}`Nat` has the structure of a linear ordering. This allows for tactics
 such as {tactic}`order` and {tactic}`calc` to be applicable to the Chapter 2 natural numbers. -/
 instance Nat.instLinearOrder : LinearOrder Nat where
   le_refl := ge_refl
-  le_trans a b c hab hbc := ge_trans hbc hab
-  lt_iff_le_not_ge a b := by
+  le_trans a b c hab hbc := ge_trans hbc hab -- a ≤ b → b ≤ c → c ≥ a
+  lt_iff_le_not_ge a b : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
     constructor
     . intro h; refine ⟨ le_of_lt h, ?_ ⟩
       by_contra h'
-      exact not_lt_self (lt_of_le_of_lt h' h)
-    rintro ⟨ h1, h2 ⟩
-    rw [lt_iff, ←le_iff]; refine ⟨ h1, ?_ ⟩
-    by_contra h
-    subst h
-    contradiction
+      have hb : b < b := lt_of_le_of_lt h' h
+      exact not_lt_self hb
+    · rintro ⟨ h1, h2 ⟩
+      rw [lt_iff, ←le_iff]
+      refine ⟨ h1, ?_ ⟩
+      by_contra h
+      subst h -- subst a
+      contradiction
   le_antisymm a b hab hba := ge_antisymm hba hab
-  le_total a b := by
+  le_total a b : a ≤ b ∨ b ≤ a := by
     obtain h | rfl | h := trichotomous a b
     . left; exact le_of_lt h
     . simp [ge_refl]
@@ -924,13 +1016,13 @@ instance Nat.instLinearOrder : LinearOrder Nat where
 
 /-- This illustration of the {tactic}`order` tactic is not from the
     textbook. -/
-example (a b c d:Nat) (hab: a ≤ b) (hbc: b ≤ c) (hcd: c ≤ d)
-        (hda: d ≤ a) : a = c := by order
+example (a b c d : Nat) (hab : a ≤ b) (hbc : b ≤ c) (hcd : c ≤ d)
+        (hda : d ≤ a) : a = c := by order
 
 /-- An illustration of the {tactic}`calc` tactic with {kw (of := «term_≤_»)}`≤`/
     {kw (of :=«term_<_»)}`<`. -/
-example (a b c d e:Nat) (hab: a ≤ b) (hbc: b < c) (hcd: c ≤ d)
-        (hde: d ≤ e) : a + 0 < e := by
+example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hcd : c ≤ d)
+        (hde : d ≤ e) : a + 0 < e := by
   calc
     a + 0 = a := by simp
         _ ≤ b := hab
@@ -945,30 +1037,204 @@ instance Nat.isOrderedAddMonoid : IsOrderedAddMonoid Nat where
 
 /-- This illustration of the {tactic}`gcongr` tactic is not from the
     textbook. -/
-example (a b c d e:Nat) (hab: a ≤ b) (hbc: b < c) (hde: d < e) :
+example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) :
   a + d ≤ c + e := by
   gcongr
   order
 
+-- Принцип сильной индукции. Если ты хочешь доказать некоторое свойство для
+-- всех натуральных чисел начиная с m₀, и умеешь это сделать для произвольного m при
+-- условии, что свойство уже известно для всех предыдущих чисел m₀, m₀+1, …, m−1, — то
+-- свойство верно для всех натуральных чисел начиная с m₀.
+--
+-- Отличие от обычной индукции в одном: вместо "дано, что свойство верно для m,
+-- докажи для m+1" тебе разрешено опираться на свойство сразу для
+-- всех предшественников, а не только для одного.
+
 /-- Proposition 2.2.14 (Strong principle of induction) / Exercise 2.2.5
     Compare with Mathlib's {name}`Nat.strong_induction_on`.
 -/
-theorem Nat.strong_induction {m₀:Nat} {P: Nat → Prop}
-  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) :
-    ∀ m, m ≥ m₀ → P m := by
-  sorry
+theorem Nat.strong_induction {m₀ : Nat} {P : Nat → Prop}
+  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
+  have hn : (n : Nat) → (∀ m, m₀ ≤ m ∧ m < n → P m) := fun (n : Nat) => by
+    induction n with
+    | zero =>
+      show ∀ (m : Nat), m₀ ≤ m ∧ m < 0 → P m
+      rintro m ⟨_, h₁⟩
+      obtain ⟨⟨a, ha⟩, hne⟩ := h₁
+      have ha' : m + a = 0 := ha.symm
+      have hmz : m = 0 := (Nat.add_eq_zero m a ha').1
+      exact absurd hmz hne
+    | succ n' ih =>
+      intro m ⟨hm₀, hlt⟩
+      obtain ⟨h₀, h₁⟩ := hlt
+      rw [Nat.le_iff_lt_or_eq] at h₀
+      obtain ha | hb := h₀
+      · rw [Nat.lt_iff_succ_le] at ha
+        rw [Nat.le_iff] at ha
+        obtain ⟨k, hk⟩ := ha
+        rw [Nat.succ_add] at hk
+        have heq : n' = m + k := Nat.succ_cancel hk
+        have hle_iff := Nat.le_iff m n'
+        have hle_wit : ∃ a, n' = m + a := ⟨k, heq⟩
+        have hmn : m ≤ n' := hle_iff.mpr hle_wit
+        have hcases_iff := Nat.le_iff_lt_or_eq m n'
+        have hcases : m < n' ∨ m = n' := hcases_iff.mp hmn
+        rcases hcases with hlt' | heq'
+        · have hih_arg : m₀ ≤ m ∧ m < n' := ⟨hm₀, hlt'⟩
+          exact ih m hih_arg
+        · subst heq'
+          exact hind m hm₀ ih
+      · contradiction
+  intro m hm₀
+  have hlt : m < m++ := Nat.succ_gt_self m
+  have harg : m₀ ≤ m ∧ m < m++ := ⟨hm₀, hlt⟩
+  exact hn (m++) m harg
+
+-- Идея: вместо того чтобы доказывать P(m) напрямую по индукции, докажем
+-- более сильное утверждение Q(n) := «P выполнено на всём отрезке [m₀, n)».
+-- Это приём «усиления индукционной гипотезы»: делаем цель сильнее, чтобы
+-- гипотеза индукции стала богаче.
+--
+-- База Q(0): отрезок [m₀, 0) пуст, квантор ∀ пробегает пустое множество.
+--
+-- Шаг Q(n') → Q(n'+1): нужно доказать P(m) для произвольного m с m₀ ≤ m < n'+1.
+-- Из m < n'+1 следует m ≤ n', то есть либо m < n', либо m = n'.
+--   · m < n': гипотеза индукции Q(n') напрямую даёт P(m).
+--   · m = n': применяем hind к m. Он требует доказать «P(m') для всех m' < m»,
+--     но m = n', поэтому это в точности Q(n') — снова гипотеза индукции.
+--     hind возвращает P(m).
+--
+-- Извлечение: P(m) = Q(m++) применённое к m < m++.
+theorem Nat.strong_induction₁ {m₀ : Nat} {P : Nat → Prop}
+  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
+  -- Обычной индукцией по n доказываем: все m с m₀ ≤ m < n удовлетворяют P
+  have hkey : ∀ n m, m₀ ≤ m → m < n → P m := by
+    intro n
+    induction n with
+    | zero =>
+      intro m h₀ hlt
+      -- hlt: m < 0 невозможно для натуральных чисел
+      obtain ⟨⟨k, hk⟩, hne⟩ := hlt
+      replace hk : m + k = 0 := hk.symm; replace hne : m ≠ 0 := hne
+      have ⟨hm₀, hk₀⟩  := Nat.add_eq_zero m k hk
+      contradiction
+    | succ n' ih =>
+      -- m < n'++ означает m ≤ n', то есть m < n' или m = n'
+      intro m hm₀ hlt
+      rw [Nat.lt_iff_succ_le] at hlt -- hlt : m++ ≤ n'++
+      rw [Nat.le_iff] at hlt -- hlt : ∃ k, n'++ = m++ + k
+      obtain ⟨k, hk⟩ := hlt
+      rw [Nat.succ_add] at hk -- hk : n'++ = (m+k)++
+      have heq : n' = m + k := Nat.succ_cancel hk
+      have hmn : m ≤ n' := by
+        rw [Nat.le_iff] -- n ≤ m ↔ ∃ a, m = n + a
+        exact ⟨k, heq⟩
+      rw [Nat.le_iff_lt_or_eq m n'] at hmn
+      rcases hmn with hlt' | rfl
+      · -- Случай m < n': сразу применяем гипотезу индукции
+        exact ih m hm₀ hlt'
+      · -- Случай m = n': применяем hind, предпосылку закрываем через ih
+        apply hind m hm₀
+        rintro m' ⟨hm'₀, hlt'⟩
+        exact ih m' hm'₀ hlt'
+  intro m hm₀
+  have hlt : m < m++ := Nat.succ_gt_self m
+  -- Берём n = m++: тогда hlt: m < m++ выполнено, и hkey даёт `P m`
+  have hh := hkey (m++) m
+  exact hh hm₀ hlt
 
 /-- Exercise 2.2.6 (backwards induction)
     Compare with Mathlib's {name}`Nat.decreasingInduction`. -/
-theorem Nat.backwards_induction {n:Nat} {P: Nat → Prop}
-  (hind: ∀ m, P (m++) → P m) (hn: P n) :
-    ∀ m, m ≤ n → P m := by
-  sorry
+theorem Nat.backwards_induction {n : Nat} {P : Nat → Prop}
+  (hind : ∀ m, P (m++) → P m) (hn : P n) : ∀ m, m ≤ n → P m := by
+  induction n with
+  | zero =>
+    rintro k ⟨x, hx⟩
+    replace hx : k + x = 0 := hx.symm
+    have ⟨ha, hb⟩ := Nat.add_eq_zero k x hx
+    rw [ha]
+    exact hn
+  | succ n' ih =>
+    rintro m hlt
+    rw [Nat.le_iff_lt_or_eq] at hlt
+    obtain h₀ | h₁ := hlt
+    · rw [Nat.lt_iff_succ_le] at h₀
+      rw [Nat.le_iff] at h₀
+      obtain ⟨k, hk⟩ := h₀
+      rw [Nat.succ_add] at hk
+      have heq : n' = m + k := Nat.succ_cancel hk
+      have hmn : m ≤ n' := by
+        rw [Nat.le_iff]
+        exact ⟨k, heq⟩
+      rw [Nat.le_iff_lt_or_eq m n'] at hmn
+      rcases hmn with hlt' | rfl
+      · have hPn' : P n' := hind n' hn
+        have hmn : m ≤ n' := by
+          rw [Nat.le_iff]
+          exact ⟨k, heq⟩
+        exact ih hPn' m hmn
+      · exact hind m hn
+    · rw [← h₁] at hn
+      exact hn
+
+theorem whatever {a n : Nat} {P Q : Nat → Prop} (hn : Q n) : P a → P n := by
+  intro ha
+  induction n with
+  | zero => sorry
+  | succ n' ih =>
+    observe hn : Q (n'++) -- Заметь как меняется гипотеза
+    sorry
+
+theorem Nat.backwards_induction₁ {n : Nat} {P : Nat → Prop}
+    (hind : ∀ m, P (m++) → P m) (hn : P n) : ∀ m, m ≤ n → P m := by
+  induction n with
+  | zero =>
+    intro m hm
+    obtain ⟨a, ha⟩ := hm
+    have hma : m + a = 0 := ha.symm
+    have hm0 : m = 0 := (Nat.add_eq_zero m a hma).1
+    subst hm0
+    exact hn
+  | succ n' ih =>
+    intro m hm
+    rw [Nat.le_iff_lt_or_eq] at hm
+    rcases hm with hlt | rfl
+    · rw [Nat.lt_iff_succ_le, Nat.le_iff] at hlt
+      obtain ⟨k, hk⟩ := hlt
+      rw [Nat.succ_add] at hk
+      have heq : n' = m + k := Nat.succ_cancel hk
+      have hmn : m ≤ n' := ⟨k, heq⟩
+      have hPn' : P n' := hind n' hn
+      exact ih hPn' m hmn
+    · exact hn
 
 /-- Exercise 2.2.7 (induction from a starting point)
     Compare with Mathlib's {name}`Nat.le_induction`. -/
-theorem Nat.induction_from {n:Nat} {P: Nat → Prop} (hind: ∀ m, P m → P (m++)) :
-    P n → ∀ m, m ≥ n → P m := by
-  sorry
+theorem Nat.induction_from {n : Nat} {P : Nat → Prop}
+  (hind : ∀ m, P m → P (m++)) : P n → ∀ m, m ≥ n → P m := by
+  intro hn m ⟨k, hk⟩
+  subst hk
+  induction k with
+  | zero =>
+    change P (n + 0)
+    rw [Nat.add_zero]
+    exact hn
+  | succ k' ih =>
+    rw [Nat.add_succ]
+    have goal := hind (n + k') ih
+    exact goal
+
+theorem Nat.induction_from₁ {n : Nat} {P : Nat → Prop}
+  (hind : ∀ m, P m → P (m++)) : P n → ∀ m, m ≥ n → P m := by
+  intro hn m ⟨k, hk⟩
+  subst hk
+  induction k with
+  | zero =>
+    convert hn using 1
+    exact Nat.add_zero n
+  | succ k' ih =>
+    rw [Nat.add_succ]
+    exact hind (n + k') ih
 
 end Chapter2
