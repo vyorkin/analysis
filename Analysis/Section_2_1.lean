@@ -81,9 +81,9 @@ postfix:100 "++" => Nat.succ
 -- через аксиомы, не нуждаясь в конкретной модели.
 
 /-- Definition 2.1.3 (Definition of the numerals 0, 1, 2, etc.). Note: to avoid ambiguity, one may
-  need to use explicit casts such as {lean}`(0:Nat)`, {lean}`(1:Nat)`, etc. to refer to this
+  need to use explicit casts such as {lean}`(0 : Nat)`, {lean}`(1 : Nat)`, etc. to refer to this
   chapter's version of the natural numbers.  -/
-instance Nat.instOfNat {n:_root_.Nat} : OfNat Nat n where
+instance Nat.instOfNat {n : _root_.Nat} : OfNat Nat n where
   ofNat := _root_.Nat.rec 0 (fun _ n ↦ n++) n
 
 instance Nat.instOne : One Nat := ⟨ 1 ⟩
@@ -290,7 +290,7 @@ f₁ := (+++) - операция "добавления" едницицы
   Recursion. Analogous to the inbuilt Mathlib method {name}`Nat.rec` associated to
   the Mathlib natural numbers
 -/
-abbrev Nat.recurse (f: Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
+abbrev Nat.recurse (f : Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
   fun n ↦
     match n with
     | 0 => c
@@ -325,23 +325,23 @@ abbrev Nat.recurse (f: Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
 -/
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's {name}`Nat.rec_zero`. -/
-theorem Nat.recurse_zero (f: Nat → Nat → Nat) (c: Nat) : Nat.recurse f c 0 = c := by rfl
+theorem Nat.recurse_zero (f : Nat → Nat → Nat) (c : Nat) : Nat.recurse f c 0 = c := by rfl
 -- ^ c - нулевой эл. числ. посл. или
 --   Nat.recurse натуральному числу 0 сопоставляет число c
 --   По сути это базовый кейс паттер-матчинга определения Nat.recurse.
 -- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's {name}`Nat.rec_add_one`. -/
-theorem Nat.recurse_succ (f: Nat → Nat → Nat) (c: Nat) (n: Nat) :
+theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) :
     recurse f c (n++) = f n (recurse f c n) := by rfl
 -- ^ Это второй кейс паттерн-матчинга определения Nat.recurse.
 -- Тоже доказывается одной редукцией Nat.recurse.
 
 /-- Proposition 2.1.16 (recursive definitions). -/
 theorem Nat.eq_recurse
-        (f: Nat → Nat → Nat)
-        (c: Nat)
-        (a: Nat → Nat) :
+        (f : Nat → Nat → Nat)
+        (c : Nat)
+        (a : Nat → Nat) :
         (a 0 = c ∧ ∀ n, a (n++) = f n (a n)) ↔ (a = recurse f c) := by
   constructor
   . intro ⟨h0, hsucc⟩
@@ -361,7 +361,7 @@ theorem Nat.eq_recurse
 
 
 /-- Proposition 2.1.16 (recursive definitions). -/
-theorem Nat.recurse_uniq (f: Nat → Nat → Nat) (c: Nat) :
+theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) :
     ∃! (a: Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
   apply ExistsUnique.intro (recurse f c)
   . constructor -- could also use `split_ands` or `and_intros` here

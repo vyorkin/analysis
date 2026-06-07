@@ -144,7 +144,7 @@ theorem Nat.succ_add (n m : Nat) : n++ + m = (n + m)++ := by rfl
 -- Из этого можно получить всё остальное.
 
 /-- Compare with Mathlib's {name}`Nat.one_add`. -/
-theorem Nat.one_add (m:Nat) : 1 + m = m++ := by
+theorem Nat.one_add (m : Nat) : 1 + m = m++ := by
   rw [show 1 = 0++ from rfl, succ_add, zero_add]
 
 /-
@@ -177,7 +177,7 @@ lemma Nat.add_zero (n : Nat) : n + 0 = n := by
       _ = n++ := by rw [ih]
 
 /-- Lemma 2.2.3 ({lean}`n+(m++) = (n+m)++`). Compare with Mathlib's {name}`Nat.add_succ`. -/
-lemma Nat.add_succ (n m:Nat) : n + (m++) = (n + m)++ := by
+lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
   -- this proof is written to follow the structure of the original text.
   revert n
   apply induction
@@ -198,7 +198,7 @@ lemma Nat.add_succ' (n m : Nat) : n + (m++) = (n + m)++ := by
       _ = (n++ + m)++ := by rw [succ_add]
 
 /-- {lean}`n++ = n + 1` (Why?). Compare with Mathlib's {name}`Nat.succ_eq_add_one` -/
-theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
+theorem Nat.succ_eq_add_one (n : Nat) : n++ = n + 1 := by
   revert n
   apply induction
   · rw [zero_add]
@@ -208,7 +208,7 @@ theorem Nat.succ_eq_add_one (n:Nat) : n++ = n + 1 := by
     rw [← ih]
 
 /-- Proposition 2.2.4 (Addition is commutative). Compare with Mathlib's {name}`Nat.add_comm` -/
-theorem Nat.add_comm (n m:Nat) : n + m = m + n := by
+theorem Nat.add_comm (n m : Nat) : n + m = m + n := by
   revert n
   -- Будем использовать индукцию по n
   apply induction
@@ -241,7 +241,7 @@ Compare with Mathlib's {name}`Nat.add_assoc`. -/
     = (a + (b + c))++   [по гипотезе индукции]
     = a++ + (b + c)     [по определению в обратную сторону]  ∎
 -/
-theorem Nat.add_assoc (a b c:Nat) : (a + b) + c = a + (b + c) := by
+theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
   revert a
   -- Будем использовать индукцию по a
   apply induction
@@ -280,7 +280,7 @@ theorem Nat.add_assoc' (a b c : Nat) : (a + b) + c = a + (b + c) := by
 
 /-- Proposition 2.2.6 (Cancellation law).
     Compare with Mathlib's {name}`Nat.add_left_cancel`. -/
-theorem Nat.add_left_cancel (a b c : Nat) (habc: a + b = a + c) : b = c := by
+theorem Nat.add_left_cancel (a b c : Nat) (habc : a + b = a + c) : b = c := by
   -- This proof is written to follow the structure of the original text.
   revert a
   apply induction
@@ -344,7 +344,7 @@ theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos :=
 
 /-- Corollary 2.2.9 (if sum vanishes, then summands vanish).
 Compare with Mathlib's {name}`Nat.add_eq_zero`. -/
-theorem Nat.add_eq_zero (a b : Nat) (hab: a + b = 0) : a = 0 ∧ b = 0 := by
+theorem Nat.add_eq_zero (a b : Nat) (hab : a + b = 0) : a = 0 ∧ b = 0 := by
   -- This proof is written to follow the structure of the original text.
   -- Доказательство от противного:
   -- Предположим, что a ≠ 0 или b ≠ 0
@@ -404,7 +404,7 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
 -- и лемма сама собирает из них ∃! x, p x.
 -- Так apply existsUnique_of_exists_of_unique создаёт ровно две подцели.
 
--- Пусть a ∈ ℕ, тогда существует единственное
+-- Пусть a ∈ ℕ и a > 0 тогда существует единственное
 -- положительное число b такое, что b++ = a.
 
 /-- Lemma 2.2.10 (unique predecessor) / Exercise 2.2.2 -/
@@ -418,7 +418,7 @@ extracts a witness `x` and a proof `hx : P x` of the property from a hypothesis 
   Шаг (a = n++): берём b := n, тогда b++ = n++ = a. ✓
 
 Единственность. Пусть y₁++ = a и y₂++ = a.
-  Тогда y₁++ = y₂++, и по аксиоме Пеано (инъективность следователя) y₁ = y₂. ∎
+  Тогда y₁++ = y₂++, и по аксиоме Пеано (инъективность следующего / succ_cancel) и тогда y₁ = y₂. ∎
 -/
 lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
   apply existsUnique_of_exists_of_unique
@@ -471,7 +471,7 @@ lemma Nat.ge_iff_le (n m : Nat) : n ≥ m ↔ m ≤ n := by rfl
 lemma Nat.gt_iff_lt (n m : Nat) : n > m ↔ m < n := by rfl
 
 /-- Compare with Mathlib's {name}`Nat.le_of_lt`. -/
-lemma Nat.le_of_lt {n m : Nat} (hnm: n < m) : n ≤ m := hnm.1
+lemma Nat.le_of_lt {n m : Nat} (hnm : n < m) : n ≤ m := hnm.1
 
 /-- Compare with Mathlib's {name}`Nat.le_iff_lt_or_eq`. -/
 lemma Nat.le_iff_lt_or_eq (n m : Nat) : n ≤ m ↔ n < m ∨ n = m := by
@@ -559,7 +559,7 @@ theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
 (a) Рефлексивность: a ≥ a.
 Положим d := 0. Тогда a = a + 0, значит ∃ d, a = a + d — по определению a ≤ a. ∎
 -/
-theorem Nat.ge_refl (a:Nat) : a ≥ a := by
+theorem Nat.ge_refl (a : Nat) : a ≥ a := by
   rw [Nat.ge_iff_le]
   rw [Nat.le_iff]
   use 0 -- exists 0
@@ -569,7 +569,7 @@ theorem Nat.ge_refl (a:Nat) : a ≥ a := by
 theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
 
 /-- The refl tag allows for the {tactic}`rfl` tactic to work for inequalities. -/
-example (a b : Nat): a + b ≥ a + b := by rfl
+example (a b : Nat) : a + b ≥ a + b := by rfl
 
 /-- (b) (Order is transitive).  The {tactic}`obtain` tactic will be useful here.
     Compare with Mathlib's {name}`Nat.le_trans`. -/
@@ -848,14 +848,14 @@ theorem Nat.not_lt_of_gt (a b : Nat) : a < b ∧ a > b → False := by
   have hab₁ := ne_of_lt a b h.1
   contradiction
 
-theorem Nat.not_lt_self {a: Nat} (h : a < a) : False := by
+theorem Nat.not_lt_self {a : Nat} (h : a < a) : False := by
   apply not_lt_of_gt a a -- a < b ∧ a > b → False
   -- simp [h]
   constructor
   · exact h
   · assumption
 
-theorem Nat.lt_of_le_of_lt {a b c : Nat} (hab: a ≤ b) (hbc: b < c) : a < c := by
+theorem Nat.lt_of_le_of_lt {a b c : Nat} (hab : a ≤ b) (hbc : b < c) : a < c := by
   rw [lt_iff_add_pos] at * -- : a < b ↔ ∃ d, d.IsPos ∧ b = a + d
   rw [le_iff] at hab
   obtain ⟨d, hd⟩ := hab
@@ -1055,7 +1055,7 @@ example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) :
     Compare with Mathlib's {name}`Nat.strong_induction_on`.
 -/
 theorem Nat.strong_induction {m₀ : Nat} {P : Nat → Prop}
-  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
+  (hind : ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
   have hn : (n : Nat) → (∀ m, m₀ ≤ m ∧ m < n → P m) := fun (n : Nat) => by
     induction n with
     | zero =>
@@ -1107,7 +1107,7 @@ theorem Nat.strong_induction {m₀ : Nat} {P : Nat → Prop}
 --
 -- Извлечение: P(m) = Q(m++) применённое к m < m++.
 theorem Nat.strong_induction₁ {m₀ : Nat} {P : Nat → Prop}
-  (hind: ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
+  (hind : ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m) : ∀ m, m ≥ m₀ → P m := by
   -- Обычной индукцией по n доказываем: все m с m₀ ≤ m < n удовлетворяют P
   have hkey : ∀ n m, m₀ ≤ m → m < n → P m := by
     intro n
@@ -1116,8 +1116,9 @@ theorem Nat.strong_induction₁ {m₀ : Nat} {P : Nat → Prop}
       intro m h₀ hlt
       -- hlt: m < 0 невозможно для натуральных чисел
       obtain ⟨⟨k, hk⟩, hne⟩ := hlt
-      replace hk : m + k = 0 := hk.symm; replace hne : m ≠ 0 := hne
-      have ⟨hm₀, hk₀⟩  := Nat.add_eq_zero m k hk
+      replace hk : m + k = 0 := hk.symm
+      replace hne : m ≠ 0 := hne
+      have ⟨hm₀, hk₀⟩ := Nat.add_eq_zero m k hk
       contradiction
     | succ n' ih =>
       -- m < n'++ означает m ≤ n', то есть m < n' или m = n'
