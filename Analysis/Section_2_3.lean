@@ -167,7 +167,7 @@ Compare with Mathlib's {name}`Nat.mul_add` -/
 theorem Nat.mul_add (a b c : Nat) : a * (b + c) = a * b + a * c := by
   -- Зафиксируем a и b и используем индукцию по c.
   revert c; apply induction
-  . -- Докажем базовый случай c = 0, т.е:
+  . -- Докажем базовый случай c = 0, т.е :
     show a * (b + 0) = a * b + a * 0
     rw [add_zero]
     -- Левая часть равнa a*b
@@ -339,11 +339,12 @@ theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) :
     obtain ⟨m, r, h₀, h₁, h₂⟩ := hn
     rw [h₂]; show ∃ x y, 0 ≤ y ∧ y < q ∧ (m * q + r)++ = x * q + y
     rw [← Nat.add_succ]
+    -- Кандидат на остаток — r++. Но он может не влезть в [0, q), поэтому смотрим, где r++ стоит относительно q.
     rcases trichotomous (r++) q with h | h | h
-    · -- r++ < q: свидетели m и r++
+    · -- r++ < q : свидетели m и r++
       use m, (r++)
       exact ⟨Nat.zero_le (r++), h, rfl⟩
-    · -- r++ = q: свидетели m++ и 0; нужен "перенос" (r++ достиг q)
+    · -- r++ = q : свидетели m++ и 0; нужен "перенос" (r++ достиг q)
       use (m++), 0
       refine ⟨Nat.zero_le 0, ?_, ?_⟩
       · -- 0 < q
@@ -352,10 +353,47 @@ theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) :
         rw [h]
         rw [add_zero]
         rw [← succ_mul]
-    · -- r++ > q: невозможно, т.к. r < q влечёт r++ ≤ q
+    · -- r++ > q : невозможно, т.к. r < q влечёт r++ ≤ q
       exfalso
       have hrs : r++ ≤ q := (lt_iff_succ_le r q).mp h₁
       exact not_lt_self (lt_of_le_of_lt hrs h)
+
+theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) :
+    ∃ m r : Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
+  have h0q : 0 < q := by
+    rw [lt_iff_add_pos]
+    use q, hq
+    rw [Nat.zero_add]
+  revert n; apply induction
+  · use 0, 0
+    and_intros
+    · exact Nat.zero_le 0 --  0 ≤ a
+    · exact Nat.zero_le q
+    · exact Ne.symm hq
+    · rfl
+  · intro n hn
+    obtain ⟨m, r, _, h₁, h₂⟩ := hn
+    rw [h₂, ← Nat.add_succ]
+    -- Кандидат на остаток — r++.
+    -- Но он может не влезть в [0, q).
+    -- Поэтому смотрим, где r++ стоит относительно q.
+    rcases trichotomous (r++) q with hlt | heq | hgt
+    · -- r++ < q : свидетели m и r++
+      use m, (r++)
+      exact ⟨Nat.zero_le _, hlt, rfl⟩
+    · -- r++ = q : свидетели m++ и 0, с переносом
+      use (m++), 0
+      and_intros
+      · exact Nat.zero_le 0
+      · exact Nat.zero_le q
+      · exact hq.symm
+      · rw [heq, Nat.add_zero, ← Nat.succ_mul]
+    · -- r++ > q : невозможно
+      apply absurd
+      · apply (lt_iff_succ_le r q).mp
+        exact h₁
+      · apply not_le.mpr
+        exact hgt
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
 abbrev Nat.pow (m n : Nat) : Nat := Nat.recurse (fun _ prod ↦ prod * m) 1 n
@@ -385,6 +423,7 @@ theorem Nat.pow_one (m : Nat) : m ^ (1 : Nat) = m := by
 /-- Exercise 2.3.4-/
 theorem Nat.sq_add_eq (a b : Nat) :
     (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
+
   sorry
 
 end Chapter2
