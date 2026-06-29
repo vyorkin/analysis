@@ -388,15 +388,16 @@ theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) :
       · exact Nat.zero_le q
       · exact hq.symm
       · rw [heq, Nat.add_zero, ← Nat.succ_mul]
-    · -- r++ > q : невозможно
-      apply absurd
-      · apply (lt_iff_succ_le r q).mp
-        exact h₁
-      · apply not_le.mpr
-        exact hgt
+    · -- r++ > q : невозможно, т.к. r < q влечёт r++ ≤ q
+      exfalso
+      apply not_lt_self (a := q)
+      apply lt_of_lt_of_le hgt
+      apply (lt_iff_succ_le r q).mp
+      exact h₁
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
-abbrev Nat.pow (m n : Nat) : Nat := Nat.recurse (fun _ prod ↦ prod * m) 1 n
+abbrev Nat.pow (m n : Nat) : Nat :=
+  Nat.recurse (fun _ prod ↦ prod * m) 1 n
 
 instance Nat.instPow : HomogeneousPow Nat where
   pow := Nat.pow
@@ -404,11 +405,13 @@ instance Nat.instPow : HomogeneousPow Nat where
 /-- Definition 2.3.11 (Exponentiation for natural numbers)
 Compare with Mathlib's {name}`Nat.pow_zero` -/
 @[simp]
-theorem Nat.pow_zero (m : Nat) : m ^ (0 : Nat) = 1 := recurse_zero (fun _ prod ↦ prod * m) _
+theorem Nat.pow_zero (m : Nat) : m ^ (0 : Nat) = 1 :=
+  recurse_zero (fun _ prod ↦ prod * m) _
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers) -/
 @[simp]
-theorem Nat.zero_pow_zero : (0 : Nat) ^ 0 = 1 := recurse_zero (fun _ prod ↦ prod * 0) _
+theorem Nat.zero_pow_zero : (0 : Nat) ^ 0 = 1 :=
+  recurse_zero (fun _ prod ↦ prod * 0) _
 
 /-- Definition 2.3.11 (Exponentiation for natural numbers)
 Compare with Mathlib's {name}`Nat.pow_succ` -/
@@ -420,10 +423,17 @@ theorem Nat.pow_succ (m n : Nat) : (m : Nat) ^ n++ = m ^ n * m :=
 theorem Nat.pow_one (m : Nat) : m ^ (1 : Nat) = m := by
   rw [←zero_succ, pow_succ]; simp
 
-/-- Exercise 2.3.4-/
+/-- Exercise 2.3.4 -/
 theorem Nat.sq_add_eq (a b : Nat) :
-    (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
-
-  sorry
+  (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
+    have h2 : (2 : Nat) = 1++ := rfl
+    rw [h2]
+    repeat rw [pow_succ, pow_one]
+    rw [succ_mul, one_mul]
+    rw [add_mul, add_mul]
+    rw [mul_add, mul_add]
+    rw [mul_comm b a]
+    rw [← add_assoc (a * a + a * b) (a * b) (b * b)]
+    rw [add_assoc (a * a) (a * b) (a * b)]
 
 end Chapter2

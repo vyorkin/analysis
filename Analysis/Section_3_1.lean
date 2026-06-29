@@ -80,6 +80,8 @@ universe u v
 class SetTheory where
   Set : Type u -- Axiom 3.1
   Object : Type v -- Axiom 3.1
+  -- `↪` — тип `Function.Embedding`: пара (функция + доказательство инъективности).
+  -- Метод `.inj'` извлекает инъективность: `∀ a b, f a = f b → a = b`.
   set_to_object : Set ↪ Object -- Axiom 3.1
   mem : Object → Set → Prop -- Axiom 3.1
   extensionality X Y : (∀ x, mem x X ↔ mem x Y) → X = Y -- Axiom 3.2
@@ -139,10 +141,18 @@ instance SetTheory.sets_are_objects : Coe Set Object where
 example (X : Set) : (X : Object) = SetTheory.set_to_object X := rfl
 
 /-- Axiom 3.1 (Sets are objects)-/
+-- `set_to_object : Set ↪ Object` — инъективное вложение; `.inj'` достаёт инъективность
+-- (т.е. `f a = f b → a = b`), поэтому равенство в `Object` поднимается до равенства в `Set`.
 theorem SetTheory.Set.coe_eq {X Y : Set} (h : (X : Object) = (Y : Object)) : X = Y :=
   set_to_object.inj' h
 
 /-- Axiom 3.1 (Sets are objects)-/
+-- `⟨coe_eq, …⟩` строит `↔` из двух направлений:
+-- `→` — это `coe_eq`, уже доказанный выше.
+-- `←` — если `X = Y`, то `rintro rfl` подставляет `Y := X` повсюду,
+--       и цель `(X : Object) = (X : Object)` закрывается `rfl`.
+-- Тэг `@[simp]` позволяет тактите `simp` автоматически
+-- убирать приведение типов в равенствах множеств.
 @[simp]
 theorem SetTheory.Set.coe_eq_iff (X Y : Set) : (X : Object) = (Y : Object) ↔ X = Y :=
   ⟨ coe_eq, by rintro rfl; rfl ⟩
@@ -153,7 +163,7 @@ theorem SetTheory.Set.ext {X Y : Set} (h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y :
   extensionality X Y h
 
 /- Axiom 3.2 (Equality of sets)-/
-#check SetTheory.Set.ext_iff
+#check SetTheory.Set.ext_iff -- {X Y : Set} : X = Y ↔ ∀ (x : Object), x ∈ X ↔ x ∈ Y
 
 instance SetTheory.Set.instEmpty : EmptyCollection Set where
   emptyCollection := emptyset
@@ -182,7 +192,8 @@ theorem SetTheory.Set.eq_empty_iff_forall_notMem {X : Set} : X = ∅ ↔ (∀ x,
   · intro h
     -- ext x
     -- ^^^ Использование тактики ext эквивалентно следующему:
-    rw [Set.ext_iff]; intro x
+    rw [Set.ext_iff]
+    intro x
     constructor
     · intro hx
       specialize h x
@@ -275,23 +286,64 @@ theorem SetTheory.Set.mem_triple (x a b c : Object) : x ∈ ({a,b,c} : Set) ↔ 
   simp [Insert.insert, mem_union, mem_singleton]
 
 /-- Remark 3.1.9 -/
-theorem SetTheory.Set.singleton_uniq (a : Object) : ∃! (X : Set), ∀ x, x ∈ X ↔ x = a := by sorry
+theorem SetTheory.Set.singleton_uniq (a : Object) : ∃! (X : Set), ∀ x, x ∈ X ↔ x = a := by
+  apply existsUnique_of_exists_of_unique
+  · use {a}
+    intro x
+    exact mem_singleton x a
+  · intro s₁ s₂ h₁ h₂
+    ext x
+    -- rw [h₁ x, h₂ x]
+    specialize h₁ x
+    specialize h₂ x
+    rw [h₁, h₂]
 
 /-- Remark 3.1.9 -/
-theorem SetTheory.Set.pair_uniq (a b : Object) : ∃! (X : Set), ∀ x, x ∈ X ↔ x = a ∨ x = b := by sorry
+theorem SetTheory.Set.pair_uniq (a b : Object) : ∃! (X : Set), ∀ x, x ∈ X ↔ x = a ∨ x = b := by
+  apply existsUnique_of_exists_of_unique
+  · use {a, b}
+    intro x
+    exact mem_pair x a b
+  · intro s₁ s₂ h₁ h₂
+    ext x
+    -- rw [h₁ x, h₂ x]
+    specialize h₁ x
+    specialize h₂ x
+    rw [h₁, h₂]
 
 /-- Remark 3.1.9 -/
-theorem SetTheory.Set.pair_comm (a b : Object) : ({a,b} : Set) = {b,a} := by sorry
+theorem SetTheory.Set.pair_comm (a b : Object) : ({a,b} : Set) = {b,a} := by
+  ext x
+  rw [mem_pair, mem_pair]
+  rw [or_comm] -- a ∨ b ↔ b ∨ a
 
 /-- Remark 3.1.9 -/
 @[simp]
 theorem SetTheory.Set.pair_self (a : Object) : ({a,a} : Set) = {a} := by
-  sorry
+  ext x
+  rw [mem_pair]
+  rw [or_self] -- (p ∨ p) = p
+  rw [mem_singleton]
 
 /-- Exercise 3.1.1 -/
 theorem SetTheory.Set.pair_eq_pair {a b c d : Object} (h : ({a,b} : Set) = {c,d}) :
     a = c ∧ b = d ∨ a = d ∧ b = c := by
-  sorry
+  rw [Set.ext_iff] at h
+  have ha := h a
+  have hb := h b
+  have hc := h c
+  have hd := h d
+  rw [mem_pair, mem_pair] at ha hb hc hd
+  simp at ha hb hc hd
+  -- hc : c = a ∨ c = b,  hd : d = a ∨ d = b
+  -- Разбираем 4 комбинации для ha и hb.
+  -- Вырожденные случаи (a=c,b=c) и (a=d,b=d) требуют hd/hc,
+  -- чтобы установить, что второй элемент пары тоже совпадает
+  rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
+  · rcases hd with rfl | rfl <;> left <;> exact ⟨rfl, rfl⟩
+  · left; exact ⟨rfl, rfl⟩
+  · right; exact ⟨rfl, rfl⟩
+  · rcases hc with rfl | rfl <;> right <;> exact ⟨rfl, rfl⟩
 
 abbrev SetTheory.Set.empty : Set := ∅
 abbrev SetTheory.Set.singleton_empty : Set := {(empty : Object)}
@@ -299,7 +351,18 @@ abbrev SetTheory.Set.pair_empty : Set := {(empty : Object), (singleton_empty : O
 
 /-- Exercise 3.1.2 -/
 theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
-  sorry
+  intro h
+  rw [Set.ext_iff] at h
+  obtain ⟨h₀, h₁⟩ := h empty
+  -- singleton_empty = {(empty : Object)} по определению
+  -- mem_singleton говорит: x ∈ {a} ↔ x = a
+  -- После rw [mem_singleton]: (empty : Object) = (empty : Object),
+  -- которая закрывается rfl автоматически
+  have hmem : (empty : Object) ∈ singleton_empty := by rw [mem_singleton]
+  have hh : (empty : Object) ∈ empty := h₁ hmem
+  rw [show empty = ∅ by rfl] at hh
+  have hc := not_mem_empty (∅ : Set)  -- Axiom 3.3: (x : Object) : x ∉ ∅
+  contradiction
 
 /-- Exercise 3.1.2 -/
 theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by sorry
@@ -421,7 +484,6 @@ theorem SetTheory.Set.subset_antisymm (A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A
 /-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
 theorem SetTheory.Set.ssubset_trans (A B C : Set) (hAB : A ⊂ B) (hBC : B ⊂ C) : A ⊂ C := by
   sorry
-
 
 /--
   This defines the subtype {lean}`A.toSubtype` for any {lean}`A:Set`.
