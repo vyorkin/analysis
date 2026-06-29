@@ -245,7 +245,7 @@ theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
   revert a
   -- Будем использовать индукцию по a
   apply induction
-  · -- Сначала рассмотрим базовый случай:
+  · -- Сначала рассмотрим базовый случай : 
     show (0 + b) + c = 0 + (b + c)
     -- По определению сложения:
     -- (0 + b) + c = b + c
@@ -291,7 +291,7 @@ theorem Nat.add_left_cancel (a b c : Nat) (habc : a + b = a + c) : b = c := by
     -- Тоже самое, что have hbd := succ_cancel hbc,
     -- только заменяет исходную гипотезу,
     -- вместо того, чтобы создавать ещё одну
-    replace hbc := succ_cancel hbc -- По аксиоме 2.4: n++ = m++ → n = m
+    replace hbc := succ_cancel hbc -- По аксиоме 2.4 : n++ = m++ → n = m
     exact ih hbc
 
 /-- (Not from textbook) {name}`Nat` can be given the structure of a commutative additive monoid.
@@ -720,7 +720,7 @@ theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b :=
 -/
 theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
   constructor
-  · -- Направление →: a < b → a++ ≤ b
+  · -- Направление → : a < b → a++ ≤ b
     rintro ⟨⟨x, h₀⟩, h₁⟩
     -- После rintro имеем:
     --   h₀ : b = a + x    (из определения ≤)
@@ -740,20 +740,20 @@ theorem Nat.lt_iff_succ_le (a b : Nat) : a < b ↔ a++ ≤ b := by
       _ = a + y++     := by rw [← he]     -- x = y++ (из he)
       _ = (a + y)++   := Nat.add_succ a y -- по лемме add_succ
       _ = a++ + y     := (Nat.succ_add a y).symm  -- по лемме succ_add
-  · -- Направление ←: a++ ≤ b → a < b
+  · -- Направление ← : a++ ≤ b → a < b
     intro h
     rw [Nat.le_iff] at h
     obtain ⟨y, hy⟩ := h
     -- hy : b = a++ + y
     constructor
-    · -- Часть 1: существование, т.е. ∃ x, b = a + x.
+    · -- Часть 1 : существование, т.е. ∃ x, b = a + x.
       -- Свидетель: y++ (потому что a++ + y = (a + y)++ = a + y++)
       -- Скобки нужны: без них Lean парсит y++ как конкатенацию списков
       use (y++)
       calc b = a++ + y  := hy
         _ = (a + y)++   := Nat.succ_add a y
         _ = a + y++     := (Nat.add_succ a y).symm
-    · -- Часть 2: a ≠ b
+    · -- Часть 2 : a ≠ b
       intro hab
       -- Если a = b, то из hy: a = a++ + y
       have haa : a = a++ + y := hab.trans hy
@@ -1037,7 +1037,7 @@ instance Nat.isOrderedAddMonoid : IsOrderedAddMonoid Nat where
 
 /-- This illustration of the {tactic}`gcongr` tactic is not from the
     textbook. -/
-example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) :
+example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) : 
   a + d ≤ c + e := by
   gcongr
   order
@@ -1133,9 +1133,9 @@ theorem Nat.strong_induction₁ {m₀ : Nat} {P : Nat → Prop}
         exact ⟨k, heq⟩
       rw [Nat.le_iff_lt_or_eq m n'] at hmn
       rcases hmn with hlt' | rfl
-      · -- Случай m < n': сразу применяем гипотезу индукции
+      · -- Случай m < n' : сразу применяем гипотезу индукции
         exact ih m hm₀ hlt'
-      · -- Случай m = n': применяем hind, предпосылку закрываем через ih
+      · -- Случай m = n' : применяем hind, предпосылку закрываем через ih
         apply hind m hm₀
         rintro m' ⟨hm'₀, hlt'⟩
         exact ih m' hm'₀ hlt'

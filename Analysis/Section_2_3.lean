@@ -167,7 +167,7 @@ Compare with Mathlib's {name}`Nat.mul_add` -/
 theorem Nat.mul_add (a b c : Nat) : a * (b + c) = a * b + a * c := by
   -- Зафиксируем a и b и используем индукцию по c.
   revert c; apply induction
-  . -- Докажем базовый случай c = 0, т.е :
+  . -- Докажем базовый случай c = 0, т.е : 
     show a * (b + 0) = a * b + a * 0
     rw [add_zero]
     -- Левая часть равнa a*b
@@ -260,7 +260,7 @@ theorem Nat.mul_lt_mul_of_pos_left {a b c : Nat} (h : a < b) (hc : c.IsPos) : c 
   exact mul_lt_mul_of_pos_right h hc
 
 /-- Proposition 2.3.6 (Multiplication preserves order) -/
-theorem Nat.mul_gt_mul_of_pos_left {a b c : Nat} (h : a > b) (hc : c.IsPos) :
+theorem Nat.mul_gt_mul_of_pos_left {a b c : Nat} (h : a > b) (hc : c.IsPos) : 
     c * a > c * b := mul_lt_mul_of_pos_left h hc
 
 /-- Corollary 2.3.7 (Cancellation law)
@@ -280,7 +280,7 @@ lemma Nat.mul_cancel_right {a b c : Nat} (h : a * c = b * c) (hc : c.IsPos) : a 
 This allows tactics such as {tactic}`gcongr` to apply to the Chapter 2 natural numbers. -/
 instance Nat.isOrderedRing : IsOrderedRing Nat where
   zero_le_one : (0 : Nat) ≤ 1 := Nat.zero_le 1
-  mul_le_mul_of_nonneg_left :
+  mul_le_mul_of_nonneg_left : 
     ∀ ⦃a : Nat⦄, 0 ≤ a → ∀ ⦃b c : Nat⦄, b ≤ c → a * b ≤ a * c := by
     intro a ha b c hbc
     rw [Nat.le_iff] at hbc
@@ -289,7 +289,7 @@ instance Nat.isOrderedRing : IsOrderedRing Nat where
     rw [Nat.mul_add]
     rw [Nat.le_iff]
     use a * d
-  mul_le_mul_of_nonneg_right :
+  mul_le_mul_of_nonneg_right : 
     ∀ ⦃c : Nat⦄, 0 ≤ c → ∀ ⦃a b : Nat⦄, a ≤ b → a * c ≤ b * c := by
     intro c hc a b hab
     rw [Nat.le_iff] at hab
@@ -320,7 +320,7 @@ example (a b c d : Nat) (hab : a ≤ b) : c * a * d ≤ c * b * d := by
 /-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5
 Compare with Mathlib's {name}`Nat.mod_eq_iff` -/
 -- Зафиксируйте q и индуктивно рассмотрите n.
-theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) :
+theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) : 
     ∃ m r : Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
   revert n; apply induction
   · use 0, 0
@@ -358,7 +358,7 @@ theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) :
       have hrs : r++ ≤ q := (lt_iff_succ_le r q).mp h₁
       exact not_lt_self (lt_of_le_of_lt hrs h)
 
-theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) :
+theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) : 
     ∃ m r : Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
   have h0q : 0 < q := by
     rw [lt_iff_add_pos]
@@ -424,7 +424,7 @@ theorem Nat.pow_one (m : Nat) : m ^ (1 : Nat) = m := by
   rw [←zero_succ, pow_succ]; simp
 
 /-- Exercise 2.3.4 -/
-theorem Nat.sq_add_eq (a b : Nat) :
+theorem Nat.sq_add_eq (a b : Nat) : 
   (a + b) ^ (2 : Nat) = a ^ (2 : Nat) + 2 * a * b + b ^ (2 : Nat) := by
     have h2 : (2 : Nat) = 1++ := rfl
     rw [h2]

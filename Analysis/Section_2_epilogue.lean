@@ -122,7 +122,7 @@ abbrev Chapter2.Nat.equivNat_ordered_ring : Chapter2.Nat ≃+*o ℕ where
   map_le_map_iff' := map_le_map_iff
 
 /-- The conversion preserves exponentiation. -/
-lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
+lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) : 
     n.toNat ^ m.toNat = (n^m).toNat := by
   induction' m with m hm
   · rw [show zero = 0 by rfl]
@@ -249,7 +249,7 @@ noncomputable abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q :=
   (Equiv.fromNat P).symm.trans (Equiv.fromNat Q)
 
 /-- There is only one equivalence between any two structures obeying the Peano axioms. -/
-theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
+theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) : 
     equiv1 = equiv2 := by
   obtain ⟨equiv1, equiv_zero1, equiv_succ1⟩ := equiv1
   obtain ⟨equiv2, equiv_zero2, equiv_succ2⟩ := equiv2
@@ -261,8 +261,8 @@ theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
     rw [equiv_succ1, equiv_succ2, ih]
 
 /-- A sample result: recursion is well-defined on any structure obeying the Peano axioms-/
-theorem Nat.recurse_uniq {P : PeanoAxioms} (f: P.Nat → P.Nat → P.Nat) (c: P.Nat) :
-    ∃! (a: P.Nat → P.Nat), a P.zero = c ∧ ∀ n, a (P.succ n) = f n (a n) := by
+theorem Nat.recurse_uniq {P : PeanoAxioms} (f : P.Nat → P.Nat → P.Nat) (c : P.Nat) : 
+    ∃! (a : P.Nat → P.Nat), a P.zero = c ∧ ∀ n, a (P.succ n) = f n (a n) := by
   -- φ — обратная к natCast, существует благодаря инъективности и сюръективности
   set φ : P.Nat → ℕ := Function.invFun P.natCast with hφ
   have hleft : ∀ n : ℕ, φ (P.natCast n) = n :=

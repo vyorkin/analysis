@@ -10,18 +10,18 @@ A companion to (the introduction to) Section 1.3.2 of the book "An introduction 
 
 -/
 
-def Unsigned {X Y:Type*} [LE Y] [Zero Y] (f:X → Y) : Prop := ∀ x, f x ≥ 0
+def Unsigned {X Y : Type*} [LE Y] [Zero Y] (f : X → Y) : Prop := ∀ x, f x ≥ 0
 
-def PointwiseConvergesTo {X Y:Type*} [TopologicalSpace Y] (f: ℕ → X → Y) (g: X → Y) : Prop := ∀ x, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x))
+def PointwiseConvergesTo {X Y : Type*} [TopologicalSpace Y] (f : ℕ → X → Y) (g : X → Y) : Prop := ∀ x, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x))
 
 /-- Definition 1.3.8 (Unsigned measurable function) -/
-def UnsignedMeasurable {d:ℕ} (f: EuclideanSpace' d → EReal) : Prop := Unsigned f ∧ ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
+def UnsignedMeasurable {d : ℕ} (f : EuclideanSpace' d → EReal) : Prop := Unsigned f ∧ ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
-def EReal.BoundedFunction {X:Type*} (f:X → EReal) : Prop := ∃ M:NNReal, ∀ x, (f x).abs ≤ M
+def EReal.BoundedFunction {X : Type*} (f : X → EReal) : Prop := ∃ M : NNReal, ∀ x, (f x).abs ≤ M
 
-def FiniteMeasureSupport {d:ℕ} {Y:Type*} [Zero Y] (f: EuclideanSpace' d → Y) : Prop := Lebesgue_measure (Support f) < ⊤
+def FiniteMeasureSupport {d : ℕ} {Y : Type*} [Zero Y] (f : EuclideanSpace' d → Y) : Prop := Lebesgue_measure (Support f) < ⊤
 
-def PointwiseAeConvergesTo {d:ℕ} {Y:Type*} [TopologicalSpace Y] (f: ℕ → (EuclideanSpace' d → Y)) (g: EuclideanSpace' d → Y) : Prop := AlmostAlways (fun x ↦ Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x)))
+def PointwiseAeConvergesTo {d : ℕ} {Y : Type*} [TopologicalSpace Y] (f : ℕ → (EuclideanSpace' d → Y)) (g : EuclideanSpace' d → Y) : Prop := AlmostAlways (fun x ↦ Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x)))
 
 /-!
 ## Helper lemmas for Lemma 1.3.9
@@ -55,18 +55,18 @@ variable {d : ℕ} {f : EuclideanSpace' d → EReal}
 -- Statement abbreviations for clarity (using indices as in the book)
 private abbrev stmt_i (f : EuclideanSpace' d → EReal) := UnsignedMeasurable f
 private abbrev stmt_ii (f : EuclideanSpace' d → EReal) :=
-  ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (∀ x, Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x)))
+  ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (∀ x, Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x)))
 private abbrev stmt_iii (f : EuclideanSpace' d → EReal) :=
-  ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f)
+  ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f)
 private abbrev stmt_iv (f : EuclideanSpace' d → EReal) :=
-  ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n) ∧ EReal.BoundedFunction (g n) ∧ FiniteMeasureSupport (g n)) ∧ (∀ x, Monotone (fun n ↦ g n x)) ∧ (∀ x, f x = iSup (fun n ↦ g n x))
+  ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n) ∧ EReal.BoundedFunction (g n) ∧ FiniteMeasureSupport (g n)) ∧ (∀ x, Monotone (fun n ↦ g n x)) ∧ (∀ x, f x = iSup (fun n ↦ g n x))
 private abbrev stmt_v (f : EuclideanSpace' d → EReal) := ∀ t, LebesgueMeasurable {x | f x > t}
 private abbrev stmt_vi (f : EuclideanSpace' d → EReal) := ∀ t, LebesgueMeasurable {x | f x ≥ t}
 private abbrev stmt_vii (f : EuclideanSpace' d → EReal) := ∀ t, LebesgueMeasurable {x | f x < t}
 private abbrev stmt_viii (f : EuclideanSpace' d → EReal) := ∀ t, LebesgueMeasurable {x | f x ≤ t}
-private abbrev stmt_ix (f : EuclideanSpace' d → EReal) := ∀ I:BoundedInterval, LebesgueMeasurable (f⁻¹' (Real.toEReal '' I.toSet))
-private abbrev stmt_x (f : EuclideanSpace' d → EReal) := ∀ U: Set EReal, IsOpen U → LebesgueMeasurable (f⁻¹' U)
-private abbrev stmt_xi (f : EuclideanSpace' d → EReal) := ∀ K: Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
+private abbrev stmt_ix (f : EuclideanSpace' d → EReal) := ∀ I : BoundedInterval, LebesgueMeasurable (f⁻¹' (Real.toEReal '' I.toSet))
+private abbrev stmt_x (f : EuclideanSpace' d → EReal) := ∀ U : Set EReal, IsOpen U → LebesgueMeasurable (f⁻¹' U)
+private abbrev stmt_xi (f : EuclideanSpace' d → EReal) := ∀ K : Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
 
 /-! # (i) ⟺ (ii): By definition of {name}`UnsignedMeasurable` -/
 
@@ -106,14 +106,14 @@ private lemma iv_imp_ii : stmt_iv f → stmt_ii f := by
 /-! # (iii) ⟹ (v): Via limsup representation -/
 
 -- Helper: Set.indicator' equals 1 when x ∈ E
-private lemma Set.indicator'_eq_one' {X : Type*} {E : Set X} {x : X} (hx : x ∈ E) :
+private lemma Set.indicator'_eq_one' {X : Type*} {E : Set X} {x : X} (hx : x ∈ E) : 
     ((E.indicator' x : ℝ) : EReal) = 1 := by
   classical
   rw [Set.indicator'_apply, if_pos hx]
   rfl
 
 -- Helper: Set.indicator' equals 0 when x ∉ E
-private lemma Set.indicator'_eq_zero' {X : Type*} {E : Set X} {x : X} (hx : x ∉ E) :
+private lemma Set.indicator'_eq_zero' {X : Type*} {E : Set X} {x : X} (hx : x ∉ E) : 
     ((E.indicator' x : ℝ) : EReal) = 0 := by
   classical
   rw [Set.indicator'_apply, if_neg hx]
@@ -121,7 +121,7 @@ private lemma Set.indicator'_eq_zero' {X : Type*} {E : Set X} {x : X} (hx : x �
 
 -- Level sets of simple functions are Lebesgue measurable
 private lemma UnsignedSimpleFunction.levelset_gt_LebesgueMeasurable
-    {g : EuclideanSpace' d → EReal} (hg : UnsignedSimpleFunction g) (t : EReal) :
+    {g : EuclideanSpace' d → EReal} (hg : UnsignedSimpleFunction g) (t : EReal) : 
     LebesgueMeasurable {x | g x > t} := by
   obtain ⟨k, c, E, hE_props, heq⟩ := hg
   -- For each subset S of Fin k, define the "atom" R_S where x ∈ E_i iff i ∈ S
@@ -197,7 +197,7 @@ private def limsupSet (g : ℕ → EuclideanSpace' d → EReal) (t : EReal) : Se
 
 -- The limsup set is Lebesgue measurable when each g_n is a simple function
 private lemma limsupSet_LebesgueMeasurable {g : ℕ → EuclideanSpace' d → EReal}
-    (hg : ∀ n, UnsignedSimpleFunction (g n)) (t : EReal) :
+    (hg : ∀ n, UnsignedSimpleFunction (g n)) (t : EReal) : 
     LebesgueMeasurable (limsupSet g t) := by
   apply LebesgueMeasurable.countable_union
   intro M
@@ -241,7 +241,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
 
       -- Case 1: t = ⊥
       rcases eq_bot_or_bot_lt t with rfl | ht_ne_bot
-      · -- t = ⊥: threshold = ⊥ + eps = ⊥ for any M, and g n x > ⊥ since g n x ≥ 0
+      · -- t = ⊥ : threshold = ⊥ + eps = ⊥ for any M, and g n x > ⊥ since g n x ≥ 0
         use 0
         intro N
         use N, le_refl N
@@ -260,7 +260,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
              _ ≤ g N x := hg_nonneg
       -- Case 2: f x = ⊤
       rcases eq_top_or_lt_top (f x) with hfx_top | hfx_lt_top
-      · -- f x = ⊤: g_n → ⊤, so eventually g_n x > any threshold
+      · -- f x = ⊤ : g_n → ⊤, so eventually g_n x > any threshold
         use 0
         intro N
         -- Since f x = ⊤ and f x > t, we have t < ⊤
@@ -281,7 +281,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
              _ < g (max N₀ N) x := h_n_mem
       -- Case 3: t < ⊤ and f x < ⊤, both are finite or f x > t means t < f x < ⊤
       rcases eq_top_or_lt_top t with rfl | ht_lt_top
-      · -- t = ⊤: but hfx says f x > ⊤, impossible
+      · -- t = ⊤ : but hfx says f x > ⊤, impossible
         exfalso; exact (not_lt.mpr le_top) hfx
       -- Now ⊥ < t < ⊤ and f x > t, with f x < ⊤
       -- f x is finite since f x < ⊤ and f x > t > ⊥
@@ -346,7 +346,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
       set threshold := t + 1 / ((M : EReal) + 1) with h_threshold
       -- Handle edge cases first
       rcases eq_top_or_lt_top t with rfl | ht_ne_top
-      · -- t = ⊤: threshold = ⊤ + eps = ⊤, and hM says g n x > ⊤, impossible
+      · -- t = ⊤ : threshold = ⊤ + eps = ⊤, and hM says g n x > ⊤, impossible
         exfalso
         obtain ⟨n, _, hn_gt⟩ := hM 0
         have h_threshold_eq_top : threshold = ⊤ := by
@@ -364,7 +364,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
         rw [h_threshold_eq_top] at hn_gt
         exact (not_lt.mpr le_top) hn_gt
       rcases eq_bot_or_bot_lt t with rfl | ht_ne_bot
-      · -- t = ⊥: threshold = ⊥ + eps = ⊥, need to show f x > ⊥
+      · -- t = ⊥ : threshold = ⊥ + eps = ⊥, need to show f x > ⊥
         -- Since g_n(x) ≥ 0 and g_n(x) → f(x), we have f(x) ≥ 0 > ⊥
         have hg_nonneg : ∀ n, g n x ≥ 0 := fun n => by
           obtain ⟨k, c, E, hE_props, heq⟩ := hg_simple n
@@ -446,12 +446,12 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
   intro hv t
   -- Handle cases based on t
   rcases eq_bot_or_bot_lt t with rfl | ht_bot
-  · -- t = ⊥: {f ≥ ⊥} = Set.univ
+  · -- t = ⊥ : {f ≥ ⊥} = Set.univ
     have h_eq : {x | f x ≥ ⊥} = Set.univ := by ext x; simp
     rw [h_eq, ← Set.compl_empty]
     exact LebesgueMeasurable.empty.complement
   rcases eq_top_or_lt_top t with rfl | ht_top
-  · -- t = ⊤: {f ≥ ⊤} = {f = ⊤} = ⋂_{n ∈ ℕ} {f > n}
+  · -- t = ⊤ : {f ≥ ⊤} = {f = ⊤} = ⋂_{n ∈ ℕ} {f > n}
     have h_eq : {x | f x ≥ ⊤} = ⋂ (n : ℕ), {x | f x > n} := by
       ext x
       simp only [Set.mem_setOf_eq, Set.mem_iInter, ge_iff_le]
@@ -462,7 +462,7 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
       · intro hfx
         exact top_le_iff.mpr (EReal.eq_top_of_forall_nat_lt hfx)
     exact h_eq ▸ LebesgueMeasurable.countable_inter (fun n => hv _)
-  · -- t is finite: use {f ≥ t} = ⋂_{n≥1} {f > t - 1/(n+1)}
+  · -- t is finite : use {f ≥ t} = ⋂_{n≥1} {f > t - 1/(n+1)}
     -- Since t < ⊤ and ⊥ < t, we know t is a real number
     induction t using EReal.rec with
     | bot => exact (not_lt.mpr le_rfl ht_bot).elim
@@ -600,7 +600,7 @@ private lemma viii_imp_v : stmt_viii f → stmt_v f := by
 
 /-! # (v)-(viii) ⟹ (ix): Intervals are intersections of half-intervals -/
 
-private lemma v_to_viii_imp_ix (hv : stmt_v f) (hvi : stmt_vi f) (hvii : stmt_vii f) (hviii : stmt_viii f) :
+private lemma v_to_viii_imp_ix (hv : stmt_v f) (hvi : stmt_vi f) (hvii : stmt_vii f) (hviii : stmt_viii f) : 
     stmt_ix f := by
   intro I
   cases I with
@@ -650,8 +650,8 @@ private lemma unsigned_preimage_bot_empty (hf : Unsigned f) : f⁻¹' {⊥} = �
   exact not_le.mpr EReal.bot_lt_zero h
 
 -- The embedded reals ℝ as a subset of EReal
-private lemma ereal_reals_eq_iUnion :
-    (Set.range Real.toEReal : Set EReal) = ⋃ (n : ℕ), Real.toEReal '' Set.Ioo (-(n:ℝ) - 1) (n + 1) := by
+private lemma ereal_reals_eq_iUnion : 
+    (Set.range Real.toEReal : Set EReal) = ⋃ (n : ℕ), Real.toEReal '' Set.Ioo (-(n : ℝ) - 1) (n + 1) := by
   ext x
   simp only [Set.mem_range, Set.mem_iUnion, Set.mem_image, Set.mem_Ioo]
   constructor
@@ -674,7 +674,7 @@ private lemma measurable_preimage_reals (hix : stmt_ix f) : LebesgueMeasurable (
   rw [ereal_reals_eq_iUnion, Set.preimage_iUnion]
   apply LebesgueMeasurable.countable_union
   intro n
-  exact hix (BoundedInterval.Ioo (-(n:ℝ) - 1) (n + 1))
+  exact hix (BoundedInterval.Ioo (-(n : ℝ) - 1) (n + 1))
 
 -- {⊤} as complement of ℝ ∪ {⊥}
 private lemma ereal_top_singleton_eq : ({⊤} : Set EReal) = (Set.range Real.toEReal ∪ {⊥})ᶜ := by
@@ -706,7 +706,7 @@ private lemma measurable_preimage_top (hf : Unsigned f) (hix : stmt_ix f) : Lebe
     exact LebesgueMeasurable.empty
 
 -- The intersection of an open set with ℝ can be expressed using countable intervals
-private lemma open_inter_reals_eq_countable_union (U : Set EReal) (hU : IsOpen U) :
+private lemma open_inter_reals_eq_countable_union (U : Set EReal) (hU : IsOpen U) : 
     ∃ S : Set (Set ℝ), S.Countable ∧ (∀ I ∈ S, ∃ a b, I = Set.Ioo a b) ∧
     U ∩ Set.range Real.toEReal = ⋃ I ∈ S, Real.toEReal '' I := by
   let V : Set ℝ := Real.toEReal ⁻¹' U
@@ -855,7 +855,7 @@ private lemma x_imp_vii : stmt_x f → stmt_vii f := by
 /-! # (v)-(xi) ⟹ (iv): Construction of approximating sequence -/
 
 -- Helper: the norm ball centered at origin is Lebesgue measurable
-private lemma normBall_LebesgueMeasurable (r : ℝ) :
+private lemma normBall_LebesgueMeasurable (r : ℝ) : 
     LebesgueMeasurable {x : EuclideanSpace' d | ‖x‖ ≤ r} := by
   have h : {x : EuclideanSpace' d | ‖x‖ ≤ r} = Metric.closedBall 0 r := by
     ext x; simp [Metric.closedBall, dist_zero_right]
@@ -876,13 +876,13 @@ private noncomputable def approx_fn (f : EuclideanSpace' d → EReal) (n : ℕ) 
   else 0
 
 -- Key lemma: approx_fn takes values in {k/2^n : k = 0, 1, ..., n·2^n}
-private lemma approx_fn_values (f : EuclideanSpace' d → EReal) (hf : Unsigned f) (n : ℕ) (x : EuclideanSpace' d) :
+private lemma approx_fn_values (f : EuclideanSpace' d → EReal) (hf : Unsigned f) (n : ℕ) (x : EuclideanSpace' d) : 
     ∃ k : ℕ, k ≤ n * 2^n ∧ approx_fn f n x = ((k : ℕ) : ℝ) / (2^n : ℝ) := by
   simp only [approx_fn]
   split_ifs with hnorm hbot htop hneg
   · -- t = ⊥ case (won't happen)
     use 0; simp
-  · -- t = ⊤ case: min(f x, n) = ⊤ is impossible since min(f x, n) ≤ n
+  · -- t = ⊤ case : min(f x, n) = ⊤ is impossible since min(f x, n) ≤ n
     exfalso
     have h1 : min (f x) ↑n ≤ ↑n := min_le_right _ _
     rw [htop] at h1
@@ -929,22 +929,22 @@ private lemma approx_fn_nonneg (f : EuclideanSpace' d → EReal) (_hf : Unsigned
 
 -- Helper: floor approximation converges to the value as iSup
 -- For r ≥ 0: r = ⨆ n, ⌊r * 2^n⌋₊ / 2^n (in EReal)
-private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
+private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) : 
     (r : EReal) = ⨆ n : ℕ, (((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) := by
   -- Define the approximating function for cleaner notation
   let f : ℕ → ℝ := fun n => ((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ)
   change (r : EReal) = ⨆ n : ℕ, (f n : EReal)
   apply le_antisymm
-  · -- Upper bound: r ≤ iSup
+  · -- Upper bound : r ≤ iSup
     apply EReal.le_of_forall_pos_le_add'
     intro ε hε
     -- Find N such that 1/2^N < ε using (1/2)^n → 0
-    have h_tendsto : Filter.Tendsto (fun n : ℕ => ((1:ℝ)/2)^n) Filter.atTop (nhds 0) :=
+    have h_tendsto : Filter.Tendsto (fun n : ℕ => ((1 : ℝ)/2)^n) Filter.atTop (nhds 0) :=
       tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
     rw [Metric.tendsto_atTop] at h_tendsto
     obtain ⟨N, hN⟩ := h_tendsto ε hε
     specialize hN N (le_refl N)
-    simp only [Real.dist_eq, sub_zero, abs_of_pos (pow_pos (by norm_num : (0:ℝ) < 1/2) N)] at hN
+    simp only [Real.dist_eq, sub_zero, abs_of_pos (pow_pos (by norm_num : (0 : ℝ) < 1/2) N)] at hN
     have h2N_pos : (2 : ℝ)^N > 0 := pow_pos (by norm_num) N
     have h_eps : (1 : ℝ) / 2^N < ε := by
       convert hN using 1
@@ -961,7 +961,7 @@ private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
     calc (r : EReal) ≤ (f N + ε : ℝ) := EReal.coe_le_coe_iff.mpr h3
          _ = (f N : EReal) + (ε : EReal) := by rw [← EReal.coe_add]
          _ ≤ (⨆ n : ℕ, (f n : EReal)) + ε := add_le_add_left h_le_iSup ε
-  · -- Lower bound: iSup ≤ r
+  · -- Lower bound : iSup ≤ r
     apply iSup_le
     intro n
     have h2n_pos : (2 : ℝ)^n > 0 := pow_pos (by norm_num) n
@@ -975,7 +975,7 @@ private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
 -- Helper: approx_fn simplifies to floor formula when f x is finite and r ≤ n
 private lemma approx_fn_eq_floor_when_finite (f : EuclideanSpace' d → EReal) (_hf : Unsigned f)
     (n : ℕ) (x : EuclideanSpace' d) (hn : ‖x‖ ≤ n) (r : ℝ) (hr : f x = r) (hr_nonneg : r ≥ 0)
-    (hrn : r ≤ n) :
+    (hrn : r ≤ n) : 
     approx_fn f n x = (((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) := by
   simp only [approx_fn, hn, ite_true, hr]
   have h_min : min (r : EReal) n = r := min_eq_left (EReal.coe_le_coe_iff.mpr hrn)
@@ -988,7 +988,7 @@ private lemma approx_fn_eq_floor_when_finite (f : EuclideanSpace' d → EReal) (
   simp only [not_lt.mpr hr_nonneg, ite_false]
 
 -- Helper: (n * 2^n) / 2^n = n in EReal
-private lemma mul_pow2_div_pow2_eq (n : ℕ) :
+private lemma mul_pow2_div_pow2_eq (n : ℕ) : 
     ((n * 2^n : ℕ) : EReal) / ((2^n : ℕ) : EReal) = ((n : ℕ) : EReal) := by
   have h2n_ne : (2^n : ℕ) ≠ 0 := pow_ne_zero n (by norm_num)
   have h2n_ne_bot : ((2^n : ℕ) : EReal) ≠ ⊥ := EReal.coe_ne_bot _
@@ -1001,7 +1001,7 @@ private lemma mul_pow2_div_pow2_eq (n : ℕ) :
 -- Helper: Extract equality from EReal division equality with 2^n denominator
 private lemma ereal_div_pow2_eq_imp_eq (j k n : ℕ)
     (h : (((j : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) =
-         (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal)) :
+         (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal)) : 
     j = k := by
   have h2n_pos : (0 : ℝ) < 2^n := pow_pos (by norm_num) n
   have h2n_ne : ((2^n : ℕ) : ℝ) ≠ 0 := by positivity
@@ -1024,7 +1024,7 @@ private lemma ereal_div_pow2_eq_imp_eq (j k n : ℕ)
 -- - {f x ≥ t} which is LebesgueMeasurable by hvi
 -- - {f x < t} which is LebesgueMeasurable by hvii
 private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stmt_vi f)
-    (hvii : stmt_vii f) (n : ℕ) (v : EReal) :
+    (hvii : stmt_vii f) (n : ℕ) (v : EReal) : 
     LebesgueMeasurable {x | approx_fn f n x = v} := by
   -- Helper: ball and outside ball are Lebesgue measurable
   have ball_leb : LebesgueMeasurable {x : EuclideanSpace' d | ‖x‖ ≤ (n : ℝ)} := normBall_LebesgueMeasurable n
@@ -1033,7 +1033,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
 
   by_cases hv_range : v ∈ Set.range (approx_fn f n)
   swap
-  · -- v not in range: level set is empty
+  · -- v not in range : level set is empty
     convert LebesgueMeasurable.empty
     ext x; simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
     intro h; exact hv_range ⟨x, h⟩
@@ -1041,8 +1041,8 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
   -- v is in range: the level set is a Boolean combination of measurable sets
   -- Decompose into inside/outside ball
   have h_split : {x | approx_fn f n x = v} =
-      ({x | ‖x‖ ≤ (n:ℝ)} ∩ {x | approx_fn f n x = v}) ∪
-      ({x | ‖x‖ > (n:ℝ)} ∩ {x | approx_fn f n x = v}) := by
+      ({x | ‖x‖ ≤ (n : ℝ)} ∩ {x | approx_fn f n x = v}) ∪
+      ({x | ‖x‖ > (n : ℝ)} ∩ {x | approx_fn f n x = v}) := by
     ext x; simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
     by_cases h : ‖x‖ ≤ n <;> simp [h, lt_of_not_ge]
   rw [h_split]
@@ -1059,12 +1059,12 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
     have h2n_pos : (0 : ℝ) < 2^n := pow_pos (by norm_num) n
     have h2n_ne : (2^n : ℝ) ≠ 0 := ne_of_gt h2n_pos
     by_cases hk_max : k = n * 2^n
-    · -- k = n * 2^n: level set inside ball equals {‖x‖ ≤ n} ∩ {f x ≥ n}
+    · -- k = n * 2^n : level set inside ball equals {‖x‖ ≤ n} ∩ {f x ≥ n}
       have hv_eq_n : v = n := by
         rw [hv_eq, hk_max]
         conv_lhs => rw [show ((n * 2^n : ℕ) : ℝ) = (n : ℝ) * 2^n by simp [Nat.cast_mul, Nat.cast_pow]]
         rw [← EReal.coe_div]; congr 1; field_simp
-      have h_eq : {x | ‖x‖ ≤ (n:ℝ)} ∩ {x | approx_fn f n x = v} =
+      have h_eq : {x | ‖x‖ ≤ (n : ℝ)} ∩ {x | approx_fn f n x = v} =
           {x | ‖x‖ ≤ n} ∩ {x | f x ≥ (n : EReal)} := by
         ext x; simp only [Set.mem_inter_iff, Set.mem_setOf_eq]
         constructor
@@ -1138,11 +1138,11 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
             grind
       rw [h_eq]
       exact ball_leb.inter (hvi n)
-    · -- k < n * 2^n: level set is {‖x‖ ≤ n} ∩ {f x ≥ k/2^n} ∩ {f x < (k+1)/2^n}
+    · -- k < n * 2^n : level set is {‖x‖ ≤ n} ∩ {f x ≥ k/2^n} ∩ {f x < (k+1)/2^n}
       have hk_lt : k < n * 2^n := Nat.lt_of_le_of_ne hk_bound hk_max
       have h_le := hvi (((k : ℕ) : ℝ) / (2^n : ℝ))
       have h_lt := hvii ((((k + 1) : ℕ) : ℝ) / (2^n : ℝ))
-      have h_eq : {x | ‖x‖ ≤ (n:ℝ)} ∩ {x | approx_fn f n x = v} =
+      have h_eq : {x | ‖x‖ ≤ (n : ℝ)} ∩ {x | approx_fn f n x = v} =
           {x | ‖x‖ ≤ n} ∩ ({x | f x ≥ (((k : ℕ) : ℝ) / (2^n : ℝ) : EReal)} ∩
           {x | f x < ((((k + 1) : ℕ) : ℝ) / (2^n : ℝ) : EReal)}) := by
         ext x; simp only [Set.mem_inter_iff, Set.mem_setOf_eq]
@@ -1158,7 +1158,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
           · exfalso
             have h_min_ge : min (f x) ↑n ≥ 0 := le_min (hf x) (EReal.coe_nonneg.mpr (Nat.cast_nonneg n))
             exact not_le.mpr hneg (EReal.toReal_nonneg h_min_ge)
-          · -- Normal case: Show floor = k and derive bounds
+          · -- Normal case : Show floor = k and derive bounds
             have hval' : (((⌊(min (f x) ↑n).toReal * 2 ^ n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) =
                 (((k : ℕ) : ℝ) / (2^n : ℝ) : EReal) := by
               have h1 : ((2^n : ℕ) : EReal) = ((2^n : ℕ) : ℝ) := EReal.coe_natCast.symm
@@ -1292,26 +1292,26 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
       exact ball_leb.inter (h_le.inter h_lt)
 
   -- Outside ball case: {‖x‖ > n} ∩ {approx_fn = v} = {‖x‖ > n} if v = 0, else ∅
-  · have h_eq : {x | ‖x‖ > (n:ℝ)} ∩ {x | approx_fn f n x = v} =
-        if v = 0 then {x | ‖x‖ > (n:ℝ)} else ∅ := by
+  · have h_eq : {x | ‖x‖ > (n : ℝ)} ∩ {x | approx_fn f n x = v} =
+        if v = 0 then {x | ‖x‖ > (n : ℝ)} else ∅ := by
       ext x
       simp only [Set.mem_inter_iff, Set.mem_setOf_eq, approx_fn]
       constructor
       · intro ⟨hn, hv⟩
-        have hn' : ¬ ‖x‖ ≤ (n:ℝ) := not_le.mpr hn
+        have hn' : ¬ ‖x‖ ≤ (n : ℝ) := not_le.mpr hn
         simp only [hn', ite_false] at hv
         split_ifs <;> [exact hn; exact absurd hv.symm ‹_›]
       · intro h
         split_ifs at h with hv0
-        · have hn : ‖x‖ > (n:ℝ) := h
-          have hn' : ¬ ‖x‖ ≤ (n:ℝ) := not_le.mpr hn
+        · have hn : ‖x‖ > (n : ℝ) := h
+          have hn' : ¬ ‖x‖ ≤ (n : ℝ) := not_le.mpr hn
           exact ⟨hn, by simp only [hn', ite_false, hv0]⟩
         · exact absurd h id
     rw [h_eq]
     split_ifs <;> [exact outside_leb; exact LebesgueMeasurable.empty]
 
 -- The main construction lemma
-private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vii f) :
+private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vii f) : 
     stmt_iv f := by
   -- Construct f_n(x) = largest k·2^{-n} ≤ min(f(x), n) when |x| ≤ n, else 0
   use approx_fn f
@@ -1379,7 +1379,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
               -- hj already has the expanded form after intro
               ext
               by_cases hj_max : j.val = n * 2^n
-              · -- j.val = n*2^n but k ≠ n*2^n: k/2^n = n = (n*2^n)/2^n, contradiction
+              · -- j.val = n*2^n but k ≠ n*2^n : k/2^n = n = (n*2^n)/2^n, contradiction
                 simp only [hj_max, ↓reduceIte] at hj
                 have h_k_val : (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) = (n : EReal) := by
                   convert hk_eq.symm.trans hj using 2; all_goals norm_cast
@@ -1454,7 +1454,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         _ = Lebesgue_measure (Metric.closedBall 0 n) := by rw [h_ball_eq]
         _ < ⊤ := lt_top_iff_ne_top.mpr h_finite
   constructor
-  · -- Monotonicity: approx_fn f m x ≤ approx_fn f n x for m ≤ n
+  · -- Monotonicity : approx_fn f m x ≤ approx_fn f n x for m ≤ n
     intro x m n hmn
     -- Key insight: as n increases, the ball grows and approximation gets finer
     unfold approx_fn
@@ -1543,16 +1543,16 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
           exact le_of_lt (pow_pos (by norm_num : (0 : ℝ) < 2) n)
       · simp only [hn, ite_false]
         rfl
-  · -- Convergence: f x = iSup (fun n => approx_fn f n x)
+  · -- Convergence : f x = iSup (fun n => approx_fn f n x)
     intro x
     -- Case analysis: f x = ⊤ or f x < ⊤
     rcases eq_top_or_lt_top (f x) with hfx_top | hfx_lt_top
-    · -- Case 1: f x = ⊤
+    · -- Case 1 : f x = ⊤
       rw [hfx_top, eq_comm, iSup_eq_top]
       intro b hb
       -- For b < ⊤, find n with approx_fn f n x > b
       rcases eq_bot_or_bot_lt b with rfl | hb_bot
-      · -- b = ⊥: any n works since approx_fn f n x ≥ 0 > ⊥
+      · -- b = ⊥ : any n works since approx_fn f n x ≥ 0 > ⊥
         use max 1 (Nat.ceil ‖x‖)
         exact lt_of_lt_of_le EReal.bot_lt_zero (approx_fn_nonneg f hf _ x)
       · -- b > ⊥ and b < ⊤, so b is a finite real
@@ -1582,7 +1582,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
           calc b' ≤ Nat.ceil b' := Nat.le_ceil _
                _ < (Nat.ceil b' : ℝ) + 1 := lt_add_one _
                _ ≤ N := by exact_mod_cast Nat.le_max_left _ _
-    · -- Case 2: f x < ⊤ (finite)
+    · -- Case 2 : f x < ⊤ (finite)
       have hfx_not_bot : f x ≠ ⊥ := ne_of_gt (lt_of_lt_of_le EReal.bot_lt_zero (hf x))
       -- f x is finite: not ⊥ (by unsigned) and not ⊤ (by hypothesis)
       set r := (f x).toReal with hr_def
@@ -1680,19 +1680,19 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
 end UnsignedMeasurable.TFAE_helpers
 
 /-- Lemma 1.3.9 (Equivalent notions of measurability).  Some slight changes to the statement have been made to make the claims cleaner to state -/
-theorem UnsignedMeasurable.TFAE {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Unsigned f):
+theorem UnsignedMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : 
     [
       UnsignedMeasurable f,
-      ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (∀ x, Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x))),
-      ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
-      ∃ (g: ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n) ∧  EReal.BoundedFunction (g n) ∧ FiniteMeasureSupport (g n)) ∧ (∀ x, Monotone (fun n ↦ g n x)) ∧ (∀ x, f x = iSup (fun n ↦ g n x)),
+      ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (∀ x, Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x))),
+      ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
+      ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n) ∧  EReal.BoundedFunction (g n) ∧ FiniteMeasureSupport (g n)) ∧ (∀ x, Monotone (fun n ↦ g n x)) ∧ (∀ x, f x = iSup (fun n ↦ g n x)),
       ∀ t, LebesgueMeasurable {x | f x > t},
       ∀ t, LebesgueMeasurable {x | f x ≥ t},
       ∀ t, LebesgueMeasurable {x | f x < t},
       ∀ t, LebesgueMeasurable {x | f x ≤ t},
-      ∀ I:BoundedInterval, LebesgueMeasurable (f⁻¹' (Real.toEReal '' I.toSet)),
-      ∀ U: Set EReal, IsOpen U → LebesgueMeasurable (f⁻¹' U),
-      ∀ K: Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
+      ∀ I : BoundedInterval, LebesgueMeasurable (f⁻¹' (Real.toEReal '' I.toSet)),
+      ∀ U : Set EReal, IsOpen U → LebesgueMeasurable (f⁻¹' U),
+      ∀ K : Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
     ].TFAE := by
   open UnsignedMeasurable.TFAE_helpers in
   -- Establish the implication graph
@@ -1714,45 +1714,45 @@ theorem UnsignedMeasurable.TFAE {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Un
   tfae_finish
 
 /-- Exercise 1.3.3(i) -/
-theorem Continuous.UnsignedMeasurable {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Continuous f) (hnonneg: Unsigned f): UnsignedMeasurable f := by sorry
+theorem Continuous.UnsignedMeasurable {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Continuous f) (hnonneg : Unsigned f) : UnsignedMeasurable f := by sorry
 
 /-- Exercise 1.3.3(ii) -/
-theorem UnsignedSimpleFunction.unsignedMeasurable {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: UnsignedSimpleFunction f): UnsignedMeasurable f := by sorry
+theorem UnsignedSimpleFunction.unsignedMeasurable {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) : UnsignedMeasurable f := by sorry
 
 /-- Exercise 1.3.3(iii) -/
-theorem UnsignedMeasurable.sup {d:ℕ} {f: ℕ → EuclideanSpace' d → EReal} (hf: ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iSup (fun n ↦ f n x)) := by sorry
+theorem UnsignedMeasurable.sup {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iSup (fun n ↦ f n x)) := by sorry
 
 /-- Exercise 1.3.3(iii) -/
-theorem UnsignedMeasurable.inf {d:ℕ} {f: ℕ → EuclideanSpace' d → EReal} (hf: ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iInf (fun n ↦ f n x)) := by sorry
+theorem UnsignedMeasurable.inf {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iInf (fun n ↦ f n x)) := by sorry
 
 /-- Exercise 1.3.3(iii) -/
-theorem UnsignedMeasurable.limsup {d:ℕ} {f: ℕ → EuclideanSpace' d → EReal} (hf: ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.limsup (fun n ↦ f n x) ) := by sorry
+theorem UnsignedMeasurable.limsup {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.limsup (fun n ↦ f n x) ) := by sorry
 
 /-- Exercise 1.3.3(iii) -/
-theorem UnsignedMeasurable.liminf {d:ℕ} {f: ℕ → EuclideanSpace' d → EReal} (hf: ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.liminf (fun n ↦ f n x) ) := by sorry
+theorem UnsignedMeasurable.liminf {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.liminf (fun n ↦ f n x) ) := by sorry
 
 /-- Exercise 1.3.3(iv) -/
-theorem UnsignedMeasurable.aeEqual {d:ℕ} {f g: EuclideanSpace' d → EReal} (hf: UnsignedMeasurable f) (hg : Unsigned g) (heq: AlmostEverywhereEqual f g) : UnsignedMeasurable g := by sorry
+theorem UnsignedMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (heq : AlmostEverywhereEqual f g) : UnsignedMeasurable g := by sorry
 
 /-- Exercise 1.3.3(v) -/
-theorem UnsignedMeasurable.aeLimit {d:ℕ} {f: EuclideanSpace' d → EReal} (g: ℕ → EuclideanSpace' d → EReal) (hf: ∀ n, UnsignedMeasurable (g n)) (hfn : Unsigned f) (heq: PointwiseAeConvergesTo g f) : UnsignedMeasurable f := by sorry
+theorem UnsignedMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → EReal} (g : ℕ → EuclideanSpace' d → EReal) (hf : ∀ n, UnsignedMeasurable (g n)) (heq : PointwiseAeConvergesTo g f) : UnsignedMeasurable f := by sorry
 
 /-- Exercise 1.3.3(vi) -/
-theorem UnsignedMeasurable.comp_cts {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: UnsignedMeasurable f) {φ: EReal → EReal} (hφ: Continuous φ) (hφnn : ∀ x ≥ 0, φ x ≥ 0) : UnsignedMeasurable (φ ∘ f) := by sorry
+theorem UnsignedMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) {φ : EReal → EReal} (hφ : Continuous φ)  : UnsignedMeasurable (φ ∘ f) := by sorry
 
 /-- Exercise 1.3.3(vii) -/
-theorem UnsignedMeasurable.add {d:ℕ} {f g: EuclideanSpace' d → EReal} (hf: UnsignedMeasurable f) (hg: UnsignedMeasurable g) : UnsignedMeasurable (f + g) := by sorry
+theorem UnsignedMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g) : UnsignedMeasurable (f + g) := by sorry
 
-def UniformConvergesTo {X:Type*} (f: ℕ → X → EReal) (g: X → EReal) : Prop := ∀ ε:NNReal, ε > 0 → ∃ N:ℕ, ∀ n ≥ N, ∀ x, f n x > g x - ε ∧ f n x < g x + ε
+def UniformConvergesTo {X : Type*} (f : ℕ → X → EReal) (g : X → EReal) : Prop := ∀ ε : NNReal, ε > 0 → ∃ N : ℕ, ∀ n ≥ N, ∀ x, f n x > g x - ε ∧ f n x < g x + ε
 
 /-- Exercise 1.3.4 -/
-theorem UnsignedMeasurable.bounded_iff {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Unsigned f) : UnsignedMeasurable f ∧ EReal.BoundedFunction f ↔ ∃ g : ℕ → EuclideanSpace' d → EReal, (∀ n, UnsignedSimpleFunction (g n) ∧ EReal.BoundedFunction (g n)) ∧ UniformConvergesTo g f := by sorry
+theorem UnsignedMeasurable.bounded_iff {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : UnsignedMeasurable f ∧ EReal.BoundedFunction f ↔ ∃ g : ℕ → EuclideanSpace' d → EReal, (∀ n, UnsignedSimpleFunction (g n) ∧ EReal.BoundedFunction (g n)) ∧ UniformConvergesTo g f := by sorry
 
 /-- Exercise 1.3.5 -/
-theorem UnsignedSimpleFunction.iff {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Unsigned f) : UnsignedSimpleFunction f ↔ UnsignedMeasurable f ∧ Finite (f '' Set.univ) := by sorry
+theorem UnsignedSimpleFunction.iff {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : UnsignedSimpleFunction f ↔ UnsignedMeasurable f ∧ Finite (f '' Set.univ) := by sorry
 
 /-- Exercise 1.3.6 -/
-theorem UnsignedMeasurable.measurable_graph {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: UnsignedMeasurable f) : LebesgueMeasurable { p | ∃ x, ∃ t:ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by sorry
+theorem UnsignedMeasurable.measurable_graph {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : LebesgueMeasurable { p | ∃ x, ∃ t : ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by sorry
 
 /-!
 ## Remark 1.3.10: Measurable functions can have non-measurable preimages
@@ -1802,7 +1802,7 @@ lemma DyadicRationals.countable : DyadicRationals.Countable := by
     Special case: x = 1 has all digits = 1 (1 = 0.111...₂).
     For x ∉ \[0,1\], all digits are 0. -/
 noncomputable def binaryDigit (x : ℝ) (j : ℕ) : ℕ :=
-  if x ∈ Set.Ico (0:ℝ) 1 then ⌊(2:ℝ)^j * x⌋₊ % 2
+  if x ∈ Set.Ico (0 : ℝ) 1 then ⌊(2 : ℝ)^j * x⌋₊ % 2
   else if x = 1 then 1
   else 0
 
@@ -1814,7 +1814,7 @@ lemma binaryDigit_le_one (x : ℝ) (j : ℕ) : binaryDigit x j ≤ 1 := by
 /-- Binary digits of 0 are all 0. -/
 lemma binaryDigit_zero (j : ℕ) : binaryDigit 0 j = 0 := by
   simp only [binaryDigit]
-  have h0' : (0:ℝ) ∈ Set.Ico 0 1 := ⟨le_refl 0, by norm_num⟩
+  have h0' : (0 : ℝ) ∈ Set.Ico 0 1 := ⟨le_refl 0, by norm_num⟩
   rw [if_pos h0']
   simp [mul_zero]
 
@@ -1823,30 +1823,30 @@ lemma binaryDigit_one (j : ℕ) : binaryDigit 1 j = 1 := by
   simp only [binaryDigit, Set.mem_Ico, lt_self_iff_false, and_false, ↓reduceIte]
 
 /-- The full sum ∑\_\{j≥0\} 2·(1/3)^(j+1) = 1. -/
-lemma tsum_two_thirds_geometric : ∑' j : ℕ, (2:ℝ) * (1/3:ℝ)^(j + 1) = 1 := by
-  have h1 : ∑' j : ℕ, (1/3:ℝ)^j = (1 - 1/3)⁻¹ :=
+lemma tsum_two_thirds_geometric : ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(j + 1) = 1 := by
+  have h1 : ∑' j : ℕ, (1/3 : ℝ)^j = (1 - 1/3)⁻¹ :=
     tsum_geometric_of_lt_one (by norm_num) (by norm_num)
-  calc ∑' j : ℕ, (2:ℝ) * (1/3:ℝ)^(j + 1)
-      = ∑' j : ℕ, (2/3:ℝ) * (1/3:ℝ)^j := by congr 1; ext j; ring
-    _ = (2/3) * ∑' j : ℕ, (1/3:ℝ)^j := by rw [tsum_mul_left]
+  calc ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(j + 1)
+      = ∑' j : ℕ, (2/3 : ℝ) * (1/3 : ℝ)^j := by congr 1; ext j; ring
+    _ = (2/3) * ∑' j : ℕ, (1/3 : ℝ)^j := by rw [tsum_mul_left]
     _ = (2/3) * (1 - 1/3)⁻¹ := by rw [h1]
     _ = 1 := by norm_num
 
 /-- The tail sum bound: ∑\_\{j≥k\} 2·(1/3)^(j+1) = (1/3)^k. -/
-lemma tsum_tail_bound (k : ℕ) :
-    ∑' j : ℕ, (2:ℝ) * (1/3:ℝ)^(k + j + 1) = (1/3:ℝ)^k := by
-  have h1 : ∑' j : ℕ, (1/3:ℝ)^j = (1 - 1/3)⁻¹ :=
+lemma tsum_tail_bound (k : ℕ) : 
+    ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(k + j + 1) = (1/3 : ℝ)^k := by
+  have h1 : ∑' j : ℕ, (1/3 : ℝ)^j = (1 - 1/3)⁻¹ :=
     tsum_geometric_of_lt_one (by norm_num) (by norm_num)
-  calc ∑' j : ℕ, (2:ℝ) * (1/3:ℝ)^(k + j + 1)
-      = ∑' j : ℕ, (2:ℝ) * ((1/3:ℝ)^(k+1) * (1/3:ℝ)^j) := by
+  calc ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(k + j + 1)
+      = ∑' j : ℕ, (2 : ℝ) * ((1/3 : ℝ)^(k+1) * (1/3 : ℝ)^j) := by
         congr 1; ext j; rw [← pow_add]; ring_nf
-    _ = (2:ℝ) * (1/3:ℝ)^(k+1) * ∑' j : ℕ, (1/3:ℝ)^j := by
+    _ = (2 : ℝ) * (1/3 : ℝ)^(k+1) * ∑' j : ℕ, (1/3 : ℝ)^j := by
         rw [← tsum_mul_left]; congr 1; ext j; ring
-    _ = (2:ℝ) * (1/3:ℝ)^(k+1) * (1 - 1/3)⁻¹ := by rw [h1]
-    _ = (1/3:ℝ)^k := by field_simp; ring
+    _ = (2 : ℝ) * (1/3 : ℝ)^(k+1) * (1 - 1/3)⁻¹ := by rw [h1]
+    _ = (1/3 : ℝ)^k := by field_simp; ring
 
 /-- Helper: if ⌊2z⌋₊ % 2 = 1 then ⌊2z⌋₊ ≥ 2⌊z⌋₊ + 1 -/
-lemma floor_two_mul_odd_ge {z : ℝ} (hz : 0 ≤ z) (hodd : ⌊2 * z⌋₊ % 2 = 1) :
+lemma floor_two_mul_odd_ge {z : ℝ} (hz : 0 ≤ z) (hodd : ⌊2 * z⌋₊ % 2 = 1) : 
     ⌊2 * z⌋₊ ≥ 2 * ⌊z⌋₊ + 1 := by
   have h_decomp : ⌊2 * z⌋₊ = 2 * (⌊2 * z⌋₊ / 2) + ⌊2 * z⌋₊ % 2 := (Nat.div_add_mod _ _).symm
   rw [hodd] at h_decomp
@@ -1861,7 +1861,7 @@ lemma floor_two_mul_odd_ge {z : ℝ} (hz : 0 ≤ z) (hodd : ⌊2 * z⌋₊ % 2 =
   omega
 
 /-- Helper: if ⌊2z⌋₊ % 2 = 0 then ⌊2z⌋₊ ≤ 2⌊z⌋₊ -/
-lemma floor_two_mul_even_le {z : ℝ} (hz : 0 ≤ z) (heven : ⌊2 * z⌋₊ % 2 = 0) :
+lemma floor_two_mul_even_le {z : ℝ} (hz : 0 ≤ z) (heven : ⌊2 * z⌋₊ % 2 = 0) : 
     ⌊2 * z⌋₊ ≤ 2 * ⌊z⌋₊ := by
   have h_decomp : ⌊2 * z⌋₊ = 2 * (⌊2 * z⌋₊ / 2) + ⌊2 * z⌋₊ % 2 := (Nat.div_add_mod _ _).symm
   rw [heven, add_zero] at h_decomp
@@ -1878,7 +1878,7 @@ lemma floor_two_mul_even_le {z : ℝ} (hz : 0 ≤ z) (heven : ⌊2 * z⌋₊ % 2
 
 /-- Helper: equal mod 2 and equal ⌊z⌋ implies equal ⌊2z⌋ -/
 lemma floor_two_mul_eq_of_mod_eq {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
-    (h_floor : ⌊x⌋₊ = ⌊y⌋₊) (h_mod : ⌊2 * x⌋₊ % 2 = ⌊2 * y⌋₊ % 2) :
+    (h_floor : ⌊x⌋₊ = ⌊y⌋₊) (h_mod : ⌊2 * x⌋₊ % 2 = ⌊2 * y⌋₊ % 2) : 
     ⌊2 * x⌋₊ = ⌊2 * y⌋₊ := by
   by_cases hxodd : ⌊2 * x⌋₊ % 2 = 1
   · have hyodd := h_mod ▸ hxodd
@@ -1939,13 +1939,13 @@ structure BinaryToTernaryProperties (g : ℝ → ℝ) : Prop where
 
 /-- The binary-to-ternary function: g(x) = ∑\_\{j≥1\} 2·bⱼ(x)·3^(-j) for x ∈ \[0,1\], else 0. -/
 noncomputable def binaryToTernaryFn (x : ℝ) : ℝ :=
-  if x ∈ Set.Icc (0:ℝ) 1 then
-    ∑' j : ℕ, (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)
+  if x ∈ Set.Icc (0 : ℝ) 1 then
+    ∑' j : ℕ, (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
   else 0
 
 /-- The series ∑ 2·bⱼ(x)·3^(-j) is summable for any x. -/
-lemma binaryToTernary_summable (x : ℝ) :
-    Summable (fun j => (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)) := by
+lemma binaryToTernary_summable (x : ℝ) : 
+    Summable (fun j => (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)) := by
   apply Summable.of_nonneg_of_le
   · intro j
     apply mul_nonneg
@@ -1953,29 +1953,29 @@ lemma binaryToTernary_summable (x : ℝ) :
     · positivity
   · intro j
     have h1 : (binaryDigit x (j + 1) : ℝ) ≤ 1 := by exact_mod_cast binaryDigit_le_one x (j + 1)
-    calc (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)
-        ≤ (2 * 1) * (1/3:ℝ)^(j + 1) := by nlinarith [pow_pos (by norm_num : (0:ℝ) < 1/3) (j + 1)]
-      _ = 2 * (1/3:ℝ)^(j + 1) := by ring
-  · have h : Summable (fun j : ℕ => (1/3:ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
+    calc (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
+        ≤ (2 * 1) * (1/3 : ℝ)^(j + 1) := by nlinarith [pow_pos (by norm_num : (0 : ℝ) < 1/3) (j + 1)]
+      _ = 2 * (1/3 : ℝ)^(j + 1) := by ring
+  · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
     exact (h.mul_left 2).comp_injective (fun _ _ h => Nat.succ_injective h)
 
 /-! # Helper lemmas for monotonicity proof -/
 
 /-- For x ∈ (0, 1), there exists a position where the binary digit is 1. -/
-lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
+lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) : 
     ∃ j, binaryDigit x (j + 1) = 1 := by
-  have hx_Ico : x ∈ Set.Ico (0:ℝ) 1 := ⟨le_of_lt hx_pos, hx_lt⟩
+  have hx_Ico : x ∈ Set.Ico (0 : ℝ) 1 := ⟨le_of_lt hx_pos, hx_lt⟩
   have hinv_ge_one : 1 ≤ x⁻¹ := Bound.one_le_inv₀ hx_pos (le_of_lt hx_lt)
-  have h_pow_exists := exists_nat_pow_near hinv_ge_one (by norm_num : (1:ℝ) < 2)
+  have h_pow_exists := exists_nat_pow_near hinv_ge_one (by norm_num : (1 : ℝ) < 2)
   obtain ⟨n, hn_le, hn_lt⟩ := h_pow_exists
-  have h_pow_unbounded : ∃ j : ℕ, 1 ≤ (2:ℝ)^(j+1) * x := by
+  have h_pow_unbounded : ∃ j : ℕ, 1 ≤ (2 : ℝ)^(j+1) * x := by
     use n
-    have h2n_pos : (0:ℝ) < 2^n := by positivity
-    calc (1:ℝ) = x⁻¹ * x := (inv_mul_cancel₀ (ne_of_gt hx_pos)).symm
-      _ ≤ (2:ℝ)^(n+1) * x := by nlinarith
+    have h2n_pos : (0 : ℝ) < 2^n := by positivity
+    calc (1 : ℝ) = x⁻¹ * x := (inv_mul_cancel₀ (ne_of_gt hx_pos)).symm
+      _ ≤ (2 : ℝ)^(n+1) * x := by nlinarith
   let j := Nat.find h_pow_unbounded
-  have hj_ge : 1 ≤ (2:ℝ)^(j+1) * x := Nat.find_spec h_pow_unbounded
-  have hj_lt : (2:ℝ)^(j+1) * x < 2 := by
+  have hj_ge : 1 ≤ (2 : ℝ)^(j+1) * x := Nat.find_spec h_pow_unbounded
+  have hj_lt : (2 : ℝ)^(j+1) * x < 2 := by
     by_cases hj0 : j = 0
     · simp only [hj0, zero_add, pow_one]
       calc 2 * x < 2 * 1 := by nlinarith [hx_Ico.2]
@@ -1986,10 +1986,10 @@ lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
       simp only [not_le] at this
       have hj_sub : j - 1 + 1 = j := Nat.sub_add_cancel hj_pos
       rw [hj_sub] at this
-      calc (2:ℝ)^(j+1) * x = 2 * ((2:ℝ)^j * x) := by rw [pow_succ]; ring
+      calc (2 : ℝ)^(j+1) * x = 2 * ((2 : ℝ)^j * x) := by rw [pow_succ]; ring
         _ < 2 * 1 := by nlinarith
         _ = 2 := by ring
-  have h_floor_eq : ⌊(2:ℝ)^(j+1) * x⌋₊ = 1 := by
+  have h_floor_eq : ⌊(2 : ℝ)^(j+1) * x⌋₊ = 1 := by
     apply Nat.floor_eq_on_Ico 1
     constructor
     · simp only [Nat.cast_one]; exact hj_ge
@@ -1997,70 +1997,70 @@ lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
   exact ⟨j, by simp only [binaryDigit, if_pos hx_Ico, h_floor_eq]⟩
 
 /-- The partial sum bounds x from below: Sₙ(x) ≤ x -/
-lemma binaryDigit_partial_sum_le {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (n : ℕ) :
-    (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n ≤ x := by
-  have h2n_pos : (0:ℝ) < 2^n := by positivity
+lemma binaryDigit_partial_sum_le {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (n : ℕ) : 
+    (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n ≤ x := by
+  have h2n_pos : (0 : ℝ) < 2^n := by positivity
   rw [div_le_iff₀ h2n_pos, mul_comm]
   exact Nat.floor_le (mul_nonneg hx.1 (le_of_lt h2n_pos))
 
 /-- The partial sum bounds x from above: x < Sₙ(x) + 2^(-n) -/
-lemma binaryDigit_partial_sum_lt (x : ℝ) (n : ℕ) :
-    x < (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n + (1:ℝ) / (2:ℝ)^n := by
-  have h2n_pos : (0:ℝ) < 2^n := by positivity
-  have := Nat.lt_floor_add_one ((2:ℝ)^n * x)
-  have h1 : (2:ℝ)^n * x < ⌊(2:ℝ)^n * x⌋₊ + 1 := this
-  calc x = ((2:ℝ)^n * x) / (2:ℝ)^n := by field_simp
-    _ < (⌊(2:ℝ)^n * x⌋₊ + 1 : ℝ) / (2:ℝ)^n := by
+lemma binaryDigit_partial_sum_lt (x : ℝ) (n : ℕ) : 
+    x < (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := by
+  have h2n_pos : (0 : ℝ) < 2^n := by positivity
+  have := Nat.lt_floor_add_one ((2 : ℝ)^n * x)
+  have h1 : (2 : ℝ)^n * x < ⌊(2 : ℝ)^n * x⌋₊ + 1 := this
+  calc x = ((2 : ℝ)^n * x) / (2 : ℝ)^n := by field_simp
+    _ < (⌊(2 : ℝ)^n * x⌋₊ + 1 : ℝ) / (2 : ℝ)^n := by
         apply div_lt_div_of_pos_right h1 h2n_pos
-    _ = (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n + (1:ℝ) / (2:ℝ)^n := by ring
+    _ = (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := by ring
 
 /-- Key lemma: if bₖ(x) = 1, then `x ≥ floor(2^k * x) / 2^k + 2^(-(k+1))` -/
-lemma binaryDigit_one_implies_lower_bound {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (k : ℕ)
-    (hbk : binaryDigit x (k + 1) = 1) :
-    (⌊(2:ℝ)^k * x⌋₊ : ℝ) / (2:ℝ)^k + (1:ℝ) / (2:ℝ)^(k + 1) ≤ x := by
+lemma binaryDigit_one_implies_lower_bound {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (k : ℕ)
+    (hbk : binaryDigit x (k + 1) = 1) : 
+    (⌊(2 : ℝ)^k * x⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) ≤ x := by
   simp only [binaryDigit, if_pos hx] at hbk
-  have heq : (2:ℝ)^(k+1) * x = 2 * ((2:ℝ)^k * x) := by ring
-  have h_floor_odd : ⌊2 * ((2:ℝ)^k * x)⌋₊ % 2 = 1 := by rw [← heq]; exact hbk
-  have h2k1_pos : (0:ℝ) < 2^(k+1) := by positivity
-  have h2k1_nonneg : (0:ℝ) ≤ 2^(k+1) := le_of_lt h2k1_pos
-  have hx_nonneg : 0 ≤ (2:ℝ)^k * x := mul_nonneg (by positivity) hx.1
-  have h_floor_rel : ⌊(2:ℝ)^(k+1) * x⌋₊ ≥ 2 * ⌊(2:ℝ)^k * x⌋₊ + 1 := by
+  have heq : (2 : ℝ)^(k+1) * x = 2 * ((2 : ℝ)^k * x) := by ring
+  have h_floor_odd : ⌊2 * ((2 : ℝ)^k * x)⌋₊ % 2 = 1 := by rw [← heq]; exact hbk
+  have h2k1_pos : (0 : ℝ) < 2^(k+1) := by positivity
+  have h2k1_nonneg : (0 : ℝ) ≤ 2^(k+1) := le_of_lt h2k1_pos
+  have hx_nonneg : 0 ≤ (2 : ℝ)^k * x := mul_nonneg (by positivity) hx.1
+  have h_floor_rel : ⌊(2 : ℝ)^(k+1) * x⌋₊ ≥ 2 * ⌊(2 : ℝ)^k * x⌋₊ + 1 := by
     rw [heq]
     exact floor_two_mul_odd_ge hx_nonneg h_floor_odd
-  calc (⌊(2:ℝ)^k * x⌋₊ : ℝ) / (2:ℝ)^k + (1:ℝ) / (2:ℝ)^(k + 1)
-      = (2 * ⌊(2:ℝ)^k * x⌋₊ + 1) / (2:ℝ)^(k + 1) := by field_simp; ring
-    _ ≤ (⌊(2:ℝ)^(k+1) * x⌋₊ : ℝ) / (2:ℝ)^(k + 1) := by
+  calc (⌊(2 : ℝ)^k * x⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1)
+      = (2 * ⌊(2 : ℝ)^k * x⌋₊ + 1) / (2 : ℝ)^(k + 1) := by field_simp; ring
+    _ ≤ (⌊(2 : ℝ)^(k+1) * x⌋₊ : ℝ) / (2 : ℝ)^(k + 1) := by
         apply div_le_div_of_nonneg_right _ h2k1_nonneg
         exact_mod_cast h_floor_rel
     _ ≤ x := binaryDigit_partial_sum_le hx (k + 1)
 
 /-- Key lemma: if bₖ(y) = 0, then `y < floor(2^k * y) / 2^k + 2^(-(k+1))` -/
-lemma binaryDigit_zero_implies_upper_bound {y : ℝ} (hy : y ∈ Set.Ico (0:ℝ) 1) (k : ℕ)
-    (hbk : binaryDigit y (k + 1) = 0) :
-    y < (⌊(2:ℝ)^k * y⌋₊ : ℝ) / (2:ℝ)^k + (1:ℝ) / (2:ℝ)^(k + 1) := by
+lemma binaryDigit_zero_implies_upper_bound {y : ℝ} (hy : y ∈ Set.Ico (0 : ℝ) 1) (k : ℕ)
+    (hbk : binaryDigit y (k + 1) = 0) : 
+    y < (⌊(2 : ℝ)^k * y⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) := by
   simp only [binaryDigit, if_pos hy] at hbk
-  have heq : (2:ℝ)^(k+1) * y = 2 * ((2:ℝ)^k * y) := by ring
-  have h_floor_even : ⌊2 * ((2:ℝ)^k * y)⌋₊ % 2 = 0 := by rw [← heq]; exact hbk
-  have h2k1_pos : (0:ℝ) < 2^(k+1) := by positivity
-  have h2k1_nonneg : (0:ℝ) ≤ 2^(k+1) := le_of_lt h2k1_pos
-  have hy_nonneg : 0 ≤ (2:ℝ)^k * y := mul_nonneg (by positivity) hy.1
-  have h_floor_rel : ⌊(2:ℝ)^(k+1) * y⌋₊ ≤ 2 * ⌊(2:ℝ)^k * y⌋₊ := by
+  have heq : (2 : ℝ)^(k+1) * y = 2 * ((2 : ℝ)^k * y) := by ring
+  have h_floor_even : ⌊2 * ((2 : ℝ)^k * y)⌋₊ % 2 = 0 := by rw [← heq]; exact hbk
+  have h2k1_pos : (0 : ℝ) < 2^(k+1) := by positivity
+  have h2k1_nonneg : (0 : ℝ) ≤ 2^(k+1) := le_of_lt h2k1_pos
+  have hy_nonneg : 0 ≤ (2 : ℝ)^k * y := mul_nonneg (by positivity) hy.1
+  have h_floor_rel : ⌊(2 : ℝ)^(k+1) * y⌋₊ ≤ 2 * ⌊(2 : ℝ)^k * y⌋₊ := by
     rw [heq]
     exact floor_two_mul_even_le hy_nonneg h_floor_even
   have h_lt := binaryDigit_partial_sum_lt y (k + 1)
-  calc y < (⌊(2:ℝ)^(k+1) * y⌋₊ : ℝ) / (2:ℝ)^(k + 1) + (1:ℝ) / (2:ℝ)^(k + 1) := h_lt
-    _ = (⌊(2:ℝ)^(k+1) * y⌋₊ + 1 : ℝ) / (2:ℝ)^(k + 1) := by ring
-    _ ≤ (2 * ⌊(2:ℝ)^k * y⌋₊ + 1 : ℝ) / (2:ℝ)^(k + 1) := by
+  calc y < (⌊(2 : ℝ)^(k+1) * y⌋₊ : ℝ) / (2 : ℝ)^(k + 1) + (1 : ℝ) / (2 : ℝ)^(k + 1) := h_lt
+    _ = (⌊(2 : ℝ)^(k+1) * y⌋₊ + 1 : ℝ) / (2 : ℝ)^(k + 1) := by ring
+    _ ≤ (2 * ⌊(2 : ℝ)^k * y⌋₊ + 1 : ℝ) / (2 : ℝ)^(k + 1) := by
         apply div_le_div_of_nonneg_right _ h2k1_nonneg
-        have : (⌊(2:ℝ)^(k+1) * y⌋₊ : ℝ) + 1 ≤ 2 * ⌊(2:ℝ)^k * y⌋₊ + 1 := by
+        have : (⌊(2 : ℝ)^(k+1) * y⌋₊ : ℝ) + 1 ≤ 2 * ⌊(2 : ℝ)^k * y⌋₊ + 1 := by
           exact_mod_cast Nat.add_le_add_right h_floor_rel 1
         linarith
-    _ = (⌊(2:ℝ)^k * y⌋₊ : ℝ) / (2:ℝ)^k + (1:ℝ) / (2:ℝ)^(k + 1) := by field_simp; ring
+    _ = (⌊(2 : ℝ)^k * y⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) := by field_simp; ring
 
 /-- Helper: floors of x, y in \[0,1) are equal up to level n if their binary digits agree up to level n-1. -/
-lemma floor_eq_of_binaryDigit_eq {x y : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (hy : y ∈ Set.Ico (0:ℝ) 1)
-    (heq : ∀ j < n, binaryDigit x (j + 1) = binaryDigit y (j + 1)) :
-    ⌊(2:ℝ)^n * x⌋₊ = ⌊(2:ℝ)^n * y⌋₊ := by
+lemma floor_eq_of_binaryDigit_eq {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (hy : y ∈ Set.Ico (0 : ℝ) 1)
+    (heq : ∀ j < n, binaryDigit x (j + 1) = binaryDigit y (j + 1)) : 
+    ⌊(2 : ℝ)^n * x⌋₊ = ⌊(2 : ℝ)^n * y⌋₊ := by
   induction n with
   | zero =>
     simp only [pow_zero, one_mul]
@@ -2072,27 +2072,27 @@ lemma floor_eq_of_binaryDigit_eq {x y : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (hy 
     have ih' := ih h_prev
     simp only [binaryDigit, if_pos hx, if_pos hy] at heq
     have hmod_eq := heq n (Nat.lt_succ_self n)
-    have hx_nonneg : 0 ≤ (2:ℝ)^n * x := mul_nonneg (by positivity) hx.1
-    have hy_nonneg : 0 ≤ (2:ℝ)^n * y := mul_nonneg (by positivity) hy.1
-    have h1 : (2:ℝ)^(n+1) * x = 2 * ((2:ℝ)^n * x) := by ring
-    have h2 : (2:ℝ)^(n+1) * y = 2 * ((2:ℝ)^n * y) := by ring
-    have hmod_eq' : ⌊2 * ((2:ℝ)^n * x)⌋₊ % 2 = ⌊2 * ((2:ℝ)^n * y)⌋₊ % 2 := by
+    have hx_nonneg : 0 ≤ (2 : ℝ)^n * x := mul_nonneg (by positivity) hx.1
+    have hy_nonneg : 0 ≤ (2 : ℝ)^n * y := mul_nonneg (by positivity) hy.1
+    have h1 : (2 : ℝ)^(n+1) * x = 2 * ((2 : ℝ)^n * x) := by ring
+    have h2 : (2 : ℝ)^(n+1) * y = 2 * ((2 : ℝ)^n * y) := by ring
+    have hmod_eq' : ⌊2 * ((2 : ℝ)^n * x)⌋₊ % 2 = ⌊2 * ((2 : ℝ)^n * y)⌋₊ % 2 := by
       rw [← h1, ← h2]; exact hmod_eq
     rw [h1, h2]
     exact floor_two_mul_eq_of_mod_eq hx_nonneg hy_nonneg ih' hmod_eq'
 
 /-- For x, y ∈ \[0,1) with x < y, there exists a first position k where bₖ(x) < bₖ(y). -/
-lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (hy : y ∈ Set.Ico (0:ℝ) 1)
-    (hxy : x < y) :
+lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (hy : y ∈ Set.Ico (0 : ℝ) 1)
+    (hxy : x < y) : 
     ∃ k, binaryDigit x (k + 1) < binaryDigit y (k + 1) ∧
          ∀ j < k, binaryDigit x (j + 1) = binaryDigit y (j + 1) := by
   have h_exists_diff : ∃ j, binaryDigit x (j + 1) ≠ binaryDigit y (j + 1) := by
     by_contra h_all_eq
     push_neg at h_all_eq
-    have h_floor_eq : ∀ n, ⌊(2:ℝ)^n * x⌋₊ = ⌊(2:ℝ)^n * y⌋₊ := by
+    have h_floor_eq : ∀ n, ⌊(2 : ℝ)^n * x⌋₊ = ⌊(2 : ℝ)^n * y⌋₊ := by
       intro n
       exact floor_eq_of_binaryDigit_eq hx hy (fun j _ => h_all_eq j)
-    have h_close : ∀ n, |x - y| < (1:ℝ) / (2:ℝ)^n := by
+    have h_close : ∀ n, |x - y| < (1 : ℝ) / (2 : ℝ)^n := by
       intro n
       have hx_bounds := binaryDigit_partial_sum_le hx n
       have hx_bounds' := binaryDigit_partial_sum_lt x n
@@ -2104,9 +2104,9 @@ lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (hy : y 
     have hxy_eq : x = y := by
       by_contra hne
       have hpos : 0 < |x - y| := abs_pos.mpr (sub_ne_zero.mpr hne)
-      obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hpos (by norm_num : (1:ℝ)/2 < 1)
+      obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hpos (by norm_num : (1 : ℝ)/2 < 1)
       have := h_close n
-      have h1 : (1:ℝ) / 2^n = (1/2)^n := by simp [div_eq_mul_inv]
+      have h1 : (1 : ℝ) / 2^n = (1/2)^n := by simp [div_eq_mul_inv]
       linarith
     exact absurd hxy_eq (ne_of_lt hxy)
   let k := Nat.find h_exists_diff
@@ -2124,56 +2124,56 @@ lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (hy : y 
     exfalso
     have hx_lb := binaryDigit_one_implies_lower_bound hx k hbx_eq
     have hy_ub := binaryDigit_zero_implies_upper_bound hy k hby_eq
-    have h_floor_eq : ⌊(2:ℝ)^k * x⌋₊ = ⌊(2:ℝ)^k * y⌋₊ := floor_eq_of_binaryDigit_eq hx hy hk_first
+    have h_floor_eq : ⌊(2 : ℝ)^k * x⌋₊ = ⌊(2 : ℝ)^k * y⌋₊ := floor_eq_of_binaryDigit_eq hx hy hk_first
     rw [h_floor_eq] at hx_lb
     linarith
 
 /-- Monotonicity: if digits agree up to k and bₖ(x) < bₖ(y), then g(x) < g(y). -/
 lemma binaryToTernary_lt_of_digit_lt {x y : ℝ}
-    (hx : x ∈ Set.Icc (0:ℝ) 1) (hy : y ∈ Set.Icc (0:ℝ) 1) (k : ℕ)
+    (hx : x ∈ Set.Icc (0 : ℝ) 1) (hy : y ∈ Set.Icc (0 : ℝ) 1) (k : ℕ)
     (hk_lt : binaryDigit x (k + 1) < binaryDigit y (k + 1))
-    (hk_eq : ∀ j < k, binaryDigit x (j + 1) = binaryDigit y (j + 1)) :
+    (hk_eq : ∀ j < k, binaryDigit x (j + 1) = binaryDigit y (j + 1)) : 
     binaryToTernaryFn x < binaryToTernaryFn y := by
   have hbx_le := binaryDigit_le_one x (k + 1)
   have hby_le := binaryDigit_le_one y (k + 1)
   have hbx_zero : binaryDigit x (k + 1) = 0 := by omega
   have hby_one : binaryDigit y (k + 1) = 1 := by omega
   simp only [binaryToTernaryFn, if_pos hx, if_pos hy]
-  let fx := fun j => (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)
-  let fy := fun j => (2 * binaryDigit y (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)
+  let fx := fun j => (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
+  let fy := fun j => (2 * binaryDigit y (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
   have h_first_eq : ∑ j ∈ Finset.range k, fx j = ∑ j ∈ Finset.range k, fy j := by
     apply Finset.sum_congr rfl
     intro j hj
     simp only [fx, fy]
     rw [hk_eq j (Finset.mem_range.mp hj)]
   have h_term_x : fx k = 0 := by simp only [fx, hbx_zero, Nat.cast_zero, mul_zero, zero_mul]
-  have h_term_y : fy k = (2:ℝ) * (1/3:ℝ)^(k + 1) := by
+  have h_term_y : fy k = (2 : ℝ) * (1/3 : ℝ)^(k + 1) := by
     simp only [fy, hby_one, Nat.cast_one, mul_one]
-  have h_tail_x : ∑' j, fx (k + 1 + j) ≤ (1/3:ℝ)^(k + 1) := by
+  have h_tail_x : ∑' j, fx (k + 1 + j) ≤ (1/3 : ℝ)^(k + 1) := by
     calc ∑' j, fx (k + 1 + j)
-        = ∑' j, (2 * binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := rfl
-      _ ≤ ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+        = ∑' j, (2 * binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := rfl
+      _ ≤ ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
           apply Summable.tsum_le_tsum
           · intro j
             have hb := binaryDigit_le_one x (k + 1 + j + 1)
             have hb_real : (binaryDigit x (k + 1 + j + 1) : ℝ) ≤ 1 := by exact_mod_cast hb
-            have h3pos : (0:ℝ) < (1/3)^(k + 1 + j + 1) := by positivity
-            calc (2 * binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-                = 2 * (binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by ring
-              _ ≤ 2 * 1 * (1/3:ℝ)^(k + 1 + j + 1) := by nlinarith
-              _ = 2 * (1/3:ℝ)^(k + 1 + j + 1) := by ring
+            have h3pos : (0 : ℝ) < (1/3)^(k + 1 + j + 1) := by positivity
+            calc (2 * binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+                = 2 * (binaryDigit x (k + 1 + j + 1) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by ring
+              _ ≤ 2 * 1 * (1/3 : ℝ)^(k + 1 + j + 1) := by nlinarith
+              _ = 2 * (1/3 : ℝ)^(k + 1 + j + 1) := by ring
           · exact (binaryToTernary_summable x).comp_injective (fun j₁ j₂ h => by omega)
-          · have h : Summable (fun j : ℕ => (1/3:ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
+          · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
             exact (h.mul_left 2).comp_injective (fun j₁ j₂ h => by omega)
-      _ = (1/3:ℝ)^(k + 1) := by
-          have h1 := tsum_geometric_of_lt_one (r := (1/3:ℝ)) (by norm_num) (by norm_num)
-          calc ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-              = ∑' j, (2:ℝ) * ((1/3:ℝ)^(k + 2) * (1/3:ℝ)^j) := by
+      _ = (1/3 : ℝ)^(k + 1) := by
+          have h1 := tsum_geometric_of_lt_one (r := (1/3 : ℝ)) (by norm_num) (by norm_num)
+          calc ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+              = ∑' j, (2 : ℝ) * ((1/3 : ℝ)^(k + 2) * (1/3 : ℝ)^j) := by
                 congr 1; ext j; rw [← pow_add]; ring_nf
-            _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * ∑' j, (1/3:ℝ)^j := by
+            _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * ∑' j, (1/3 : ℝ)^j := by
                 rw [← tsum_mul_left]; congr 1; ext j; ring
-            _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
-            _ = (1/3:ℝ)^(k + 1) := by field_simp; ring
+            _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
+            _ = (1/3 : ℝ)^(k + 1) := by field_simp; ring
   have h_tail_y_nonneg : 0 ≤ ∑' j, fy (k + 1 + j) := by
     apply tsum_nonneg; intro j; simp only [fy]; positivity
   have hsum_x : Summable fx := binaryToTernary_summable x
@@ -2193,7 +2193,7 @@ lemma binaryToTernary_lt_of_digit_lt {x y : ℝ}
     congr 1
     omega
   rw [h_split_x, h_split_y, h_first_eq, h_term_x, h_term_y]
-  have h3pos : (0:ℝ) < (1/3)^(k + 1) := by positivity
+  have h3pos : (0 : ℝ) < (1/3)^(k + 1) := by positivity
   linarith
 
 /-! # Helper lemmas for injectivity proof -/
@@ -2202,9 +2202,9 @@ lemma binaryToTernary_lt_of_digit_lt {x y : ℝ}
 lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
     (hd : ∀ j, d j ∈ ({0, 2} : Set ℕ))
     (he : ∀ j, e j ∈ ({0, 2} : Set ℕ))
-    (hsum_d : Summable (fun j => (d j : ℝ) * (1/3:ℝ)^(j + 1)))
-    (hsum_e : Summable (fun j => (e j : ℝ) * (1/3:ℝ)^(j + 1)))
-    (heq : ∑' j, (d j : ℝ) * (1/3:ℝ)^(j + 1) = ∑' j, (e j : ℝ) * (1/3:ℝ)^(j + 1)) :
+    (hsum_d : Summable (fun j => (d j : ℝ) * (1/3 : ℝ)^(j + 1)))
+    (hsum_e : Summable (fun j => (e j : ℝ) * (1/3 : ℝ)^(j + 1)))
+    (heq : ∑' j, (d j : ℝ) * (1/3 : ℝ)^(j + 1) = ∑' j, (e j : ℝ) * (1/3 : ℝ)^(j + 1)) : 
     ∀ j, d j = e j := by
   by_contra h_ne
   push_neg at h_ne
@@ -2220,28 +2220,28 @@ lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
   rcases hd_k with hdk0 | hdk2 <;> rcases he_k with hek0 | hek2
   · omega
   ·
-    have h_first_eq : ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3:ℝ)^(j + 1) := by
+    have h_first_eq : ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3 : ℝ)^(j + 1) := by
       apply Finset.sum_congr rfl
       intro j hj
       rw [hk_eq j (Finset.mem_range.mp hj)]
-    have h_split_d : ∑' j, (d j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3:ℝ)^(j + 1) + (d k : ℝ) * (1/3:ℝ)^(k + 1) +
-        ∑' j, (d (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_split_d : ∑' j, (d j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3 : ℝ)^(j + 1) + (d k : ℝ) * (1/3 : ℝ)^(k + 1) +
+        ∑' j, (d (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       rw [← Summable.sum_add_tsum_nat_add (k + 1) hsum_d, Finset.sum_range_succ]
       congr 1; congr 1
       funext j; simp only [add_comm j (k + 1)]
-    have h_split_e : ∑' j, (e j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3:ℝ)^(j + 1) + (e k : ℝ) * (1/3:ℝ)^(k + 1) +
-        ∑' j, (e (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_split_e : ∑' j, (e j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3 : ℝ)^(j + 1) + (e k : ℝ) * (1/3 : ℝ)^(k + 1) +
+        ∑' j, (e (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       rw [← Summable.sum_add_tsum_nat_add (k + 1) hsum_e, Finset.sum_range_succ]
       congr 1; congr 1
       funext j; simp only [add_comm j (k + 1)]
     rw [h_split_d, h_split_e, h_first_eq, hdk0, hek2] at heq
     simp only [Nat.cast_zero, zero_mul, Nat.cast_ofNat] at heq
-    have h_tail_d_bound : ∑' j, (d (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) ≤ (1/3:ℝ)^(k + 1) := by
-      calc ∑' j, (d (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-          ≤ ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_tail_d_bound : ∑' j, (d (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) ≤ (1/3 : ℝ)^(k + 1) := by
+      calc ∑' j, (d (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+          ≤ ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
             apply Summable.tsum_le_tsum
             · intro j
               have hdj := hd (k + 1 + j)
@@ -2250,44 +2250,44 @@ lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
               · simp only [hdj0, Nat.cast_zero, zero_mul]; positivity
               · simp only [hdj2, Nat.cast_ofNat]; exact le_rfl
             · exact hsum_d.comp_injective (fun _ _ h => by omega)
-            · have h : Summable (fun j : ℕ => (1/3:ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
+            · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
               exact (h.mul_left 2).comp_injective (fun _ _ h => by omega)
-        _ = (1/3:ℝ)^(k + 1) := by
-            have h1 := tsum_geometric_of_lt_one (r := (1/3:ℝ)) (by norm_num) (by norm_num)
-            calc ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-                = ∑' j, (2:ℝ) * ((1/3:ℝ)^(k + 2) * (1/3:ℝ)^j) := by
+        _ = (1/3 : ℝ)^(k + 1) := by
+            have h1 := tsum_geometric_of_lt_one (r := (1/3 : ℝ)) (by norm_num) (by norm_num)
+            calc ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+                = ∑' j, (2 : ℝ) * ((1/3 : ℝ)^(k + 2) * (1/3 : ℝ)^j) := by
                   congr 1; ext j; rw [← pow_add]; ring_nf
-              _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * ∑' j, (1/3:ℝ)^j := by
+              _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * ∑' j, (1/3 : ℝ)^j := by
                   rw [← tsum_mul_left]; congr 1; ext j; ring
-              _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
-              _ = (1/3:ℝ)^(k + 1) := by field_simp; ring
-    have h_tail_e_nonneg : 0 ≤ ∑' j, (e (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+              _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
+              _ = (1/3 : ℝ)^(k + 1) := by field_simp; ring
+    have h_tail_e_nonneg : 0 ≤ ∑' j, (e (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       apply tsum_nonneg; intro j; positivity
-    have h3pos : (0:ℝ) < (1/3)^(k + 1) := by positivity
+    have h3pos : (0 : ℝ) < (1/3)^(k + 1) := by positivity
     linarith
   ·
-    have h_first_eq : ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3:ℝ)^(j + 1) := by
+    have h_first_eq : ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3 : ℝ)^(j + 1) := by
       apply Finset.sum_congr rfl
       intro j hj
       rw [hk_eq j (Finset.mem_range.mp hj)]
-    have h_split_d : ∑' j, (d j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3:ℝ)^(j + 1) + (d k : ℝ) * (1/3:ℝ)^(k + 1) +
-        ∑' j, (d (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_split_d : ∑' j, (d j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (d j : ℝ) * (1/3 : ℝ)^(j + 1) + (d k : ℝ) * (1/3 : ℝ)^(k + 1) +
+        ∑' j, (d (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       rw [← Summable.sum_add_tsum_nat_add (k + 1) hsum_d, Finset.sum_range_succ]
       congr 1; congr 1
       funext j; simp only [add_comm j (k + 1)]
-    have h_split_e : ∑' j, (e j : ℝ) * (1/3:ℝ)^(j + 1) =
-        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3:ℝ)^(j + 1) + (e k : ℝ) * (1/3:ℝ)^(k + 1) +
-        ∑' j, (e (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_split_e : ∑' j, (e j : ℝ) * (1/3 : ℝ)^(j + 1) =
+        ∑ j ∈ Finset.range k, (e j : ℝ) * (1/3 : ℝ)^(j + 1) + (e k : ℝ) * (1/3 : ℝ)^(k + 1) +
+        ∑' j, (e (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       rw [← Summable.sum_add_tsum_nat_add (k + 1) hsum_e, Finset.sum_range_succ]
       congr 1; congr 1
       funext j; simp only [add_comm j (k + 1)]
     rw [h_split_d, h_split_e, h_first_eq, hdk2, hek0] at heq
     simp only [Nat.cast_zero, zero_mul, Nat.cast_ofNat] at heq
-    have h_tail_e_bound : ∑' j, (e (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) ≤ (1/3:ℝ)^(k + 1) := by
-      calc ∑' j, (e (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-          ≤ ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+    have h_tail_e_bound : ∑' j, (e (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) ≤ (1/3 : ℝ)^(k + 1) := by
+      calc ∑' j, (e (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+          ≤ ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
             apply Summable.tsum_le_tsum
             · intro j
               have hej := he (k + 1 + j)
@@ -2296,36 +2296,36 @@ lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
               · simp only [hej0, Nat.cast_zero, zero_mul]; positivity
               · simp only [hej2, Nat.cast_ofNat]; exact le_rfl
             · exact hsum_e.comp_injective (fun _ _ h => by omega)
-            · have h : Summable (fun j : ℕ => (1/3:ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
+            · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
               exact (h.mul_left 2).comp_injective (fun _ _ h => by omega)
-        _ = (1/3:ℝ)^(k + 1) := by
-            have h1 := tsum_geometric_of_lt_one (r := (1/3:ℝ)) (by norm_num) (by norm_num)
-            calc ∑' j, (2:ℝ) * (1/3:ℝ)^(k + 1 + j + 1)
-                = ∑' j, (2:ℝ) * ((1/3:ℝ)^(k + 2) * (1/3:ℝ)^j) := by
+        _ = (1/3 : ℝ)^(k + 1) := by
+            have h1 := tsum_geometric_of_lt_one (r := (1/3 : ℝ)) (by norm_num) (by norm_num)
+            calc ∑' j, (2 : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1)
+                = ∑' j, (2 : ℝ) * ((1/3 : ℝ)^(k + 2) * (1/3 : ℝ)^j) := by
                   congr 1; ext j; rw [← pow_add]; ring_nf
-              _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * ∑' j, (1/3:ℝ)^j := by
+              _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * ∑' j, (1/3 : ℝ)^j := by
                   rw [← tsum_mul_left]; congr 1; ext j; ring
-              _ = (2:ℝ) * (1/3:ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
-              _ = (1/3:ℝ)^(k + 1) := by field_simp; ring
-    have h_tail_d_nonneg : 0 ≤ ∑' j, (d (k + 1 + j) : ℝ) * (1/3:ℝ)^(k + 1 + j + 1) := by
+              _ = (2 : ℝ) * (1/3 : ℝ)^(k + 2) * (1 - 1/3)⁻¹ := by rw [h1]
+              _ = (1/3 : ℝ)^(k + 1) := by field_simp; ring
+    have h_tail_d_nonneg : 0 ≤ ∑' j, (d (k + 1 + j) : ℝ) * (1/3 : ℝ)^(k + 1 + j + 1) := by
       apply tsum_nonneg; intro j; positivity
-    have h3pos : (0:ℝ) < (1/3)^(k + 1) := by positivity
+    have h3pos : (0 : ℝ) < (1/3)^(k + 1) := by positivity
     linarith
   · omega
 
 /-! # Helper lemmas for binary expansion sums -/
 
 /-- ⌊2y⌋ = 2⌊y⌋ + ⌊2y⌋ % 2 for y ≥ 0. -/
-private lemma floor_two_mul_decomp {y : ℝ} (_hy : 0 ≤ y) :
+private lemma floor_two_mul_decomp {y : ℝ} (_hy : 0 ≤ y) : 
     ⌊2 * y⌋₊ = 2 * ⌊y⌋₊ + ⌊2 * y⌋₊ % 2 := by
   have h := Nat.div_add_mod ⌊2 * y⌋₊ 2
-  have h_div : ⌊2 * y⌋₊ / 2 = ⌊y⌋₊ := Nat.cast_mul_floor_div_cancel (by norm_num : (2:ℕ) ≠ 0) y
+  have h_div : ⌊2 * y⌋₊ / 2 = ⌊y⌋₊ := Nat.cast_mul_floor_div_cancel (by norm_num : (2 : ℕ) ≠ 0) y
   omega
 
 /-- Partial sum identity: `∑ (j < n) bⱼ * 2^(-(j+1)) = floor(2^n * x) / 2^n`. -/
-private lemma partial_sum_eq_floor {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (n : ℕ) :
-    ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1) =
-    (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n := by
+private lemma partial_sum_eq_floor {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (n : ℕ) : 
+    ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) =
+    (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n := by
   induction n with
   | zero =>
     simp only [Finset.range_zero, Finset.sum_empty, pow_zero]
@@ -2333,33 +2333,33 @@ private lemma partial_sum_eq_floor {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (n :
     simp [h0]
   | succ n ih =>
     rw [Finset.sum_range_succ, ih]
-    have h2n_pos : (0:ℝ) < 2^n := by positivity
+    have h2n_pos : (0 : ℝ) < 2^n := by positivity
     have hx_nonneg : 0 ≤ x := hx.1
-    have hb : binaryDigit x (n + 1) = ⌊(2:ℝ)^(n+1) * x⌋₊ % 2 := by
+    have hb : binaryDigit x (n + 1) = ⌊(2 : ℝ)^(n+1) * x⌋₊ % 2 := by
       simp only [binaryDigit, if_pos hx]
-    have h_floor : ⌊(2:ℝ)^(n+1) * x⌋₊ = 2 * ⌊(2:ℝ)^n * x⌋₊ + ⌊(2:ℝ)^(n+1) * x⌋₊ % 2 := by
-      have h2 : (2:ℝ)^(n+1) * x = 2 * ((2:ℝ)^n * x) := by ring
+    have h_floor : ⌊(2 : ℝ)^(n+1) * x⌋₊ = 2 * ⌊(2 : ℝ)^n * x⌋₊ + ⌊(2 : ℝ)^(n+1) * x⌋₊ % 2 := by
+      have h2 : (2 : ℝ)^(n+1) * x = 2 * ((2 : ℝ)^n * x) := by ring
       rw [h2]
       exact floor_two_mul_decomp (mul_nonneg (le_of_lt h2n_pos) hx_nonneg)
     rw [hb]
-    have h2n_ne : (2:ℝ)^n ≠ 0 := ne_of_gt h2n_pos
-    have h_pow_succ : (2:ℝ)^(n+1) = 2 * 2^n := by ring
+    have h2n_ne : (2 : ℝ)^n ≠ 0 := ne_of_gt h2n_pos
+    have h_pow_succ : (2 : ℝ)^(n+1) = 2 * 2^n := by ring
     rw [h_pow_succ]
-    have h_half_pow : (1/2:ℝ)^(n+1) = 1 / (2 * 2^n) := by
+    have h_half_pow : (1/2 : ℝ)^(n+1) = 1 / (2 * 2^n) := by
       rw [← h_pow_succ]; simp [div_eq_mul_inv]
     rw [h_half_pow]
-    have h_floor' : (⌊2 * 2^n * x⌋₊ : ℝ) = 2 * (⌊(2:ℝ)^n * x⌋₊ : ℝ) + (⌊2 * 2^n * x⌋₊ % 2 : ℕ) := by
-      have h2eq : (2:ℝ) * 2^n * x = (2:ℝ)^(n+1) * x := by ring
+    have h_floor' : (⌊2 * 2^n * x⌋₊ : ℝ) = 2 * (⌊(2 : ℝ)^n * x⌋₊ : ℝ) + (⌊2 * 2^n * x⌋₊ % 2 : ℕ) := by
+      have h2eq : (2 : ℝ) * 2^n * x = (2 : ℝ)^(n+1) * x := by ring
       rw [h2eq]
       exact_mod_cast h_floor
-    have h2_2n_pos : (0:ℝ) < 2 * 2^n := by positivity
-    have h2_2n_ne : (2:ℝ) * 2^n ≠ 0 := ne_of_gt h2_2n_pos
+    have h2_2n_pos : (0 : ℝ) < 2 * 2^n := by positivity
+    have h2_2n_ne : (2 : ℝ) * 2^n ≠ 0 := ne_of_gt h2_2n_pos
     rw [h_floor']
     field_simp
 
 /-- Binary series is summable for x ∈ \[0,1). -/
-private lemma binary_summable {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) :
-    Summable (fun j => (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1)) := by
+private lemma binary_summable {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) : 
+    Summable (fun j => (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1)) := by
   apply Summable.of_nonneg_of_le
   · intro j; positivity
   · intro j
@@ -2368,39 +2368,39 @@ private lemma binary_summable {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) :
         simp only [binaryDigit, if_pos hx]
         omega
       exact_mod_cast this
-    calc (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1)
-        ≤ 1 * (1/2:ℝ)^(j + 1) := by nlinarith [pow_pos (by norm_num : (0:ℝ) < 1/2) (j + 1)]
-      _ = (1/2:ℝ)^(j + 1) := by ring
-  · have h : Summable (fun j : ℕ => (1/2:ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
+    calc (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1)
+        ≤ 1 * (1/2 : ℝ)^(j + 1) := by nlinarith [pow_pos (by norm_num : (0 : ℝ) < 1/2) (j + 1)]
+      _ = (1/2 : ℝ)^(j + 1) := by ring
+  · have h : Summable (fun j : ℕ => (1/2 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
     exact h.comp_injective (fun _ _ h => Nat.succ_injective h)
 
 /-- For non-dyadic x ∈ \[0,1), x equals its binary expansion sum. -/
-lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (_hnd : x ∉ DyadicRationals) :
-    x = ∑' j : ℕ, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1) := by
+lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (_hnd : x ∉ DyadicRationals) : 
+    x = ∑' j : ℕ, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) := by
   have h_summable := binary_summable hx
   have h_partial_to_tsum : Filter.Tendsto
-      (fun n => ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1))
-      Filter.atTop (nhds (∑' j, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1))) :=
+      (fun n => ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1))
+      Filter.atTop (nhds (∑' j, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1))) :=
     h_summable.hasSum.tendsto_sum_nat
-  have h_partial_eq : ∀ n, ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1) =
-      (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n := partial_sum_eq_floor hx
-  have h_floor_to_x : Filter.Tendsto (fun n => (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n) Filter.atTop (nhds x) := by
-    have h_lower : ∀ n, (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n ≤ x := fun n => by
-      have h2n_pos : (0:ℝ) < 2^n := by positivity
+  have h_partial_eq : ∀ n, ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) =
+      (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n := partial_sum_eq_floor hx
+  have h_floor_to_x : Filter.Tendsto (fun n => (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n) Filter.atTop (nhds x) := by
+    have h_lower : ∀ n, (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n ≤ x := fun n => by
+      have h2n_pos : (0 : ℝ) < 2^n := by positivity
       rw [div_le_iff₀ h2n_pos, mul_comm]
       exact Nat.floor_le (mul_nonneg hx.1 (le_of_lt h2n_pos))
-    have h_upper : ∀ n, x < (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n + (1:ℝ) / (2:ℝ)^n := fun n => by
-      have h2n_pos : (0:ℝ) < 2^n := by positivity
-      have := Nat.lt_floor_add_one ((2:ℝ)^n * x)
-      calc x = ((2:ℝ)^n * x) / (2:ℝ)^n := by field_simp
-        _ < (⌊(2:ℝ)^n * x⌋₊ + 1 : ℝ) / (2:ℝ)^n := by apply div_lt_div_of_pos_right this h2n_pos
-        _ = (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n + (1:ℝ) / (2:ℝ)^n := by ring
-    have h_gap : Filter.Tendsto (fun n : ℕ => (1:ℝ) / (2:ℝ)^n) Filter.atTop (nhds 0) := by
-      have h1 : Filter.Tendsto (fun n : ℕ => ((1:ℝ)/2)^n) Filter.atTop (nhds 0) :=
+    have h_upper : ∀ n, x < (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := fun n => by
+      have h2n_pos : (0 : ℝ) < 2^n := by positivity
+      have := Nat.lt_floor_add_one ((2 : ℝ)^n * x)
+      calc x = ((2 : ℝ)^n * x) / (2 : ℝ)^n := by field_simp
+        _ < (⌊(2 : ℝ)^n * x⌋₊ + 1 : ℝ) / (2 : ℝ)^n := by apply div_lt_div_of_pos_right this h2n_pos
+        _ = (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := by ring
+    have h_gap : Filter.Tendsto (fun n : ℕ => (1 : ℝ) / (2 : ℝ)^n) Filter.atTop (nhds 0) := by
+      have h1 : Filter.Tendsto (fun n : ℕ => ((1 : ℝ)/2)^n) Filter.atTop (nhds 0) :=
         tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
       convert h1 using 1; ext n; simp [div_eq_mul_inv]
-    have h_between : ∀ n, x - (1:ℝ) / (2:ℝ)^n < (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n ∧
-        (⌊(2:ℝ)^n * x⌋₊ : ℝ) / (2:ℝ)^n ≤ x := fun n => ⟨by linarith [h_upper n], h_lower n⟩
+    have h_between : ∀ n, x - (1 : ℝ) / (2 : ℝ)^n < (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n ∧
+        (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n ≤ x := fun n => ⟨by linarith [h_upper n], h_lower n⟩
     apply Metric.tendsto_atTop.mpr
     intro ε hε
     rw [Metric.tendsto_atTop] at h_gap
@@ -2414,7 +2414,7 @@ lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (_hnd : 
     rw [Real.dist_eq, abs_lt]
     constructor <;> linarith [hbn.1, hbn.2]
   have h_partial_to_x : Filter.Tendsto
-      (fun n => ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1))
+      (fun n => ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1))
       Filter.atTop (nhds x) := by
     simp_rw [h_partial_eq]
     exact h_floor_to_x
@@ -2422,9 +2422,9 @@ lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0:ℝ) 1) (_hnd : 
 
 /-- Non-dyadic x ∈ \[0,1) with equal binary digits are equal. -/
 lemma eq_of_binaryDigit_eq_of_non_dyadic {x₁ x₂ : ℝ}
-    (hx₁ : x₁ ∈ Set.Ico (0:ℝ) 1) (hx₂ : x₂ ∈ Set.Ico (0:ℝ) 1)
+    (hx₁ : x₁ ∈ Set.Ico (0 : ℝ) 1) (hx₂ : x₂ ∈ Set.Ico (0 : ℝ) 1)
     (hnd₁ : x₁ ∉ DyadicRationals) (hnd₂ : x₂ ∉ DyadicRationals)
-    (heq : ∀ j, binaryDigit x₁ j = binaryDigit x₂ j) :
+    (heq : ∀ j, binaryDigit x₁ j = binaryDigit x₂ j) : 
     x₁ = x₂ := by
   have h1 := non_dyadic_eq_binary_sum hx₁ hnd₁
   have h2 := non_dyadic_eq_binary_sum hx₂ hnd₂
@@ -2438,8 +2438,8 @@ lemma eq_of_binaryDigit_eq_of_non_dyadic {x₁ x₂ : ℝ}
 /-- Points with \{0,2\} ternary digits are in the Cantor set. -/
 lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
     (hd : ∀ j, d j ∈ ({0, 2} : Set ℕ))
-    (hsum : Summable (fun j => (d j : ℝ) * (1/3:ℝ)^(j + 1)))
-    (hy : y = ∑' j, (d j : ℝ) * (1/3:ℝ)^(j + 1)) :
+    (hsum : Summable (fun j => (d j : ℝ) * (1/3 : ℝ)^(j + 1)))
+    (hy : y = ∑' j, (d j : ℝ) * (1/3 : ℝ)^(j + 1)) : 
     y ∈ CantorSet ∨ y = 0 := by
   left
   rw [CantorSet]
@@ -2450,15 +2450,15 @@ lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
   simp only [Set.mem_iUnion]
   use a
   simp only [BoundedInterval.set_Icc, Set.mem_Icc]
-  have h_split : y = ∑ j ∈ Finset.range n, (d j : ℝ) * (1/3:ℝ)^(j + 1) +
-      ∑' j, (d (n + j) : ℝ) * (1/3:ℝ)^(n + j + 1) := by
+  have h_split : y = ∑ j ∈ Finset.range n, (d j : ℝ) * (1/3 : ℝ)^(j + 1) +
+      ∑' j, (d (n + j) : ℝ) * (1/3 : ℝ)^(n + j + 1) := by
     rw [hy, ← Summable.sum_add_tsum_nat_add n hsum]
     congr 1
     apply tsum_congr
     intro j
     rw [add_comm j n]
-  have h_partial : ∑ j ∈ Finset.range n, (d j : ℝ) * (1/3:ℝ)^(j + 1) =
-      ∑ i : Fin n, (a i : ℝ) / (3:ℝ)^(i.val + 1) := by
+  have h_partial : ∑ j ∈ Finset.range n, (d j : ℝ) * (1/3 : ℝ)^(j + 1) =
+      ∑ i : Fin n, (a i : ℝ) / (3 : ℝ)^(i.val + 1) := by
     rw [Finset.sum_fin_eq_sum_range]
     apply Finset.sum_congr rfl
     intro j hj
@@ -2466,11 +2466,11 @@ lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
     rw [dif_pos hj]
     simp only [a]
     field_simp; ring_nf; simp
-  have h_tail_nonneg : 0 ≤ ∑' j, (d (n + j) : ℝ) * (1/3:ℝ)^(n + j + 1) := by
+  have h_tail_nonneg : 0 ≤ ∑' j, (d (n + j) : ℝ) * (1/3 : ℝ)^(n + j + 1) := by
     apply tsum_nonneg; intro j; positivity
-  have h_tail_bound : ∑' j, (d (n + j) : ℝ) * (1/3:ℝ)^(n + j + 1) ≤ (1/3:ℝ)^n := by
-    calc ∑' j, (d (n + j) : ℝ) * (1/3:ℝ)^(n + j + 1)
-        ≤ ∑' j, (2:ℝ) * (1/3:ℝ)^(n + j + 1) := by
+  have h_tail_bound : ∑' j, (d (n + j) : ℝ) * (1/3 : ℝ)^(n + j + 1) ≤ (1/3 : ℝ)^n := by
+    calc ∑' j, (d (n + j) : ℝ) * (1/3 : ℝ)^(n + j + 1)
+        ≤ ∑' j, (2 : ℝ) * (1/3 : ℝ)^(n + j + 1) := by
           apply Summable.tsum_le_tsum
           · intro j
             have hdj := hd (n + j)
@@ -2479,20 +2479,20 @@ lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
             · simp only [hdj0, Nat.cast_zero, zero_mul]; positivity
             · simp only [hdj2, Nat.cast_ofNat]; exact le_refl _
           · exact hsum.comp_injective (fun _ _ h => by omega)
-          · have h : Summable (fun j : ℕ => (1/3:ℝ)^j) :=
+          · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) :=
               summable_geometric_of_lt_one (by norm_num) (by norm_num)
             exact (h.mul_left 2).comp_injective (fun _ _ h => by omega)
-      _ = (1/3:ℝ)^n := by
-          have h1 := tsum_geometric_of_lt_one (r := (1/3:ℝ)) (by norm_num) (by norm_num)
-          calc ∑' j, (2:ℝ) * (1/3:ℝ)^(n + j + 1)
-              = ∑' j, (2:ℝ) * ((1/3:ℝ)^(n + 1) * (1/3:ℝ)^j) := by
+      _ = (1/3 : ℝ)^n := by
+          have h1 := tsum_geometric_of_lt_one (r := (1/3 : ℝ)) (by norm_num) (by norm_num)
+          calc ∑' j, (2 : ℝ) * (1/3 : ℝ)^(n + j + 1)
+              = ∑' j, (2 : ℝ) * ((1/3 : ℝ)^(n + 1) * (1/3 : ℝ)^j) := by
                 congr 1; ext j; rw [← pow_add]; ring_nf
-            _ = (2:ℝ) * (1/3:ℝ)^(n + 1) * ∑' j, (1/3:ℝ)^j := by
+            _ = (2 : ℝ) * (1/3 : ℝ)^(n + 1) * ∑' j, (1/3 : ℝ)^j := by
                 rw [← tsum_mul_left]; congr 1; ext j; ring
-            _ = (2:ℝ) * (1/3:ℝ)^(n + 1) * (1 - 1/3)⁻¹ := by rw [h1]
-            _ = (1/3:ℝ)^n := by field_simp; ring
+            _ = (2 : ℝ) * (1/3 : ℝ)^(n + 1) * (1 - 1/3)⁻¹ := by rw [h1]
+            _ = (1/3 : ℝ)^n := by field_simp; ring
   rw [h_split, h_partial]
-  have h_one_third_pow : (1/3:ℝ)^n = 1 / 3^n := by simp [div_eq_mul_inv]
+  have h_one_third_pow : (1/3 : ℝ)^n = 1 / 3^n := by simp [div_eq_mul_inv]
   constructor
   · linarith
   · rw [← h_one_third_pow]
@@ -2512,18 +2512,18 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
       intro x
       simp only [binaryToTernaryFn]
       split_ifs with h
-      · have h_bound : ∀ j, (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1) ≤
-            (2:ℝ) * (1/3:ℝ)^(j + 1) := by
+      · have h_bound : ∀ j, (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1) ≤
+            (2 : ℝ) * (1/3 : ℝ)^(j + 1) := by
           intro j
           have h1 : (binaryDigit x (j + 1) : ℝ) ≤ 1 := by
             exact_mod_cast binaryDigit_le_one x (j + 1)
-          nlinarith [pow_pos (by norm_num : (0:ℝ) < 1/3) (j + 1)]
-        have h_summable2 : Summable (fun j => (2:ℝ) * (1/3:ℝ)^(j + 1)) := by
-          have h : Summable (fun j : ℕ => (1/3:ℝ)^j) :=
+          nlinarith [pow_pos (by norm_num : (0 : ℝ) < 1/3) (j + 1)]
+        have h_summable2 : Summable (fun j => (2 : ℝ) * (1/3 : ℝ)^(j + 1)) := by
+          have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) :=
             summable_geometric_of_lt_one (by norm_num) (by norm_num)
           exact (h.mul_left 2).comp_injective (fun _ _ h => Nat.succ_injective h)
-        calc ∑' j, (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1)
-            ≤ ∑' j, (2:ℝ) * (1/3:ℝ)^(j + 1) :=
+        calc ∑' j, (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
+            ≤ ∑' j, (2 : ℝ) * (1/3 : ℝ)^(j + 1) :=
               Summable.tsum_le_tsum h_bound (binaryToTernary_summable x) h_summable2
           _ = 1 := tsum_two_thirds_geometric
       · norm_num
@@ -2532,7 +2532,7 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
       simp only [binaryToTernaryFn, if_neg hx]
     zero_at_zero := by
       simp only [binaryToTernaryFn]
-      have h0 : (0:ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
+      have h0 : (0 : ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
       rw [if_pos h0]
       simp only [binaryDigit_zero, Nat.cast_zero, mul_zero, zero_mul, tsum_zero]
     zero_set_countable := by
@@ -2551,11 +2551,11 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
         · exact ⟨0, by rw [hx1]; exact binaryDigit_one 1⟩
         · exact binaryDigit_exists_one_of_pos hx_pos (lt_of_le_of_ne hx_in.2 hx1)
       obtain ⟨j, hj_eq⟩ := h_exists_one
-      have h_term_pos : (2 * binaryDigit x (j + 1) : ℝ) * (1/3:ℝ)^(j + 1) > 0 := by
+      have h_term_pos : (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1) > 0 := by
         rw [hj_eq]; positivity
-      have h_nonneg : ∀ k, 0 ≤ (2 * binaryDigit x (k + 1) : ℝ) * (1/3:ℝ)^(k + 1) := by
+      have h_nonneg : ∀ k, 0 ≤ (2 * binaryDigit x (k + 1) : ℝ) * (1/3 : ℝ)^(k + 1) := by
         intro k; positivity
-      have h_sum_pos : 0 < ∑' k : ℕ, (2 * binaryDigit x (k + 1) : ℝ) * (1/3:ℝ)^(k + 1) :=
+      have h_sum_pos : 0 < ∑' k : ℕ, (2 * binaryDigit x (k + 1) : ℝ) * (1/3 : ℝ)^(k + 1) :=
         (binaryToTernary_summable x).tsum_pos h_nonneg j h_term_pos
       linarith
     monotone_on := by
@@ -2565,7 +2565,7 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
       ·
         have hxy_strict : x < y := lt_of_le_of_ne hxy hxy'
         have hx_lt_one : x < 1 := lt_of_lt_of_le hxy_strict hy.2
-        have hx_Ico : x ∈ Set.Ico (0:ℝ) 1 := ⟨hx.1, hx_lt_one⟩
+        have hx_Ico : x ∈ Set.Ico (0 : ℝ) 1 := ⟨hx.1, hx_lt_one⟩
         by_cases hy1 : y = 1
         ·
           subst hy1
@@ -2583,20 +2583,20 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
               have h_zero_after : binaryDigit x (n + 1) = 0 := by
                 simp only [binaryDigit, if_pos hx_Ico]
                 rw [hx_eq]
-                have h_calc : (2:ℝ)^(n + 1) * (k / (2:ℝ)^n) = 2 * k := by field_simp; ring
+                have h_calc : (2 : ℝ)^(n + 1) * (k / (2 : ℝ)^n) = 2 * k := by field_simp; ring
                 rw [h_calc]
                 have : (2 * k : ℝ) = ((2 * k : ℕ) : ℝ) := by simp
                 rw [this, Nat.floor_natCast, Nat.mul_mod_right]
               exact h_all_one n h_zero_after
             · have hx_eq_sum := non_dyadic_eq_binary_sum hx_Ico hx_dyadic
               exfalso
-              have h_sum_one : ∑' j : ℕ, (binaryDigit x (j + 1) : ℝ) * (1/2:ℝ)^(j + 1) = 1 := by
+              have h_sum_one : ∑' j : ℕ, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) = 1 := by
                 have h_digit : ∀ j, (binaryDigit x (j + 1) : ℝ) = 1 := by
                   intro j; rw [h_all_eq_one j]; norm_num
                 simp_rw [h_digit]
-                have h := tsum_geometric_of_lt_one (r := (1:ℝ)/2) (by norm_num) (by norm_num)
-                calc ∑' j, (1:ℝ) * (1/2)^(j + 1) = ∑' j, (1/2:ℝ)^(j + 1) := by simp
-                  _ = (1/2) * ∑' j, (1/2:ℝ)^j := by
+                have h := tsum_geometric_of_lt_one (r := (1 : ℝ)/2) (by norm_num) (by norm_num)
+                calc ∑' j, (1 : ℝ) * (1/2)^(j + 1) = ∑' j, (1/2 : ℝ)^(j + 1) := by simp
+                  _ = (1/2) * ∑' j, (1/2 : ℝ)^j := by
                       rw [← tsum_mul_left]; congr 1; ext j; ring
                   _ = (1/2) * (1 - 1/2)⁻¹ := by rw [h]
                   _ = 1 := by norm_num
@@ -2618,7 +2618,7 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
           exact le_of_lt (binaryToTernary_lt_of_digit_lt hx ⟨zero_le_one, le_refl 1⟩ k hk_lt hk_eq)
         ·
           have hy_lt_one : y < 1 := lt_of_le_of_ne hy.2 hy1
-          have hy_Ico : y ∈ Set.Ico (0:ℝ) 1 := ⟨hy.1, hy_lt_one⟩
+          have hy_Ico : y ∈ Set.Ico (0 : ℝ) 1 := ⟨hy.1, hy_lt_one⟩
           obtain ⟨k, hk_lt, hk_eq⟩ := binaryDigit_first_diff hx_Ico hy_Ico hxy_strict
           exact le_of_lt (binaryToTernary_lt_of_digit_lt hx hy k hk_lt hk_eq)
     image_in_cantor := by
@@ -2631,19 +2631,19 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
         have h := binaryDigit_le_one x (j + 1)
         simp only [d]
         interval_cases binaryDigit x (j + 1) <;> simp
-      have hsum : Summable (fun j => (d j : ℝ) * (1/3:ℝ)^(j + 1)) := by
+      have hsum : Summable (fun j => (d j : ℝ) * (1/3 : ℝ)^(j + 1)) := by
         convert binaryToTernary_summable x using 1
         funext j; simp [d]
-      have hy_eq : ∑' j, (2:ℝ) * ↑(binaryDigit x (j + 1)) * (1 / 3) ^ (j + 1) =
-          ∑' j, (d j : ℝ) * (1/3:ℝ)^(j + 1) := by
+      have hy_eq : ∑' j, (2 : ℝ) * ↑(binaryDigit x (j + 1)) * (1 / 3) ^ (j + 1) =
+          ∑' j, (d j : ℝ) * (1/3 : ℝ)^(j + 1) := by
         congr 1; funext j; simp only [d, Nat.cast_mul, Nat.cast_ofNat]
       rw [hy_eq]
       exact mem_CantorSet_of_ternary_02 d hd hsum rfl
     injective_on_nonterminating := by
-      let A := Set.Icc (0:ℝ) 1 \ DyadicRationals
+      let A := Set.Icc (0 : ℝ) 1 \ DyadicRationals
       use A
       refine ⟨Set.diff_subset, ?_, ?_, ?_⟩
-      · have h_sdiff : Set.Icc (0:ℝ) 1 \ A = DyadicRationals ∩ Set.Icc 0 1 := by
+      · have h_sdiff : Set.Icc (0 : ℝ) 1 \ A = DyadicRationals ∩ Set.Icc 0 1 := by
           simp only [A, Set.diff_diff_right, Set.diff_self, Set.empty_union, Set.inter_comm]
         rw [h_sdiff]
         exact DyadicRationals.countable.mono Set.inter_subset_left
@@ -2658,12 +2658,12 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
         have hd₂ : ∀ j, d₂ j ∈ ({0, 2} : Set ℕ) := by
           intro j; have h := binaryDigit_le_one x₂ (j + 1)
           simp only [d₂]; interval_cases binaryDigit x₂ (j + 1) <;> simp
-        have heq' : ∑' j, (d₁ j : ℝ) * (1/3:ℝ)^(j + 1) = ∑' j, (d₂ j : ℝ) * (1/3:ℝ)^(j + 1) := by
+        have heq' : ∑' j, (d₁ j : ℝ) * (1/3 : ℝ)^(j + 1) = ∑' j, (d₂ j : ℝ) * (1/3 : ℝ)^(j + 1) := by
           convert heq using 1 <;> { congr 1; funext j; simp only [d₁, d₂, Nat.cast_mul, Nat.cast_ofNat] }
-        have hsum₁ : Summable (fun j => (d₁ j : ℝ) * (1/3:ℝ)^(j + 1)) := by
+        have hsum₁ : Summable (fun j => (d₁ j : ℝ) * (1/3 : ℝ)^(j + 1)) := by
           convert binaryToTernary_summable x₁ using 1
           funext j; simp only [d₁, Nat.cast_mul, Nat.cast_ofNat]
-        have hsum₂ : Summable (fun j => (d₂ j : ℝ) * (1/3:ℝ)^(j + 1)) := by
+        have hsum₂ : Summable (fun j => (d₂ j : ℝ) * (1/3 : ℝ)^(j + 1)) := by
           convert binaryToTernary_summable x₂ using 1
           funext j; simp only [d₂, Nat.cast_mul, Nat.cast_ofNat]
         have hdigits_eq := ternary_02_expansion_unique hd₁ hd₂ hsum₁ hsum₂ heq'
@@ -2672,11 +2672,11 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
           have := hdigits_eq j
           simp only [d₁, d₂] at this
           omega
-        have h1_dyadic : (1:ℝ) ∈ DyadicRationals := ⟨1, 0, by norm_num, by norm_num⟩
+        have h1_dyadic : (1 : ℝ) ∈ DyadicRationals := ⟨1, 0, by norm_num, by norm_num⟩
         have hx₁_ne_1 : x₁ ≠ 1 := fun h => hx₁.2 (h ▸ h1_dyadic)
         have hx₂_ne_1 : x₂ ≠ 1 := fun h => hx₂.2 (h ▸ h1_dyadic)
-        have hx₁_Ico : x₁ ∈ Set.Ico (0:ℝ) 1 := ⟨hx₁.1.1, lt_of_le_of_ne hx₁.1.2 hx₁_ne_1⟩
-        have hx₂_Ico : x₂ ∈ Set.Ico (0:ℝ) 1 := ⟨hx₂.1.1, lt_of_le_of_ne hx₂.1.2 hx₂_ne_1⟩
+        have hx₁_Ico : x₁ ∈ Set.Ico (0 : ℝ) 1 := ⟨hx₁.1.1, lt_of_le_of_ne hx₁.1.2 hx₁_ne_1⟩
+        have hx₂_Ico : x₂ ∈ Set.Ico (0 : ℝ) 1 := ⟨hx₂.1.1, lt_of_le_of_ne hx₂.1.2 hx₂_ne_1⟩
         apply eq_of_binaryDigit_eq_of_non_dyadic hx₁_Ico hx₂_Ico hx₁.2 hx₂.2
         intro j
         rcases j with _ | j
@@ -2699,28 +2699,28 @@ lemma binaryToTernary_props : BinaryToTernaryProperties binaryToTernary :=
   Classical.choose_spec binaryToTernary_exists
 
 /-- {lean}`binaryToTernary x = 0` iff {lean}`x = 0` for x ∈ \[0,1\]. -/
-lemma binaryToTernary_eq_zero_iff {x : ℝ} (hx : x ∈ Set.Icc (0:ℝ) 1) :
+lemma binaryToTernary_eq_zero_iff {x : ℝ} (hx : x ∈ Set.Icc (0 : ℝ) 1) : 
     binaryToTernary x = 0 ↔ x = 0 := by
   constructor
   · intro h
     by_contra hx_ne
     have hx_pos : 0 < x := lt_of_le_of_ne hx.1 (Ne.symm hx_ne)
-    have h0_in : (0:ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
+    have h0_in : (0 : ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
     have h_mono := binaryToTernary_props.monotone_on h0_in hx (le_of_lt hx_pos)
     rw [binaryToTernary_props.zero_at_zero] at h_mono
-    have h_zero_set : Set.Icc (0:ℝ) x ⊆ Set.Icc 0 1 ∩ {y | binaryToTernary y = 0} := by
+    have h_zero_set : Set.Icc (0 : ℝ) x ⊆ Set.Icc 0 1 ∩ {y | binaryToTernary y = 0} := by
       intro y hy
       constructor
       · exact ⟨hy.1, le_trans hy.2 hx.2⟩
       · simp only [Set.mem_setOf_eq]
-        have h0y : (0:ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
+        have h0y : (0 : ℝ) ∈ Set.Icc 0 1 := ⟨le_refl 0, by norm_num⟩
         have hy_in : y ∈ Set.Icc 0 1 := ⟨hy.1, le_trans hy.2 hx.2⟩
         have h_mono1 := binaryToTernary_props.monotone_on h0y hy_in hy.1
         have h_mono2 := binaryToTernary_props.monotone_on hy_in hx hy.2
         rw [binaryToTernary_props.zero_at_zero] at h_mono1
         rw [h] at h_mono2
         linarith [binaryToTernary_props.nonneg y]
-    have h_uncountable : ¬ (Set.Icc (0:ℝ) x).Countable := by
+    have h_uncountable : ¬ (Set.Icc (0 : ℝ) x).Countable := by
       have hx_pos : 0 < x := lt_of_le_of_ne hx.1 (fun h => hx_ne h.symm)
       have h_card := Cardinal.mk_Icc_real hx_pos
       intro hc
@@ -2749,22 +2749,22 @@ lemma f_lifted_le_one (x : EuclideanSpace' 1) : f_lifted x ≤ 1 := by
     max_le (by norm_num) hg
   exact EReal.coe_le_coe_iff.mpr h_max_le
 
-lemma f_lifted_zero_outside (x : EuclideanSpace' 1) (hx : EuclideanSpace'.equiv_Real x ∉ Set.Icc 0 1) :
+lemma f_lifted_zero_outside (x : EuclideanSpace' 1) (hx : EuclideanSpace'.equiv_Real x ∉ Set.Icc 0 1) : 
     f_lifted x = 0 := by
   simp only [f_lifted]
   have hg := binaryToTernary_props.zero_outside (EuclideanSpace'.equiv_Real x) hx
   rw [hg]
   simp
 
-lemma f_lifted_zero_at_zero (x : EuclideanSpace' 1) (hx : EuclideanSpace'.equiv_Real x = 0) :
+lemma f_lifted_zero_at_zero (x : EuclideanSpace' 1) (hx : EuclideanSpace'.equiv_Real x = 0) : 
     f_lifted x = 0 := by
   simp only [f_lifted]
   have hg := binaryToTernary_props.zero_at_zero
   rw [hx, hg]
   simp
 
-lemma f_zero_set_in_interval_countable :
-    (Set.Icc (0:ℝ) 1 ∩ {x | binaryToTernary x = 0}).Countable :=
+lemma f_zero_set_in_interval_countable : 
+    (Set.Icc (0 : ℝ) 1 ∩ {x | binaryToTernary x = 0}).Countable :=
   binaryToTernary_props.zero_set_countable
 
 lemma f_lifted_zero_set_measurable : LebesgueMeasurable {x : EuclideanSpace' 1 | f_lifted x = 0} := by
@@ -2810,7 +2810,7 @@ lemma f_lifted_zero_set_measurable : LebesgueMeasurable {x : EuclideanSpace' 1 |
   rw [h_decomp]
   apply LebesgueMeasurable.union
   · apply IsOpen.measurable
-    have h_open : IsOpen (Set.Icc (0:ℝ) 1)ᶜ := isOpen_compl_iff.mpr isClosed_Icc
+    have h_open : IsOpen (Set.Icc (0 : ℝ) 1)ᶜ := isOpen_compl_iff.mpr isClosed_Icc
     have hf_cont : Continuous (fun x : ℝ => Real.equiv_EuclideanSpace' x) := by
       show Continuous (fun x : ℝ => WithLp.toLp 2 (fun _ : Fin 1 => x))
       exact continuous_induced_rng.mpr (continuous_pi (fun _ => continuous_id))
@@ -2827,7 +2827,7 @@ lemma f_lifted_zero_set_measurable : LebesgueMeasurable {x : EuclideanSpace' 1 |
     exact Countable.Lebesgue_measure Nat.one_pos h_countable
 
 /-- Sublevel sets of {name}`f_lifted` are measurable (key lemma for `f_lifted_measurable`). -/
-lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
+lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) : 
     LebesgueMeasurable {x : EuclideanSpace' 1 | f_lifted x ≤ t} := by
   have h_outside_zero : ∀ x : EuclideanSpace' 1, EuclideanSpace'.equiv_Real x ∉ Set.Icc 0 1 →
       f_lifted x ≤ t := fun x hx => by rw [f_lifted_zero_outside x hx]; exact le_of_lt ht_pos
@@ -2886,19 +2886,19 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
         continuous_toFun := hf_cont
         continuous_invFun := hg_cont }
     exact e.isOpenMap (Set.Ioi 1) isOpen_Ioi
-  · -- Monotonicity case: {x ∈ [0,1] | f_lifted x ≤ t} is a convex set, hence measurable
+  · -- Monotonicity case : {x ∈ [0,1] | f_lifted x ≤ t} is a convex set, hence measurable
     have ht_ne_top : t ≠ ⊤ := ne_of_lt (lt_of_lt_of_le ht_lt_one le_top)
     have ht_ne_bot : t ≠ ⊥ := ne_of_gt (lt_of_le_of_lt bot_le ht_pos)
     let t' := t.toReal
     have ht_eq : t = (t' : EReal) := (EReal.coe_toReal ht_ne_top ht_ne_bot).symm
     rw [ht_eq]
     have ht'_pos : 0 < t' := by
-      have h : (0:EReal) < t := ht_pos
+      have h : (0 : EReal) < t := ht_pos
       rw [ht_eq, EReal.coe_pos] at h; exact h
     have ht'_lt_one : t' < 1 := by
-      have h : (t':EReal) < 1 := by rw [← ht_eq]; exact ht_lt_one
+      have h : (t' : EReal) < 1 := by rw [← ht_eq]; exact ht_lt_one
       exact EReal.coe_lt_coe_iff.mp h
-    let S : Set ℝ := {r ∈ Set.Icc (0:ℝ) 1 | binaryToTernary r ≤ t'}
+    let S : Set ℝ := {r ∈ Set.Icc (0 : ℝ) 1 | binaryToTernary r ≤ t'}
     have h_set_eq : {x : EuclideanSpace' 1 | EuclideanSpace'.equiv_Real x ∈ Set.Icc 0 1 ∧ f_lifted x ≤ ↑t'} =
         Real.equiv_EuclideanSpace' '' S := by
       ext x
@@ -2924,14 +2924,14 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
     by_cases hS_empty : S = ∅
     · rw [hS_empty]; simp only [Set.image_empty]; exact LebesgueMeasurable.empty
     push_neg at hS_empty
-    have h_zero_in_S : (0:ℝ) ∈ S := by
+    have h_zero_in_S : (0 : ℝ) ∈ S := by
       simp only [S, Set.mem_Icc]
       constructor
       · exact ⟨le_refl 0, zero_le_one⟩
       · rw [binaryToTernary_props.zero_at_zero]; exact le_of_lt ht'_pos
     have h_bdd_above : BddAbove S := ⟨1, fun x hx => hx.1.2⟩
     let a := sSup S
-    have ha_mem : a ∈ Set.Icc (0:ℝ) 1 := ⟨
+    have ha_mem : a ∈ Set.Icc (0 : ℝ) 1 := ⟨
       le_csSup_of_le h_bdd_above h_zero_in_S (le_refl 0),
       csSup_le (Set.nonempty_of_mem h_zero_in_S) (fun x hx => hx.1.2)⟩
     have hf_cont : Continuous (fun x : ℝ => Real.equiv_EuclideanSpace' x) := by
@@ -3026,7 +3026,7 @@ lemma f_lifted_measurable : UnsignedMeasurable f_lifted := by
     · exact sublevel_set_measurable t ht_pos ht_lt_one
 
 /-- Non-measurable F ⊆ \[0,1\] with {name}`binaryToTernary`(F) ⊆ Cantor set (Vitali construction). -/
-lemma exists_nonmeasurable_with_cantor_image :
+lemma exists_nonmeasurable_with_cantor_image : 
     ∃ F : Set ℝ, ∃ A : Set ℝ, F ⊆ Set.Icc 0 1 ∧
     ¬ LebesgueMeasurable (Real.equiv_EuclideanSpace' '' F) ∧
     binaryToTernary '' F ⊆ CantorSet ∧
@@ -3042,7 +3042,7 @@ lemma exists_nonmeasurable_with_cantor_image :
   case hF_image =>
     intro y hy
     obtain ⟨x, hx, rfl⟩ := hy
-    have hx_in_Icc : x ∈ Set.Icc (0:ℝ) 1 := hA_sub hx.2
+    have hx_in_Icc : x ∈ Set.Icc (0 : ℝ) 1 := hA_sub hx.2
     have h_image := binaryToTernary_props.image_in_cantor ⟨x, hx_in_Icc, rfl⟩
     cases h_image with
     | inl h => exact h
@@ -3050,10 +3050,10 @@ lemma exists_nonmeasurable_with_cantor_image :
       simp only [Set.mem_singleton_iff] at h
       exfalso
       have h_x_eq_0 : x = 0 := binaryToTernary_eq_zero_iff hx_in_Icc |>.mp h
-      have h0_dyadic : (0:ℝ) ∈ DyadicRationals := ⟨0, 0, by norm_num, by norm_num⟩
+      have h0_dyadic : (0 : ℝ) ∈ DyadicRationals := ⟨0, 0, by norm_num, by norm_num⟩
       subst h_x_eq_0
-      have h0_in_A : (0:ℝ) ∈ A := hx.2
-      have h0_in_inter : (0:ℝ) ∈ A ∩ DyadicRationals := ⟨h0_in_A, h0_dyadic⟩
+      have h0_in_A : (0 : ℝ) ∈ A := hx.2
+      have h0_in_inter : (0 : ℝ) ∈ A ∩ DyadicRationals := ⟨h0_in_A, h0_dyadic⟩
       rw [hA_disjoint] at h0_in_inter
       exact h0_in_inter
   case hF_nonmeas =>
@@ -3099,7 +3099,7 @@ end Remark_1_3_10
     Proof: Let f = {name}`Remark_1_3_10.binaryToTernary` (maps \[0,1\] → Cantor set), F ⊆ \[0,1\] non-measurable (Vitali).
     Set E = f(F) ⊆ Cantor set. Then E is null (⊆ null set) hence measurable, but f⁻¹(E) = F
     is non-measurable. (Uses injectivity of f on non-dyadic rationals A ⊇ F.) -/
-example : ∃ (f: EuclideanSpace' 1 → EReal) (_hf: UnsignedMeasurable f) (E: Set (EuclideanSpace' 1)) (_hE: LebesgueMeasurable E), ¬ LebesgueMeasurable (f⁻¹' ((Real.toEReal ∘ EuclideanSpace'.equiv_Real) '' E)) := by
+example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E : Set (EuclideanSpace' 1)) (_hE : LebesgueMeasurable E), ¬ LebesgueMeasurable (f⁻¹' ((Real.toEReal ∘ EuclideanSpace'.equiv_Real) '' E)) := by
   use Remark_1_3_10.f_lifted, Remark_1_3_10.f_lifted_measurable
   obtain ⟨F, A, hF_sub, hF_nonmeas, hF_image, hF_sub_A, hA_sub, hA_cocountable, hA_inj⟩ :=
     Remark_1_3_10.exists_nonmeasurable_with_cantor_image
@@ -3136,9 +3136,9 @@ example : ∃ (f: EuclideanSpace' 1 → EReal) (_hf: UnsignedMeasurable f) (E: S
         use a
         refine ⟨?_, rfl⟩
         -- Show a ∈ F using injectivity
-        have ha_in_Icc : a ∈ Set.Icc (0:ℝ) 1 := hA_sub ha
+        have ha_in_Icc : a ∈ Set.Icc (0 : ℝ) 1 := hA_sub ha
         have hw_in_A : w ∈ A := hF_sub_A hw
-        have hw_in_Icc : w ∈ Set.Icc (0:ℝ) 1 := hA_sub hw_in_A
+        have hw_in_Icc : w ∈ Set.Icc (0 : ℝ) 1 := hA_sub hw_in_A
         -- f p = binaryToTernary a (since a ∈ [0,1] and binaryToTernary a ≥ 0)
         have hf_eq : Remark_1_3_10.f_lifted (Real.equiv_EuclideanSpace' a) =
             Real.toEReal (Remark_1_3_10.binaryToTernary a) := by
@@ -3161,7 +3161,7 @@ example : ∃ (f: EuclideanSpace' 1 → EReal) (_hf: UnsignedMeasurable f) (E: S
         · exact ⟨r, hF_sub_A hr, rfl⟩
     -- A' is measurable: [0,1]' \ A' is countable hence null, use of_ae_eq with [0,1]'
     have hA'_meas : LebesgueMeasurable A' := by
-      let Icc' := Real.equiv_EuclideanSpace' '' Set.Icc (0:ℝ) 1
+      let Icc' := Real.equiv_EuclideanSpace' '' Set.Icc (0 : ℝ) 1
       have hIcc'_meas : LebesgueMeasurable Icc' := IsClosed.measurable <| by
         have : Icc' = EuclideanSpace'.equiv_Real ⁻¹' Set.Icc 0 1 := by
           ext x; simp only [Icc', Set.mem_image, Set.mem_preimage]
@@ -3195,11 +3195,11 @@ example : ∃ (f: EuclideanSpace' 1 → EReal) (_hf: UnsignedMeasurable f) (E: S
     exact LebesgueMeasurable.inter h_meas hA'_meas
 
 /-- Definition 1.3.11 (Complex measurability)-/
-def ComplexMeasurable {d:ℕ} (f: EuclideanSpace' d → ℂ) : Prop := ∃ (g: ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
+def ComplexMeasurable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
-def RealMeasurable {d:ℕ} (f: EuclideanSpace' d → ℝ) : Prop := ∃ (g: ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
+def RealMeasurable {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
-theorem RealMeasurable.iff {d:ℕ} {f: EuclideanSpace' d → ℝ} : RealMeasurable f ↔ ComplexMeasurable (Real.complex_fun f) := by
+theorem RealMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℝ} : RealMeasurable f ↔ ComplexMeasurable (Real.complex_fun f) := by
   constructor
   -- Forward: RealMeasurable f → ComplexMeasurable (Real.complex_fun f)
   · intro ⟨g, hg_simple, hg_conv⟩
@@ -3222,7 +3222,7 @@ theorem RealMeasurable.iff {d:ℕ} {f: EuclideanSpace' d → ℝ} : RealMeasurab
       simp only [Complex.ofReal_re] at h'
       exact h'
 
-theorem ComplexMeasurable.iff {d:ℕ} {f: EuclideanSpace' d → ℂ} : ComplexMeasurable f ↔ RealMeasurable (Complex.re_fun f) ∧ RealMeasurable (Complex.im_fun f) := by
+theorem ComplexMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℂ} : ComplexMeasurable f ↔ RealMeasurable (Complex.re_fun f) ∧ RealMeasurable (Complex.im_fun f) := by
   constructor
   -- Forward: ComplexMeasurable f → RealMeasurable (re ∘ f) ∧ RealMeasurable (im ∘ f)
   · intro ⟨g, hg_simple, hg_conv⟩
@@ -3252,66 +3252,66 @@ theorem ComplexMeasurable.iff {d:ℕ} {f: EuclideanSpace' d → ℂ} : ComplexMe
       exact h_sum
 
 /-- Exercise 1.3.7 -/
-theorem RealMeasurable.TFAE {d:ℕ} {f: EuclideanSpace' d → ℝ}:
+theorem RealMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℝ} : 
     [
       RealMeasurable f,
-      ∃ (g: ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
+      ∃ (g : ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
       UnsignedMeasurable (EReal.pos_fun f) ∧ UnsignedMeasurable (EReal.neg_fun f),
-      ∀ U: Set ℝ, IsOpen U → LebesgueMeasurable (f⁻¹' U),
-      ∀ K: Set ℝ, IsClosed K → LebesgueMeasurable (f⁻¹' K)
+      ∀ U : Set ℝ, IsOpen U → MeasurableSet (f⁻¹' U),
+      ∀ K : Set ℝ, IsClosed K → MeasurableSet (f⁻¹' K)
     ].TFAE
   := by sorry
 
-theorem ComplexMeasurable.TFAE {d:ℕ} {f: EuclideanSpace' d → ℂ}:
+theorem ComplexMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℂ} : 
     [
       ComplexMeasurable f,
-      ∃ (g: ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
+      ∃ (g : ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseAeConvergesTo g f),
       RealMeasurable (Complex.re_fun f) ∧ RealMeasurable (Complex.im_fun f),
       UnsignedMeasurable (EReal.pos_fun (Complex.re_fun f)) ∧ UnsignedMeasurable (EReal.neg_fun (Complex.im_fun f)) ∧ UnsignedMeasurable (EReal.pos_fun (Complex.im_fun f)) ∧ UnsignedMeasurable (EReal.neg_fun (Complex.re_fun f)),
-      ∀ U: Set ℂ, IsOpen U → LebesgueMeasurable (f⁻¹' U),
-      ∀ K: Set ℂ, IsClosed K → LebesgueMeasurable (f⁻¹' K)
+      ∀ U : Set ℂ, IsOpen U → MeasurableSet (f⁻¹' U),
+      ∀ K : Set ℂ, IsClosed K → MeasurableSet (f⁻¹' K)
     ].TFAE
   := by sorry
 
 /-- Exercise 1.3.8(i) -/
-theorem Continuous.RealMeasurable {d:ℕ} {f: EuclideanSpace' d → ℝ} (hf: Continuous f) : RealMeasurable f := by sorry
+theorem Continuous.RealMeasurable {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : Continuous f) : RealMeasurable f := by sorry
 
-theorem Continuous.ComplexMeasurable {d:ℕ} {f: EuclideanSpace' d → ℂ} (hf: Continuous f) : ComplexMeasurable f := by sorry
+theorem Continuous.ComplexMeasurable {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : Continuous f) : ComplexMeasurable f := by sorry
 
 /-- Exercise 1.3.8(ii) -/
-theorem UnsignedSimpleFunction.iff' {d:ℕ} {f: EuclideanSpace' d → EReal} (hf: Unsigned f) : UnsignedSimpleFunction f ↔ UnsignedMeasurable f ∧ Finite (f '' Set.univ) := by sorry
+theorem UnsignedSimpleFunction.iff' {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : UnsignedSimpleFunction f ↔ UnsignedMeasurable f ∧ Finite (f '' Set.univ) := by sorry
 
 /-- Exercise 1.3.8(iii) -/
-theorem RealMeasurable.aeEqual {d:ℕ} {f g: EuclideanSpace' d → ℝ} (hf: RealMeasurable f) (heq: AlmostEverywhereEqual f g) : RealMeasurable g := by sorry
+theorem RealMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (heq : AlmostEverywhereEqual f g) : RealMeasurable g := by sorry
 
-theorem ComplexMeasurable.aeEqual {d:ℕ} {f g: EuclideanSpace' d → ℂ} (hf: ComplexMeasurable f) (heq: AlmostEverywhereEqual f g) : ComplexMeasurable g := by sorry
+theorem ComplexMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (heq : AlmostEverywhereEqual f g) : ComplexMeasurable g := by sorry
 
 /-- Exercise 1.3.8(iv) -/
-theorem RealMeasurable.aeLimit {d:ℕ} {f: EuclideanSpace' d → ℝ} (g: ℕ → EuclideanSpace' d → ℝ) (hf: ∀ n, RealMeasurable (g n)) (heq: PointwiseAeConvergesTo g f) : RealMeasurable f := by sorry
+theorem RealMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → ℝ} (g : ℕ → EuclideanSpace' d → ℝ) (hf : ∀ n, RealMeasurable (g n)) (heq : PointwiseAeConvergesTo g f) : RealMeasurable f := by sorry
 
-theorem ComplexMeasurable.aeLimit {d:ℕ} {f: EuclideanSpace' d → ℂ} (g: ℕ → EuclideanSpace' d → ℂ) (hf: ∀ n, ComplexMeasurable (g n)) (heq: PointwiseAeConvergesTo g f) : ComplexMeasurable f := by sorry
+theorem ComplexMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → ℂ} (g : ℕ → EuclideanSpace' d → ℂ) (hf : ∀ n, ComplexMeasurable (g n)) (heq : PointwiseAeConvergesTo g f) : ComplexMeasurable f := by sorry
 
 /-- Exercise 1.3.8(v) -/
-theorem RealMeasurable.comp_cts {d:ℕ} {f: EuclideanSpace' d → ℝ} (hf: RealMeasurable f) {φ: ℝ → ℝ} (hφ: Continuous φ)  : RealMeasurable (φ ∘ f) := by sorry
+theorem RealMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) {φ : ℝ → ℝ} (hφ : Continuous φ)  : RealMeasurable (φ ∘ f) := by sorry
 
-theorem ComplexMeasurable.comp_cts {d:ℕ} {f: EuclideanSpace' d → ℂ} (hf: ComplexMeasurable f) {φ: ℂ → ℂ} (hφ: Continuous φ)  : ComplexMeasurable (φ ∘ f) := by sorry
-
-/-- Exercise 1.3.8(vi) -/
-theorem RealMeasurable.add {d:ℕ} {f g: EuclideanSpace' d → ℝ} (hf: RealMeasurable f) (hg: RealMeasurable g) : RealMeasurable (f + g) := by sorry
-
-theorem ComplexMeasurable.add {d:ℕ} {f g: EuclideanSpace' d → ℂ} (hf: ComplexMeasurable f) (hg: ComplexMeasurable g) : ComplexMeasurable (f + g) := by sorry
+theorem ComplexMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) {φ : ℂ → ℂ} (hφ : Continuous φ)  : ComplexMeasurable (φ ∘ f) := by sorry
 
 /-- Exercise 1.3.8(vi) -/
-theorem RealMeasurable.sub {d:ℕ} {f g: EuclideanSpace' d → ℝ} (hf: RealMeasurable f) (hg: RealMeasurable g) : RealMeasurable (f - g) := by sorry
+theorem RealMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f + g) := by sorry
 
-theorem ComplexMeasurable.sub {d:ℕ} {f g: EuclideanSpace' d → ℂ} (hf: ComplexMeasurable f) (hg: ComplexMeasurable g) : ComplexMeasurable (f - g) := by sorry
+theorem ComplexMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f + g) := by sorry
 
 /-- Exercise 1.3.8(vi) -/
-theorem RealMeasurable.mul {d:ℕ} {f g: EuclideanSpace' d → ℝ} (hf: RealMeasurable f) (hg: RealMeasurable g) : RealMeasurable (f * g) := by sorry
+theorem RealMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f - g) := by sorry
 
-theorem ComplexMeasurable.mul {d:ℕ} {f g: EuclideanSpace' d → ℂ} (hf: ComplexMeasurable f) (hg: ComplexMeasurable g) : ComplexMeasurable (f * g) := by sorry
+theorem ComplexMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f - g) := by sorry
+
+/-- Exercise 1.3.8(vi) -/
+theorem RealMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f * g) := by sorry
+
+theorem ComplexMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f * g) := by sorry
 
 
 open Classical in
 /-- Exercise 1.3.9 -/
-theorem RealMeasurable.riemann_integrable {f: ℝ → ℝ} {I: BoundedInterval} (hf: RiemannIntegrableOn f I) : RealMeasurable ((fun x ↦ if x ∈ I.toSet then f x else 0) ∘ EuclideanSpace'.equiv_Real) := by sorry
+theorem RealMeasurable.riemann_integrable {f : ℝ → ℝ} {I : BoundedInterval} (hf : RiemannIntegrableOn f I) : RealMeasurable ((fun x ↦ if x ∈ I.toSet then f x else 0) ∘ EuclideanSpace'.equiv_Real) := by sorry

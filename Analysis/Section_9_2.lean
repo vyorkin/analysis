@@ -18,22 +18,22 @@ Main constructions and results of this section:
 namespace Chapter9
 
 open Classical in
-noncomputable abbrev function_example : ℝ → ℝ := fun x ↦ if x ∈ ((fun y:ℚ ↦ (y:ℝ)) '' .univ) then 1 else 0
+noncomputable abbrev function_example : ℝ → ℝ := fun x ↦ if x ∈ ((fun y : ℚ ↦ (y : ℝ)) '' .univ) then 1 else 0
 
 /-- Definition 9.2.1 (Arithmetic operations on functions)-/
-theorem add_func_eval (f g: ℝ → ℝ) (x: ℝ) : (f + g) x = f x + g x := rfl
+theorem add_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f + g) x = f x + g x := rfl
 
-theorem sub_func_eval (f g: ℝ → ℝ) (x: ℝ) : (f - g) x = f x - g x := rfl
+theorem sub_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f - g) x = f x - g x := rfl
 
-theorem max_func_eval (f g: ℝ → ℝ) (x: ℝ) : max f g x = max (f x) (g x) := rfl
+theorem max_func_eval (f g : ℝ → ℝ) (x : ℝ) : max f g x = max (f x) (g x) := rfl
 
-theorem min_func_eval (f g: ℝ → ℝ) (x: ℝ) : min f g x = min (f x) (g x) := rfl
+theorem min_func_eval (f g : ℝ → ℝ) (x : ℝ) : min f g x = min (f x) (g x) := rfl
 
-theorem mul_func_eval (f g: ℝ → ℝ) (x: ℝ) : (f * g) x = f x * g x := rfl
+theorem mul_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f * g) x = f x * g x := rfl
 
-theorem div_func_eval (f g: ℝ → ℝ) (x: ℝ) : (f / g) x = f x / g x := rfl
+theorem div_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f / g) x = f x / g x := rfl
 
-theorem smul_func_eval (c: ℝ) (f: ℝ → ℝ) (x: ℝ) : (c • f) x = c * f x := rfl
+theorem smul_func_eval (c : ℝ) (f : ℝ → ℝ) (x : ℝ) : (c • f) x = c * f x := rfl
 
 abbrev f_9_2_2 : ℝ → ℝ := fun x ↦ x^2
 

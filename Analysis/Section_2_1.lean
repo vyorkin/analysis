@@ -60,7 +60,7 @@ instance Nat.instZero : Zero Nat := ⟨ zero ⟩
 #check (0 : Nat)
 
 /-- Axiom 2.2 (Successor of a natural number is a natural number) -/
-postfix:100 "++" => Nat.succ
+postfix : 100 "++" => Nat.succ
 #check (fun n ↦ n++)
 -- #check ((fun n ↦ n++) 0 : Nat)
 
@@ -207,7 +207,7 @@ theorem Nat.six_ne_two : (6 : Nat) ≠ 2 := by
   contradiction
 
 /-- One can also prove this sort of result by the {tactic}`decide` tactic -/
-theorem Nat.six_ne_two' : (6:Nat) ≠ 2 := by
+theorem Nat.six_ne_two' : (6 : Nat) ≠ 2 := by
   decide
 
 /-
@@ -332,7 +332,7 @@ theorem Nat.recurse_zero (f : Nat → Nat → Nat) (c : Nat) : Nat.recurse f c 0
 -- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
 /-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's {name}`Nat.rec_add_one`. -/
-theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) :
+theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) : 
     recurse f c (n++) = f n (recurse f c n) := by rfl
 -- ^ Это второй кейс паттерн-матчинга определения Nat.recurse.
 -- Тоже доказывается одной редукцией Nat.recurse.
@@ -341,7 +341,7 @@ theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) :
 theorem Nat.eq_recurse
         (f : Nat → Nat → Nat)
         (c : Nat)
-        (a : Nat → Nat) :
+        (a : Nat → Nat) : 
         (a 0 = c ∧ ∀ n, a (n++) = f n (a n)) ↔ (a = recurse f c) := by
   constructor
   . intro ⟨h0, hsucc⟩
@@ -361,8 +361,8 @@ theorem Nat.eq_recurse
 
 
 /-- Proposition 2.1.16 (recursive definitions). -/
-theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) :
-    ∃! (a: Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
+theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) : 
+    ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
   apply ExistsUnique.intro (recurse f c)
   . constructor -- could also use `split_ands` or `and_intros` here
     . exact recurse_zero _ _

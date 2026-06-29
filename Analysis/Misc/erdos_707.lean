@@ -3,13 +3,13 @@ import Mathlib
 /-! Formalizing a proof (the prime case of) Erdos problem \#707 recently proven by Alexeev, ChatGPT, Lean, and Mixon at https://borisalexeev.com/papers/erdos707.html, following Theorem 8 proven on page 5 -/
 
 /-- A perfect difference set is a set where every nonzero element is uniquely representable as a difference of two elements of the set. -/
-def IsPerfectDifferenceSet {N: ℕ} (B: Finset (ZMod N)) := ∀ d: ZMod N, d ≠ 0 → ∃! b: B × B, b.1.val - b.2.val = d
+def IsPerfectDifferenceSet {N : ℕ} (B : Finset (ZMod N)) := ∀ d : ZMod N, d ≠ 0 → ∃! b : B × B, b.1.val - b.2.val = d
 
-def IsPerfectDifferenceSet.map {N: ℕ} (B: Finset (ZMod N)) (p: (B × B) ⊕ Unit) : ZMod N ⊕ B := match p with
+def IsPerfectDifferenceSet.map {N : ℕ} (B : Finset (ZMod N)) (p : (B × B) ⊕ Unit) : ZMod N ⊕ B := match p with
 | Sum.inl p => if p.1 = p.2 then Sum.inr p.1 else Sum.inl (p.1.val - p.2.val)
 | Sum.inr _ => Sum.inl 0
 
-lemma IsPerfectDifferenceSet.card {N: ℕ} [NeZero N] {B: Finset (ZMod N)} (hdiff: IsPerfectDifferenceSet B) : B.card * B.card + 1 = N + B.card := by
+lemma IsPerfectDifferenceSet.card {N : ℕ} [NeZero N] {B : Finset (ZMod N)} (hdiff : IsPerfectDifferenceSet B) : B.card * B.card + 1 = N + B.card := by
   have he : Function.Bijective (IsPerfectDifferenceSet.map B) := by
     constructor
     . intro p p' hpp'
@@ -42,9 +42,9 @@ class Hypotheses where
   hp : Nat.Prime p
   N : ℕ
   hN : N = p^2 + p + 1
-  B: Finset (ZMod N)
-  hdiff: IsPerfectDifferenceSet B
-  embed : ({1,2,4,8}: Finset ℕ) → B
+  B : Finset (ZMod N)
+  hdiff : IsPerfectDifferenceSet B
+  embed : ({1,2,4,8} : Finset ℕ) → B
   h_embed : ∀ n, (embed n).val = n
   h_inj : Function.Injective embed
 
@@ -68,7 +68,7 @@ lemma h8 : 8 ∈ B := by
   convert (embed ⟨ 8, by grind ⟩).property
   simp [h_embed]
 
-lemma h2_ne_1: (2: ZMod N) ≠ (1: ZMod N) := by
+lemma h2_ne_1 : (2 : ZMod N) ≠ (1 : ZMod N) := by
   have : (embed ⟨ 2, by grind ⟩).val ≠ (embed ⟨ 1, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
     by_contra!
@@ -76,7 +76,7 @@ lemma h2_ne_1: (2: ZMod N) ≠ (1: ZMod N) := by
     grind
   convert this <;> simp [h_embed]
 
-lemma h4_ne_1: (4: ZMod N) ≠ (1: ZMod N) := by
+lemma h4_ne_1 : (4 : ZMod N) ≠ (1 : ZMod N) := by
   have : (embed ⟨ 4, by grind ⟩).val ≠ (embed ⟨ 1, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
     by_contra!
@@ -84,7 +84,7 @@ lemma h4_ne_1: (4: ZMod N) ≠ (1: ZMod N) := by
     grind
   convert this <;> simp [h_embed]
 
-lemma h4_ne_8: (4: ZMod N) ≠ (8: ZMod N) := by
+lemma h4_ne_8 : (4 : ZMod N) ≠ (8 : ZMod N) := by
   have : (embed ⟨ 4, by grind ⟩).val ≠ (embed ⟨ 8, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
     by_contra!
@@ -102,8 +102,8 @@ lemma card_B : B.card = p + 1 := by
   have h1 := Finset.card_le_card_of_injective h_inj
   simp at h1
   replace : B.card * B.card = p^2 + p + B.card := by grind [hN]
-  replace : (B.card:ℤ) * B.card = p^2 + p + B.card := by grind
-  replace : ((B.card:ℤ) - (p + 1)) * (B.card + p) = 0 := by grind
+  replace : (B.card : ℤ) * B.card = p^2 + p + B.card := by grind
+  replace : ((B.card : ℤ) - (p + 1)) * (B.card + p) = 0 := by grind
   rw [mul_eq_zero] at this
   grind
 
@@ -119,14 +119,14 @@ lemma heven : Even B.card := by
   rw [card_B]
   grind [odd_P]
 
-lemma mul_two_inj {x y: ZMod N} (h: 2 * x = 2 * y) : x = y := by
+lemma mul_two_inj {x y : ZMod N} (h : 2 * x = 2 * y) : x = y := by
   apply IsUnit.mul_left_cancel _ h
   convert (ZMod.isUnit_prime_iff_not_dvd (n := N) Nat.prime_two).mpr _
   exact Odd.not_two_dvd_nat hodd
 
-lemma diff_uniq {a b c d:B} (ha: a ≠ b) (hsub: a.val-b.val = c.val-d.val) : a=c ∧ b=d := by
+lemma diff_uniq {a b c d : B} (ha : a ≠ b) (hsub : a.val-b.val = c.val-d.val) : a=c ∧ b=d := by
   have := hdiff (a-b) (by grind)
-  replace : (⟨ a, b ⟩: B × B) = ⟨ c, d ⟩ := by apply this.unique <;> grind
+  replace : (⟨ a, b ⟩ : B × B) = ⟨ c, d ⟩ := by apply this.unique <;> grind
   grind
 
 /--
@@ -135,20 +135,20 @@ Given a perfect difference set {name}`B` and an element {name}`a` not in {name}`
 {lean}`f (a := a)` maps each {lean}`b ∈ B` to the unique {lean}`c ∈ B` such that {lean}`a - b = c -
 d` for some {lean}`d ∈ B`.
 -/
-noncomputable def f {a:ZMod N} (ha: a ∉ B) (b:B): B :=
+noncomputable def f {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
     (hdiff (a-b.val) (by grind)).choose.1
 
 /--
 {given -show}`d`
 Though not defined in Theorem 8, it is convenient to also introduce the companion function {lean}`g (a := a)`, defined to be the {name}`d` element such that {lean}`a - b = f (a := a) ha b - d`.
 -/
-noncomputable def g {a:ZMod N} (ha: a ∉ B) (b:B): B :=
+noncomputable def g {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
     (hdiff (a-b.val) (by grind)).choose.2
 
-lemma f_def {a:ZMod N} (ha: a ∉ B) (b:B) : a - b = f ha b - g ha b := by
+lemma f_def {a : ZMod N} (ha : a ∉ B) (b : B) : a - b = f ha b - g ha b := by
   convert (hdiff (a - b.val) (by grind)).choose_spec.1.symm
 
-lemma f_def' {a:ZMod N} (ha: a ∉ B) (b c d:B) : a - b = c - d ↔ c = f ha b ∧ d = g ha b := by
+lemma f_def' {a : ZMod N} (ha : a ∉ B) (b c d : B) : a - b = c - d ↔ c = f ha b ∧ d = g ha b := by
   constructor
   . intro h
     rw [f_def ha b] at h; symm at h
@@ -159,7 +159,7 @@ lemma f_def' {a:ZMod N} (ha: a ∉ B) (b c d:B) : a - b = c - d ↔ c = f ha b �
   exact f_def ha b
 
 /-- {lean}`f (a := a)` is an involution. -/
-lemma f_inv {a:ZMod N} (ha: a ∉ B) : Function.Involutive (f ha) := by
+lemma f_inv {a : ZMod N} (ha : a ∉ B) : Function.Involutive (f ha) := by
   intro b
   have h1 := f_def ha b
   replace h1 : a - (f ha b) = b - (g ha b) := by grind
@@ -167,16 +167,16 @@ lemma f_inv {a:ZMod N} (ha: a ∉ B) : Function.Involutive (f ha) := by
   rw [←h1.1]
 
 /-- Fixed points of {lean}`f (a := a)` satisfy {lean}`2 * f ha b = a + g ha b`. -/
-lemma f_fixed {a:ZMod N} {ha: a ∉ B} {b:B} (hb: f ha b = b): 2 * b.val = a + (g ha b).val := by
+lemma f_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : 2 * b.val = a + (g ha b).val := by
   have := f_def ha b
   grind
 
 
-@[implicit_reducible] noncomputable def z2_vact {a:ZMod N} (ha: a ∉ B) : AddAction (ZMod 2) B :=
+@[implicit_reducible] noncomputable def z2_vact {a : ZMod N} (ha : a ∉ B) : AddAction (ZMod 2) B :=
 {
   vadd i b := if i=1 then f ha b else b
   zero_vadd b := by
-    change (if (0: ZMod 2) = 1 then f ha b else b) = b
+    change (if (0 : ZMod 2) = 1 then f ha b else b) = b
     simp
   add_vadd i j b := by
     change (if i + j = 1 then f ha b else b) = if i = 1 then f ha (if j = 1 then f ha b else b) else (if j = 1 then f ha b else b)
@@ -184,7 +184,7 @@ lemma f_fixed {a:ZMod N} {ha: a ∉ B} {b:B} (hb: f ha b = b): 2 * b.val = a + (
 }
 
 /-- If there is one fixed point, there is another. -/
-lemma f_second_fixed {a:ZMod N} {ha: a ∉ B} {b:B} (hb: f ha b = b) : ∃ c:B, c ≠ b ∧ f ha c = c := by
+lemma f_second_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : ∃ c : B, c ≠ b ∧ f ha c = c := by
   let action := z2_vact ha
   classical
   have := action.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup _ _
@@ -201,7 +201,7 @@ lemma f_second_fixed {a:ZMod N} {ha: a ∉ B} {b:B} (hb: f ha b = b) : ∃ c:B, 
     rw [←this]
     grind
   have hs : b ∈ S := by
-    change (if (1: ZMod 2) = 1 then f ha b else b) = b
+    change (if (1 : ZMod 2) = 1 then f ha b else b) = b
     simp [hb]
   have c1 : Fintype.card S ≥ 1 := by
     haveI : Nonempty ↑S := ⟨⟨b, hs⟩⟩
@@ -210,37 +210,37 @@ lemma f_second_fixed {a:ZMod N} {ha: a ∉ B} {b:B} (hb: f ha b = b) : ∃ c:B, 
   have c2 : S ≠ {b} := by
     contrapose! c1
     simp [c1]
-  have c3 : ∃ c:B, c ∈ S ∧ c ≠ b := by
+  have c3 : ∃ c : B, c ∈ S ∧ c ≠ b := by
     simp at c2
     grind
   obtain ⟨ c, hc ⟩ := c3
   use c; simp [hc]
   simp [S] at hc
   replace hc := hc.1
-  change (if (1: ZMod 2) = 1 then f ha c else c) = c at hc
+  change (if (1 : ZMod 2) = 1 then f ha c else c) = c at hc
   simp_all
 
-lemma two_mul_sub_one_notin {x:B} (hx: x.val ≠ 2) : 2 * (x.val - 1) ∉ B := by
+lemma two_mul_sub_one_notin {x : B} (hx : x.val ≠ 2) : 2 * (x.val - 1) ∉ B := by
   by_contra! this
   replace := diff_uniq (a:= x) (b := ⟨ 2,h2 ⟩) (c := ⟨_,this⟩) (d:=x) (by grind) (by grind)
   grind
 
-lemma first_fixed {x:B} (hx: x.val ≠ 2) : f (two_mul_sub_one_notin hx) x = x := by
+lemma first_fixed {x : B} (hx : x.val ≠ 2) : f (two_mul_sub_one_notin hx) x = x := by
   convert ((f_def' (two_mul_sub_one_notin hx) x x ⟨ 2, h2⟩).mp ?_).1.symm
   grind
 
-lemma second_fixed {x:B} (hx: x.val ≠ 2) : ∃ b, b ≠ x ∧ f (two_mul_sub_one_notin hx) b = b :=  f_second_fixed (first_fixed hx)
+lemma second_fixed {x : B} (hx : x.val ≠ 2) : ∃ b, b ≠ x ∧ f (two_mul_sub_one_notin hx) b = b :=  f_second_fixed (first_fixed hx)
 
-noncomputable def b (x:B) := if hx: x.val = 2 then ⟨ 2, h2 ⟩ else (second_fixed hx).choose
+noncomputable def b (x : B) := if hx : x.val = 2 then ⟨ 2, h2 ⟩ else (second_fixed hx).choose
 
-noncomputable def d (x:B) := if hx: x.val = 2 then ⟨ 2, h2 ⟩ else g (two_mul_sub_one_notin hx) (second_fixed hx).choose
+noncomputable def d (x : B) := if hx : x.val = 2 then ⟨ 2, h2 ⟩ else g (two_mul_sub_one_notin hx) (second_fixed hx).choose
 
-lemma b_neq {x:B} (hx: x.val ≠ 2) : b x ≠ x := by
+lemma b_neq {x : B} (hx : x.val ≠ 2) : b x ≠ x := by
   simp [b, hx]
   convert (second_fixed hx).choose_spec.1
 
-lemma bd_ident (x:B) : 2 * (b x).val = 2 * (x.val - 1) + (d x).val := by
-  by_cases hx: x.val = 2
+lemma bd_ident (x : B) : 2 * (b x).val = 2 * (x.val - 1) + (d x).val := by
+  by_cases hx : x.val = 2
   · simp [b,d,hx]; ring
   · simp [b, d, hx]
     convert f_fixed _ using 2

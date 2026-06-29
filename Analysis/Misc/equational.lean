@@ -30,11 +30,11 @@ Some manual golfing was performed afterwards.
 class Magma (α : Type _) where
   op : α → α → α
 
-infix:65 " ◇ " => Magma.op
+infix : 65 " ◇ " => Magma.op
 
-abbrev Equation1689 (M: Type _) [Magma M] := ∀ x y z : M, x = (y ◇ x) ◇ ((x ◇ z) ◇ z)
+abbrev Equation1689 (M : Type _) [Magma M] := ∀ x y z : M, x = (y ◇ x) ◇ ((x ◇ z) ◇ z)
 
-abbrev Equation2 (M: Type _) [Magma M] := ∀ x y : M, x = y
+abbrev Equation2 (M : Type _) [Magma M] := ∀ x y : M, x = y
 
 variable {M : Type _} [Magma M]
 

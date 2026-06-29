@@ -12,34 +12,34 @@ open BoundedInterval
 /-- Definition 1.1.5.  (Riemann integrability) The interval {lean}`I` should be closed, though we will not enforce this.  We also permit the length to be 0. We index the tags and deltas starting from 0 rather than 1
 in the text as this is slightly more convenient in Lean. -/
 @[ext]
-structure TaggedPartition (I: BoundedInterval) (n:ℕ) where
+structure TaggedPartition (I : BoundedInterval) (n : ℕ) where
   x : Fin (n+1) → ℝ
   x_tag : Fin n → ℝ
   x_start : x 0 = I.a
   x_end : x (Fin.last n) = I.b
   x_mono : StrictMono x
-  x_tag_between (i: Fin n) : x i.castSucc ≤ x_tag i ∧ x_tag i ≤ x i.succ
+  x_tag_between (i : Fin n) : x i.castSucc ≤ x_tag i ∧ x_tag i ≤ x i.succ
 
 -- The width of the i-th subinterval in a tagged partition.
-def TaggedPartition.delta {I: BoundedInterval} {n:ℕ} (P: TaggedPartition I n) (i:Fin n): ℝ :=
+def TaggedPartition.delta {I : BoundedInterval} {n : ℕ} (P : TaggedPartition I n) (i : Fin n) : ℝ :=
  P.x i.succ - P.x i.castSucc
 
 -- The mesh size (supremum of subinterval widths) of a tagged partition.
-noncomputable def TaggedPartition.norm {I: BoundedInterval} {n:ℕ} (P: TaggedPartition I n) : ℝ := iSup P.delta
+noncomputable def TaggedPartition.norm {I : BoundedInterval} {n : ℕ} (P : TaggedPartition I n) : ℝ := iSup P.delta
 
 -- The Riemann sum of f with respect to a tagged partition: sum of f(tag_i) * delta_i.
-def TaggedPartition.RiemannSum {I: BoundedInterval} {n:ℕ} (f: ℝ → ℝ) (P: TaggedPartition I n) : ℝ :=
+def TaggedPartition.RiemannSum {I : BoundedInterval} {n : ℕ} (f : ℝ → ℝ) (P : TaggedPartition I n) : ℝ :=
   ∑ i, f (P.x_tag i) * P.delta i
 
 /-- {given (type := "ℕ") -show}`n` {lean}`Sigma (TaggedPartition I)` is the type of all partitions of {name}`I` with an unspecified number {name}`n` of components.  Here we define what it means to converge to zero in this type. -/
 -- A filter on Sigma (TaggedPartition I) converging to zero as the partition norm shrinks.
-noncomputable def TaggedPartition.nhds_zero (I: BoundedInterval) : Filter (Sigma (TaggedPartition I)) := Filter.comap (fun P ↦ P.snd.norm) (nhds 0)
+noncomputable def TaggedPartition.nhds_zero (I : BoundedInterval) : Filter (Sigma (TaggedPartition I)) := Filter.comap (fun P ↦ P.snd.norm) (nhds 0)
 
 -- Riemann integrability: Riemann sums converge to R as the partition norm tends to zero.
-def riemann_integral_eq (f: ℝ → ℝ) (I: BoundedInterval) (R: ℝ) : Prop := (TaggedPartition.nhds_zero I).Tendsto (fun P ↦ TaggedPartition.RiemannSum f P.snd) (nhds R)
+def riemann_integral_eq (f : ℝ → ℝ) (I : BoundedInterval) (R : ℝ) : Prop := (TaggedPartition.nhds_zero I).Tendsto (fun P ↦ TaggedPartition.RiemannSum f P.snd) (nhds R)
 
 /-- Construct a uniform partition of {lean}`[a,b]` into {lean}`n` equal pieces with left endpoint tags. -/
-noncomputable def TaggedPartition.uniform (I: BoundedInterval) (n: ℕ) (hn: n > 0) (_: I = Icc I.a I.b) (hab: I.a < I.b) : TaggedPartition I n where
+noncomputable def TaggedPartition.uniform (I : BoundedInterval) (n : ℕ) (hn : n > 0) (_ : I = Icc I.a I.b) (hab : I.a < I.b) : TaggedPartition I n where
   x := fun i => I.a + (I.b - I.a) * (i.val : ℝ) / n
   x_tag := fun i => I.a + (I.b - I.a) * (i.castSucc.val : ℝ) / n
   x_start := by simp
@@ -71,7 +71,7 @@ noncomputable def TaggedPartition.uniform (I: BoundedInterval) (n: ℕ) (hn: n >
       · linarith
 
 /-- The norm of a uniform partition is (b-a)/n. -/
-lemma TaggedPartition.uniform_norm (I: BoundedInterval) (n: ℕ) (hn: n > 0) (hI: I = Icc I.a I.b) (hab: I.a < I.b) :
+lemma TaggedPartition.uniform_norm (I : BoundedInterval) (n : ℕ) (hn : n > 0) (hI : I = Icc I.a I.b) (hab : I.a < I.b) : 
     (TaggedPartition.uniform I n hn hI hab).norm = (I.b - I.a) / n := by
   let P := TaggedPartition.uniform I n hn hI hab
   unfold TaggedPartition.norm
@@ -102,7 +102,7 @@ lemma TaggedPartition.uniform_norm (I: BoundedInterval) (n: ℕ) (hn: n > 0) (hI
   linarith
 
 /-- For any positive interval and δ > 0, there exists a tagged partition with norm ≤ δ. -/
-lemma TaggedPartition.exists_norm_le (I: BoundedInterval) (hI: I = Icc I.a I.b) (hab: I.a < I.b) (δ : ℝ) (hδ : 0 < δ) :
+lemma TaggedPartition.exists_norm_le (I : BoundedInterval) (hI : I = Icc I.a I.b) (hab : I.a < I.b) (δ : ℝ) (hδ : 0 < δ) : 
     ∃ (n : ℕ) (P : TaggedPartition I n), P.norm ≤ δ := by
   -- Choose n large enough that (b-a)/n < δ
   obtain ⟨N, hN⟩ := exists_nat_gt ((I.b - I.a) / δ)
@@ -123,7 +123,7 @@ lemma TaggedPartition.exists_norm_le (I: BoundedInterval) (hI: I = Icc I.a I.b) 
   linarith
 
 /-- The filter {name}`TaggedPartition.nhds_zero` is non-trivial when the interval has positive length. -/
-instance TaggedPartition.nhds_zero_neBot (I: BoundedInterval) (hI: I = Icc I.a I.b) (hab: I.a < I.b) :
+instance TaggedPartition.nhds_zero_neBot (I : BoundedInterval) (hI : I = Icc I.a I.b) (hab : I.a < I.b) : 
     Filter.NeBot (TaggedPartition.nhds_zero I) := by
   unfold TaggedPartition.nhds_zero
   rw [Filter.comap_neBot_iff]
@@ -157,12 +157,12 @@ instance TaggedPartition.nhds_zero_neBot (I: BoundedInterval) (hI: I = Icc I.a I
 /-- We enforce {lean}`I` to be closed and nonempty for the definition of Riemann integrability.
     The nonempty constraint ensures meaningful integration and excludes degenerate cases. -/
 -- A function is Riemann integrable on a closed interval if Riemann sums converge to some value.
-abbrev RiemannIntegrableOn (f: ℝ → ℝ) (I: BoundedInterval) : Prop :=
+abbrev RiemannIntegrableOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop :=
   I = Icc I.a I.b ∧ I.toSet.Nonempty ∧ ∃ R, riemann_integral_eq f I R
 
 open Classical in
 -- The Riemann integral value: the limit of Riemann sums (zero if not integrable).
-noncomputable def riemannIntegral (f: ℝ → ℝ) (I: BoundedInterval) : ℝ := if h:RiemannIntegrableOn f I then h.2.2.choose else 0
+noncomputable def riemannIntegral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := if h : RiemannIntegrableOn f I then h.2.2.choose else 0
 
 /-- When an interval has zero length, all Riemann sums equal zero. -/
 lemma riemann_sum_eq_zero_of_zero_length {f : ℝ → ℝ} {I : BoundedInterval} (h_len : |I|ₗ = 0)
@@ -266,7 +266,7 @@ lemma eq_of_length_zero_of_Icc {I : BoundedInterval}
 
 /-- Definition 1.1.15 (Riemann integrability) -/
 -- For a Riemann integrable function, the Riemann sums converge to the integral value.
-lemma riemann_integral_of_integrable {f:ℝ → ℝ} {I: BoundedInterval} (h: RiemannIntegrableOn f I) : riemann_integral_eq f I (riemannIntegral f I) := by
+lemma riemann_integral_of_integrable {f : ℝ → ℝ} {I : BoundedInterval} (h : RiemannIntegrableOn f I) : riemann_integral_eq f I (riemannIntegral f I) := by
   -- Strategy: Since `h : RiemannIntegrableOn f I` means `∃ R, riemann_integral_eq f I R`,
   -- and `riemannIntegral f I` is defined as `h.2.2.choose` (the witness chosen by Classical.choose),
   -- we need to show that `riemann_integral_eq f I h.2.2.choose`, which is exactly `h.2.2.choose_spec`.
@@ -279,21 +279,21 @@ lemma riemann_integral_of_integrable {f:ℝ → ℝ} {I: BoundedInterval} (h: Ri
 
 /-- Definition 1.1.15 (Riemann integrability) -/
 -- Characterization of the Riemann integral: R is the integral iff the Riemann sums converge to R.
-lemma riemann_integral_eq_iff_of_integrable {f:ℝ → ℝ} {I: BoundedInterval} (h: RiemannIntegrableOn f I) (R:ℝ): riemann_integral_eq f I R ↔ R = riemannIntegral f I := by
+lemma riemann_integral_eq_iff_of_integrable {f : ℝ → ℝ} {I : BoundedInterval} (h : RiemannIntegrableOn f I) (R : ℝ) : riemann_integral_eq f I R ↔ R = riemannIntegral f I := by
   constructor
-  · -- Forward direction: uniqueness of limits in Hausdorff space
+  · -- Forward direction : uniqueness of limits in Hausdorff space
     intro hR
     -- We know riemann_integral_eq f I (riemannIntegral f I) from riemann_integral_of_integrable
     have hRI := riemann_integral_of_integrable h
     -- Handle two cases: I.a < I.b or I.a = I.b
     by_cases hab : I.a < I.b
-    · -- Case: I.a < I.b (positive length interval)
+    · -- Case : I.a < I.b (positive length interval)
       -- The filter is non-trivial, so we can apply Hausdorff limit uniqueness
       haveI : Filter.NeBot (TaggedPartition.nhds_zero I) := TaggedPartition.nhds_zero_neBot I h.1 hab
       -- Both Riemann sums converge: one to R, one to riemannIntegral f I
       -- In a Hausdorff space (ℝ is metric hence Hausdorff), limits are unique
       exact tendsto_nhds_unique hR hRI
-    · -- Case: ¬(I.a < I.b) means I.a ≥ I.b (zero or negative length interval)
+    · -- Case : ¬(I.a < I.b) means I.a ≥ I.b (zero or negative length interval)
       -- In either case, the length is 0
       have h_len : |I|ₗ = 0 := by
         unfold BoundedInterval.length
@@ -308,14 +308,14 @@ lemma riemann_integral_eq_iff_of_integrable {f:ℝ → ℝ} {I: BoundedInterval}
       have hRI_zero : riemannIntegral f I = 0 := riemann_integral_eq_zero_of_zero_length h_eq h_len hRI
       -- Therefore R = riemannIntegral f I
       rw [hR_zero, hRI_zero]
-  · -- Backward direction: substitution
+  · -- Backward direction : substitution
     intro hRe
     rw [hRe]
     exact riemann_integral_of_integrable h
 
 /-- Definition 1.1.15 (Riemann integrability)-/
 -- ε-δ characterization: Riemann sums converge to R iff for all ε > 0, there exists δ > 0 such that partitions with norm ≤ δ have Riemann sums within ε of R.
-lemma riemann_integral_eq_iff {f:ℝ → ℝ} {I: BoundedInterval} (R:ℝ): riemann_integral_eq f I R ↔ ∀ ε>0, ∃ δ>0, ∀ n, ∀ P: TaggedPartition I n, P.norm ≤ δ → |P.RiemannSum f - R| ≤ ε := by
+lemma riemann_integral_eq_iff {f : ℝ → ℝ} {I : BoundedInterval} (R : ℝ) : riemann_integral_eq f I R ↔ ∀ ε>0, ∃ δ>0, ∀ n, ∀ P : TaggedPartition I n, P.norm ≤ δ → |P.RiemannSum f - R| ≤ ε := by
   -- Show equivalence between filter convergence and ε-δ definition.
   -- Forward (→): Use `LinearOrderedAddCommGroup.tendsto_nhds` and `Filter.eventually_comap` to extract ε-δ.
   -- Backward (←): Given ε-δ, show filter convergence
@@ -325,7 +325,7 @@ lemma riemann_integral_eq_iff {f:ℝ → ℝ} {I: BoundedInterval} (R:ℝ): riem
   -- Use Filter.eventually_comap to relate comap filter to nhds 0
   simp_rw [Filter.eventually_comap]
   constructor
-  · -- Forward direction: filter convergence → ε-δ
+  · -- Forward direction : filter convergence → ε-δ
     intro h_tendsto ε hε
     -- Get eventually condition from filter convergence
     have h_eventually : ∀ᶠ (x : ℝ) in nhds 0, ∀ (a : Sigma (TaggedPartition I)), a.snd.norm = x → |TaggedPartition.RiemannSum f a.snd - R| < ε := h_tendsto ε hε
@@ -380,7 +380,7 @@ lemma riemann_integral_eq_iff {f:ℝ → ℝ} {I: BoundedInterval} (R:ℝ): riem
     have h_applied := hδ_ball h_dist ⟨n, P⟩ h_eq
     -- Convert < to ≤
     linarith
-  · -- Backward direction: ε-δ → filter convergence
+  · -- Backward direction : ε-δ → filter convergence
     intro h_eps_delta ε hε
     -- Use ε/2 to get strict inequality from ≤ condition
     obtain ⟨δ, hδ_pos, hδ⟩ := h_eps_delta (ε / 2) (half_pos hε)
@@ -432,7 +432,7 @@ lemma riemann_integral_eq_iff {f:ℝ → ℝ} {I: BoundedInterval} (R:ℝ): riem
 
 /-- Definition 1.1.15.  (Riemann integrability)  -/
 -- Any function is Riemann integrable on a degenerate interval [a,a] with integral zero.
-lemma RiemannIntegrable.of_zero_length (f: ℝ → ℝ) {I: BoundedInterval} {a : ℝ} (h: I = Icc a a) : RiemannIntegrableOn f I ∧ riemannIntegral f I = 0 := by
+lemma RiemannIntegrable.of_zero_length (f : ℝ → ℝ) {I : BoundedInterval} {a : ℝ} (h : I = Icc a a) : RiemannIntegrableOn f I ∧ riemannIntegral f I = 0 := by
   -- First establish basic facts from h : I = Icc a a
   have ha : I.a = a := by simp [h]
   have hb : I.b = a := by simp [h]
@@ -463,8 +463,8 @@ lemma RiemannIntegrable.of_zero_length (f: ℝ → ℝ) {I: BoundedInterval} {a 
     exact ((riemann_integral_eq_iff_of_integrable h_integrable 0).mp h_integral_zero).symm
 
 /-- Helper: Modify a tagged partition by changing one tag -/
-def TaggedPartition.changeTag {I: BoundedInterval} {n:ℕ} (P: TaggedPartition I n)
-    (k: Fin n) (t: ℝ) (ht: P.x k.castSucc ≤ t ∧ t ≤ P.x k.succ) : TaggedPartition I n where
+def TaggedPartition.changeTag {I : BoundedInterval} {n : ℕ} (P : TaggedPartition I n)
+    (k : Fin n) (t : ℝ) (ht : P.x k.castSucc ≤ t ∧ t ≤ P.x k.succ) : TaggedPartition I n where
   x := P.x
   x_tag := Function.update P.x_tag k t
   x_start := P.x_start
@@ -476,8 +476,8 @@ def TaggedPartition.changeTag {I: BoundedInterval} {n:ℕ} (P: TaggedPartition I
     · rw [Function.update_of_ne hik]; exact P.x_tag_between i
 
 /-- The Riemann sum difference when changing one tag -/
-lemma TaggedPartition.RiemannSum_changeTag_sub {I: BoundedInterval} {n:ℕ} (P: TaggedPartition I n)
-    (f: ℝ → ℝ) (k: Fin n) (t: ℝ) (ht: P.x k.castSucc ≤ t ∧ t ≤ P.x k.succ) :
+lemma TaggedPartition.RiemannSum_changeTag_sub {I : BoundedInterval} {n : ℕ} (P : TaggedPartition I n)
+    (f : ℝ → ℝ) (k : Fin n) (t : ℝ) (ht : P.x k.castSucc ≤ t ∧ t ≤ P.x k.succ) : 
     (P.changeTag k t ht).RiemannSum f - P.RiemannSum f = (f t - f (P.x_tag k)) * P.delta k := by
   -- delta is unchanged by changeTag since x is unchanged
   have h_delta : ∀ i, (P.changeTag k t ht).delta i = P.delta i := fun _ => rfl
@@ -496,8 +496,8 @@ lemma TaggedPartition.RiemannSum_changeTag_sub {I: BoundedInterval} {n:ℕ} (P: 
   simp
 
 /-- For a uniform partition, delta is constant -/
-lemma TaggedPartition.uniform_delta {I: BoundedInterval} {n: ℕ} (hn: n > 0) (hI: I = Icc I.a I.b)
-    (hab: I.a < I.b) (i: Fin n) :
+lemma TaggedPartition.uniform_delta {I : BoundedInterval} {n : ℕ} (hn : n > 0) (hI : I = Icc I.a I.b)
+    (hab : I.a < I.b) (i : Fin n) : 
     (TaggedPartition.uniform I n hn hI hab).delta i = (I.b - I.a) / n := by
   unfold TaggedPartition.delta TaggedPartition.uniform
   simp only
@@ -511,7 +511,7 @@ noncomputable def findSubintervalIndex (lo hi : ℝ) (n : ℕ) (hn : n > 0) (x :
   ⟨k, by omega⟩
 
 /-- The found index correctly brackets x -/
-lemma findSubintervalIndex_spec (lo hi : ℝ) (n : ℕ) (hn : n > 0) (hlohi : lo < hi) (x : ℝ) (hx : lo ≤ x ∧ x ≤ hi) :
+lemma findSubintervalIndex_spec (lo hi : ℝ) (n : ℕ) (hn : n > 0) (hlohi : lo < hi) (x : ℝ) (hx : lo ≤ x ∧ x ≤ hi) : 
     let k := findSubintervalIndex lo hi n hn x hx
     let Δ := (hi - lo) / n
     lo + k.val * Δ ≤ x ∧ x ≤ lo + (k.val + 1) * Δ := by
@@ -520,7 +520,7 @@ lemma findSubintervalIndex_spec (lo hi : ℝ) (n : ℕ) (hn : n > 0) (hlohi : lo
   have hΔ_pos : 0 < Δ := div_pos (sub_pos.mpr hlohi) (Nat.cast_pos.mpr hn)
   set k := min (Nat.floor ((x - lo) / Δ)) (n - 1) with hk_def
   constructor
-  · -- Lower bound: lo + k * Δ ≤ x
+  · -- Lower bound : lo + k * Δ ≤ x
     have h_floor_le : ↑(Nat.floor ((x - lo) / Δ)) * Δ ≤ x - lo := by
       have h_nonneg : 0 ≤ (x - lo) / Δ := div_nonneg (by linarith [hx.1]) (le_of_lt hΔ_pos)
       have h_le : (Nat.floor ((x - lo) / Δ) : ℝ) ≤ (x - lo) / Δ := Nat.floor_le h_nonneg
@@ -533,7 +533,7 @@ lemma findSubintervalIndex_spec (lo hi : ℝ) (n : ℕ) (hn : n > 0) (hlohi : lo
            apply mul_le_mul_of_nonneg_right (Nat.cast_le.mpr h_k_le_floor) (le_of_lt hΔ_pos)
          _ ≤ lo + (x - lo) := by linarith [h_floor_le]
          _ = x := by ring
-  · -- Upper bound: x ≤ lo + (k + 1) * Δ
+  · -- Upper bound : x ≤ lo + (k + 1) * Δ
     by_cases h_at_end : x = hi
     · -- If x = hi, then k = n - 1 and (k + 1) * Δ = n * Δ = hi - lo
       have h_ne : hi - lo ≠ 0 := ne_of_gt (sub_pos.mpr hlohi)
@@ -580,11 +580,11 @@ lemma findSubintervalIndex_spec (lo hi : ℝ) (n : ℕ) (hn : n > 0) (hlohi : lo
       linarith [h_lt]
 
 /-- Definition 1.1.15 -/
-theorem RiemannIntegrable.bounded {f: ℝ → ℝ} {I: BoundedInterval} (h: RiemannIntegrableOn f I) : ∃ M, ∀ x ∈ I, |f x| ≤ M := by
+theorem RiemannIntegrable.bounded {f : ℝ → ℝ} {I : BoundedInterval} (h : RiemannIntegrableOn f I) : ∃ M, ∀ x ∈ I, |f x| ≤ M := by
   obtain ⟨hIcc, h_nonempty, R, hR⟩ := h
   -- Handle zero-length case separately
   by_cases hab : I.a = I.b
-  · -- Zero-length case: I.toSet = {I.a}
+  · -- Zero-length case : I.toSet = {I.a}
     use |f I.a|
     intro x hx
     rw [hIcc] at hx
@@ -734,74 +734,74 @@ theorem RiemannIntegrable.bounded {f: ℝ → ℝ} {I: BoundedInterval} (h: Riem
 
 @[ext]
 -- A function that is constant on each interval in a partition of I.
-structure PiecewiseConstantFunction (I: BoundedInterval) where
+structure PiecewiseConstantFunction (I : BoundedInterval) where
   f : ℝ → ℝ
   T : Finset BoundedInterval
   c : T → ℝ
-  disjoint: (T : Set BoundedInterval).PairwiseDisjoint BoundedInterval.toSet
+  disjoint : (T : Set BoundedInterval).PairwiseDisjoint BoundedInterval.toSet
   cover : I.toSet = ⋃ J ∈ T, J.toSet
-  const : ∀ J:T, ∀ x ∈ J.val, f x = c J
+  const : ∀ J : T, ∀ x ∈ J.val, f x = c J
 
 -- Two functions agree if they are equal on the interval I.
-abbrev PiecewiseConstantFunction.agreesWith {I: BoundedInterval} (F: PiecewiseConstantFunction I) (f: ℝ → ℝ) : Prop := I.toSet.EqOn f F.f
+abbrev PiecewiseConstantFunction.agreesWith {I : BoundedInterval} (F : PiecewiseConstantFunction I) (f : ℝ → ℝ) : Prop := I.toSet.EqOn f F.f
 
 -- A function is piecewise constant on I if it can be represented as a piecewise constant function.
-def PiecewiseConstantOn (f: ℝ → ℝ) (I: BoundedInterval) : Prop := ∃ F: PiecewiseConstantFunction I, F.agreesWith f
+def PiecewiseConstantOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∃ F : PiecewiseConstantFunction I, F.agreesWith f
 
 -- The integral of a piecewise constant function: sum of (constant value × interval length) over all intervals.
-def PiecewiseConstantFunction.integral {I: BoundedInterval} (g: PiecewiseConstantFunction I) : ℝ :=
+def PiecewiseConstantFunction.integral {I : BoundedInterval} (g : PiecewiseConstantFunction I) : ℝ :=
   ∑ J : g.T, g.c J * |J|ₗ
 
 /-- Exercise 1.1.20 (Piecewise constant functions) -/
 -- The integral is well-defined: different representations of the same piecewise constant function have the same integral.
-theorem PiecewiseConstantFunction.integral_eq (f: ℝ → ℝ) {I: BoundedInterval} (F F': PiecewiseConstantFunction I) (hF: F.agreesWith f) (hF': F'.agreesWith f) : F.integral = F'.integral := by sorry
+theorem PiecewiseConstantFunction.integral_eq (f : ℝ → ℝ) {I : BoundedInterval} (F F' : PiecewiseConstantFunction I) (hF : F.agreesWith f) (hF' : F'.agreesWith f) : F.integral = F'.integral := by sorry
 
 -- The integral of a piecewise constant function on I.
-noncomputable def PiecewiseConstantOn.integral (f: ℝ → ℝ) {I: BoundedInterval} (h: PiecewiseConstantOn f I) : ℝ := h.choose.integral
+noncomputable def PiecewiseConstantOn.integral (f : ℝ → ℝ) {I : BoundedInterval} (h : PiecewiseConstantOn f I) : ℝ := h.choose.integral
 
 /-- Exercise 1.1.20 (Piecewise constant functions) -/
 -- The integral of a piecewise constant function equals the integral of any of its representations.
-theorem PiecewiseConstantOn.integral_eq (f: ℝ → ℝ) {I: BoundedInterval} (h: PiecewiseConstantOn f I) (F: PiecewiseConstantFunction I) (hF: F.agreesWith f) : h.integral = F.integral := by sorry
+theorem PiecewiseConstantOn.integral_eq (f : ℝ → ℝ) {I : BoundedInterval} (h : PiecewiseConstantOn f I) (F : PiecewiseConstantFunction I) (hF : F.agreesWith f) : h.integral = F.integral := by sorry
 
 /-- Exercise 1.1.21 (a) (Linearity of the piecewise constant integral) -/
 -- A scalar multiple of a piecewise constant function is piecewise constant.
-theorem PiecewiseConstantOn.smul {I: BoundedInterval} (c:ℝ) {f: ℝ → ℝ} (h: PiecewiseConstantOn f I) : PiecewiseConstantOn (c • f) I := by sorry
+theorem PiecewiseConstantOn.smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (h : PiecewiseConstantOn f I) : PiecewiseConstantOn (c • f) I := by sorry
 
 /-- Exercise 1.1.21 (a) (Linearity of the piecewise constant integral) -/
 -- The integral is linear: integral(c * f) = c * integral(f).
-theorem PiecewiseConstantFunction.integral_smul {I:BoundedInterval} (c:ℝ) {f: ℝ → ℝ} (h: PiecewiseConstantOn f I) : (h.smul c).integral = c • h.integral := by sorry
+theorem PiecewiseConstantFunction.integral_smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (h : PiecewiseConstantOn f I) : (h.smul c).integral = h.integral := by sorry
 
 /-- Exercise 1.1.21 (a) (Linearity of the piecewise constant integral) -/
 -- The sum of two piecewise constant functions is piecewise constant.
-theorem PiecewiseConstantOn.add {I: BoundedInterval} {f g: ℝ → ℝ} (hf: PiecewiseConstantOn f I) (hg: PiecewiseConstantOn g I) : PiecewiseConstantOn (f + g) I := by sorry
+theorem PiecewiseConstantOn.add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (f + g) I := by sorry
 
 /-- Exercise 1.1.21 (a) (Linearity of the piecewise constant integral) -/
 -- The integral is linear: integral(f + g) = integral(f) + integral(g).
-theorem PiecewiseConstantFunction.integral_add {I: BoundedInterval} {f g: ℝ → ℝ} (hf: PiecewiseConstantOn f I) (hg: PiecewiseConstantOn g I) : (hf.add hg).integral = hf.integral + hg.integral := by sorry
+theorem PiecewiseConstantFunction.integral_add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : (hf.add hg).integral = hf.integral + hg.integral := by sorry
 
 /-- Exercise 1.1.21 (b) (Monotonicity of the piecewise constant integral) -/
 -- The integral is monotone: if f ≤ g pointwise, then integral(f) ≤ integral(g).
-theorem PiecewiseConstantFunction.integral_mono {I: BoundedInterval} {f g: ℝ → ℝ} (hf: PiecewiseConstantOn f I) (hg: PiecewiseConstantOn g I) (hmono: ∀ x ∈ I.toSet, f x ≤ g x): hf.integral ≤ hg.integral := by sorry
+theorem PiecewiseConstantFunction.integral_mono {I : BoundedInterval} {f g : ℝ → ℝ} (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) (hmono : ∀ x ∈ I.toSet, f x ≤ g x) : hf.integral ≤ hg.integral := by sorry
 
 /-- Exercise 1.1.21 (c) (Piecewise constant integral of indicator functions) -/
 -- The indicator function of an elementary set is piecewise constant.
-theorem PiecewiseConstantOn.indicator_of_elem (I: BoundedInterval) {E:Set ℝ} (hE: IsElementary (Real.equiv_EuclideanSpace' '' E) ) : PiecewiseConstantOn E.indicator' I := by sorry
+theorem PiecewiseConstantOn.indicator_of_elem (I : BoundedInterval) {E : Set ℝ} (hE : IsElementary (Real.equiv_EuclideanSpace' '' E) ) : PiecewiseConstantOn E.indicator' I := by sorry
 
 /-- Exercise 1.1.21 (c) (Piecewise constant integral of indicator functions) -/
 -- The integral of an indicator function of an elementary set equals its elementary measure.
-theorem PiecewiseConstantFunction.integral_of_elem {I: BoundedInterval} {E:Set ℝ} (hE: IsElementary (Real.equiv_EuclideanSpace' '' E) ) (hsub: E ⊆ I.toSet) : (PiecewiseConstantOn.indicator_of_elem I hE).integral = hE.measure := by sorry
+theorem PiecewiseConstantFunction.integral_of_elem {I : BoundedInterval} {E : Set ℝ} (hE : IsElementary (Real.equiv_EuclideanSpace' '' E) ) (hsub : E ⊆ I.toSet) : (PiecewiseConstantOn.indicator_of_elem I hE).integral = hE.measure := by sorry
 
 /-- Definition 1.1.6 (Darboux integral) -/
 -- The lower Darboux integral: supremum of integrals of piecewise constant functions that underestimate f.
-noncomputable def LowerDarbouxIntegral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ := sSup { R | ∃ g: PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x }
+noncomputable def LowerDarbouxIntegral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := sSup { R | ∃ g : PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x }
 
 /-- Definition 1.1.6 (Darboux integral) -/
 -- The upper Darboux integral: infimum of integrals of piecewise constant functions that overestimate f.
-noncomputable def UpperDarbouxIntegral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ := sInf { R | ∃ h: PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, f x ≤ h.f x }
+noncomputable def UpperDarbouxIntegral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := sInf { R | ∃ h : PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, f x ≤ h.f x }
 
 namespace PiecewiseConstantFunction
 /-- Helper: Construct a constant piecewise constant function with a given value -/
-def mkConst (I: BoundedInterval) (c: ℝ) : PiecewiseConstantFunction I where
+def mkConst (I : BoundedInterval) (c : ℝ) : PiecewiseConstantFunction I where
   f := fun _ => c
   T := {I}
   c := fun _ => c
@@ -810,13 +810,13 @@ def mkConst (I: BoundedInterval) (c: ℝ) : PiecewiseConstantFunction I where
   const := by intro J x hx; rfl
 
 /-- Helper: The integral of a constant piecewise constant function -/
-lemma integral_mkConst (I: BoundedInterval) (c: ℝ) :
+lemma integral_mkConst (I : BoundedInterval) (c : ℝ) : 
     (PiecewiseConstantFunction.mkConst I c).integral = c * |I|ₗ := by
   unfold PiecewiseConstantFunction.integral PiecewiseConstantFunction.mkConst
   simp [Finset.sum_singleton]
 
 /-- Helper: Construct the negation of a piecewise constant function -/
-def neg {I: BoundedInterval} (g: PiecewiseConstantFunction I) : PiecewiseConstantFunction I where
+def neg {I : BoundedInterval} (g : PiecewiseConstantFunction I) : PiecewiseConstantFunction I where
   f := fun x => -g.f x
   T := g.T
   c := fun J => -g.c J
@@ -828,7 +828,7 @@ def neg {I: BoundedInterval} (g: PiecewiseConstantFunction I) : PiecewiseConstan
     simp [h_const]
 
 /-- Helper: The integral of a negated piecewise constant function -/
-lemma integral_neg {I: BoundedInterval} (g: PiecewiseConstantFunction I) :
+lemma integral_neg {I : BoundedInterval} (g : PiecewiseConstantFunction I) : 
     g.neg.integral = -g.integral := by
   unfold PiecewiseConstantFunction.integral PiecewiseConstantFunction.neg
   rw [← Finset.sum_neg_distrib]
@@ -837,8 +837,8 @@ lemma integral_neg {I: BoundedInterval} (g: PiecewiseConstantFunction I) :
   ring
 
 /-- Helper: Convert a {name}`PiecewiseConstantFunction` to {name}`PiecewiseConstantOn` and relate integrals -/
-lemma to_PiecewiseConstantOn {I: BoundedInterval} (g: PiecewiseConstantFunction I) :
-    ∃ (h: PiecewiseConstantOn g.f I), h.integral = g.integral := by
+lemma to_PiecewiseConstantOn {I : BoundedInterval} (g : PiecewiseConstantFunction I) : 
+    ∃ (h : PiecewiseConstantOn g.f I), h.integral = g.integral := by
   have hg_agrees : g.agreesWith g.f := fun x hx => rfl
   use ⟨g, hg_agrees⟩
   exact PiecewiseConstantOn.integral_eq g.f ⟨g, hg_agrees⟩ g hg_agrees
@@ -847,8 +847,8 @@ lemma to_PiecewiseConstantOn {I: BoundedInterval} (g: PiecewiseConstantFunction 
 Helper: Apply {name}`PiecewiseConstantFunction.integral_mono` between two
 {name}`PiecewiseConstantFunction`s via {name}`PiecewiseConstantOn`.
 -/
-lemma integral_mono' {I: BoundedInterval}
-    (g h: PiecewiseConstantFunction I) (h_pointwise: ∀ x ∈ I.toSet, g.f x ≤ h.f x) :
+lemma integral_mono' {I : BoundedInterval}
+    (g h : PiecewiseConstantFunction I) (h_pointwise : ∀ x ∈ I.toSet, g.f x ≤ h.f x) : 
     g.integral ≤ h.integral := by
   have hg_agrees : g.agreesWith g.f := fun x hx => rfl
   have hh_agrees : h.agreesWith h.f := fun x hx => rfl
@@ -867,8 +867,8 @@ end PiecewiseConstantFunction
 
 
 /-- Helper: The lower Darboux set is bounded above -/
-lemma LowerDarbouxIntegral.bddAbove {f:ℝ → ℝ} {I: BoundedInterval} (M: ℝ) (hM: ∀ x ∈ I, |f x| ≤ M) :
-    BddAbove ({ R | ∃ g: PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } : Set ℝ) := by
+lemma LowerDarbouxIntegral.bddAbove {f : ℝ → ℝ} {I : BoundedInterval} (M : ℝ) (hM : ∀ x ∈ I, |f x| ≤ M) : 
+    BddAbove ({ R | ∃ g : PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } : Set ℝ) := by
   rw [bddAbove_def]
   use M * |I|ₗ
   intro R hR
@@ -887,8 +887,8 @@ lemma LowerDarbouxIntegral.bddAbove {f:ℝ → ℝ} {I: BoundedInterval} (M: ℝ
   exact h_mono
 
 /-- Helper: The upper Darboux set is bounded below -/
-lemma UpperDarbouxIntegral.bddBelow {f:ℝ → ℝ} {I: BoundedInterval} (M: ℝ) (hM: ∀ x ∈ I, |f x| ≤ M) :
-    BddBelow ({ R | ∃ h: PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, f x ≤ h.f x } : Set ℝ) := by
+lemma UpperDarbouxIntegral.bddBelow {f : ℝ → ℝ} {I : BoundedInterval} (M : ℝ) (hM : ∀ x ∈ I, |f x| ≤ M) : 
+    BddBelow ({ R | ∃ h : PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, f x ≤ h.f x } : Set ℝ) := by
   rw [bddBelow_def]
   use -M * |I|ₗ
   intro R hR
@@ -908,7 +908,7 @@ lemma UpperDarbouxIntegral.bddBelow {f:ℝ → ℝ} {I: BoundedInterval} (M: ℝ
 
 /-- Definition 1.1.6 (Darboux integral) -/
 -- For any bounded function, the lower Darboux integral is at most the upper Darboux integral.
-lemma lower_darboux_le_upper_darboux {f:ℝ → ℝ} {I: BoundedInterval} (hbound: ∃ M, ∀ x ∈ I, |f x| ≤ M) : LowerDarbouxIntegral f I ≤ UpperDarbouxIntegral f I := by
+lemma lower_darboux_le_upper_darboux {f : ℝ → ℝ} {I : BoundedInterval} (hbound : ∃ M, ∀ x ∈ I, |f x| ≤ M) : LowerDarbouxIntegral f I ≤ UpperDarbouxIntegral f I := by
   obtain ⟨M, hM⟩ := hbound
   unfold LowerDarbouxIntegral UpperDarbouxIntegral
   apply csSup_le
@@ -944,15 +944,15 @@ lemma lower_darboux_le_upper_darboux {f:ℝ → ℝ} {I: BoundedInterval} (hboun
 
 /-- Definition 1.1.6 (Darboux integral) -/
 -- A function is Darboux integrable if it is bounded and its lower and upper Darboux integrals coincide.
-noncomputable def DarbouxIntegrableOn (f:ℝ → ℝ) (I: BoundedInterval) : Prop := (I = Icc I.a I.b) ∧ ∃ M, ∀ x ∈ I, |f x| ≤ M ∧ LowerDarbouxIntegral f I = UpperDarbouxIntegral f I
+noncomputable def DarbouxIntegrableOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop := (I = Icc I.a I.b) ∧ ∃ M, ∀ x ∈ I, |f x| ≤ M ∧ LowerDarbouxIntegral f I = UpperDarbouxIntegral f I
 
 /-- We give the Darboux integral the "junk" value of the lower Darboux integral when the function is not integrable. -/
 -- The Darboux integral: equals the common value if integrable, otherwise the lower Darboux integral.
-noncomputable def darbouxIntegral (f:ℝ → ℝ) (I: BoundedInterval) : ℝ := LowerDarbouxIntegral f I
+noncomputable def darbouxIntegral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := LowerDarbouxIntegral f I
 
 /-- Helper: The upper Darboux set for -f is bounded below -/
-lemma UpperDarbouxIntegral.bddBelow_neg {f:ℝ → ℝ} {I: BoundedInterval} (M: ℝ) (hM: ∀ x ∈ I, |f x| ≤ M) :
-    BddBelow ({ R | ∃ h: PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } : Set ℝ) := by
+lemma UpperDarbouxIntegral.bddBelow_neg {f : ℝ → ℝ} {I : BoundedInterval} (M : ℝ) (hM : ∀ x ∈ I, |f x| ≤ M) : 
+    BddBelow ({ R | ∃ h : PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } : Set ℝ) := by
   rw [bddBelow_def]
   use -M * |I|ₗ
   intro R hR
@@ -972,7 +972,7 @@ lemma UpperDarbouxIntegral.bddBelow_neg {f:ℝ → ℝ} {I: BoundedInterval} (M:
 
 /-- Definition 1.1.6 (Darboux integral) -/
 -- For the negation of a function, the upper Darboux integral of -f equals minus the lower Darboux integral of f.
-lemma UpperDarbouxIntegral.neg {f:ℝ → ℝ} {I: BoundedInterval} (hbound: ∃ M, ∀ x ∈ I, |f x| ≤ M) : UpperDarbouxIntegral (-f) I = -LowerDarbouxIntegral f I := by
+lemma UpperDarbouxIntegral.neg {f : ℝ → ℝ} {I : BoundedInterval} (hbound : ∃ M, ∀ x ∈ I, |f x| ≤ M) : UpperDarbouxIntegral (-f) I = -LowerDarbouxIntegral f I := by
   obtain ⟨M, hM⟩ := hbound
   unfold UpperDarbouxIntegral LowerDarbouxIntegral
   apply le_antisymm
@@ -997,10 +997,10 @@ lemma UpperDarbouxIntegral.neg {f:ℝ → ℝ} {I: BoundedInterval} (hbound: ∃
         have h_ineq : g.f x ≤ f x := hg_lower x hx
         simp [neg_g, PiecewiseConstantFunction.neg]
         linarith
-      have h_neg_in_set : -g.integral ∈ { R | ∃ h: PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } := by
+      have h_neg_in_set : -g.integral ∈ { R | ∃ h : PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } := by
         use neg_g, g.integral_neg, h_neg_upper
       have h_bdd_below := UpperDarbouxIntegral.bddBelow_neg M hM
-      have h_inf_le : sInf { R | ∃ h: PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } ≤ -g.integral :=
+      have h_inf_le : sInf { R | ∃ h : PiecewiseConstantFunction I, h.integral = R ∧ ∀ x ∈ I.toSet, (-f) x ≤ h.f x } ≤ -g.integral :=
         csInf_le h_bdd_below h_neg_in_set
       linarith
   · -- Show -LowerDarbouxIntegral f I ≤ UpperDarbouxIntegral (-f) I
@@ -1024,91 +1024,91 @@ lemma UpperDarbouxIntegral.neg {f:ℝ → ℝ} {I: BoundedInterval} (hbound: ∃
         simp only [neg_h, PiecewiseConstantFunction.neg]
         have h1 : -f x ≤ h.f x := h_ineq
         nlinarith [h1]
-      have h_neg_in_set : -h.integral ∈ { R | ∃ g: PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } := by
+      have h_neg_in_set : -h.integral ∈ { R | ∃ g : PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } := by
         use neg_h, h.integral_neg, h_neg_lower
       have h_bdd := LowerDarbouxIntegral.bddAbove M hM
-      have h_le_sup : -h.integral ≤ sSup { R | ∃ g: PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } :=
+      have h_le_sup : -h.integral ≤ sSup { R | ∃ g : PiecewiseConstantFunction I, g.integral = R ∧ ∀ x ∈ I.toSet, g.f x ≤ f x } :=
         le_csSup h_bdd h_neg_in_set
       linarith
 
 /-- Exercise 1.1.22 -/
 -- Riemann integrability is equivalent to Darboux integrability for bounded functions.
-lemma RiemannIntegrableOn.iff_darbouxIntegrable {f:ℝ → ℝ} {I: BoundedInterval} (hbound: ∃ M, ∀ x ∈ I, |f x| ≤ M) : RiemannIntegrableOn f I ↔ DarbouxIntegrableOn f I := by sorry
+lemma RiemannIntegrableOn.iff_darbouxIntegrable {f : ℝ → ℝ} {I : BoundedInterval} (hbound : ∃ M, ∀ x ∈ I, |f x| ≤ M) : RiemannIntegrableOn f I ↔ DarbouxIntegrableOn f I := by sorry
 
 /-- Exercise 1.1.22 -/
 -- For Riemann integrable functions, the Riemann integral equals the Darboux integral.
-lemma riemann_integral_eq_darboux_integral {f:ℝ → ℝ} {I: BoundedInterval} (hf: RiemannIntegrableOn f I) : riemannIntegral f I = darbouxIntegral f I := by sorry
+lemma riemann_integral_eq_darboux_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : RiemannIntegrableOn f I) : riemannIntegral f I = darbouxIntegral f I := by sorry
 
 /-- Exercise 1.1.23 -/
 -- Any function continuous on a closed interval is Riemann integrable.
-lemma RiemannIntegrableOn.continuous {f:ℝ → ℝ} {I: BoundedInterval} (hI: I = Icc I.a I.b) (hcont: ContinuousOn f I.toSet) : RiemannIntegrableOn f I := by sorry
+lemma RiemannIntegrableOn.continuous {f : ℝ → ℝ} {I : BoundedInterval} (hI : I = Icc I.a I.b) (hcont : ContinuousOn f I.toSet) : RiemannIntegrableOn f I := by sorry
 
 -- A function that is continuous on each piece of a partition is Riemann integrable on the whole interval.
-lemma RiemannIntegrableOn.piecewise_continuous {f:ℝ → ℝ} {I: BoundedInterval} (hI: I = Icc I.a I.b)
- (T: Finset BoundedInterval)  (hdisjoint: (T : Set BoundedInterval).PairwiseDisjoint BoundedInterval.toSet)
- (hcover : I.toSet = ⋃ J ∈ T, J.toSet) (hcont: ∀ J ∈ T, ContinuousOn f J.toSet) : RiemannIntegrableOn f I := by sorry
+lemma RiemannIntegrableOn.piecewise_continuous {f : ℝ → ℝ} {I : BoundedInterval} (hI : I = Icc I.a I.b)
+ (T : Finset BoundedInterval)  (hdisjoint : (T : Set BoundedInterval).PairwiseDisjoint BoundedInterval.toSet)
+ (hcover : I.toSet = ⋃ J ∈ T, J.toSet) (hcont : ∀ J ∈ T, ContinuousOn f J.toSet) : RiemannIntegrableOn f I := by sorry
 
 /-- Exercise 1.1.24 (a) (Linearity of the piecewise constant integral) -/
 -- A scalar multiple of a Riemann integrable function is Riemann integrable.
-theorem RiemannIntegrableOn.smul {I: BoundedInterval} (c:ℝ) {f: ℝ → ℝ} (h: RiemannIntegrableOn f I) : RiemannIntegrableOn (c • f) I := by sorry
+theorem RiemannIntegrableOn.smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (h : RiemannIntegrableOn f I) : RiemannIntegrableOn (c • f) I := by sorry
 
 /-- Exercise 1.1.24 (a) (Linearity of the piecewise constant integral) -/
 -- The integral of a scalar multiple: integral(c * f) = c * integral(f).
-theorem riemann_integral_smul {I:BoundedInterval} (c:ℝ) {f: ℝ → ℝ} (h: RiemannIntegrableOn f I) : riemannIntegral (c • f) I = c • (riemannIntegral f I) := by sorry
+theorem riemann_integral_smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (h : RiemannIntegrableOn f I) : riemannIntegral (c • f) = c • (riemannIntegral f) := by sorry
 
 /-- Exercise 1.1.24 (a) (Linearity of the piecewise constant integral) -/
 -- The sum of two Riemann integrable functions is Riemann integrable.
-theorem RiemannIntegrableOn.add {I: BoundedInterval} {f g: ℝ → ℝ} (hf: RiemannIntegrableOn f I) (hg: RiemannIntegrableOn g I) : RiemannIntegrableOn (f + g) I := by sorry
+theorem RiemannIntegrableOn.add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : RiemannIntegrableOn f I) (hg : RiemannIntegrableOn g I) : RiemannIntegrableOn (f + g) I := by sorry
 
 /-- Exercise 1.1.24 (a) (Linearity of the piecewise constant integral) -/
 -- The integral of a sum: integral(f + g) = integral(f) + integral(g).
-theorem riemann_integral_add {I: BoundedInterval} {f g: ℝ → ℝ} (hf: RiemannIntegrableOn f I) (hg: RiemannIntegrableOn g I) : riemannIntegral (f+g) I = riemannIntegral f I + riemannIntegral g I := by sorry
+theorem riemann_integral_add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : RiemannIntegrableOn f I) (hg : RiemannIntegrableOn g I) : riemannIntegral (f+g) = riemannIntegral f + riemannIntegral g := by sorry
 
 /-- Exercise 1.1.24 (b) (Monotonicity of the piecewise constant integral) -/
 -- The integral is monotone: if f ≤ g pointwise, then integral(f) ≤ integral(g).
-theorem riemann_integral_mono {I: BoundedInterval} {f g: ℝ → ℝ} (hf: RiemannIntegrableOn f I) (hg: RiemannIntegrableOn g I) (hmono: ∀ x ∈ I.toSet, f x ≤ g x): riemannIntegral f I ≤ riemannIntegral g I := by sorry
+theorem riemann_integral_mono {I : BoundedInterval} {f g : ℝ → ℝ} (hf : RiemannIntegrableOn f I) (hg : RiemannIntegrableOn g I) (hmono : ∀ x ∈ I.toSet, f x ≤ g x) : riemannIntegral f ≤ riemannIntegral g := by sorry
 
 /-- Exercise 1.1.24 (c) (Indicator functions) -/
 -- The indicator function of a Jordan measurable set is Riemann integrable.
-theorem RiemannIntegrableOn.indicator_of_elem (I: BoundedInterval) {E:Set ℝ} (hE: JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) : RiemannIntegrableOn E.indicator' I := by sorry
+theorem RiemannIntegrableOn.indicator_of_elem (I : BoundedInterval) {E : Set ℝ} (hE : JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) : RiemannIntegrableOn E.indicator' I := by sorry
 
 /-- Exercise 1.1.24 (c) (Piecewise constant integral of indicator functions) -/
 -- The integral of an indicator function equals the measure of the set it indicates.
-theorem riemann_integral_of_elem {I: BoundedInterval} {E:Set ℝ} (hE: JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) (hsub: E ⊆ I.toSet) : riemannIntegral E.indicator' I = hE.measure := by sorry
+theorem riemann_integral_of_elem {I : BoundedInterval} {E : Set ℝ} (hE : JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) (hsub : E ⊆ I.toSet) : riemannIntegral E.indicator' I = hE.measure := by sorry
 
 /-- Exercise 1.1.24 (Uniqueness) -/
 -- The Riemann integral is the unique integral satisfying linearity, monotonicity, and normalization on indicator functions.
-theorem riemann_integral_unique {I: BoundedInterval} (integ: (ℝ → ℝ) → ℝ)
-  (hsmul: ∀ (c:ℝ) (f: ℝ → ℝ) (hf: RiemannIntegrableOn f I), integ (c • f) = c • (integ f))
-  (hadd: ∀ (f g: ℝ → ℝ) (hf: RiemannIntegrableOn f I) (hg: RiemannIntegrableOn g I), integ (f + g) = integ f + integ g)
-  (hmono: ∀ (f g: ℝ → ℝ) (hf: RiemannIntegrableOn f I) (hg: RiemannIntegrableOn g I) (hmono: ∀ x ∈ I.toSet, f x ≤ g x), integ f ≤ integ g)
-  (hindicator: ∀ (E:Set ℝ) (hE: JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) (hsub: E ⊆ I.toSet), integ E.indicator' = hE.measure) :
+theorem riemann_integral_unique {I : BoundedInterval} (integ : (ℝ → ℝ) → ℝ)
+  (hsmul : ∀ (c : ℝ) (f : ℝ → ℝ) (hf : RiemannIntegrableOn f I), integ (c • f) = c • (integ f))
+  (hadd : ∀ (f g : ℝ → ℝ) (hf : RiemannIntegrableOn f I) (hg : RiemannIntegrableOn g I), integ (f + g) = integ f + integ g)
+  (hmono : ∀ (f g : ℝ → ℝ) (hf : RiemannIntegrableOn f I) (hg : RiemannIntegrableOn g I) (hmono : ∀ x ∈ I.toSet, f x ≤ g x), integ f ≤ integ g)
+  (hindicator : ∀ (E : Set ℝ) (hE : JordanMeasurable (Real.equiv_EuclideanSpace' '' E) ) (hsub : E ⊆ I.toSet), integ E.indicator' = hE.measure) : 
   ∀ f, RiemannIntegrableOn f I → integ f = riemannIntegral f I := by sorry
 
 /-- Exercise 1.1.25 (Area interpretation of Riemann integral) -/
 -- The region under the graph of a Riemann integrable function is Jordan measurable.
-theorem RiemannIntegrableOn.measurable_upper {I: BoundedInterval}
-  {f: ℝ → ℝ} (hfint: RiemannIntegrableOn f I) :
-  JordanMeasurable { p:EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ 0 ≤ p 1 ∧ p 1 ≤ f (p 0) } := by sorry
+theorem RiemannIntegrableOn.measurable_upper {I : BoundedInterval}
+  {f : ℝ → ℝ} (hfint : RiemannIntegrableOn f I) : 
+  JordanMeasurable { p : EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ 0 ≤ p 1 ∧ p 1 ≤ f (p 0) } := by sorry
 
 /-- Exercise 1.1.25 (Area interpretation of Riemann integral) -/
 -- The region below the graph of a Riemann integrable function is Jordan measurable.
-theorem RiemannIntegrableOn.measurable_lower {I: BoundedInterval}
-  {f: ℝ → ℝ} (hfint: RiemannIntegrableOn f I) :
-  JordanMeasurable { p:EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ f (p 0) ≤ p 1 ∧ p 1 ≤ 0 } := by sorry
+theorem RiemannIntegrableOn.measurable_lower {I : BoundedInterval}
+  {f : ℝ → ℝ} (hfint : RiemannIntegrableOn f I) : 
+  JordanMeasurable { p : EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ f (p 0) ≤ p 1 ∧ p 1 ≤ 0 } := by sorry
 
 /-- Exercise 1.1.25 (Area interpretation of Riemann integral) -/
 -- A function is Riemann integrable iff the regions above and below its graph are both Jordan measurable.
-theorem JordanMeasurable.iff_integrable {I: BoundedInterval} (hI: I = Icc I.a I.b)
-  {f: ℝ → ℝ} (hf: ∃ M, ∀ x ∈ I.toSet, |f x| ≤ M) : RiemannIntegrableOn f I ↔
-  JordanMeasurable { p:EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ 0 ≤ p 1 ∧ p 1 ≤ f (p 0) } ∧
-  JordanMeasurable { p:EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ f (p 0) ≤ p 1 ∧ p 1 ≤ 0 }
+theorem JordanMeasurable.iff_integrable {I : BoundedInterval} (hI : I = Icc I.a I.b)
+  {f : ℝ → ℝ} (hf : ∃ M, ∀ x ∈ I.toSet, |f x| ≤ M) : RiemannIntegrableOn f I ↔
+  JordanMeasurable { p : EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ 0 ≤ p 1 ∧ p 1 ≤ f (p 0) } ∧
+  JordanMeasurable { p : EuclideanSpace' 2 | p 0 ∈ I.toSet ∧ f (p 0) ≤ p 1 ∧ p 1 ≤ 0 }
   := by sorry
 
 /-- Exercise 1.1.25 (Area interpretation of Riemann integral) -/
 -- The Riemann integral equals the difference between the measures of the upper and lower regions.
-theorem RiemannIntegrableOn.eq_measure {I: BoundedInterval}
-  {f: ℝ → ℝ} (hfint: RiemannIntegrableOn f I) :
+theorem RiemannIntegrableOn.eq_measure {I : BoundedInterval}
+  {f : ℝ → ℝ} (hfint : RiemannIntegrableOn f I) : 
   riemannIntegral f I = hfint.measurable_upper.measure - hfint.measurable_lower.measure := by sorry
 
 /- Exercise 1.1.26: Extend the definition of the Riemann and Darboux integrals to higher dimensions, in such a way that analogues of all the previous results hold; state and prove those analogues. -/

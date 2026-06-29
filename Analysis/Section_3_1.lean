@@ -92,7 +92,7 @@ class SetTheory where
   union_pair : Set → Set → Set -- Axiom 3.5
   union_pair_axiom X Y x : mem x (union_pair X Y) ↔ (mem x X ∨ mem x Y) -- Axiom 3.5
   specify A (P : Subtype (mem . A) → Prop) : Set -- Axiom 3.6
-  specification_axiom A (P : Subtype (mem . A) → Prop) :
+  specification_axiom A (P : Subtype (mem . A) → Prop) : 
     (∀ x, mem x (specify A P) → mem x A) ∧ ∀ x, mem x.val (specify A P) ↔ P x -- Axiom 3.6
   replace A (P : Subtype (mem . A) → Object → Prop)
     (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set -- Axiom 3.7
@@ -100,12 +100,12 @@ class SetTheory where
     (hP : ∀ x y y', P x y ∧ P x y' → y = y') : ∀ y, mem y (replace A P hP) ↔ ∃ x, P x y -- Axiom 3.7
   nat : Set -- Axiom 3.8
   nat_equiv : ℕ ≃ Subtype (mem . nat) -- Axiom 3.8
-  regularity_axiom A (hA : ∃ x, mem x A) :
+  regularity_axiom A (hA : ∃ x, mem x A) : 
     ∃ x, mem x A ∧ ∀ S, x = set_to_object S → ¬ ∃ y, mem y A ∧ mem y S -- Axiom 3.9
   pow : Set → Set → Set -- Axiom 3.11
-  function_to_object (X : Set) (Y : Set) :
+  function_to_object (X : Set) (Y : Set) : 
     (Subtype (mem . X) → Subtype (mem . Y)) ↪ Object -- Axiom 3.11
-  powerset_axiom (X : Set) (Y : Set) (F : Object) :
+  powerset_axiom (X : Set) (Y : Set) (F : Object) : 
     mem F (pow X Y) ↔ ∃ f : Subtype (mem . Y) → Subtype (mem . X),
     function_to_object Y X f = F -- Axiom 3.11
   union : Set → Set -- Axiom 3.12
@@ -326,7 +326,7 @@ theorem SetTheory.Set.pair_self (a : Object) : ({a,a} : Set) = {a} := by
   rw [mem_singleton]
 
 /-- Exercise 3.1.1 -/
-theorem SetTheory.Set.pair_eq_pair {a b c d : Object} (h : ({a,b} : Set) = {c,d}) :
+theorem SetTheory.Set.pair_eq_pair {a b c d : Object} (h : ({a,b} : Set) = {c,d}) : 
     a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [Set.ext_iff] at h
   have ha := h a
@@ -355,21 +355,52 @@ theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
   rw [Set.ext_iff] at h
   obtain ⟨h₀, h₁⟩ := h empty
   -- singleton_empty = {(empty : Object)} по определению
-  -- mem_singleton говорит: x ∈ {a} ↔ x = a
+  -- mem_singleton: x ∈ {a} ↔ x = a
   -- После rw [mem_singleton]: (empty : Object) = (empty : Object),
   -- которая закрывается rfl автоматически
   have hmem : (empty : Object) ∈ singleton_empty := by rw [mem_singleton]
   have hh : (empty : Object) ∈ empty := h₁ hmem
   rw [show empty = ∅ by rfl] at hh
-  have hc := not_mem_empty (∅ : Set)  -- Axiom 3.3: (x : Object) : x ∉ ∅
+  have hc := not_mem_empty (∅ : Set) -- Axiom 3.3 : (x : Object) : x ∉ ∅
+  contradiction
+
+theorem SetTheory.Set.emptyset_neq_singleton' : empty ≠ singleton_empty := by
+  intro h
+  have hmem : (empty : Object) ∈ singleton_empty := by rw [mem_singleton] -- x ∈ {a} ↔ x = a
+  rw [← h] at hmem
+  exact not_mem_empty _ hmem
+
+/-- Exercise 3.1.2 -/
+theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by
+  intro h
+  rw [Set.ext_iff] at h
+  obtain ⟨h₀, h₁⟩ := h empty
+  have hmem : (empty : Object) ∈ pair_empty := by
+    rw [mem_pair]
+    left
+    rfl
+  have hh : (empty : Object) ∈ empty := h₁ hmem
+  rw [show empty = ∅ by rfl] at hh
+  have hc := not_mem_empty (∅ : Set) -- Axiom 3.3 : (x : Object) : x ∉ ∅
+  contradiction
+
+theorem SetTheory.Set.emptyset_neq_pair' : empty ≠ pair_empty := by
+  intro h
+  have hmem : (empty : Object) ∈ pair_empty := by rw [mem_pair]; tauto
+  rw [← h, show empty = ∅ by rfl] at hmem
+  have hnot := not_mem_empty (∅ : Set) -- Axiom 3.3 : (x : Object) : x ∉ ∅
   contradiction
 
 /-- Exercise 3.1.2 -/
-theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by sorry
-
-/-- Exercise 3.1.2 -/
 theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty := by
-  sorry
+  intro h
+  have hmem : (singleton_empty : Object) ∈ pair_empty := by rw [mem_pair]; tauto
+  rw [← h] at hmem
+  rw [mem_singleton] at hmem -- x ∈ {a} ↔ x = a
+  symm at hmem
+  have heq : empty = singleton_empty := Set.coe_eq hmem
+  have hnot := emptyset_neq_singleton
+  contradiction
 
 /--
   Remark 3.1.11.
@@ -384,7 +415,7 @@ theorem SetTheory.Set.union_congr_left (A A' B : Set) (h : A = A') : A ∪ B = A
 theorem SetTheory.Set.union_congr_right (A B B' : Set) (h : B = B') : A ∪ B = A ∪ B' := by sorry
 
 /-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
-theorem SetTheory.Set.singleton_union_singleton (a b : Object) :
+theorem SetTheory.Set.singleton_union_singleton (a b : Object) : 
     ({a} : Set) ∪ ({b} : Set) = {a,b} := by
   sorry
 
@@ -426,7 +457,7 @@ theorem SetTheory.Set.triple_eq (a b c : Object) : {a,b,c} = ({a} : Set) ∪ {b,
   rfl
 
 /-- Example 3.1.10 -/
-theorem SetTheory.Set.pair_union_pair (a b c : Object) :
+theorem SetTheory.Set.pair_union_pair (a b c : Object) : 
     ({a,b} : Set) ∪ {b,c} = {a,b,c} := by
   ext; simp only [mem_union, mem_pair, mem_triple]; tauto
 
@@ -537,18 +568,18 @@ lemma SetTheory.Set.subtype_mk_coe {A : Set} {x : Object} (hx : x ∈ A) : A.sub
 abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set := SetTheory.specify A P
 
 /-- Axiom 3.6 (axiom of specification) -/
-theorem SetTheory.Set.specification_axiom {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) :
+theorem SetTheory.Set.specification_axiom {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) : 
     x ∈ A :=
   (SetTheory.specification_axiom A P).1 x h
 
 /-- Axiom 3.6 (axiom of specification) -/
-theorem SetTheory.Set.specification_axiom' {A : Set} (P : A → Prop) (x : A) :
+theorem SetTheory.Set.specification_axiom' {A : Set} (P : A → Prop) (x : A) : 
     x.val ∈ A.specify P ↔ P x :=
   (SetTheory.specification_axiom A P).2 x
 
 /-- Axiom 3.6 (axiom of specification) -/
 @[simp]
-theorem SetTheory.Set.specification_axiom'' {A : Set} (P : A → Prop) (x : Object) :
+theorem SetTheory.Set.specification_axiom'' {A : Set} (P : A → Prop) (x : Object) : 
     x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨ x, h ⟩ := by
   constructor
   . intro h; use specification_axiom h
@@ -560,7 +591,7 @@ theorem SetTheory.Set.specify_subset {A : Set} (P : A → Prop) : A.specify P �
 
 /-- This exercise may require some understanding of how subtypes are implemented in Lean. -/
 theorem SetTheory.Set.specify_congr {A A' : Set} (hAA' : A = A') {P : A → Prop} {P' : A' → Prop}
-  (hPP' : (x : Object) → (h : x ∈ A) → (h' : x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) :
+  (hPP' : (x : Object) → (h : x ∈ A) → (h' : x ∈ A') → P ⟨ x, h⟩ ↔ P' ⟨ x, h'⟩ ) : 
     A.specify P = A'.specify P' := by sorry
 
 instance SetTheory.Set.instIntersection : Inter Set where
@@ -609,12 +640,12 @@ theorem SetTheory.Set.inter_self (A : Set) : A ∩ A = A := by
 theorem SetTheory.Set.inter_assoc (A B C : Set) : (A ∩ B) ∩ C = A ∩ (B ∩ C) := by sorry
 
 /-- Proposition 3.1.27(f) -/
-theorem  SetTheory.Set.inter_union_distrib_left (A B C : Set) :
+theorem  SetTheory.Set.inter_union_distrib_left (A B C : Set) : 
     A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
   sorry
 
 /-- Proposition 3.1.27(f) -/
-theorem  SetTheory.Set.union_inter_distrib_left (A B C : Set) :
+theorem  SetTheory.Set.union_inter_distrib_left (A B C : Set) : 
     A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
   sorry
 
@@ -669,7 +700,7 @@ abbrev SetTheory.Set.replace (A : Set) {P : A → Object → Prop}
 /-- Axiom 3.7 (Axiom of replacement) -/
 @[simp]
 theorem SetTheory.Set.replacement_axiom {A : Set} {P : A → Object → Prop}
-  (hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object) :
+  (hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object) : 
     y ∈ A.replace hP ↔ ∃ x, P x y := SetTheory.replacement_axiom A P hP y
 
 abbrev Nat := SetTheory.nat
@@ -746,7 +777,7 @@ lemma SetTheory.Set.nat_equiv_symm_inj (n m : Nat) : (n : ℕ) = (m : ℕ) ↔ n
   Equiv.apply_eq_iff_eq nat_equiv.symm
 
 @[simp]
-theorem SetTheory.Set.ofNat_inj (n m : ℕ) :
+theorem SetTheory.Set.ofNat_inj (n m : ℕ) : 
     (ofNat(n) : Nat) = (ofNat(m) : Nat) ↔ ofNat(n) = ofNat(m) := by
       convert nat_equiv_inj _ _
 
@@ -754,7 +785,7 @@ example : (5 : Nat) ≠ (3 : Nat) := by
   simp
 
 @[simp]
-theorem SetTheory.Set.ofNat_inj' (n m : ℕ) :
+theorem SetTheory.Set.ofNat_inj' (n m : ℕ) : 
     (ofNat(n) : Object) = (ofNat(m) : Object) ↔ ofNat(n) = ofNat(m) := by
       simp only [←Object.ofnat_eq, Object.ofnat_eq', Set.coe_inj, Set.nat_equiv_inj]
       rfl
@@ -769,7 +800,7 @@ example (n : ℕ) : (n : Object) = 2 ↔ n = 2 := by
   simp
 
 @[simp]
-theorem SetTheory.Object.natCast_inj (n m : ℕ) :
+theorem SetTheory.Object.natCast_inj (n m : ℕ) : 
     (n : Object) = (m : Object) ↔ n = m := by
       simp [←ofnat_eq, Subtype.val_inj]
 
@@ -877,11 +908,11 @@ theorem SetTheory.Set.inter_union_cancel (A B : Set) : A ∩ (A ∪ B) = A := by
 theorem SetTheory.Set.union_inter_cancel (A B : Set) : A ∪ (A ∩ B) = A := by sorry
 
 /-- Exercise 3.1.9 -/
-theorem SetTheory.Set.partition_left {A B X : Set} (h_union : A ∪ B = X) (h_inter : A ∩ B = ∅) :
+theorem SetTheory.Set.partition_left {A B X : Set} (h_union : A ∪ B = X) (h_inter : A ∩ B = ∅) : 
     A = X \ B := by sorry
 
 /-- Exercise 3.1.9 -/
-theorem SetTheory.Set.partition_right {A B X : Set} (h_union : A ∪ B = X) (h_inter : A ∩ B = ∅) :
+theorem SetTheory.Set.partition_right {A B X : Set} (h_union : A ∪ B = X) (h_inter : A ∩ B = ∅) : 
     B = X \ A := by
   sorry
 
@@ -889,7 +920,7 @@ theorem SetTheory.Set.partition_right {A B X : Set} (h_union : A ∪ B = X) (h_i
   Exercise 3.1.10.
   You may find {name}`Function.onFun_apply` and the {tactic}`fin_cases` tactic useful.
 -/
-theorem SetTheory.Set.pairwise_disjoint (A B : Set) :
+theorem SetTheory.Set.pairwise_disjoint (A B : Set) : 
     Pairwise (Function.onFun Disjoint ![A \ B, A ∩ B, B \ A]) := by sorry
 
 /-- Exercise 3.1.10 -/
@@ -901,19 +932,19 @@ theorem SetTheory.Set.union_eq_partition (A B : Set) : A ∪ B = (A \ B) ∪ (A 
   The challenge is to prove this without using {name}`Set.specify`, {name}`Set.specification_axiom`,
   {name}`Set.specification_axiom'`, or anything built from them (like differences and intersections).
 -/
-theorem SetTheory.Set.specification_from_replacement {A : Set} {P : A → Prop} :
+theorem SetTheory.Set.specification_from_replacement {A : Set} {P : A → Prop} : 
     ∃ B, B ⊆ A ∧ ∀ x, x.val ∈ B ↔ P x := by sorry
 
 /-- Exercise 3.1.12.-/
-theorem SetTheory.Set.subset_union_subset {A B A' B' : Set} (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) :
+theorem SetTheory.Set.subset_union_subset {A B A' B' : Set} (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : 
     A' ∪ B' ⊆ A ∪ B := by sorry
 
 /-- Exercise 3.1.12.-/
-theorem SetTheory.Set.subset_inter_subset {A B A' B' : Set} (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) :
+theorem SetTheory.Set.subset_inter_subset {A B A' B' : Set} (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : 
     A' ∩ B' ⊆ A ∩ B := by sorry
 
 /-- Exercise 3.1.12.-/
-theorem SetTheory.Set.subset_diff_subset_counter :
+theorem SetTheory.Set.subset_diff_subset_counter : 
     ∃ (A B A' B' : Set), (A' ⊆ A) ∧ (B' ⊆ B) ∧ ¬ (A' \ B') ⊆ (A \ B) := by sorry
 
 /-
@@ -942,7 +973,7 @@ example (X : Set) : _root_.Set Object := X
   (and indeed Russell's paradox prevents this)
 -/
 @[simp]
-theorem SetTheory.Set.coe_inj' (X Y : Set) :
+theorem SetTheory.Set.coe_inj' (X Y : Set) : 
     (X : _root_.Set Object) = (Y : _root_.Set Object) ↔ X = Y := by
   constructor
   . intro h; apply ext; intro x
@@ -957,17 +988,17 @@ theorem SetTheory.Set.mem_coe (X : Set) (x : Object) : x ∈ (X : _root_.Set Obj
 theorem SetTheory.Set.coe_empty : ((∅ : Set) : _root_.Set Object) = ∅ := by sorry
 
 /-- Compatibility of subset -/
-theorem SetTheory.Set.coe_subset (X Y : Set) :
+theorem SetTheory.Set.coe_subset (X Y : Set) : 
     (X : _root_.Set Object) ⊆ (Y : _root_.Set Object) ↔ X ⊆ Y := by sorry
 
-theorem SetTheory.Set.coe_ssubset (X Y : Set) :
+theorem SetTheory.Set.coe_ssubset (X Y : Set) : 
     (X : _root_.Set Object) ⊂ (Y : _root_.Set Object) ↔ X ⊂ Y := by sorry
 
 /-- Compatibility of singleton -/
 theorem SetTheory.Set.coe_singleton (x : Object) : (({x} : Set) : _root_.Set Object) = {x} := by sorry
 
 /-- Compatibility of union -/
-theorem SetTheory.Set.coe_union (X Y : Set) :
+theorem SetTheory.Set.coe_union (X Y : Set) : 
     ((X ∪ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by sorry
 
 /-- Compatibility of pair -/
@@ -977,15 +1008,15 @@ theorem SetTheory.Set.coe_pair (x y : Object) : (({x, y} : Set) : _root_.Set Obj
 theorem SetTheory.Set.coe_subtype (X : Set) :  (X : _root_.Set Object) = X.toSubtype := by sorry
 
 /-- Compatibility of intersection -/
-theorem SetTheory.Set.coe_intersection (X Y : Set) :
+theorem SetTheory.Set.coe_intersection (X Y : Set) : 
     ((X ∩ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by sorry
 
 /-- Compatibility of set difference-/
-theorem SetTheory.Set.coe_diff (X Y : Set) :
+theorem SetTheory.Set.coe_diff (X Y : Set) : 
     ((X \ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by sorry
 
 /-- Compatibility of disjointness -/
-theorem SetTheory.Set.coe_Disjoint (X Y : Set) :
+theorem SetTheory.Set.coe_Disjoint (X Y : Set) : 
     Disjoint (X : _root_.Set Object) (Y : _root_.Set Object) ↔ Disjoint X Y := by sorry
 
 end Chapter3

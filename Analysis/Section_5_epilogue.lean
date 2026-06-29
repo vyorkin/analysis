@@ -32,23 +32,23 @@ structure DedekindCut where
   E : Set ℚ
   nonempty : E.Nonempty
   bounded : BddAbove E
-  lower: IsLowerSet E
+  lower : IsLowerSet E
   nomax : ∀ q ∈ E, ∃ r ∈ E, r > q
 
-theorem isLowerSet_iff (E: Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E :=
+theorem isLowerSet_iff (E : Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E :=
   isLowerSet_iff_forall_lt
 
-abbrev Real.toSet_Rat (x:Real) : Set ℚ := { q | (q:Real) < x }
+abbrev Real.toSet_Rat (x : Real) : Set ℚ := { q | (q : Real) < x }
 
-lemma Real.toSet_Rat_nonempty (x:Real) : x.toSet_Rat.Nonempty := by sorry
+lemma Real.toSet_Rat_nonempty (x : Real) : x.toSet_Rat.Nonempty := by sorry
 
-lemma Real.toSet_Rat_bounded (x:Real) : BddAbove x.toSet_Rat := by sorry
+lemma Real.toSet_Rat_bounded (x : Real) : BddAbove x.toSet_Rat := by sorry
 
-lemma Real.toSet_Rat_lower (x:Real) : IsLowerSet x.toSet_Rat := by sorry
+lemma Real.toSet_Rat_lower (x : Real) : IsLowerSet x.toSet_Rat := by sorry
 
-lemma Real.toSet_Rat_nomax {x:Real} : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
+lemma Real.toSet_Rat_nomax {x : Real} : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
 
-abbrev Real.toCut (x:Real) : DedekindCut :=
+abbrev Real.toCut (x : Real) : DedekindCut :=
  {
    E := x.toSet_Rat
    nonempty := x.toSet_Rat_nonempty
@@ -57,15 +57,15 @@ abbrev Real.toCut (x:Real) : DedekindCut :=
    nomax := x.toSet_Rat_nomax
  }
 
-abbrev DedekindCut.toSet_Real (c: DedekindCut) : Set Real := (fun (q:ℚ) ↦ (q:Real)) '' c.E
+abbrev DedekindCut.toSet_Real (c : DedekindCut) : Set Real := (fun (q : ℚ) ↦ (q : Real)) '' c.E
 
-lemma DedekindCut.toSet_Real_nonempty (c: DedekindCut) : c.toSet_Real.Nonempty := by sorry
+lemma DedekindCut.toSet_Real_nonempty (c : DedekindCut) : c.toSet_Real.Nonempty := by sorry
 
-lemma DedekindCut.toSet_Real_bounded (c: DedekindCut) : BddAbove c.toSet_Real := by sorry
+lemma DedekindCut.toSet_Real_bounded (c : DedekindCut) : BddAbove c.toSet_Real := by sorry
 
-noncomputable abbrev DedekindCut.toReal (c: DedekindCut) : Real := sSup c.toSet_Real
+noncomputable abbrev DedekindCut.toReal (c : DedekindCut) : Real := sSup c.toSet_Real
 
-lemma DedekindCut.toReal_isLUB (c: DedekindCut) : IsLUB c.toSet_Real c.toReal :=
+lemma DedekindCut.toReal_isLUB (c : DedekindCut) : IsLUB c.toSet_Real c.toReal :=
   ExtendedReal.sSup_of_bounded c.toSet_Real_nonempty c.toSet_Real_bounded
 
 noncomputable abbrev Real.equivCut : Real ≃ DedekindCut where
@@ -80,17 +80,17 @@ end Chapter5
 
 /-- Now to develop analogous results for the Mathlib reals. -/
 
-abbrev Real.toSet_Rat (x:ℝ) : Set ℚ := { q | (q:ℝ) < x }
+abbrev Real.toSet_Rat (x : ℝ) : Set ℚ := { q | (q : ℝ) < x }
 
-lemma Real.toSet_Rat_nonempty (x:ℝ) : x.toSet_Rat.Nonempty := by sorry
+lemma Real.toSet_Rat_nonempty (x : ℝ) : x.toSet_Rat.Nonempty := by sorry
 
-lemma Real.toSet_Rat_bounded (x:ℝ) : BddAbove x.toSet_Rat := by sorry
+lemma Real.toSet_Rat_bounded (x : ℝ) : BddAbove x.toSet_Rat := by sorry
 
-lemma Real.toSet_Rat_lower (x:ℝ) : IsLowerSet x.toSet_Rat := by sorry
+lemma Real.toSet_Rat_lower (x : ℝ) : IsLowerSet x.toSet_Rat := by sorry
 
-lemma Real.toSet_Rat_nomax (x:ℝ) : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
+lemma Real.toSet_Rat_nomax (x : ℝ) : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
 
-abbrev Real.toCut (x:ℝ) : Chapter5.DedekindCut :=
+abbrev Real.toCut (x : ℝ) : Chapter5.DedekindCut :=
  {
    E := x.toSet_Rat
    nonempty := x.toSet_Rat_nonempty
@@ -101,15 +101,15 @@ abbrev Real.toCut (x:ℝ) : Chapter5.DedekindCut :=
 
 namespace Chapter5
 
-abbrev DedekindCut.toSet_R (c: DedekindCut) : Set ℝ := (fun (q:ℚ) ↦ (q:ℝ)) '' c.E
+abbrev DedekindCut.toSet_R (c : DedekindCut) : Set ℝ := (fun (q : ℚ) ↦ (q : ℝ)) '' c.E
 
-lemma DedekindCut.toSet_R_nonempty (c: DedekindCut) : c.toSet_R.Nonempty := by sorry
+lemma DedekindCut.toSet_R_nonempty (c : DedekindCut) : c.toSet_R.Nonempty := by sorry
 
-lemma DedekindCut.toSet_R_bounded (c: DedekindCut) : BddAbove c.toSet_R := by sorry
+lemma DedekindCut.toSet_R_bounded (c : DedekindCut) : BddAbove c.toSet_R := by sorry
 
-noncomputable abbrev DedekindCut.toR (c: DedekindCut) : ℝ := sSup c.toSet_R
+noncomputable abbrev DedekindCut.toR (c : DedekindCut) : ℝ := sSup c.toSet_R
 
-lemma DedekindCut.toR_isLUB (c: DedekindCut) : IsLUB c.toSet_R c.toR :=
+lemma DedekindCut.toR_isLUB (c : DedekindCut) : IsLUB c.toSet_R c.toR :=
   isLUB_csSup c.toSet_R_nonempty c.toSet_R_bounded
 
 end Chapter5
@@ -135,11 +135,11 @@ lemma Real.equivR_iff (x : Real) (y : ℝ) : y = Real.equivR x ↔ y.toCut = x.t
 -----
 
 -- We start by showing it works for ratCasts
-theorem Real.equivR_ratCast {q: ℚ} : equivR q = (q: ℝ) := by
+theorem Real.equivR_ratCast {q : ℚ} : equivR q = (q : ℝ) := by
   sorry
 
-lemma Real.equivR_nat {n: ℕ} : equivR n = (n: ℝ) := equivR_ratCast
-lemma Real.equivR_int {n: ℤ} : equivR n = (n: ℝ) := equivR_ratCast
+lemma Real.equivR_nat {n : ℕ} : equivR n = (n : ℝ) := equivR_ratCast
+lemma Real.equivR_int {n : ℤ} : equivR n = (n : ℝ) := equivR_ratCast
 
 ----
 
@@ -147,27 +147,27 @@ lemma Real.equivR_int {n: ℤ} : equivR n = (n: ℝ) := equivR_ratCast
 -- To do this we need a few things:
 
 -- Convertion between the notions of Cauchy Sequences
-theorem Sequence.IsCauchy.to_IsCauSeq {a: ℕ → ℚ} (ha: IsCauchy a) : IsCauSeq _root_.abs a := by
+theorem Sequence.IsCauchy.to_IsCauSeq {a : ℕ → ℚ} (ha : IsCauchy a) : IsCauSeq _root_.abs a := by
   sorry
 
 -- Convertion of an `IsCauchy` to a `CauSeq`
-abbrev Sequence.IsCauchy.CauSeq {a: ℕ → ℚ} : (ha: IsCauchy a) → CauSeq ℚ _root_.abs :=
+abbrev Sequence.IsCauchy.CauSeq {a : ℕ → ℚ} : (ha : IsCauchy a) → CauSeq ℚ _root_.abs :=
   (⟨a, ·.to_IsCauSeq⟩)
 
 -- We then set up the conversion from Sequence.Equiv to CauSeq.LimZero because
 -- it is the equivalence relation
-example {a b: CauSeq ℚ abs} : a ≈ b ↔ CauSeq.LimZero (a - b) := by rfl
+example {a b : CauSeq ℚ abs} : a ≈ b ↔ CauSeq.LimZero (a - b) := by rfl
 
-theorem Sequence.Equiv.LimZero {a b: ℕ → ℚ} (ha: IsCauchy a) (hb: IsCauchy b) (h:Equiv a b)
+theorem Sequence.Equiv.LimZero {a b : ℕ → ℚ} (ha : IsCauchy a) (hb : IsCauchy b) (h : Equiv a b)
   : CauSeq.LimZero (ha.CauSeq - hb.CauSeq) := by
     sorry
 
 -- We can now use it to convert between different functions in Real.mk
-theorem Real.mk_eq_mk {a b: ℕ → ℚ} (ha : Sequence.IsCauchy a) (hb : Sequence.IsCauchy b) (hab: Sequence.Equiv a b)
+theorem Real.mk_eq_mk {a b : ℕ → ℚ} (ha : Sequence.IsCauchy a) (hb : Sequence.IsCauchy b) (hab : Sequence.Equiv a b)
   : Real.mk ha.CauSeq = Real.mk hb.CauSeq := Real.mk_eq.mpr (hab.LimZero ha hb)
 
 -- Both directions of the equivalence
-theorem Sequence.Equiv_iff_LimZero {a b: ℕ → ℚ} (ha: IsCauchy a) (hb: IsCauchy b)
+theorem Sequence.Equiv_iff_LimZero {a b : ℕ → ℚ} (ha : IsCauchy a) (hb : IsCauchy b)
   : Equiv a b ↔ CauSeq.LimZero (ha.CauSeq - hb.CauSeq) := by
     refine ⟨(·.LimZero ha hb), ?_⟩
     sorry
@@ -177,18 +177,18 @@ theorem Sequence.Equiv_iff_LimZero {a b: ℕ → ℚ} (ha: IsCauchy a) (hb: IsCa
 
 -- We show that for any sequence, it will eventually be arbitrarily close to its LIM
 open Real in
-theorem Sequence.difference_approaches_zero {a: ℕ → ℚ} (ha: Sequence.IsCauchy a) :
-  ∀ε > 0, ∃N, ∀n ≥ N, |LIM a - a n| ≤ (ε: ℚ) := by
+theorem Sequence.difference_approaches_zero {a : ℕ → ℚ} (ha : Sequence.IsCauchy a) : 
+  ∀ε > 0, ∃N, ∀n ≥ N, |LIM a - a n| ≤ (ε : ℚ) := by
     sorry
 
 -- There exists a Cauchy sequence entirely above the LIM
-theorem Real.exists_equiv_above {a: ℕ → ℚ} (ha: Sequence.IsCauchy a)
-  : ∃(b: ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, LIM a ≤ b n := by
+theorem Real.exists_equiv_above {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
+  : ∃(b : ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, LIM a ≤ b n := by
     sorry
 
 -- There exists a Cauchy sequence entirely below the LIM
-theorem Real.exists_equiv_below {a: ℕ → ℚ} (ha: Sequence.IsCauchy a)
-  : ∃(b: ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, b n ≤ LIM a := by
+theorem Real.exists_equiv_below {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
+  : ∃(b : ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, b n ≤ LIM a := by
     sorry
 
 ----
@@ -200,22 +200,22 @@ theorem Real.exists_equiv_below {a: ℕ → ℚ} (ha: Sequence.IsCauchy a)
 
 -- Transform a `Real` to an `ℝ` by going through Cauchy Sequences
 -- we can use the conversion of Real.mk_eq to use different sequences to show different parts
-theorem Real.equivR_eq' {a: ℕ → ℚ} (ha: Sequence.IsCauchy a)
+theorem Real.equivR_eq' {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
   : (LIM a).equivR = Real.mk ha.CauSeq := by
-    by_cases hq: ∃(q: ℚ), q = LIM a
+    by_cases hq : ∃(q : ℚ), q = LIM a
     · sorry
     show sSup (Rat.cast '' (LIM a).toSet_Rat) = _
     refine IsLUB.csSup_eq ⟨?_, ?_⟩ (Set.Nonempty.image _ <| Real.toSet_Rat_nonempty _)
     · -- show that `Real.mk ha.CauSeq` is an upper bound
       intro _ hy
       obtain ⟨y, hy, h⟩ := Set.mem_image _ _ _ |>.mp hy
-      rw [← h, show (y: ℝ) = Real.mk (CauSeq.const _ y) from rfl]
+      rw [← h, show (y : ℝ) = Real.mk (CauSeq.const _ y) from rfl]
       sorry
     -- show that for any other upper bound, `Real.mk ha.CauSeq` is smaller
     intro M hM
     sorry
 
-lemma Real.equivR_eq (x: Real) : ∃(a : ℕ → ℚ) (ha: Sequence.IsCauchy a),
+lemma Real.equivR_eq (x : Real) : ∃(a : ℕ → ℚ) (ha : Sequence.IsCauchy a),
   x = LIM a ∧ x.equivR = Real.mk ha.CauSeq := by
     obtain ⟨a, ha, rfl⟩ := x.eq_lim
     exact ⟨a, ha, rfl, equivR_eq' ha⟩
@@ -231,22 +231,22 @@ noncomputable abbrev Real.equivR_ordered_ring : Real ≃+*o ℝ where
 lemma Real.equivR_map_mul {x y : Real} : equivR (x * y) = equivR x * equivR y :=
   equivR_ordered_ring.map_mul _ _
 
-lemma Real.equivR_map_inv {x: Real} : equivR (x⁻¹) = (equivR x)⁻¹ :=
+lemma Real.equivR_map_inv {x : Real} : equivR (x⁻¹) = (equivR x)⁻¹ :=
   map_inv₀ equivR_ordered_ring _
 
-theorem Real.equivR_map_pos {x: Real} : 0 < x ↔ 0 < equivR x := by sorry
+theorem Real.equivR_map_pos {x : Real} : 0 < x ↔ 0 < equivR x := by sorry
 
-theorem Real.equivR_map_nonneg {x: Real} : 0 ≤ x ↔ 0 ≤ equivR x := by sorry
+theorem Real.equivR_map_nonneg {x : Real} : 0 ≤ x ↔ 0 ≤ equivR x := by sorry
 
 
 -- Showing equivalence of the different pows
-theorem Real.pow_of_equivR (x:Real) (n:ℕ) : equivR (x^n) = (equivR x)^n := by
+theorem Real.pow_of_equivR (x : Real) (n : ℕ) : equivR (x^n) = (equivR x)^n := by
   sorry
 
-theorem Real.zpow_of_equivR (x:Real) (n:ℤ) : equivR (x^n) = (equivR x)^n := by
+theorem Real.zpow_of_equivR (x : Real) (n : ℤ) : equivR (x^n) = (equivR x)^n := by
   sorry
 
-theorem Real.ratPow_of_equivR (x:Real) (q:ℚ) (hx : x > 0): equivR (x^q) = (equivR x)^(q:ℝ) := by
+theorem Real.ratPow_of_equivR (x : Real) (q : ℚ) (hx : x > 0) : equivR (x^q) = (equivR x)^(q : ℝ) := by
   sorry
 
 

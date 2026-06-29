@@ -32,7 +32,7 @@ lemma PSet.mem_ofNat_iff (n m : ℕ) : ofNat n ∈ ofNat m ↔ n < m := by
 
 /-- Another preliminary lemma: Natural numbers in {name}`PSet` can only be equivalent
 if they are equal. -/
-lemma PSet.eq_of_ofNat_equiv_ofNat (n m : ℕ): (ofNat.{u} n).Equiv (ofNat.{u} m) → n = m := by
+lemma PSet.eq_of_ofNat_equiv_ofNat (n m : ℕ) : (ofNat.{u} n).Equiv (ofNat.{u} m) → n = m := by
   wlog hmn : m ≤ n generalizing n m
   · intro heq; rw [this _ _ _ heq.symm]; order
   intro h; rw [Equiv.eq, Set.ext_iff] at h

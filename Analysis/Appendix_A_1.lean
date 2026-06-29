@@ -156,7 +156,7 @@ example : ¬(2 + 2 = 5) := by simp
 
 example : 2 + 2 ≠ 5 := by simp
 
-example (Jane_black_hair Jane_blue_eyes : Prop) :
+example (Jane_black_hair Jane_blue_eyes : Prop) : 
   (¬(Jane_black_hair ∧ Jane_blue_eyes)) ↔ (¬Jane_black_hair ∨ ¬Jane_blue_eyes) := by
   simp; tauto
 
@@ -170,7 +170,7 @@ example (x : ℤ) : ¬(x ≥ 2 ∧ x ≤ 6) ↔ (x < 2 ∨ x > 6) := by
   have : ¬(x ≤ 6) ↔ (x > 6) := Int.not_le
   tauto
 
-example (John_brown_hair John_black_hair : Prop) :
+example (John_brown_hair John_black_hair : Prop) : 
   (¬(John_brown_hair ∨ John_black_hair)) ↔ (¬John_brown_hair ∧ ¬John_black_hair) := by
   simp
 
@@ -182,40 +182,40 @@ example (x : ℝ) : ¬(x ≥ 1 ∧ x ≤ -1) ↔ (x < 1 ∨ x > -1) := by
 example (x : ℤ) : ¬(Even x ∨ Odd x) ↔ (¬Even x ∧ ¬Odd x) := by
   tauto
 
-example (X:Prop) : ¬ (¬ X) ↔ X := by
+example (X : Prop) : ¬ (¬ X) ↔ X := by
   simp
 
 /-- If and only if (iff) -/
-example {X Y : Prop} (hXY: X ↔ Y) (hX: X) : Y := by
+example {X Y : Prop} (hXY : X ↔ Y) (hX : X) : Y := by
   rw [hXY] at hX
   exact hX
 
-example {X Y: Prop} (hXY: X ↔ Y) (hY: Y) : X := by
+example {X Y : Prop} (hXY : X ↔ Y) (hY : Y) : X := by
   rw [←hXY] at hY
   exact hY
 
-example {X Y: Prop} (hXY: X ↔ Y) (hX: X) : Y := by
+example {X Y : Prop} (hXY : X ↔ Y) (hX : X) : Y := by
   exact hXY.mp hX
 
-example {X Y: Prop} (hXY: X ↔ Y) (hY: Y) : X := by
+example {X Y : Prop} (hXY : X ↔ Y) (hY : Y) : X := by
   exact hXY.mpr hY
 
-example {X Y: Prop} (hXY: X ↔ Y) : X=Y := by
+example {X Y : Prop} (hXY : X ↔ Y) : X=Y := by
   simp [hXY]
 
-example (x:ℝ) : x = 3 ↔ 2 * x = 6 := by
+example (x : ℝ) : x = 3 ↔ 2 * x = 6 := by
   constructor
   . intro h
     linarith
   intro h
   linarith
 
-example : ¬ (∀ x:ℝ, x = 3 ↔ x^2 = 9) := by
+example : ¬ (∀ x : ℝ, x = 3 ↔ x^2 = 9) := by
   simp
   use -3
   norm_cast
 
-example {X Y: Prop} (hXY: X ↔ Y) (hX: ¬ X) : ¬ Y := by
+example {X Y : Prop} (hXY : X ↔ Y) (hX : ¬ X) : ¬ Y := by
   by_contra this
   rw [←hXY] at this
   contradiction
@@ -223,39 +223,39 @@ example {X Y: Prop} (hXY: X ↔ Y) (hX: ¬ X) : ¬ Y := by
 example : (2+2=5) ↔ (4+4=10) := by
   simp
 
-example {X Y Z:Prop} (hXY: X ↔ Y) (hXZ: X ↔ Z) : [X,Y,Z].TFAE := by
+example {X Y Z : Prop} (hXY : X ↔ Y) (hXZ : X ↔ Z) : [X,Y,Z].TFAE := by
   tfae_have 1 ↔ 2 := by exact hXY  -- This line is optional
   tfae_have 1 ↔ 3 := by exact hXZ  -- This line is optional
   tfae_finish
 
 /-- Note for the {name (full := List.TFAE.out)}`out` method that one indexes starting from 0, in
 contrast to the {tactic}`tfae_have` tactic. -/
-example {X Y Z:Prop} (h: [X,Y,Z].TFAE) : X ↔ Y := by
+example {X Y Z : Prop} (h : [X,Y,Z].TFAE) : X ↔ Y := by
   exact h.out 0 1
 
 /-- Exercise A.1.1.  Fill in the first {syntax term}`sorry` with something reasonable. -/
-example {X Y:Prop} : ¬ ((X ∨ Y) ∧ ¬ (X ∧ Y)) ↔ sorry := by sorry
+example {X Y : Prop} : ¬ ((X ∨ Y) ∧ ¬ (X ∧ Y)) ↔ sorry := by sorry
 
 /-- Exercise A.1.2.  Fill in the first {syntax term}`sorry` with something reasonable. -/
-example {X Y:Prop} : ¬ (X ↔ Y) ↔ sorry := by sorry
+example {X Y : Prop} : ¬ (X ↔ Y) ↔ sorry := by sorry
 
 /-- Exercise A.1.3. -/
-def Exercise_A_1_3 : Decidable (∀ (X Y: Prop), (X → Y) → (¬X → ¬ Y) → (X ↔ Y)) := by
+def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬ Y) → (X ↔ Y)) := by
   --the first line of this construction should be either `apply isTrue` or `apply isFalse`,
   --depending on whether you believe the given statement to be true or false. 
   sorry
 
 /-- Exercise A.1.4. -/
-def Exercise_A_1_4 : Decidable (∀ (X Y: Prop), (X → Y) → (¬Y → ¬ X) → (X ↔ Y)) := by
+def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬ X) → (X ↔ Y)) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
 /-- Exercise A.1.5. -/
-def Exercise_A_1_5 : Decidable (∀ (X Y Z: Prop), (X ↔ Y) → (Y ↔ Z) → [X,Y,Z].TFAE) := by
+def Exercise_A_1_5 : Decidable (∀ (X Y Z : Prop), (X ↔ Y) → (Y ↔ Z) → [X,Y,Z].TFAE) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
 /-- Exercise A.1.6. -/
-def Exercise_A_1_6 : Decidable (∀ (X Y Z: Prop), (X → Y) → (Y → Z) → (Z → X) → [X,Y,Z].TFAE) := by
+def Exercise_A_1_6 : Decidable (∀ (X Y Z : Prop), (X → Y) → (Y → Z) → (Z → X) → [X,Y,Z].TFAE) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry

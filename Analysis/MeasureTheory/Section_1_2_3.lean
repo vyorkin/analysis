@@ -31,7 +31,7 @@ def Rat.addSubgroup : AddSubgroup ℝ where
 abbrev RealModRat := ℝ ⧸ Rat.addSubgroup
 
 /-- ℚ is dense in ℝ, so every coset of ℝ/ℚ intersects \[0,1\] -/
-lemma coset_intersects_unit_interval (c : RealModRat) :
+lemma coset_intersects_unit_interval (c : RealModRat) : 
     ∃ x : ℝ, x ∈ Set.Icc 0 1 ∧ QuotientAddGroup.mk (s := Rat.addSubgroup) x = c := by
   obtain ⟨r⟩ := c
   -- r is a representative of the coset c
@@ -73,8 +73,8 @@ lemma VitaliSet_subset_unit_interval : VitaliSet ⊆ Set.Icc 0 1 := by
   exact (coset_intersects_unit_interval c).choose_spec.1
 
 /-- Key lemma: \[0,1\] is covered by translates of E by rationals in \[-1,1\] -/
-lemma unit_interval_covered_by_translates :
-    Set.Icc (0:ℝ) 1 ⊆ ⋃ (q : ℚ) (_ : q ∈ Set.Icc (-1:ℚ) 1), (VitaliSet + {(q:ℝ)}) := by
+lemma unit_interval_covered_by_translates : 
+    Set.Icc (0 : ℝ) 1 ⊆ ⋃ (q : ℚ) (_ : q ∈ Set.Icc (-1 : ℚ) 1), (VitaliSet + {(q : ℝ)}) := by
   intro y hy
   -- y is in some coset c of ℝ/ℚ
   let c : RealModRat := QuotientAddGroup.mk (s := Rat.addSubgroup) y
@@ -97,7 +97,7 @@ lemma unit_interval_covered_by_translates :
       linarith [hy.1, hx_in.2]
     · have h1 : (q : ℝ) = y - x := by linarith [hy_eq]
       linarith [hy.2, hx_in.1]
-  have hq_bound_rat : q ∈ Set.Icc (-1:ℚ) 1 := by
+  have hq_bound_rat : q ∈ Set.Icc (-1 : ℚ) 1 := by
     constructor
     · have : (-1 : ℝ) ≤ q := hq_bound.1
       exact_mod_cast this
@@ -118,11 +118,11 @@ lemma unit_interval_covered_by_translates :
   · linarith [hy_eq]
 
 /-- The rationals in \[-1,1\] are countable -/
-lemma rat_Icc_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := by
+lemma rat_Icc_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := by
   exact Set.countable_univ.mono (Set.subset_univ _)
 
 /-- The Lebesgue measure of a closed interval \[a,b\] in ℝ (embedded in {lean}`EuclideanSpace' 1`) equals b - a -/
-lemma Lebesgue_measure.Icc_eq (a b : ℝ) (hab : a ≤ b) :
+lemma Lebesgue_measure.Icc_eq (a b : ℝ) (hab : a ≤ b) : 
     Lebesgue_measure (Real.equiv_EuclideanSpace' '' Set.Icc a b) = (b - a : ℝ) := by
   -- Use the fact that Set.Icc a b = (BoundedInterval.Icc a b).toSet
   have h_interval : Set.Icc a b = (BoundedInterval.Icc a b).toSet := by rfl
@@ -146,28 +146,28 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
   let E := Real.equiv_EuclideanSpace' '' VitaliSet
   intro hE_meas
   -- The rationals in [-1,1] form a denumerable set
-  have hQ_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := rat_Icc_countable
-  have hQ_inf : Set.Infinite {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} :=
-    Set.Icc_infinite (by norm_num : (-1:ℚ) < 1)
+  have hQ_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := rat_Icc_countable
+  have hQ_inf : Set.Infinite {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} :=
+    Set.Icc_infinite (by norm_num : (-1 : ℚ) < 1)
   -- Get bijection from ℕ to the subtype using Denumerable structure
-  haveI : Infinite {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := hQ_inf.to_subtype
-  haveI : Countable {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := hQ_countable.to_subtype
-  haveI denumQ : Denumerable {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := (nonempty_denumerable _).some
+  haveI : Infinite {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := hQ_inf.to_subtype
+  haveI : Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := hQ_countable.to_subtype
+  haveI denumQ : Denumerable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := (nonempty_denumerable _).some
   -- The equivalence ℕ ≃ {q : ℚ | q ∈ [-1,1]}
-  let eqvQ : {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} ≃ ℕ := Denumerable.eqv _
+  let eqvQ : {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} ≃ ℕ := Denumerable.eqv _
   -- f : ℕ → ℚ is the injective enumeration of rationals in [-1,1]
   let f : ℕ → ℚ := fun n => (eqvQ.symm n : ℚ)
   -- f is injective
   have hf_inj : Function.Injective f := Subtype.val_injective.comp eqvQ.symm.injective
   -- f n is in [-1,1] for all n
-  have hf_mem : ∀ n, f n ∈ Set.Icc (-1:ℚ) 1 := fun n => (eqvQ.symm n).2
+  have hf_mem : ∀ n, f n ∈ Set.Icc (-1 : ℚ) 1 := fun n => (eqvQ.symm n).2
   -- f has range = {q | q ∈ [-1,1]}
-  have hf_range : {q | q ∈ Set.Icc (-1:ℚ) 1} = Set.range f := by
+  have hf_range : {q | q ∈ Set.Icc (-1 : ℚ) 1} = Set.range f := by
     ext q
     simp only [Set.mem_setOf_eq, Set.mem_range, f]
     constructor
     · intro hq
-      let q' : {q : ℚ | q ∈ Set.Icc (-1:ℚ) 1} := ⟨q, hq⟩
+      let q' : {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := ⟨q, hq⟩
       refine ⟨eqvQ q', ?_⟩
       simp only [Equiv.symm_apply_apply]
       rfl
@@ -238,7 +238,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
     Lebesgue_measure.translate _ hE_meas
   -- We proceed by cases on whether m(E) = 0
   by_cases hE_zero : Lebesgue_measure E = 0
-  · -- Case m(E) = 0: Then m(⋃) = 0, but ⋃ covers [0,1], so m(⋃) ≥ 1
+  · -- Case m(E) = 0 : Then m(⋃) = 0, but ⋃ covers [0,1], so m(⋃) ≥ 1
     have h_sum_zero : ∑' n, Lebesgue_measure (translateE n) = 0 := by
       simp only [h_translate_measure, hE_zero]
       exact tsum_zero
@@ -254,7 +254,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
       rw [Set.mem_iUnion] at hq
       obtain ⟨hq_bound, hy_mem⟩ := hq
       -- q ∈ [-1,1], so q = f n for some n
-      have hq_in_range : q ∈ {r : ℚ | r ∈ Set.Icc (-1:ℚ) 1} := hq_bound
+      have hq_in_range : q ∈ {r : ℚ | r ∈ Set.Icc (-1 : ℚ) 1} := hq_bound
       rw [hf_range] at hq_in_range
       obtain ⟨n, rfl⟩ := hq_in_range
       rw [Set.mem_iUnion]
@@ -289,7 +289,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
     rw [h_union_measure] at h_ge_one
     -- 1 ≤ 0 is a contradiction
     exact absurd h_ge_one (by norm_num : ¬(1 : EReal) ≤ 0)
-  · -- Case m(E) > 0: Then ∑ m(E) = ∞, but m(⋃) ≤ 3
+  · -- Case m(E) > 0 : Then ∑ m(E) = ∞, but m(⋃) ≤ 3
     -- The measure is nonnegative
     have hE_nonneg : 0 ≤ Lebesgue_measure E := Lebesgue_outer_measure.nonneg E
     have hE_pos : 0 < Lebesgue_measure E := by
@@ -314,7 +314,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
       obtain ⟨v, hv, rfl⟩ := hx
       -- v ∈ VitaliSet ⊆ [0,1], f n ∈ [-1,1]
       have hv_in := VitaliSet_subset_unit_interval hv
-      have hq_bound : f n ∈ Set.Icc (-1:ℚ) 1 := hf_mem n
+      have hq_bound : f n ∈ Set.Icc (-1 : ℚ) 1 := hf_mem n
       use v + (qSeq n : ℝ)
       constructor
       · constructor
@@ -358,4 +358,4 @@ example : ∃ E F : Set (EuclideanSpace' 1), E ∩ F = ∅ ∧ Bornology.IsBound
   sorry
 
 /-- Exercise 1.2.27 (Projections of measurable sets need not be measurable) -/
-example : ∃ E : Set (EuclideanSpace' 2), LebesgueMeasurable E ∧ ¬ LebesgueMeasurable ((fun x ↦ Real.equiv_EuclideanSpace' (x 0: ℝ)) '' E) := by sorry
+example : ∃ E : Set (EuclideanSpace' 2), LebesgueMeasurable E ∧ ¬ LebesgueMeasurable ((fun x ↦ Real.equiv_EuclideanSpace' (x 0 : ℝ)) '' E) := by sorry

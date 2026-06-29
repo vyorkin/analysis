@@ -39,21 +39,21 @@ abbrev axiom_of_universal_specification : Prop :=
 theorem Russells_paradox : ¬ axiom_of_universal_specification := by
   -- This proof is written to follow the structure of the original text.
   intro h
-  set P : Object → Prop := fun x ↦ ∃ X:Set, x = X ∧ x ∉ X
+  set P : Object → Prop := fun x ↦ ∃ X : Set, x = X ∧ x ∉ X
   choose Ω hΩ using h P
-  by_cases h: (Ω:Object) ∈ Ω
-  . have : P (Ω:Object) := (hΩ _).mp h
+  by_cases h : (Ω : Object) ∈ Ω
+  . have : P (Ω : Object) := (hΩ _).mp h
     obtain ⟨ Ω', ⟨ hΩ1, hΩ2⟩ ⟩ := this
     simp at hΩ1
     rw [←hΩ1] at hΩ2
     contradiction
-  have : P (Ω:Object) := by use Ω
+  have : P (Ω : Object) := by use Ω
   rw [←hΩ] at this
   contradiction
 
 /-- Axiom 3.9 (Regularity) -/
-theorem SetTheory.Set.axiom_of_regularity {A:Set} (h: A ≠ ∅) :
-    ∃ x:A, ∀ S:Set, x.val = S → Disjoint S A := by
+theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) : 
+    ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A := by
   choose x h h' using regularity_axiom A (nonempty_def h)
   use ⟨x, h⟩
   intro S hS; specialize h' S hS
@@ -65,63 +65,63 @@ theorem SetTheory.Set.axiom_of_regularity {A:Set} (h: A ≠ ∅) :
   Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the empty set.
 -/
-theorem SetTheory.Set.emptyset_exists (h: axiom_of_universal_specification):
-    ∃ (X:Set), ∀ x, x ∉ X := by
+theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) : 
+    ∃ (X : Set), ∀ x, x ∉ X := by
   sorry
 
 /--
   Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the singleton set.
 -/
-theorem SetTheory.Set.singleton_exists (h: axiom_of_universal_specification) (x:Object):
-    ∃ (X:Set), ∀ y, y ∈ X ↔ y = x := by
+theorem SetTheory.Set.singleton_exists (h : axiom_of_universal_specification) (x : Object) : 
+    ∃ (X : Set), ∀ y, y ∈ X ↔ y = x := by
   sorry
 
 /--
   Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the pair set.
 -/
-theorem SetTheory.Set.pair_exists (h: axiom_of_universal_specification) (x₁ x₂:Object):
-    ∃ (X:Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
+theorem SetTheory.Set.pair_exists (h : axiom_of_universal_specification) (x₁ x₂ : Object) : 
+    ∃ (X : Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
   sorry
 
 /--
   Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the union operation.
 -/
-theorem SetTheory.Set.union_exists (h: axiom_of_universal_specification) (A B:Set):
-    ∃ (Z:Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
+theorem SetTheory.Set.union_exists (h : axiom_of_universal_specification) (A B : Set) : 
+    ∃ (Z : Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
   sorry
 
 /--
   Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the specify operation.
 -/
-theorem SetTheory.Set.specify_exists (h: axiom_of_universal_specification) (A:Set) (P: A → Prop):
-    ∃ (Z:Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨ z, h ⟩ := by
+theorem SetTheory.Set.specify_exists (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) : 
+    ∃ (Z : Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨ z, h ⟩ := by
   sorry
 
 /--
   Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
   Russell's paradox, or the replace operation.
 -/
-theorem SetTheory.Set.replace_exists (h: axiom_of_universal_specification) (A:Set)
-  (P: A → Object → Prop) (hP: ∀ x y y', P x y ∧ P x y' → y = y') :
-    ∃ (Z:Set), ∀ y, y ∈ Z ↔ ∃ a : A, P a y := by
+theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A : Set)
+  (P : A → Object → Prop) (hP : ∀ x y y', P x y ∧ P x y' → y = y') : 
+    ∃ (Z : Set), ∀ y, y ∈ Z ↔ ∃ a : A, P a y := by
   sorry
 
 /-- Exercise 3.2.2 -/
-theorem SetTheory.Set.not_mem_self (A:Set) : (A:Object) ∉ A := by sorry
+theorem SetTheory.Set.not_mem_self (A : Set) : (A : Object) ∉ A := by sorry
 
 /-- Exercise 3.2.2 -/
-theorem SetTheory.Set.not_mem_mem (A B:Set) : (A:Object) ∉ B ∨ (B:Object) ∉ A := by sorry
+theorem SetTheory.Set.not_mem_mem (A B : Set) : (A : Object) ∉ B ∨ (B : Object) ∉ A := by sorry
 
 /-- Exercise 3.2.3 -/
 theorem SetTheory.Set.univ_iff : axiom_of_universal_specification ↔
-  ∃ (U:Set), ∀ x, x ∈ U := by sorry
+  ∃ (U : Set), ∀ x, x ∈ U := by sorry
 
 /-- Exercise 3.2.3 -/
-theorem SetTheory.Set.no_univ : ¬ ∃ (U:Set), ∀ (x:Object), x ∈ U := by sorry
+theorem SetTheory.Set.no_univ : ¬ ∃ (U : Set), ∀ (x : Object), x ∈ U := by sorry
 
 
 end Chapter3

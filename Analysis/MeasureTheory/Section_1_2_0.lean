@@ -12,8 +12,8 @@ A companion to (the introduction to) Section 1.2 of the book "An introduction to
 open BoundedInterval
 
 /-- Exercise 1.2.1 (countable union) -/
-lemma exercise_1_2_1_union :
-    ∃ E: ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
+lemma exercise_1_2_1_union : 
+    ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n))) ∧
       (∀ n, E n ⊆ Set.Icc 0 1) ∧
       ¬ JordanMeasurable (⋃ n, Real.equiv_EuclideanSpace' '' (E n)) := by
@@ -22,8 +22,8 @@ lemma exercise_1_2_1_union :
   -- But the union is all rationals in [0,1], which is NOT Jordan measurable
 
   -- Get an enumeration of rationals in [0,1]
-  have h_countable : (Set.Icc (0:ℚ) 1).Countable := Set.countable_coe_iff.mp inferInstance
-  have h_nonempty : (Set.Icc (0:ℚ) 1).Nonempty := ⟨0, by simp⟩
+  have h_countable : (Set.Icc (0 : ℚ) 1).Countable := Set.countable_coe_iff.mp inferInstance
+  have h_nonempty : (Set.Icc (0 : ℚ) 1).Nonempty := ⟨0, by simp⟩
   obtain ⟨q, hq_surj⟩ := h_countable.exists_surjective h_nonempty
 
   -- Define E_n = {q_n} (singleton containing the nth rational)
@@ -61,7 +61,7 @@ lemma exercise_1_2_1_union :
   -- Part 4: The union ⋃_n E_n = rationals in [0,1], which is NOT Jordan measurable
   · intro hJM
     -- The union equals the set of all rationals in [0,1]
-    have h_union_eq_rats : (⋃ n, E n) = Set.range (fun r : Set.Icc (0:ℚ) 1 => (r.val : ℝ)) := by
+    have h_union_eq_rats : (⋃ n, E n) = Set.range (fun r : Set.Icc (0 : ℚ) 1 => (r.val : ℝ)) := by
       ext x
       simp only [E, Set.mem_iUnion, Set.mem_singleton_iff, Set.mem_range]
       constructor
@@ -82,7 +82,7 @@ lemma exercise_1_2_1_union :
       exact hJM
 
     -- Let Q = rationals in [0,1]
-    let Q := Set.range (fun r : Set.Icc (0:ℚ) 1 => (r.val : ℝ))
+    let Q := Set.range (fun r : Set.Icc (0 : ℚ) 1 => (r.val : ℝ))
 
     -- Show Q is bounded
     have hQ_bounded : Bornology.IsBounded Q := by
@@ -91,7 +91,7 @@ lemma exercise_1_2_1_union :
       obtain ⟨r, hr⟩ := hx
       rw [← hr]
       simp
-      have : r.val ∈ Set.Icc (0:ℚ) 1 := r.property
+      have : r.val ∈ Set.Icc (0 : ℚ) 1 := r.property
       constructor
       · exact_mod_cast this.1
       · exact_mod_cast this.2
@@ -149,15 +149,15 @@ lemma exercise_1_2_1_union :
         -- Therefore closure Q ⊇ [0,1]
         intro x hx
         -- Use DenseRange for rationals
-        have h_dense : ∀ ε > 0, ∃ q : ℚ, |(q:ℝ) - x| < ε ∧ (q:ℝ) ∈ Set.Icc 0 1 := by
+        have h_dense : ∀ ε > 0, ∃ q : ℚ, |(q : ℝ) - x| < ε ∧ (q : ℝ) ∈ Set.Icc 0 1 := by
           intro ε hε
           -- Find a rational within ε of x using density
           have := Rat.denseRange_cast.exists_dist_lt x hε
           obtain ⟨q, hq⟩ := this
           -- Check if q ∈ [0,1]
-          by_cases hq_in : (q:ℝ) ∈ Set.Icc 0 1
+          by_cases hq_in : (q : ℝ) ∈ Set.Icc 0 1
           · use q
-            have : |(q:ℝ) - x| < ε := by
+            have : |(q : ℝ) - x| < ε := by
               rw [← Real.dist_eq, dist_comm]
               exact hq
             exact ⟨this, hq_in⟩
@@ -203,15 +203,15 @@ lemma exercise_1_2_1_union :
         apply Metric.mem_closure_iff.mpr
         intro ε hε
         obtain ⟨q, hq_dist, hq_in⟩ := h_dense ε hε
-        use (q:ℝ)
+        use (q : ℝ)
         constructor
-        · -- Show (q:ℝ) ∈ Q (first subgoal from "use")
+        · -- Show (q : ℝ) ∈ Q (first subgoal from "use")
           simp only [Q, Set.mem_range]
-          have hq_bounds : q ∈ Set.Icc (0:ℚ) 1 := by
+          have hq_bounds : q ∈ Set.Icc (0 : ℚ) 1 := by
             rw [Set.mem_Icc] at hq_in ⊢
             exact ⟨by exact_mod_cast hq_in.1, by exact_mod_cast hq_in.2⟩
           use ⟨q, hq_bounds⟩
-        · -- Show dist (q:ℝ) x < ε (second subgoal from "use")
+        · -- Show dist (q : ℝ) x < ε (second subgoal from "use")
           rw [Real.dist_eq]
           rw [abs_sub_comm] at hq_dist
           exact hq_dist
@@ -334,7 +334,7 @@ lemma exercise_1_2_1_union :
       simp only [Q, Set.mem_range] at hy_Q
       obtain ⟨r, hr⟩ := hy_Q
       -- So y is rational: hr shows (r.val : ℝ) = y, so r.val is the rational witness
-      have hy_rational : ∃ q : ℚ, (q:ℝ) = y := ⟨r.val, hr⟩
+      have hy_rational : ∃ q : ℚ, (q : ℝ) = y := ⟨r.val, hr⟩
       -- But y is irrational: hy_irrat_mem : y ∈ {x | Irrational x}
       -- This means Irrational y, which contradicts hy_rational
       simp only [Set.mem_setOf_eq] at hy_irrat_mem
@@ -373,7 +373,7 @@ lemma exercise_1_2_1_union :
       -- The only A with A ⊆ ∅ is A = ∅, which has measure 0
       -- So the set is (at most) {0}, and sSup {0} = 0
       apply le_antisymm
-      · -- sSup ≤ 0: show every element in the set is ≤ 0
+      · -- sSup ≤ 0 : show every element in the set is ≤ 0
         apply csSup_le
         · -- Show the set is nonempty
           use 0, ∅, IsElementary.empty 1
@@ -386,7 +386,7 @@ lemma exercise_1_2_1_union :
           -- So hA.measure = (IsElementary.empty 1).measure = 0
           subst hA_empty
           exact le_of_eq (IsElementary.measure_of_empty 1)
-      · -- 0 ≤ sSup: 0 is in the set
+      · -- 0 ≤ sSup : 0 is in the set
         apply le_csSup
         · -- Show the set is bounded above
           use 0
@@ -412,33 +412,33 @@ lemma exercise_1_2_1_union :
     exact absurd h_eq (by norm_num)
 
 /-- Exercise 1.2.1 (countable union) -/
-example :
-    ∃ E: ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
+example : 
+    ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n)))
       ∧ ¬ JordanMeasurable (⋃ n, Real.equiv_EuclideanSpace' '' (E n)) := by
   obtain ⟨E, hB, hJM, -, h_union⟩ := exercise_1_2_1_union
   exact ⟨E, hB, hJM, h_union⟩
 
 /-- Exercise 1.2.1 (countable intersection) -/
-example :
-    ∃ E: ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
+example : 
+    ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n))) ∧
       ¬ JordanMeasurable (⋂ n, Real.equiv_EuclideanSpace' '' (E n)) := by
   classical
   obtain ⟨S, hS_bdd, hS_jm, hS_subset, hS_union_not⟩ := exercise_1_2_1_union
   let I : Set ℝ := Set.Icc 0 1
   let E : ℕ → Set ℝ := fun n => I \ S n
-  have hI_image :
+  have hI_image : 
       Real.equiv_EuclideanSpace' '' I =
         (BoundedInterval.Icc 0 1 : Box 1).toSet := by
     rw [BoundedInterval.coe_of_box]
     simp [I, BoundedInterval.set_Icc]
-  have hI_JM :
+  have hI_JM : 
       JordanMeasurable (Real.equiv_EuclideanSpace' '' I) := by
     let B : Box 1 := BoundedInterval.Icc 0 1
     simpa [hI_image, B] using
       (IsElementary.jordanMeasurable (IsElementary.box B))
-  have h_image_diff :
+  have h_image_diff : 
       ∀ n,
         Real.equiv_EuclideanSpace' '' (E n) =
           (Real.equiv_EuclideanSpace' '' I) \
@@ -471,7 +471,7 @@ example :
     exact Set.diff_subset
   ·
     intro n
-    have hJ :
+    have hJ : 
         JordanMeasurable
           ((Real.equiv_EuclideanSpace' '' I) \
             (Real.equiv_EuclideanSpace' '' (S n))) :=
@@ -488,7 +488,7 @@ example :
       intro n
       simpa [F, C, A] using h_image_diff n
     have hC_union_not : ¬ JordanMeasurable (⋃ n, C n) := by
-      have h_image_union :
+      have h_image_union : 
           Real.equiv_EuclideanSpace' '' (⋃ n, S n) =
             ⋃ n, C n := by
         ext y
@@ -503,7 +503,7 @@ example :
           obtain ⟨x, hxSn, rfl⟩ := hyC
           exact Set.mem_image_of_mem _ (Set.mem_iUnion.mpr ⟨n, hxSn⟩)
       simpa [C, h_image_union] using hS_union_not
-    have h_inter_eq :
+    have h_inter_eq : 
         (⋂ n, F n) = A \ ⋃ n, C n := by
       ext x
       constructor
@@ -538,13 +538,13 @@ example :
       obtain ⟨n, hxC⟩ := Set.mem_iUnion.mp hx
       exact hC_subset n hxC
     have h_union_JM : JordanMeasurable (⋃ n, C n) := by
-      have h_diff :
+      have h_diff : 
           JordanMeasurable (A \ (⋂ n, F n)) :=
         JordanMeasurable.sdiff
           (by simpa [A] using hI_JM) hJM_inter
       classical
       have h_congr := congrArg (fun s => A \ s) h_inter_eq
-      have h_step :
+      have h_step : 
           A \ (A \ ⋃ n, C n) = A ∩ ⋃ n, C n := by
         ext x
         constructor
@@ -557,7 +557,7 @@ example :
           refine ⟨hx.1, ?_⟩
           intro hx_diff
           exact hx_diff.2 hx.2
-      have h_eq :
+      have h_eq : 
           (A \ (⋂ n, F n)) = A ∩ ⋃ n, C n :=
         h_congr.trans h_step
       have h_eq' : A ∩ ⋃ n, C n = ⋃ n, C n := by
@@ -575,7 +575,7 @@ example :
 
 /-- Exercise 1.2.2 -/
 -- The pointwise limit of uniformly bounded Riemann integrable functions need not be Riemann integrable.
-example : ∃ f: ℕ → ℝ → ℝ, ∃ F: ℝ → ℝ, ∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M ∧
+example : ∃ f : ℕ → ℝ → ℝ, ∃ F : ℝ → ℝ, ∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M ∧
     (∀ x ∈ Set.Icc 0 1, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (F x))) ∧
     (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) ∧
     ¬ RiemannIntegrableOn F (Icc 0 1) := by
@@ -583,12 +583,12 @@ example : ∃ f: ℕ → ℝ → ℝ, ∃ F: ℝ → ℝ, ∃ M, ∀ n, ∀ x �
 
 /-- Exercise 1.2.2 -/
 -- Determine whether uniform convergence of uniformly bounded Riemann integrable functions preserves Riemann integrability (true or false).
-def Ex_1_2_2b : Decidable ( ∀ f: ℕ → ℝ → ℝ, ∀ F: ℝ → ℝ, (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) → (∀ x ∈ Set.Icc 0 1, TendstoUniformly f F Filter.atTop) → (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) → RiemannIntegrableOn F (Icc 0 1) ) := by
+def Ex_1_2_2b : Decidable ( ∀ f : ℕ → ℝ → ℝ, ∀ F : ℝ → ℝ, (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) → (∀ x ∈ Set.Icc 0 1, TendstoUniformly f F Filter.atTop) → (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) → RiemannIntegrableOn F (Icc 0 1) ) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`, depending on whether you believe the given statement to be true or false.
   sorry
 
 -- The Jordan outer measure equals the infimum of sums of box volumes over all finite box covers.
-theorem Jordan_outer_eq {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: Bornology.IsBounded E) : Jordan_outer_measure E = sInf (((fun S: Finset (Box d) ↦ ∑ B ∈ S, |B|ᵥ)) '' { S | E ⊆ ⋃ B ∈ S, B.toSet }) := by
+theorem Jordan_outer_eq {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E) : Jordan_outer_measure E = sInf (((fun S : Finset (Box d) ↦ ∑ B ∈ S, |B|ᵥ)) '' { S | E ⊆ ⋃ B ∈ S, B.toSet }) := by
   -- Strategy: Show equality via two inequalities (le_antisymm)
   apply le_antisymm
 
@@ -732,7 +732,7 @@ theorem Jordan_outer_eq {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: Bornology.IsBo
       have hT_sum : ∑ B ∈ T, |B|ᵥ = hA.measure := by
         symm; exact hA.measure_eq hT_disj hA_eq
       -- sInf(box covers) ≤ ∑ B ∈ T, |B|ᵥ (since T is a box cover)
-      have h_inf_le : sInf (((fun S: Finset (Box d) ↦ ∑ B ∈ S, |B|ᵥ)) '' { S | E ⊆ ⋃ B ∈ S, B.toSet }) ≤ ∑ B ∈ T, |B|ᵥ := by
+      have h_inf_le : sInf (((fun S : Finset (Box d) ↦ ∑ B ∈ S, |B|ᵥ)) '' { S | E ⊆ ⋃ B ∈ S, B.toSet }) ≤ ∑ B ∈ T, |B|ᵥ := by
         apply csInf_le
         -- Show box covers set is bounded below
         · use 0
@@ -753,15 +753,15 @@ theorem Jordan_outer_eq {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: Bornology.IsBo
       rw [←hT_sum]; exact h_inf_le
 
 /-- This definition deviates from the text by working with countable families of boxes rather than boxes indexed by the natural numbers.  This becomes important in dimension zero, when all boxes are non-empty. -/
-noncomputable def Lebesgue_outer_measure {d:ℕ} (E: Set (EuclideanSpace' d)) : EReal :=
-  sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+noncomputable def Lebesgue_outer_measure {d : ℕ} (E : Set (EuclideanSpace' d)) : EReal :=
+  sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
 
 /-- When d > 0, the Lebesgue outer measure can be computed using ℕ-indexed box sequences,
     which is equivalent to the definition using countable families. This is because we can
     pad any countable family with zero-volume boxes (which exist when d > 0). -/
-lemma Lebesgue_outer_measure_eq_nat_indexed {d:ℕ} (hd: 0 < d) (E: Set (EuclideanSpace' d)) :
+lemma Lebesgue_outer_measure_eq_nat_indexed {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d)) : 
     Lebesgue_outer_measure E =
-    sInf (((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }) := by
+    sInf (((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }) := by
   unfold Lebesgue_outer_measure
   -- Strategy: Show both ≤ directions
   -- (≤): Any ℕ-indexed cover is a countable cover with X = Set.univ
@@ -776,18 +776,18 @@ lemma Lebesgue_outer_measure_eq_nat_indexed {d:ℕ} (hd: 0 < d) (E: Set (Euclide
     obtain ⟨S, hS_cover, rfl⟩ := hb
     -- Show ∑' n, (S n).volume.toEReal is in the countable covers set
     apply sInf_le
-    show ∑' n, (S n).volume.toEReal ∈ { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+    show ∑' n, (S n).volume.toEReal ∈ { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
     -- Convert S : ℕ → Box d to S' : Set.univ → Box d
     let S' : Set.univ → Box d := fun n => S n.val
     use Set.univ, S'
     constructor
-    · -- Covering property: E ⊆ ⋃ n : Set.univ, (S' n).toSet
+    · -- Covering property : E ⊆ ⋃ n : Set.univ, (S' n).toSet
       have : (⋃ n : Set.univ, (S' n).toSet) = (⋃ n, (S n).toSet) := by
         ext x
         simp [S']
       rw [this]
       exact hS_cover
-    · -- Sum equality: ∑' (n : Set.univ), (S' n).volume.toEReal = ∑' n, (S n).volume.toEReal
+    · -- Sum equality : ∑' (n : Set.univ), (S' n).volume.toEReal = ∑' n, (S n).volume.toEReal
       -- Strategy: Use Equiv.tsum_eq to reindex from Set.univ to ℕ
       simp only [S']
       -- The equivalence Equiv.Set.univ : Set.univ ≃ ℕ allows us to reindex the sum
@@ -896,7 +896,7 @@ lemma Lebesgue_outer_measure_eq_nat_indexed {d:ℕ} (hd: 0 < d) (E: Set (Euclide
       rw [h1, h2, h3]
 
     -- Apply sInf_le
-    calc sInf (((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet })
+    calc sInf (((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet })
         ≤ ∑' n, (S' n).volume.toEReal := by
             apply sInf_le
             use S', hS'_cover
@@ -906,7 +906,7 @@ lemma Lebesgue_outer_measure_eq_nat_indexed {d:ℕ} (hd: 0 < d) (E: Set (Euclide
 open Classical in
 /-- Helper lemma: If X is an infinite subset of ℕ, then the sum of its indicator function
     (mapping elements of X to 1 and others to 0) diverges to ⊤ in {name}`EReal`. -/
-lemma hasSum_indicator_top_of_infinite (X : Set ℕ) (hX : ¬X.Finite) :
+lemma hasSum_indicator_top_of_infinite (X : Set ℕ) (hX : ¬X.Finite) : 
     HasSum (fun n => if n ∈ X then (1 : EReal) else 0) ⊤ := by
   -- Strategy: Show that finite sums grow unboundedly.
   -- For any n, we can find n elements in X (since X is infinite),
@@ -947,7 +947,7 @@ lemma hasSum_indicator_top_of_infinite (X : Set ℕ) (hX : ¬X.Finite) :
 open Classical in
 /-- In dimension 0, the Lebesgue outer measure is 1 for non-empty sets and 0 for the empty set.
     This is because all boxes in dimension 0 are singletons with volume 1 (empty product). -/
-lemma Lebesgue_outer_measure_of_dim_zero {E: Set (EuclideanSpace' 0)} :
+lemma Lebesgue_outer_measure_of_dim_zero {E : Set (EuclideanSpace' 0)} : 
     Lebesgue_outer_measure E = if E.Nonempty then 1 else 0 := by
   unfold Lebesgue_outer_measure
 
@@ -1054,7 +1054,7 @@ lemma Lebesgue_outer_measure_of_dim_zero {E: Set (EuclideanSpace' 0)} :
           simp [Finset.sum_singleton]
         have : HasSum g (∑' n : ℕ, g n) := by
           by_cases hX : X.Finite
-          · -- Case 1: X is finite
+          · -- Case 1 : X is finite
             have h_supp : g.support.Finite := by
               dsimp [g, Function.support]
               apply Set.Finite.subset hX
@@ -1062,7 +1062,7 @@ lemma Lebesgue_outer_measure_of_dim_zero {E: Set (EuclideanSpace' 0)} :
               simp at h
               exact h
             exact (summable_of_hasFiniteSupport h_supp).hasSum
-          · -- Case 2: X is infinite
+          · -- Case 2 : X is infinite
             -- The sum is Top. We prove HasSum g Top.
             have h_top : HasSum g ⊤ := by
               -- Apply helper lemma: infinite indicator sum diverges to ⊤
@@ -1121,13 +1121,13 @@ lemma Lebesgue_outer_measure_of_dim_zero {E: Set (EuclideanSpace' 0)} :
       exact le_max_right _ _
 
 /-- Coercion {lean}`ℝ → EReal` preserves infimums for nonempty bounded-below sets -/
-lemma EReal.sInf_image_coe {s : Set ℝ} (hs : s.Nonempty) (h_bdd : BddBelow s) :
+lemma EReal.sInf_image_coe {s : Set ℝ} (hs : s.Nonempty) (h_bdd : BddBelow s) : 
     sInf ((fun x : ℝ => (x : EReal)) '' s) = ↑(sInf s) := by
   -- Strategy: Show both ≤ directions using sInf properties
   apply le_antisymm
 
   -- Part 1: sInf(↑''s) ≤ ↑(sInf s)
-  · -- Key: sInf(↑''s) is a lower bound for ↑''s, so sInf(↑''s) ≤ ↑x for all x ∈ s
+  · -- Key : sInf(↑''s) is a lower bound for ↑''s, so sInf(↑''s) ≤ ↑x for all x ∈ s
     -- We want to show this implies sInf(↑''s) ≤ ↑(sInf s)
     -- Case analysis on whether sInf(↑''s) is ⊥ or a real
     by_cases h_bot : sInf ((fun y : ℝ => (y : EReal)) '' s) = ⊥
@@ -1158,7 +1158,7 @@ lemma EReal.sInf_image_coe {s : Set ℝ} (hs : s.Nonempty) (h_bdd : BddBelow s) 
         -- Use that sInf(↑''s) is bounded: ↑m ≤ sInf(↑''s) ≤ ↑x₀
         -- If sInf(↑''s) = ⊤, then ↑x₀ ≥ ⊤, contradicting that x₀ is real
         by_cases h_top : sInf ((fun y : ℝ => (y : EReal)) '' s) = ⊤
-        · -- Get contradiction: ↑x₀ ≥ ⊤
+        · -- Get contradiction : ↑x₀ ≥ ⊤
           have : (x₀ : EReal) ≥ ⊤ := by rw [←h_top]; exact h_le_x0
           simp [not_le.mpr] at this
         · -- sInf(↑''s) is not ⊥ (from h_bot) and not ⊤ (from h_top)
@@ -1195,7 +1195,7 @@ lemma EReal.sInf_image_coe {s : Set ℝ} (hs : s.Nonempty) (h_bdd : BddBelow s) 
 
 /-- When enumerating a finset to a sequence padded with empty boxes,
     the infinite sum of volumes equals the finite sum -/
-lemma tsum_volume_finset_eq {d : ℕ} (hd : 0 < d) (S : Finset (Box d)) :
+lemma tsum_volume_finset_eq {d : ℕ} (hd : 0 < d) (S : Finset (Box d)) : 
     let S_list := S.toList
     let zero_box : Box d := ⟨fun i => if i.val = 0 then ∅ else BoundedInterval.Icc 0 0⟩
     let S_seq : ℕ → Box d := fun n =>
@@ -1246,12 +1246,12 @@ lemma tsum_volume_finset_eq {d : ℕ} (hd : 0 < d) (S : Finset (Box d)) :
   -- sum_bij: (i : α → β) (hi : ∀ a ∈ s, i a ∈ t) (h : ∀ a ∈ s, g (i a) = f a)
   --          (hg : ∀ b ∈ t, ∃ a ∈ s, i a = b) (hh : ∀ a₁ a₂ ∈ s, i a₁ = i a₂ → a₁ = a₂)
   refine Finset.sum_bij (fun n hn => S_list.get ⟨n, Finset.mem_range.mp hn⟩) ?_ ?_ ?_ ?_
-  · -- hi: Image is in S
+  · -- hi : Image is in S
     intro n hn
     have hn_lt := Finset.mem_range.mp hn
     have : S_list.get ⟨n, hn_lt⟩ ∈ S_list := List.get_mem S_list ⟨n, hn_lt⟩
     exact Finset.mem_toList.mp this
-  · -- i_inj: Injectivity
+  · -- i_inj : Injectivity
     intro n₁ hn₁ n₂ hn₂ heq
     have hn₁_lt := Finset.mem_range.mp hn₁
     have hn₂_lt := Finset.mem_range.mp hn₂
@@ -1268,7 +1268,7 @@ lemma tsum_volume_finset_eq {d : ℕ} (hd : 0 < d) (S : Finset (Box d)) :
     -- Apply injectivity: S_list.get ⟨n₁, hn₁_lt⟩ = S_list.get ⟨n₂, hn₂_lt⟩ implies ⟨n₁, hn₁_lt⟩ = ⟨n₂, hn₂_lt⟩
     have h_idx_eq : (⟨n₁, hn₁_lt⟩ : Fin S_list.length) = ⟨n₂, hn₂_lt⟩ := h_inj h_get_eq
     exact congrArg Fin.val h_idx_eq
-  · -- i_surj: Surjectivity
+  · -- i_surj : Surjectivity
     intro b hb
     obtain ⟨i, hi⟩ := List.get_of_mem (Finset.mem_toList.mpr hb)
     -- hi : S.toList.get i = b, and S_list = S.toList, so S_list.get i = b
@@ -1280,14 +1280,14 @@ lemma tsum_volume_finset_eq {d : ℕ} (hd : 0 < d) (S : Finset (Box d)) :
       rw [←hi]
       rfl
     exact ⟨i.val, Finset.mem_range.mpr i.isLt, h_eq⟩
-  · -- h: Function preserves summand
+  · -- h : Function preserves summand
     intro n hn
     have hn_lt := Finset.mem_range.mp hn
     simp only [S_seq, dif_pos hn_lt]
 
 
 -- For any bounded set, the Lebesgue outer measure is at most the Jordan outer measure.
-theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: Bornology.IsBounded E) : Lebesgue_outer_measure E ≤ Jordan_outer_measure E := by
+theorem Lebesgue_outer_measure_le_Jordan {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E) : Lebesgue_outer_measure E ≤ Jordan_outer_measure E := by
   -- Strategy: Handle d = 0 separately using Lebesgue_outer_measure_of_dim_zero. For d > 0:
   -- Express Jordan outer measure as infimum over finite covers via Jordan_outer_eq.
   -- Show Lebesgue outer measure (infimum over countable covers) ≤ Jordan by proving
@@ -1300,7 +1300,7 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
     -- Use the characterization of Lebesgue_outer_measure for d = 0
     rw [Lebesgue_outer_measure_of_dim_zero]
     by_cases hE_ne : E.Nonempty
-    · -- Case: E is nonempty, so Lebesgue_outer_measure E = 1
+    · -- Case : E is nonempty, so Lebesgue_outer_measure E = 1
       simp only [hE_ne, ↓reduceIte]
       -- Need to show (1 : EReal) ≤ ↑(Jordan_outer_measure E)
       -- Any elementary set containing nonempty E must be nonempty, hence has measure ≥ 1
@@ -1360,7 +1360,7 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
                 exact h_vol_nonneg B'
             _ = 1 := h_vol
       exact EReal.coe_le_coe_iff.mpr h
-    · -- Case: E is empty, so Lebesgue_outer_measure E = 0
+    · -- Case : E is empty, so Lebesgue_outer_measure E = 0
       simp only [hE_ne, ↓reduceIte]
       -- Need to show (0 : EReal) ≤ ↑(Jordan_outer_measure E), which follows from nonnegativity
       exact EReal.coe_nonneg.mpr (Jordan_outer_measure_nonneg E)
@@ -1374,7 +1374,7 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
   -- Show sInf (countable covers) ≤ (finite cover sum : EReal) for all finite covers
   -- This implies sInf (countable) ≤ sInf (finite)
   have h_le : ∀ m ∈ (fun S ↦ (∑ B ∈ S, |B|ᵥ : ℝ)) '' {S | E ⊆ ⋃ B ∈ S, B.toSet},
-      sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } ≤ (m : EReal) := by
+      sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } ≤ (m : EReal) := by
     intro m hm
     obtain ⟨S, hS_cover, rfl⟩ := hm
 
@@ -1415,10 +1415,10 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
       exact tsum_volume_finset_eq hd_pos S
 
     -- Step 3: Apply infimum property
-    calc sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+    calc sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
         ≤ ∑' n, (S_seq n).volume.toEReal := by
             apply sInf_le
-            show ∑' n, (S_seq n).volume.toEReal ∈ { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+            show ∑' n, (S_seq n).volume.toEReal ∈ { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
             use Set.univ, fun (n : Set.univ) => S_seq n.val
             constructor
             · -- Show E ⊆ ⋃ n, (S n).toSet
@@ -1450,7 +1450,7 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
   -- Then use le_sInf: if a ≤ b for all b ∈ s, then a ≤ sInf s
 
   -- First, show that sInf(countable) ≤ sInf(↑ '' finite_set)
-  have h_le_coe : sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+  have h_le_coe : sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
       ≤ sInf ((fun m : ℝ => (m : EReal)) '' ((fun S ↦ ∑ B ∈ S, |B|ᵥ) '' {S | E ⊆ ⋃ B ∈ S, B.toSet})) := by
     apply le_sInf
     intro b hb
@@ -1472,7 +1472,7 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
     simp [BoundedInterval.length]
 
   -- Apply transitivity: Lebesgue_sInf ≤ sInf(↑ '' finite) = ↑(sInf finite)
-  calc sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
+  calc sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal }
       ≤ sInf ((fun m : ℝ => (m : EReal)) '' ((fun S ↦ ∑ B ∈ S, |B|ᵥ) '' {S | E ⊆ ⋃ B ∈ S, B.toSet})) := h_le_coe
       _ = ↑(sInf ((fun S ↦ ∑ B ∈ S, |B|ᵥ) '' {S | E ⊆ ⋃ B ∈ S, B.toSet})) := by
           -- Use helper lemma: EReal.sInf_image_coe
@@ -1480,11 +1480,11 @@ theorem Lebesgue_outer_measure_le_Jordan {d:ℕ} {E: Set (EuclideanSpace' d)} (h
 
 /-- Example 1.2.1.  With the junk value conventions of this companion, the Jordan outer measure of the rationals is zero rather than infinite (I think). -/
 -- The Jordan outer measure of the rationals in a bounded interval equals the interval length.
-example {R:ℝ} (hR: 0 < R) : Jordan_outer_measure (Real.equiv_EuclideanSpace' '' (Set.Icc (-R) R ∩ Set.range (fun q:ℚ ↦ (q:ℝ)))) = 2*R := by
+example {R : ℝ} (hR : 0 < R) : Jordan_outer_measure (Real.equiv_EuclideanSpace' '' (Set.Icc (-R) R ∩ Set.range (fun q : ℚ ↦ (q : ℝ)))) = 2*R := by
   sorry
 
 -- Any countable set (in positive dimension) has Lebesgue outer measure zero.
-theorem Countable.Lebesgue_measure {d:ℕ} (hd : 0 < d) {E: Set (EuclideanSpace' d)} (hE: E.Countable) : Lebesgue_outer_measure E = 0 := by
+theorem Countable.Lebesgue_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpace' d)} (hE : E.Countable) : Lebesgue_outer_measure E = 0 := by
   unfold Lebesgue_outer_measure
   -- Strategy: Cover E with singleton boxes, each with volume 0
 
@@ -1518,7 +1518,7 @@ theorem Countable.Lebesgue_measure {d:ℕ} (hd : 0 < d) {E: Set (EuclideanSpace'
     simp [EReal.coe_zero, tsum_zero]
 
   -- Apply this cover to show the infimum is at most 0
-  have h_le : sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } ≤ 0 := by
+  have h_le : sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } ≤ 0 := by
     apply csInf_le
     · -- Show the set is bounded below by 0
       use 0
@@ -1548,7 +1548,7 @@ theorem Countable.Lebesgue_measure {d:ℕ} (hd : 0 < d) {E: Set (EuclideanSpace'
         simp only [h_vol, EReal.coe_zero, tsum_zero]
 
   -- Show the infimum is at least 0
-  have h_ge : 0 ≤ sInf { V | ∃ (X : Set ℕ) (S: X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } := by
+  have h_ge : 0 ≤ sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } := by
     apply le_csInf
     · -- Show the set is nonempty (we have the singleton cover)
       use 0
@@ -1570,24 +1570,24 @@ theorem Countable.Lebesgue_measure {d:ℕ} (hd : 0 < d) {E: Set (EuclideanSpace'
   exact le_antisymm h_le h_ge
 
 -- The Lebesgue outer measure of the rationals in a bounded interval is zero.
-example {R:ℝ} : Lebesgue_outer_measure (Real.equiv_EuclideanSpace' '' (Set.Icc (-R) R ∩ Set.range (fun q:ℚ ↦ (q:ℝ)))) = 0 := by
+example {R : ℝ} : Lebesgue_outer_measure (Real.equiv_EuclideanSpace' '' (Set.Icc (-R) R ∩ Set.range (fun q : ℚ ↦ (q : ℝ)))) = 0 := by
   apply Countable.Lebesgue_measure (by omega : 0 < 1)
   apply Set.Countable.image
   -- The intersection is countable because the right side is countable
-  have : (Set.Icc (-R) R ∩ Set.range (fun q:ℚ ↦ (q:ℝ))).Countable := by
+  have : (Set.Icc (-R) R ∩ Set.range (fun q : ℚ ↦ (q : ℝ))).Countable := by
     apply Set.Countable.mono (Set.inter_subset_right)
-    exact Set.countable_range (fun q:ℚ => (q:ℝ))
+    exact Set.countable_range (fun q : ℚ => (q : ℝ))
   exact this
 
 -- The Lebesgue outer measure of all rationals is zero.
-example : Lebesgue_outer_measure (Real.equiv_EuclideanSpace' '' (Set.range (fun q:ℚ ↦ (q:ℝ)))) = 0 := by
+example : Lebesgue_outer_measure (Real.equiv_EuclideanSpace' '' (Set.range (fun q : ℚ ↦ (q : ℝ)))) = 0 := by
   apply Countable.Lebesgue_measure (by omega : 0 < 1)
   apply Set.Countable.image
-  exact Set.countable_range (fun q:ℚ => (q:ℝ))
+  exact Set.countable_range (fun q : ℚ => (q : ℝ))
 
 -- A set is Lebesgue measurable if it can be approximated arbitrarily well from the outside by open sets.
-def LebesgueMeasurable {d:ℕ} (E: Set (EuclideanSpace' d)) : Prop :=
-  ∀ ε > 0, ∃ U: Set (EuclideanSpace' d), IsOpen U ∧ E ⊆ U ∧ Lebesgue_outer_measure (U \ E) ≤ ε
+def LebesgueMeasurable {d : ℕ} (E : Set (EuclideanSpace' d)) : Prop :=
+  ∀ ε > 0, ∃ U : Set (EuclideanSpace' d), IsOpen U ∧ E ⊆ U ∧ Lebesgue_outer_measure (U \ E) ≤ ε
 
 -- The Lebesgue measure of a set (equals its Lebesgue outer measure).
-noncomputable def Lebesgue_measure {d:ℕ} (E: Set (EuclideanSpace' d)) : EReal := Lebesgue_outer_measure E
+noncomputable def Lebesgue_measure {d : ℕ} (E : Set (EuclideanSpace' d)) : EReal := Lebesgue_outer_measure E

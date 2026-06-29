@@ -20,86 +20,86 @@ namespace Chapter11
 open Chapter9
 
 /-- Theorem 11.4.1(a) / Exercise 11.4.1 -/
-theorem IntegrableOn.add {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
+theorem IntegrableOn.add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f + g) I ∧ integ (f + g) I = integ f I + integ g I := by
   sorry
 
 /-- Theorem 11.4.1(b) / Exercise 11.4.1 -/
-theorem IntegrableOn.smul {I: BoundedInterval} (c:ℝ) {f:ℝ → ℝ} (hf: IntegrableOn f I) :
+theorem IntegrableOn.smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
   IntegrableOn (c • f) I ∧ integ (c • f) I = c * integ f I := by
   sorry
 
-theorem IntegrableOn.neg {I: BoundedInterval} {f:ℝ → ℝ} (hf: IntegrableOn f I) :
+theorem IntegrableOn.neg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
   IntegrableOn (-f) I ∧ integ (-f) I = -integ f I := by have := IntegrableOn.smul (-1) hf; aesop
 
 /-- Theorem 11.4.1(c) / Exercise 11.4.1 -/
-theorem IntegrableOn.sub {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
+theorem IntegrableOn.sub {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f - g) I ∧ integ (f - g) I = integ f I - integ g I := by
   sorry
 
 /-- Theorem 11.4.1(d) / Exercise 11.4.1 -/
-theorem IntegrableOn.nonneg {I: BoundedInterval} {f:ℝ → ℝ} (hf: IntegrableOn f I) (hf_nonneg: ∀ x ∈ I, 0 ≤ f x) :
+theorem IntegrableOn.nonneg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) (hf_nonneg : ∀ x ∈ I, 0 ≤ f x) : 
   0 ≤ integ f I := by
   sorry
 
 /-- Theorem 11.4.1(e) / Exercise 11.4.1 -/
-theorem IntegrableOn.mono {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I)
-  (h: MajorizesOn g f I) :
+theorem IntegrableOn.mono {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I)
+  (h : MajorizesOn g f I) : 
   integ f I ≤ integ g I := by
   sorry
 
 /-- Theorem 11.4.1(f) / Exercise 11.4.1 -/
-theorem IntegrableOn.const (c:ℝ) (I: BoundedInterval) :
+theorem IntegrableOn.const (c : ℝ) (I : BoundedInterval) : 
   IntegrableOn (fun _ ↦ c) I ∧ integ (fun _ ↦ c) I = c * |I|ₗ := by
   sorry
 
 /-- Theorem 11.4.1(f) / Exercise 11.4.1 -/
-theorem IntegrableOn.const' {I: BoundedInterval} {f:ℝ → ℝ} (hf: ConstantOn f I) :
+theorem IntegrableOn.const' {I : BoundedInterval} {f : ℝ → ℝ} (hf : ConstantOn f I) : 
   IntegrableOn f I ∧ integ f I = (constant_value_on f I) * |I|ₗ := by
   sorry
 
 
 open Classical in
 /-- Theorem 11.4.1 (g)  / Exercise 11.4.1 -/
-theorem IntegrableOn.of_extend {I J: BoundedInterval} (hIJ: I ⊆ J)
-  {f: ℝ → ℝ} (h: IntegrableOn f I) :
+theorem IntegrableOn.of_extend {I J : BoundedInterval} (hIJ : I ⊆ J)
+  {f : ℝ → ℝ} (h : IntegrableOn f I) : 
   IntegrableOn (fun x ↦ if x ∈ I then f x else 0) J := by
   sorry
 
 open Classical in
 /-- Theorem 11.4.1 (g)  / Exercise 11.4.1 -/
-theorem IntegrableOn.of_extend' {I J: BoundedInterval} (hIJ: I ⊆ J)
-  {f: ℝ → ℝ} (h: IntegrableOn f I) :
+theorem IntegrableOn.of_extend' {I J : BoundedInterval} (hIJ : I ⊆ J)
+  {f : ℝ → ℝ} (h : IntegrableOn f I) : 
   integ (fun x ↦ if x ∈ I then f x else 0) J = integ f I := by
   sorry
 
 /-- Theorem 11.4.1 (h) (Laws of integration) / Exercise 11.4.1 -/
-theorem IntegrableOn.join {I J K: BoundedInterval} (hIJK: K.joins I J)
-  {f: ℝ → ℝ} (h: IntegrableOn f K) :
+theorem IntegrableOn.join {I J K : BoundedInterval} (hIJK : K.joins I J)
+  {f : ℝ → ℝ} (h : IntegrableOn f K) : 
   IntegrableOn f I ∧ IntegrableOn f J ∧ integ f K = integ f I + integ f J := by
   sorry
 
 /-- A variant of Theorem 11.4.1(h) that will be useful in later sections. -/
-theorem IntegrableOn.mono' {I J: BoundedInterval} (hIJ: J ⊆ I)
-  {f: ℝ → ℝ} (h: IntegrableOn f I) : IntegrableOn f J := by
+theorem IntegrableOn.mono' {I J : BoundedInterval} (hIJ : J ⊆ I)
+  {f : ℝ → ℝ} (h : IntegrableOn f I) : IntegrableOn f J := by
   sorry
 
 /-- A further variant of Theorem 11.4.1(h) that will be useful in later sections. -/
-theorem IntegrableOn.eq {I J: BoundedInterval} (hIJ: J ⊆ I)
-  (ha: J.a = I.a) (hb: J.b = I.b)
-  {f: ℝ → ℝ} (h: IntegrableOn f I) : integ f J = integ f I := by
+theorem IntegrableOn.eq {I J : BoundedInterval} (hIJ : J ⊆ I)
+  (ha : J.a = I.a) (hb : J.b = I.b)
+  {f : ℝ → ℝ} (h : IntegrableOn f I) : integ f J = integ f I := by
   sorry
 
 /-- A handy little lemma for "epsilon of room" type arguments -/
-lemma nonneg_of_le_const_mul_eps {x C:ℝ} (h: ∀ ε>0, x ≤ C * ε) : x ≤ 0 := by
-  by_cases hC: C > 0
+lemma nonneg_of_le_const_mul_eps {x C : ℝ} (h : ∀ ε>0, x ≤ C * ε) : x ≤ 0 := by
+  by_cases hC : C > 0
   . by_contra!
     specialize h (x/(2*C)) (by positivity); convert_to x ≤ x/2 at h; grind
     linarith
   specialize h 1 ?_ <;> grind
 
 /-- Theorem 11.4.3 (Max and min preserve integrability)-/
-theorem IntegrableOn.max {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
+theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f ⊔ g) I  := by
   -- This proof is written to follow the structure of the original text.
   unfold IntegrableOn at hf hg
@@ -109,7 +109,7 @@ theorem IntegrableOn.max {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableO
     simp only [Pi.sup_apply]
     exact abs_max_le_max_abs_abs.trans (sup_le_sup hM hM')
   have lower_le_upper : 0 ≤ upper_integral (f ⊔ g) I - lower_integral (f ⊔ g) I := by linarith [lower_integral_le_upper hmax_bound]
-  have (ε:ℝ) (hε: 0 < ε) : upper_integral (f ⊔ g) I - lower_integral (f ⊔ g) I ≤ 4*ε := by
+  have (ε : ℝ) (hε : 0 < ε) : upper_integral (f ⊔ g) I - lower_integral (f ⊔ g) I ≤ 4*ε := by
     choose f' hf'min hf'const hf'int using gt_of_lt_lower_integral hf.1 (show integ f I - ε < lower_integral f I
     by grind)
     choose g' hg'min hg'const hg'int using gt_of_lt_lower_integral hg.1 (show integ g I - ε < lower_integral g I by grind)
@@ -145,12 +145,12 @@ theorem IntegrableOn.max {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableO
 
 
 /-- Theorem 11.4.5 / Exercise 11.4.3.  The objective here is to create a shorter proof than the one above.-/
-theorem IntegrableOn.min {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
+theorem IntegrableOn.min {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f ⊓ g) I  := by
   sorry
 
 /-- Corollary 11.4.4 -/
-theorem IntegrableOn.abs {I: BoundedInterval} {f:ℝ → ℝ} (hf: IntegrableOn f I) :
+theorem IntegrableOn.abs {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
   IntegrableOn (abs f) I := by
   have := (IntegrableOn.const 0 I).1
   convert ((hf.max this).sub (hf.min this)).1 using 1
@@ -158,11 +158,11 @@ theorem IntegrableOn.abs {I: BoundedInterval} {f:ℝ → ℝ} (hf: IntegrableOn 
 
 /-- Theorem 11.4.5 (Products preserve Riemann integrability).
 It is convenient to first establish the non-negative case.-/
-theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I)
-  (hf_nonneg: MajorizesOn f 0 I) (hg_nonneg: MajorizesOn g 0 I) :
+theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I)
+  (hf_nonneg : MajorizesOn f 0 I) (hg_nonneg : MajorizesOn g 0 I) : 
   IntegrableOn (f * g) I := by
   -- This proof is written to follow the structure of the original text.
-  by_cases hI : (I:Set ℝ).Nonempty
+  by_cases hI : (I : Set ℝ).Nonempty
   swap
   . apply (integ_on_subsingleton _).1
     rw [←BoundedInterval.length_of_subsingleton]
@@ -177,7 +177,7 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
     simp [abs_mul]; apply mul_le_mul hM₁ hM₂ <;> positivity
   have lower_le_upper : 0 ≤ upper_integral (f * g) I - lower_integral (f * g) I := by
     linarith [lower_integral_le_upper hmul_bound]
-  have (ε:ℝ) (hε: 0 < ε) : upper_integral (f * g) I - lower_integral (f * g) I ≤ 2*(M₁+M₂)*ε := by
+  have (ε : ℝ) (hε : 0 < ε) : upper_integral (f * g) I - lower_integral (f * g) I ≤ 2*(M₁+M₂)*ε := by
     have : ∃ f', MinorizesOn f' f I ∧ PiecewiseConstantOn f' I ∧ integ f I - ε < PiecewiseConstantOn.integ f' I ∧ MajorizesOn f' 0 I := by
       choose f' hf'min hf'const hf'int using gt_of_lt_lower_integral hf.1 (show integ f I - ε < lower_integral f I by linarith)
       use max f' 0
@@ -260,7 +260,7 @@ theorem integ_of_mul_nonneg {I: BoundedInterval} {f g:ℝ → ℝ} (hf: Integrab
   exact ⟨ hmul_bound, by linarith [nonneg_of_le_const_mul_eps this] ⟩
 
 
-theorem integ_of_mul {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f I) (hg: IntegrableOn g I) :
+theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f * g) I := by
   -- This proof is written to follow the structure of the original text.
   set fplus := max f (fun _ ↦ 0)
@@ -287,7 +287,7 @@ theorem integ_of_mul {I: BoundedInterval} {f g:ℝ → ℝ} (hf: IntegrableOn f 
 open BoundedInterval
 
 /-- Exercise 11.4.2 -/
-theorem IntegrableOn.split {I: BoundedInterval} {f: ℝ → ℝ} (hf: IntegrableOn f I) (P: Partition I) :
+theorem IntegrableOn.split {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) (P : Partition I) : 
   integ f I = ∑ J ∈ P.intervals, integ f J := by
     sorry
 

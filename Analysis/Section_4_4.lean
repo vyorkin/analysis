@@ -25,14 +25,14 @@ Users of the companion who have completed the exercises in this section are welc
 -/
 
 /-- Proposition 4.4.1 (Interspersing of integers by rationals) / Exercise 4.4.1 -/
-theorem Rat.between_int (x:ℚ) : ∃! n:ℤ, n ≤ x ∧ x < n+1 := by
+theorem Rat.between_int (x : ℚ) : ∃! n : ℤ, n ≤ x ∧ x < n+1 := by
   sorry
 
-theorem Nat.exists_gt (x:ℚ) : ∃ n:ℕ, n > x := by
+theorem Nat.exists_gt (x : ℚ) : ∃ n : ℕ, n > x := by
   sorry
 
 /-- Proposition 4.4.3 (Interspersing of rationals) -/
-theorem Rat.exists_between_rat {x y:ℚ} (h: x < y) : ∃ z:ℚ, x < z ∧ z < y := by
+theorem Rat.exists_between_rat {x y : ℚ} (h : x < y) : ∃ z : ℚ, x < z ∧ z < y := by
   -- This proof is written to follow the structure of the original text.
   -- The reader is encouraged to find shorter proofs, for instance
   -- using Mathlib's `linarith` tactic.
@@ -45,38 +45,38 @@ theorem Rat.exists_between_rat {x y:ℚ} (h: x < y) : ∃ z:ℚ, x < z ∧ z < y
   convert add_lt_add_right h' (y/2) using 1 <;> ring
 
 /-- Exercise 4.4.2 (a) -/
-theorem Nat.no_infinite_descent : ¬ ∃ a:ℕ → ℕ, ∀ n, a (n+1) < a n := by
+theorem Nat.no_infinite_descent : ¬ ∃ a : ℕ → ℕ, ∀ n, a (n+1) < a n := by
   sorry
 
 /-- Exercise 4.4.2 (b) -/
-def Int.infinite_descent : Decidable (∃ a:ℕ → ℤ, ∀ n, a (n+1) < a n) := by
+def Int.infinite_descent : Decidable (∃ a : ℕ → ℤ, ∀ n, a (n+1) < a n) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
 /-- Exercise 4.4.2 (b) -/
-def Rat.pos_infinite_descent : Decidable (∃ a:ℕ → {x: ℚ // 0 < x}, ∀ n, a (n+1) < a n) := by
+def Rat.pos_infinite_descent : Decidable (∃ a : ℕ → {x : ℚ // 0 < x}, ∀ n, a (n+1) < a n) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
 #check even_iff_exists_two_mul
 #check odd_iff_exists_bit1
 
-theorem Nat.even_or_odd'' (n:ℕ) : Even n ∨ Odd n := by
+theorem Nat.even_or_odd'' (n : ℕ) : Even n ∨ Odd n := by
   sorry
 
-theorem Nat.not_even_and_odd (n:ℕ) : ¬ (Even n ∧ Odd n) := by
+theorem Nat.not_even_and_odd (n : ℕ) : ¬ (Even n ∧ Odd n) := by
   sorry
 
 #check Nat.rec
 
 /-- Proposition 4.4.4 / Exercise 4.4.3  -/
-theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
+theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
   -- This proof is written to follow the structure of the original text.
   by_contra h; choose x hx using h
   have hnon : x ≠ 0 := by aesop
   wlog hpos : x > 0
   . apply this _ _ _ (show -x>0 by simp; order) <;> grind
-  have hrep : ∃ p q:ℕ, p > 0 ∧ q > 0 ∧ p^2 = 2*q^2 := by
+  have hrep : ∃ p q : ℕ, p > 0 ∧ q > 0 ∧ p^2 = 2*q^2 := by
     use x.num.toNat, x.den
     observe hnum_pos : x.num > 0
     observe hden_pos : x.den > 0
@@ -86,7 +86,7 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
     rw [hnum_cast] at hx; norm_cast at hx; grind
   set P : ℕ → Prop := fun p ↦ p > 0 ∧ ∃ q > 0, p^2 = 2*q^2
   have hP : ∃ p, P p := by aesop
-  have hiter (p:ℕ) (hPp: P p) : ∃ q, q < p ∧ P q := by
+  have hiter (p : ℕ) (hPp : P p) : ∃ q, q < p ∧ P q := by
     obtain hp | hp := p.even_or_odd''
     . rw [even_iff_exists_two_mul] at hp
       obtain ⟨ k, rfl ⟩ := hp
@@ -104,26 +104,26 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x:ℚ, x^2 = 2 := by
     observe : ¬(Even (p ^ 2) ∧ Odd (p ^ 2))
     tauto
   classical
-  set f : ℕ → ℕ := fun p ↦ if hPp: P p then (hiter p hPp).choose else 0
-  have hf (p:ℕ) (hPp: P p) : (f p < p) ∧ P (f p) := by
+  set f : ℕ → ℕ := fun p ↦ if hPp : P p then (hiter p hPp).choose else 0
+  have hf (p : ℕ) (hPp : P p) : (f p < p) ∧ P (f p) := by
     simp [f, hPp]; exact (hiter p hPp).choose_spec
   choose p hP using hP
   set a : ℕ → ℕ := Nat.rec p (fun n p ↦ f p)
-  have ha (n:ℕ) : P (a n) := by
+  have ha (n : ℕ) : P (a n) := by
     induction n with
     | zero => exact hP
     | succ n ih => exact (hf _ ih).2
-  have hlt (n:ℕ) : a (n+1) < a n := by
+  have hlt (n : ℕ) : a (n+1) < a n := by
     have : a (n+1) = f (a n) := n.rec_add_one p (fun n p ↦ f p)
     grind
   exact Nat.no_infinite_descent ⟨ a, hlt ⟩
 
 
 /-- Proposition 4.4.5 -/
-theorem Rat.exist_approx_sqrt_two {ε:ℚ} (hε:ε>0) : ∃ x ≥ (0:ℚ), x^2 < 2 ∧ 2 < (x+ε)^2 := by
+theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ), x^2 < 2 ∧ 2 < (x+ε)^2 := by
   -- This proof is written to follow the structure of the original text.
   by_contra! h
-  have (n:ℕ): (n*ε)^2 < 2 := by
+  have (n : ℕ) : (n*ε)^2 < 2 := by
     induction' n with n hn; simp
     simp [add_mul]
     apply lt_of_le_of_ne (h (n*ε) (by positivity) hn)
@@ -134,7 +134,7 @@ theorem Rat.exist_approx_sqrt_two {ε:ℚ} (hε:ε>0) : ∃ x ≥ (0:ℚ), x^2 <
   grind
 
 /-- Example 4.4.6 -/
-example :
-  let ε:ℚ := 1/1000
-  let x:ℚ := 1414/1000
+example : 
+  let ε : ℚ := 1/1000
+  let x : ℚ := 1414/1000
   x^2 < 2 ∧ 2 < (x+ε)^2 := by norm_num
