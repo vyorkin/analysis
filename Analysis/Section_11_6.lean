@@ -21,7 +21,7 @@ open Chapter9 BoundedInterval
 
 set_option maxHeartbeats 300000 in
 /-- Proposition 11.6.1 (i) -/
-theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b)) :
+theorem integ_of_monotone {a b : ℝ} {f : ℝ → ℝ} (hf : MonotoneOn f (Icc a b)) :
   IntegrableOn f (Icc a b) := by
   -- This proof is adapted from the structure of the original text.
   by_cases hab : 0 < b-a
@@ -131,7 +131,7 @@ theorem integ_of_monotone {a b:ℝ} {f:ℝ → ℝ} (hf: MonotoneOn f (Icc a b))
 
 
 /-- Proposition 11.6.1 (ii) -/
-theorem integ_of_antitone {a b:ℝ} {f:ℝ → ℝ} (hf: AntitoneOn f (Icc a b)) :
+theorem integ_of_antitone {a b : ℝ} {f : ℝ → ℝ} (hf : AntitoneOn f (Icc a b)) :
   IntegrableOn f (Icc a b) := by
   rw [←neg_neg f]; apply (integ_of_monotone _).neg.1; convert hf.neg using 1
 
@@ -146,8 +146,8 @@ theorem integ_of_bdd_antitone {I:BoundedInterval} {f:ℝ → ℝ} (hbound: BddOn
   sorry
 
 /-- Proposition 11.6.4 (Integral test) -/
-theorem summable_iff_integ_of_antitone {f:ℝ → ℝ} (hnon: ∀ x ≥ 0, f x ≥ 0)
-  (hf: AntitoneOn f (.Ici 0)) :
+theorem summable_iff_integ_of_antitone {f : ℝ → ℝ} (hnon : ∀ x ≥ 0, f x ≥ 0)
+  (hf : AntitoneOn f (.Ici 0)) :
   Summable (fun n:ℕ ↦ f n) ↔ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
   sorry
 
