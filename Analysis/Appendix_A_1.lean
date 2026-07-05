@@ -15,7 +15,7 @@ Showcases some basic tactics and Lean syntax.
 /- Example A.1.1. What the textbook calls "statements" are objects of type `Prop` in Lean.  Also,
    in Lean we tend to assign "junk" values to expressions that might normally be considered
    undefined, so discussions regarding undefined terms in the textbook should be adjusted
-   accordingly. -/   
+   accordingly. -/
 #check 2+2=4
 #check 2+2=5
 
@@ -156,7 +156,7 @@ example : ¬(2 + 2 = 5) := by simp
 
 example : 2 + 2 ≠ 5 := by simp
 
-example (Jane_black_hair Jane_blue_eyes : Prop) : 
+example (Jane_black_hair Jane_blue_eyes : Prop) :
   (¬(Jane_black_hair ∧ Jane_blue_eyes)) ↔ (¬Jane_black_hair ∨ ¬Jane_blue_eyes) := by
   simp; tauto
 
@@ -170,7 +170,7 @@ example (x : ℤ) : ¬(x ≥ 2 ∧ x ≤ 6) ↔ (x < 2 ∨ x > 6) := by
   have : ¬(x ≤ 6) ↔ (x > 6) := Int.not_le
   tauto
 
-example (John_brown_hair John_black_hair : Prop) : 
+example (John_brown_hair John_black_hair : Prop) :
   (¬(John_brown_hair ∨ John_black_hair)) ↔ (¬John_brown_hair ∧ ¬John_black_hair) := by
   simp
 
@@ -228,8 +228,8 @@ example {X Y Z : Prop} (hXY : X ↔ Y) (hXZ : X ↔ Z) : [X,Y,Z].TFAE := by
   tfae_have 1 ↔ 3 := by exact hXZ  -- This line is optional
   tfae_finish
 
-/-- Note for the {name (full := List.TFAE.out)}`out` method that one indexes starting from 0, in
-contrast to the {tactic}`tfae_have` tactic. -/
+/-- Note for the {name (full := List.TFAE.out)}`out` method that
+    one indexes starting from 0, in contrast to the {tactic}`tfae_have` tactic. -/
 example {X Y Z : Prop} (h : [X,Y,Z].TFAE) : X ↔ Y := by
   exact h.out 0 1
 
@@ -242,7 +242,7 @@ example {X Y : Prop} : ¬ (X ↔ Y) ↔ sorry := by sorry
 /-- Exercise A.1.3. -/
 def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬ Y) → (X ↔ Y)) := by
   --the first line of this construction should be either `apply isTrue` or `apply isFalse`,
-  --depending on whether you believe the given statement to be true or false. 
+  --depending on whether you believe the given statement to be true or false.
   sorry
 
 /-- Exercise A.1.4. -/

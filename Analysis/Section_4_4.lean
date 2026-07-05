@@ -36,10 +36,11 @@ theorem Rat.exists_between_rat {x y : ℚ} (h : x < y) : ∃ z : ℚ, x < z ∧ 
   -- This proof is written to follow the structure of the original text.
   -- The reader is encouraged to find shorter proofs, for instance
   -- using Mathlib's `linarith` tactic.
-  use (x+y)/2
+  use (x + y)/2
   have h' : x/2 < y/2 := by
     rw [show x/2 = x*(1/2) by ring, show y/2 = y*(1/2) by ring]
-    apply mul_lt_mul_of_pos_right h; positivity
+    apply mul_lt_mul_of_pos_right h -- (hbc : b < c) (ha : 0 < a) : b * a < c * a
+    positivity
   constructor
   . convert add_lt_add_right h' (x/2) using 1 <;> ring
   convert add_lt_add_right h' (y/2) using 1 <;> ring
@@ -134,7 +135,7 @@ theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ),
   grind
 
 /-- Example 4.4.6 -/
-example : 
+example :
   let ε : ℚ := 1/1000
   let x : ℚ := 1414/1000
   x^2 < 2 ∧ 2 < (x+ε)^2 := by norm_num
