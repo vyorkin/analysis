@@ -38,24 +38,40 @@ abbrev axiom_of_universal_specification : Prop :=
 
 theorem Russells_paradox : ¬ axiom_of_universal_specification := by
   -- This proof is written to follow the structure of the original text.
-  intro h
-  unfold axiom_of_universal_specification at h
-  set P : Object → Prop := fun x ↦ ∃ X : Set, x = X ∧ x ∉ X
-  choose Ω hΩ using h P
-  by_cases h : (Ω : Object) ∈ Ω
-  . have : P (Ω : Object) := (hΩ _).mp h
-    obtain ⟨ Ω', ⟨ hΩ1, hΩ2⟩ ⟩ := this
+  intro hus
+  unfold axiom_of_universal_specification at hus
+  -- P x: "x — это (некоторое) множество, не содержащее самого себя"
+  set P : Object → Prop := fun x ↦ ∃ X : Set, x = X ∧ x ∉ X -- let P : ...
+  -- x = X -- мн-во элементов, которые являются этим же множеством (самим сабими)
+  -- x ∉ X -- не содержит само себя
+  -- по аксиоме универсальной спецификации применённой к P, получаем:
+  obtain ⟨Ω, hΩ⟩ := hus P
+  -- Рассмотрим оба случая:
+  -- когда омега содержит само себя и когда не содержит
+  by_cases h' : (Ω : Object) ∈ Ω
+  -- случай Ω ∈ Ω: тогда P Ω верно, то есть Ω совпадает с каким-то X ∉ X
+  . have hiff : (Ω : Object) ∈ Ω ↔ P (Ω : Object) := hΩ Ω
+    have hP : P (Ω : Object) := hiff.mp h'
+    obtain ⟨Ω', ⟨hΩ1, hΩ2⟩⟩ := hP
+    -- simp сводит равенство образов (↑Ω = ↑Ω') к равенству множеств Ω = Ω'
     simp at hΩ1
     rw [←hΩ1] at hΩ2
-    contradiction
+    contradiction  -- hΩ2 : Ω ∉ Ω, а h' : Ω ∈ Ω
+  -- случай Ω ∉ Ω: тогда X := Ω сам свидетельствует, что P Ω верно
   · have : P (Ω : Object) := by use Ω
-    rw [←hΩ] at this
+    rw [←hΩ] at this  -- получаем Ω ∈ Ω, что противоречит h'
     contradiction
 
 /-- Axiom 3.9 (Regularity) -/
 theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
     ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A := by
-  choose x h h' using regularity_axiom A (nonempty_def h)
+  have hA : ∃ x, x ∈ A := nonempty_def h
+  -- regularity_axiom
+  --   (A : Set)
+  --   (hA : ∃ x, mem x A)
+  --   :
+  --   ∃ x, x ∈ A ∧ ∀ (S : Set), x = S → ¬∃ y, y ∈ A ∧ y ∈ S
+  obtain ⟨x, h, h'⟩ := regularity_axiom A hA
   use ⟨x, h⟩
   intro S hS; specialize h' S hS
   rw [disjoint_iff, eq_empty_iff_forall_notMem]
