@@ -118,7 +118,7 @@ theorem SetTheory.Set.not_P_3_3_3b_existsUnique : ¬ ∀ x, ∃! y : Nat, P_3_3_
 abbrev SetTheory.Set.P_3_3_3c : (Nat \ {(0 : Object)} : Set) → Nat → Prop :=
   fun x y ↦ ((y+1 : ℕ) : Object) = x
 
-theorem SetTheory.Set.P_3_3_3c_existsUnique (x : (Nat \ {(0 : Object)} : Set)) : 
+theorem SetTheory.Set.P_3_3_3c_existsUnique (x : (Nat \ {(0 : Object)} : Set)) :
     ∃! y : Nat, P_3_3_3c x y := by
   -- Some technical unpacking here due to the subtle distinctions between the `Object` type,
   -- sets converted to subtypes of `Object`, and subsets of those sets.
@@ -134,7 +134,7 @@ theorem SetTheory.Set.P_3_3_3c_existsUnique (x : (Nat \ {(0 : Object)} : Set)) :
 abbrev SetTheory.Set.f_3_3_3c : Function (Nat \ {(0 : Object)} : Set) Nat :=
   Function.mk P_3_3_3c P_3_3_3c_existsUnique
 
-theorem SetTheory.Set.f_3_3_3c_eval (x : (Nat \ {(0 : Object)} : Set)) (y : Nat) : 
+theorem SetTheory.Set.f_3_3_3c_eval (x : (Nat \ {(0 : Object)} : Set)) (y : Nat) :
     y = f_3_3_3c x ↔ ((y+1 : ℕ) : Object) = x := Function.eval _ _ _
 
 /-- Create a version of a non-zero {lean}`n` inside {lean}`Nat \ {0}` for any natural number n. -/
@@ -151,7 +151,7 @@ theorem SetTheory.Set.f_3_3_3c_eval' (n : ℕ) : f_3_3_3c (coe_nonzero (n+1) (by
 theorem SetTheory.Set.f_3_3_3c_eval'' : f_3_3_3c (coe_nonzero 4 (by positivity)) = 3 := by
   convert f_3_3_3c_eval' 3
 
-theorem SetTheory.Set.f_3_3_3c_eval''' (n : ℕ) : 
+theorem SetTheory.Set.f_3_3_3c_eval''' (n : ℕ) :
     f_3_3_3c (coe_nonzero (2*n+3) (by positivity)) = (2*n+2 : ℕ) := by convert f_3_3_3c_eval' (2*n+2)
 
 /--
@@ -228,7 +228,7 @@ abbrev SetTheory.Set.f_3_3_11 (X : Set) : Function (∅ : Set) X :=
 theorem SetTheory.Set.empty_function_unique {X : Set} (f g : Function (∅ : Set) X) : f = g := by sorry
 
 /-- Definition 3.3.13 (Composition) -/
-noncomputable abbrev Function.comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) : 
+noncomputable abbrev Function.comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) :
     Function X Z :=
   Function.mk_fn (fun x ↦ g (f x))
 
@@ -236,13 +236,13 @@ noncomputable abbrev Function.comp {X Y Z : Set} (g : Function Y Z) (f : Functio
 -- so we use `○` here instead to avoid ambiguity.
 infix : 90 "○" => Function.comp
 
-theorem Function.comp_eval {X Y Z : Set} (g : Function Y Z) (f : Function X Y) (x : X) : 
+theorem Function.comp_eval {X Y Z : Set} (g : Function Y Z) (f : Function X Y) (x : X) :
     (g ○ f) x = g (f x) := Function.eval_of _ _
 
 /--
   Compatibility with Mathlib's composition operation.
 -/
-theorem Function.comp_eq_comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) : 
+theorem Function.comp_eq_comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) :
     (g ○ f).to_fn = g.to_fn ∘ f.to_fn := by
   ext; simp only [Function.comp_eval, Function.comp_apply]
 
@@ -251,24 +251,24 @@ abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat := Function.mk_fn (fun x ↦ (2
 
 abbrev SetTheory.Set.g_3_3_14 : Function Nat Nat := Function.mk_fn (fun x ↦ (x+3 : ℕ))
 
-theorem SetTheory.Set.g_circ_f_3_3_14 : 
+theorem SetTheory.Set.g_circ_f_3_3_14 :
     g_3_3_14 ○ f_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+3 : ℕ) : Nat)) := by
   simp [Function.eq_iff, Function.eval_of]
 
-theorem SetTheory.Set.f_circ_g_3_3_14 : 
+theorem SetTheory.Set.f_circ_g_3_3_14 :
     f_3_3_14 ○ g_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+6 : ℕ) : Nat)) := by
   simp [Function.eq_iff, Function.eval_of]
   intros; ring
 
 /-- Lemma 3.3.15 (Composition is associative) -/
 theorem SetTheory.Set.comp_assoc {W X Y Z : Set} (h : Function Y Z) (g : Function X Y)
-  (f : Function W X) : 
+  (f : Function W X) :
     h ○ (g ○ f) = (h ○ g) ○ f := by
   simp [Function.eq_iff]
 
 abbrev Function.one_to_one {X Y : Set} (f : Function X Y) : Prop := ∀ x x' : X, x ≠ x' → f x ≠ f x'
 
-theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) : 
+theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) :
     f.one_to_one ↔ ∀ x x' : X, f x = f x' → x = x' := by
   peel with x hx; tauto
 
@@ -276,7 +276,7 @@ theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) :
   Compatibility with Mathlib's {name}`Function.Injective`.  You may wish to use the {tactic}`unfold` tactic to
   understand Mathlib concepts such as {name}`Function.Injective`.
 -/
-theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) : 
+theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) :
     f.one_to_one ↔ Function.Injective f.to_fn := by
   rw [one_to_one_iff, Function.Injective]
 
@@ -284,7 +284,7 @@ theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) :
   Example 3.3.18.  One half of the example requires the integers, and so is expressed using
   Mathlib functions instead of Chapter 3 functions.
 -/
-theorem SetTheory.Set.f_3_3_18_one_to_one : 
+theorem SetTheory.Set.f_3_3_18_one_to_one :
     (Function.mk_fn (fun (n : Nat) ↦ ((n^2 : ℕ) : Nat))).one_to_one := by
   rw [Function.one_to_one_iff]
   intro _ _ h
@@ -302,7 +302,7 @@ example : Function.Injective (fun (n : ℕ) ↦ n^2) := by
   intro _ _ _; rwa [← pow_left_inj₀ (by norm_num) (by norm_num) (show 2 ≠ 0 by norm_num)]
 
 /-- Remark 3.3.19 -/
-theorem SetTheory.Set.two_to_one {X Y : Set} {f : Function X Y} (h : ¬ f.one_to_one) : 
+theorem SetTheory.Set.two_to_one {X Y : Set} {f : Function X Y} (h : ¬ f.one_to_one) :
     ∃ x x' : X, x ≠ x' ∧ f x = f x' := by
   rw [Function.one_to_one] at h; aesop
 
@@ -328,7 +328,7 @@ example : Function.Surjective (fun (n : ℤ) ↦ ⟨ n^2, by use n ⟩ : ℤ →
 abbrev Function.bijective {X Y : Set} (f : Function X Y) : Prop := f.one_to_one ∧ f.onto
 
 /-- Compatibility with Mathlib's {name}`Function.Bijective` -/
-theorem Function.bijective_iff {X Y : Set} (f : Function X Y) : 
+theorem Function.bijective_iff {X Y : Set} (f : Function X Y) :
     f.bijective ↔ Function.Bijective f.to_fn := by
   rw [Function.bijective, Function.Bijective, one_to_one_iff', onto_iff]
 
@@ -373,7 +373,7 @@ example : ¬ Function.Bijective (fun n ↦ n+1) := by
   symm; apply Nat.zero_ne_add_one
 
 /-- Remark 3.3.27 -/
-theorem Function.bijective_incorrect_def : 
+theorem Function.bijective_incorrect_def :
     ∃ X Y : Set, ∃ f : Function X Y, (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective := by
   use Nat, Nat
   set f := mk_fn fun x ↦ (0 : Nat); use f
@@ -392,7 +392,7 @@ theorem Function.bijective_incorrect_def :
   of {name}`f` must be exactly of the same type of {name}`f`, and {lean}`Function Y X` is a different type from
   {lean}`Function X Y`.
 -/
-abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) : 
+abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
     Function Y X :=
   Function.mk (fun y x ↦ f x = y) (by
     intros
@@ -404,11 +404,11 @@ abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
     simp [hx]
   )
 
-theorem Function.inverse_eval {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) : 
+theorem Function.inverse_eval {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) :
     x = (f.inverse h) y ↔ f x = y := Function.eval _ _ _
 
 /-- Compatibility with Mathlib's notion of inverse -/
-theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) : 
+theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) :
     (f.inverse h).to_fn = Function.invFun f.to_fn := by
   ext y; congr; symm
   rw [inverse_eval]
@@ -463,33 +463,33 @@ def Function.comp_cancel_right_without_hg : Decidable (∀ (X Y Z : Set) (f : Fu
 /--
   Exercise 3.3.5.
 -/
-theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hinj : 
+theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hinj :
     (g ○ f).one_to_one) : f.one_to_one := by sorry
 
-theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hsurj : 
+theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hsurj :
     (g ○ f).onto) : g.onto := by sorry
 
-def Function.comp_injective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hinj : 
+def Function.comp_injective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hinj :
     (g ○ f).one_to_one), g.one_to_one) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
-def Function.comp_surjective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hsurj : 
+def Function.comp_surjective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hsurj :
     (g ○ f).onto), f.onto) := by
   -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
   sorry
 
 /-- Exercise 3.3.6 -/
-theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y} (h : f.bijective) (x : X) : 
+theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y} (h : f.bijective) (x : X) :
     (f.inverse h) (f x) = x := by sorry
 
-theorem Function.self_comp_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) : 
+theorem Function.self_comp_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) :
     f ((f.inverse h) y) = y := by sorry
 
-theorem Function.inverse_bijective {X Y : Set} {f : Function X Y} (h : f.bijective) : 
+theorem Function.inverse_bijective {X Y : Set} {f : Function X Y} (h : f.bijective) :
     (f.inverse h).bijective := by sorry
 
-theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) : 
+theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) :
     (f.inverse h).inverse (f.inverse_bijective h) = f := by sorry
 
 /-- Exercise 3.3.7 -/
@@ -497,39 +497,39 @@ theorem Function.comp_bijective {X Y Z : Set} {f : Function X Y} {g : Function Y
   (hg : g.bijective) : (g ○ f).bijective := by sorry
 
 theorem Function.inv_of_comp {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
-  (hf : f.bijective) (hg : g.bijective) : 
+  (hf : f.bijective) (hg : g.bijective) :
     (g ○ f).inverse (Function.comp_bijective hf hg) = (f.inverse hf) ○ (g.inverse hg) := by sorry
 
 /-- Exercise 3.3.8 -/
-abbrev Function.inclusion {X Y : Set} (h : X ⊆ Y) : 
+abbrev Function.inclusion {X Y : Set} (h : X ⊆ Y) :
     Function X Y := Function.mk_fn (fun x ↦ ⟨ x.val, h x.val x.property ⟩ )
 
 abbrev Function.id (X : Set) : Function X X := Function.mk_fn (fun x ↦ x)
 
-theorem Function.inclusion_id (X : Set) : 
+theorem Function.inclusion_id (X : Set) :
     Function.inclusion (SetTheory.Set.subset_self X) = Function.id X := by sorry
 
-theorem Function.inclusion_comp (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) : 
+theorem Function.inclusion_comp (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
     Function.inclusion hYZ ○ Function.inclusion hXY = Function.inclusion (SetTheory.Set.subset_trans hXY hYZ) := by sorry
 
 theorem Function.comp_id {A B : Set} (f : Function A B) : f ○ Function.id A = f := by sorry
 
 theorem Function.id_comp {A B : Set} (f : Function A B) : Function.id B ○ f = f := by sorry
 
-theorem Function.comp_inv {A B : Set} (f : Function A B) (hf : f.bijective) : 
+theorem Function.comp_inv {A B : Set} (f : Function A B) (hf : f.bijective) :
     f ○ f.inverse hf = Function.id B := by sorry
 
-theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) : 
+theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) :
     f.inverse hf ○ f = Function.id A := by sorry
 
 open Classical in
-theorem Function.glue {X Y Z : Set} (hXY : Disjoint X Y) (f : Function X Z) (g : Function Y Z) : 
+theorem Function.glue {X Y Z : Set} (hXY : Disjoint X Y) (f : Function X Z) (g : Function Y Z) :
     ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
     ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by sorry
 
 open Classical in
 theorem Function.glue' {X Y Z : Set} (f : Function X Z) (g : Function Y Z)
-    (hfg : ∀ x : ((X ∩ Y) : Set), f ⟨x.val, by aesop⟩ = g ⟨x.val, by aesop⟩)  : 
+    (hfg : ∀ x : ((X ∩ Y) : Set), f ⟨x.val, by aesop⟩ = g ⟨x.val, by aesop⟩)  :
     ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
     ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by sorry
 

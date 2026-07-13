@@ -116,7 +116,8 @@ class SetTheory where
   -- которых выполнено `P x y`, т.е. аналог {f(x) | x ∈ A}.
   -- В отличие от specify, результат не обязан быть подмножеством A.
   --
-  -- Тождество Лейбница. Тождество неразличимых:
+  -- Тождество Лейбница. Тождество неразличимых или,
+  -- проще говоря, экстенсиональность:
   replace A (P : Subtype (mem . A) → Object → Prop)
     (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set -- Axiom 3.7
   -- Образ/отображение: P x y читается как «x переходит в y» — функциональное отношение
@@ -1092,7 +1093,8 @@ example (A B : Set) : Prop := Disjoint A B
 theorem SetTheory.Set.disjoint_iff (A B : Set) : Disjoint A B ↔ A ∩ B = ∅ := by
   convert _root_.disjoint_iff
 
--- Тождество неразличимых по Лейбницу.
+-- Тождество неразличимых (по Лейбницу).
+-- Или, проще говоря, экстенсиональность.
 abbrev SetTheory.Set.replace (A : Set) {P : A → Object → Prop}
   (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set := SetTheory.replace A P hP
 
@@ -1681,32 +1683,52 @@ theorem SetTheory.Set.partition_right {A B X : Set}
       · contradiction
       · exact hxb
 
-/--
-  Exercise 3.1.10.
-  You may find {name}`Function.onFun_apply` and the {tactic}`fin_cases` tactic useful.
--/
--- Disjoint X Y означает X ∩ Y = ∅.
--- Доказать, что три множества A \ B, A ∩ B, B \ A попарно не пересекаются.
-theorem SetTheory.Set.pairwise_disjoint (A B : Set) :
-  Pairwise (Function.onFun Disjoint ![A \ B, A ∩ B, B \ A]) := by
-    -- Function.onFun_apply
-    -- (f : β → β → γ) (g : α → β) (a b : α) :
-    --   Function.onFun f g a b = f (g a) (g b)
-    intro i j hij
-    simp only [Function.onFun]
-    rw [disjoint_iff]
-    fin_cases i <;> fin_cases j
-      <;> simp
-      <;> (try contradiction)
-      <;> (ext x; simp [mem_inter, mem_sdiff]; tauto)
-
 -- Пример использования тактики fin_cases.
+-- Понимание работы этой тактики пригождается в доказательсве ниже.
 example (n : ℕ) (h : n ∈ ({0, 1, 4} : Finset ℕ)) :
     n = 0 ∨ ∃ k, n = k ^ 2 ∧ k > 0 := by
   fin_cases h
   · left; rfl
   · right; exact ⟨1, rfl, by norm_num⟩
   · right; exact ⟨2, rfl, by norm_num⟩
+
+/--
+  Exercise 3.1.10.
+  You may find {name}`Function.onFun_apply` and the {tactic}`fin_cases` tactic useful.
+-/
+-- Disjoint X Y означает X ∩ Y = ∅.
+-- Доказать, что три множества A \ B, A ∩ B, B \ A попарно не пересекаются.
+--
+-- Pairwise r означает ∀ ⦃i j⦄, i ≠ j → r i j — свойство r выполняется для
+-- любой пары различных элементов. Работать с ним удобно через `intro i j hij`,
+-- что даёт индексы i j и гипотезу hij : i ≠ j, оставляя доказать r i j.
+--
+-- Function.onFun f g — это функция, оборачивающая бинарное f, подставляя
+-- в оба аргумента результат g: onFun f g a b = f (g a) (g b) (лемма Function.onFun_apply).
+-- Здесь g — массив ![A \ B, A ∩ B, B \ A] : Fin 3 → Set,
+-- так что goal Pairwise (onFun Disjoint g) после intro превращается
+-- в Disjoint (g i) (g j). Т.е. мы берём попарно утверждения с соответствующими индексами.
+theorem SetTheory.Set.pairwise_disjoint (A B : Set) :
+  Pairwise (Function.onFun Disjoint ![A \ B, A ∩ B, B \ A]) := by
+    intro i j hij
+    -- Тип i, j изначально выводится как Fin (Nat.succ 0).succ.succ
+    -- (из-за вложенных Matrix.vecCons в ![A \ B, A ∩ B, B \ A]), что defeq
+    -- числовому литералу Fin 3, но печатается по-другому.
+    -- change просто перепечатывает тип, не меняя саму гипотезу.
+    change Fin 3 at i j
+    -- Разворачивает определение onFun в цели: goal
+    -- Function.onFun Disjoint g i j превращается в Disjoint (g i) (g j),
+    -- где g = ![A \ B, A ∩ B, B \ A].
+    unfold Function.onFun
+    rw [disjoint_iff]
+    -- fin_cases i перебирает все конкретные значения i : Fin 3 (0, 1, 2),
+    -- порождая отдельную цель на каждое; вместе с fin_cases j получаем
+    -- по одной цели на каждую из 9 комбинаций (i, j).
+    -- Соответственно мы получаем 9 утверждений о попарно непересекающихся множествах.
+    fin_cases i <;> fin_cases j
+      <;> simp -- Применяем функции к аргументам, редуцируя выражения.
+      <;> (try contradiction) -- Устраняем несколько противоречий сразу же.
+      <;> (ext x; simp [mem_inter, mem_sdiff]; tauto) -- Остальное тривиально-тавтологично.
 
 #check compl_inter -- X \ (A ∩ B) = X \ A ∪ X \ B
 #check compl_union -- X \ (A ∪ B) = X \ A ∩ (X \ B)
@@ -1767,31 +1789,40 @@ theorem SetTheory.Set.union_eq_partition' (A B : Set) :
 -/
 -- У нас есть произвольное множество A и предикат P на его элементах.
 -- Нужно построить множество B ⊆ A такое, что x.val ∈ B ↔ P x для всех x ∈ A —
--- то есть B = {x ∈ A | P x}, обычная теоретико-множественная вырезка.
--- Отличие от Set.specify в том, что здесь нельзя пользоваться аксиомой спецификации
--- (и всем, что из неё построено) — множество B нужно получить через аксиому замены (replacement_axiom).
+-- то есть B = {x ∈ A | P x}, обычная теоретико-множественная "вырезка".
+-- Отличие от Set.specify в том, что здесь нельзя
+-- пользоваться аксиомой спецификации (и всем, что из неё построено) —
+-- множество B нужно получить через аксиому замены (replacement_axiom).
+-- Ну, просто потому, что мы и строим сейчас аксиому спецификации из аксиомы замены (подстановки).
 theorem SetTheory.Set.specification_from_replacement {A : Set} {P : A → Prop} :
   ∃ B, B ⊆ A ∧ ∀ x, x.val ∈ B ↔ P x := by
-    -- Двухместное отношение для аксиомы замены:
-    -- y соответствует x, если P x выполнено и y — это как раз x.val
-    let P' : A → Object → Prop := fun x y => P x ∧ y = x.val
-    -- Однозначность:
+    -- Двухместное отношение для аксиомы замены (подстановки):
+    -- y соответствует x, если P x выполнено и (y = x.val)
+    let P' : A → Object → Prop := fun x y => P x ∧ (y = x.val)
+    -- ^^^ предикат P' показывает "неразличимость".
+    -- Однозначность / экстенсиональность / тождество неразличимых (по Лейбницу):
     -- Если и y, и y' соответствуют одному x, то y = y' = x.val
     have hP : ∀ (x : A) (y y' : Object), P' x y ∧ P' x y' → y = y' := by
-      rintro x y y' ⟨⟨_, hy⟩, _, hy'⟩
+      intro x y y'
+      rintro ⟨⟨_hpx, hy⟩, _hpx', hy'⟩
       rw [hy, hy']
     -- B — образ A относительно P' (аксиома замены).
-    use (A.replace hP)
+    set B := A.replace hP with hB
+    -- ^^ `set` (в отличие от `let`) вводит B как непрозрачную константу
+    -- и отдельную гипотезу hB : B = A.replace hP, так что определение B
+    -- не сворачивается в "⋯" в списке гипотез, а видно явно.
+    use B
+    show B ⊆ A ∧ (∀ (x : A.toSubtype), ↑x ∈ B ↔ P x)
     constructor
     · -- B ⊆ A: всякий элемент B — это x.val для какого-то x ∈ A,
       -- а значит лежит в A
       intro y hy
-      rw [replacement_axiom] at hy
-      obtain ⟨x, _, hxy⟩ := hy
+      rw [hB, replacement_axiom] at hy
+      obtain ⟨x, _hpx, hxy⟩ := hy
       rw [hxy]
       exact x.property
     · intro x
-      rw [replacement_axiom]
+      rw [hB, replacement_axiom]
       constructor
       · -- Если x.val = x'.val для некоторого x' с P x',
         -- то x = x' (подтипы равны по равенству val), значит P x.
@@ -1828,24 +1859,80 @@ theorem SetTheory.Set.specification_from_replacement' {A : Set} {P : A → Prop}
     · intro hPx
       exact ⟨x, hPx, rfl⟩
 
+
+#check union_subset_iff   -- A ∪ B ⊆ C ↔ A ⊆ C ∧ B ⊆ C
+#check subset_union       -- (hAX : A ⊆ X) : A ∪ X = X
+#check subset_union_left  -- A ⊆ A ∪ B
+#check subset_union_right -- B ⊆ A ∪ B
+#check subset_trans       -- (hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C
+
 /-- Exercise 3.1.12.-/
 theorem SetTheory.Set.subset_union_subset {A B A' B' : Set}
   (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : A' ∪ B' ⊆ A ∪ B := by
-      sorry
+    rw [subset_def] at *
+    intro x hx
+    specialize hA'A x
+    specialize hB'B x
+    rw [mem_union] at *
+    rcases hx with hxa | hxb
+    · left
+      exact hA'A hxa
+    · right
+      exact hB'B hxb
+
+theorem SetTheory.Set.subset_union_subset' {A B A' B' : Set}
+  (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : A' ∪ B' ⊆ A ∪ B := by
+    rw [union_subset_iff] -- A ∪ B ⊆ C ↔ A ⊆ C ∧ B ⊆ C
+    constructor
+    · have hA : A ⊆ A ∪ B := subset_union_left A B
+      exact subset_trans hA'A hA
+    · have hB : B ⊆ A ∪ B := subset_union_right A B
+      exact subset_trans hB'B hB
 
 /-- Exercise 3.1.12.-/
 theorem SetTheory.Set.subset_inter_subset {A B A' B' : Set}
   (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : A' ∩ B' ⊆ A ∩ B := by
-    sorry
+    rw [subset_inter_iff]
+    constructor
+    · have hA := inter_subset_left A' B'
+      exact subset_trans hA hA'A
+    · have hB := inter_subset_right A' B'
+      exact subset_trans hB hB'B
 
 /-- Exercise 3.1.12.-/
 theorem SetTheory.Set.subset_diff_subset_counter :
-    ∃ (A B A' B' : Set), (A' ⊆ A) ∧ (B' ⊆ B) ∧ ¬ (A' \ B') ⊆ (A \ B) := by
-      sorry
+  ∃ (A B A' B' : Set),
+    (A' ⊆ A) ∧ (B' ⊆ B) ∧ ¬((A' \ B') ⊆ (A \ B)) := by
+      -- Контрпример:
+      -- A = A' = B = {x}, B' = ∅,
+      -- где x — любой объект (берём x = ∅).
+      --
+      -- Тогда:
+      -- A' \ B' = {x} \ ∅ = {x},
+      -- но
+      -- A \ B = {x} \ {x} = ∅
+      set e : Object := ((∅ : Set) : Object)
+      use {e}, {e}, {e}, ∅
+      -- Цель:
+      -- ({∅} ⊆ {∅} ∧ ∅ ⊆ {∅}) ∧ ¬({∅} \ ∅ ⊆ {∅} \ {∅})
+      --
+      -- simp only [subset_self, empty_subset, true_and]
+      refine ⟨subset_self {e}, empty_subset {e}, ?_⟩
+      intro h
+      rw [subset_def] at h
+      have hself : e ∈ ({e} : Set) := by rw [mem_singleton]
+      have hmem : e ∈ ({e} : Set) \ ∅ := by
+        rw [mem_sdiff]
+        exact ⟨hself, not_mem_empty _⟩
+      have hcontra := h e hmem
+      rw [mem_sdiff] at hcontra
+      obtain ⟨h₀, h1⟩ := hcontra
+      contradiction
 
 /-
-  Final part of Exercise 3.1.12: state and prove a reasonable substitute positive result for the
-  above theorem that involves set differences.
+  Final part of Exercise 3.1.12: state and prove
+  a reasonable substitute positive result for the above theorem
+  that involves set differences.
 -/
 
 /-- Exercise 3.1.13 -/
