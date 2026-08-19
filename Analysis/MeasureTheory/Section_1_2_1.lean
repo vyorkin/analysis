@@ -12,12 +12,12 @@ A companion to (the introduction to) Section 1.2.1 of the book "An introduction 
 open BoundedInterval
 
 /-- Express {name}`Box.toSet` as a preimage of a pi set under the {name}`PiLp` homeomorphism. -/
-lemma Box.toSet_eq_ofLp_preimage {d : ℕ} (B : Box d) :
+lemma Box.toSet_eq_ofLp_preimage {d : ℕ} (B : Box d) : 
     B.toSet = (PiLp.homeomorph 2 (fun _ : Fin d => ℝ)) ⁻¹' Set.univ.pi (fun i => (B.side i).toSet) := by
   ext x; simp only [Box.mem_toSet, Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies]; rfl
 
 /-- The interior of {name}`Box.toSet` expressed as a preimage. -/
-lemma Box.interior_toSet {d : ℕ} (B : Box d) :
+lemma Box.interior_toSet {d : ℕ} (B : Box d) : 
     interior B.toSet = (PiLp.homeomorph 2 (fun _ : Fin d => ℝ)) ⁻¹'
       Set.univ.pi (fun i => interior (B.side i).toSet) := by
   rw [Box.toSet_eq_ofLp_preimage,
@@ -25,7 +25,7 @@ lemma Box.interior_toSet {d : ℕ} (B : Box d) :
     interior_pi_set Set.finite_univ]
 
 /-- The closure of {name}`Box.toSet` expressed as a preimage. -/
-lemma Box.closure_toSet {d : ℕ} (B : Box d) :
+lemma Box.closure_toSet {d : ℕ} (B : Box d) : 
     closure B.toSet = (PiLp.homeomorph 2 (fun _ : Fin d => ℝ)) ⁻¹'
       Set.univ.pi (fun i => closure (B.side i).toSet) := by
   rw [Box.toSet_eq_ofLp_preimage,
@@ -33,7 +33,7 @@ lemma Box.closure_toSet {d : ℕ} (B : Box d) :
     closure_pi_set]
 
 /-- The frontier of {name}`Box.toSet` expressed via the {name}`PiLp` homeomorphism. -/
-lemma Box.frontier_toSet {d : ℕ} (B : Box d) :
+lemma Box.frontier_toSet {d : ℕ} (B : Box d) : 
     frontier B.toSet = (PiLp.homeomorph 2 (fun _ : Fin d => ℝ)) ⁻¹'
       frontier (Set.univ.pi (fun i => (B.side i).toSet)) := by
   rw [Box.toSet_eq_ofLp_preimage,
@@ -49,17 +49,17 @@ lemma Box.isClosed_toSet_of_Icc {d : ℕ} (B : Box d)
   simp only [hab, BoundedInterval.toSet]; exact isClosed_Icc
 
 /-- Exercise 1.2.3(i) (Empty set) -/
-theorem Lebesgue_outer_measure.of_empty (d:ℕ) : Lebesgue_outer_measure (∅: Set (EuclideanSpace' d)) = 0 := by
+theorem Lebesgue_outer_measure.of_empty (d : ℕ) : Lebesgue_outer_measure (∅ : Set (EuclideanSpace' d)) = 0 := by
   sorry
 
 /-- Exercise 1.2.3(ii) (Monotonicity) -/
-theorem Lebesgue_outer_measure.mono {d: ℕ} {E F : Set (EuclideanSpace' d)} (h : E ⊆ F) :
+theorem Lebesgue_outer_measure.mono {d : ℕ} {E F : Set (EuclideanSpace' d)} (h : E ⊆ F) : 
     Lebesgue_outer_measure E ≤ Lebesgue_outer_measure F := by
   sorry
 
 /-- Lebesgue outer measure is non-negative.
     Since it's the sInf of sums of box volumes, which are all ≥ 0, the result is ≥ 0. -/
-theorem Lebesgue_outer_measure.nonneg {d: ℕ} (E : Set (EuclideanSpace' d)) :
+theorem Lebesgue_outer_measure.nonneg {d : ℕ} (E : Set (EuclideanSpace' d)) : 
     0 ≤ Lebesgue_outer_measure E := by
   unfold Lebesgue_outer_measure
   -- 0 ≤ sInf S when all elements are ≥ 0 (for complete lattice, sInf ∅ = ⊤ ≥ 0)
@@ -78,12 +78,12 @@ theorem Lebesgue_outer_measure.nonneg {d: ℕ} (E : Set (EuclideanSpace' d)) :
   exact EReal.coe_nonneg.mpr hvol
 
 /-- Exercise 1.2.3(iii) (Countable subadditivity) -/
-theorem Lebesgue_outer_measure.union_le {d: ℕ} (E : ℕ → Set (EuclideanSpace' d)) :
+theorem Lebesgue_outer_measure.union_le {d : ℕ} (E : ℕ → Set (EuclideanSpace' d)) : 
     Lebesgue_outer_measure (⋃ i, E i) ≤ ∑' i, Lebesgue_outer_measure (E i) := by
   sorry
 
 /-- Finite subadditivity -/
-theorem Lebesgue_outer_measure.finite_union_le {d n:ℕ} (E: Fin n → Set (EuclideanSpace' d)) :
+theorem Lebesgue_outer_measure.finite_union_le {d n : ℕ} (E : Fin n → Set (EuclideanSpace' d)) : 
     Lebesgue_outer_measure (⋃ i, E i) ≤ ∑ i, Lebesgue_outer_measure (E i) := by
   -- Extend E to ℕ → Set by using empty set for indices ≥ n, then use countable subadditivity
   let E' : ℕ → Set (EuclideanSpace' d) := fun k =>
@@ -144,8 +144,8 @@ theorem Lebesgue_outer_measure.finite_union_le {d n:ℕ} (E: Fin n → Set (Eucl
         simp [E', dif_pos i.isLt]
 
 
-noncomputable def set_dist {X:Type*} [PseudoMetricSpace X] (A B: Set X) : ℝ :=
-  sInf ((fun p: X × X ↦ dist p.1 p.2) '' (A ×ˢ B))
+noncomputable def set_dist {X : Type*} [PseudoMetricSpace X] (A B : Set X) : ℝ :=
+  sInf ((fun p : X × X ↦ dist p.1 p.2) '' (A ×ˢ B))
 
 -- ========================================================================
 -- Start of Helpers for lemma 1.2.5: Lebesgue_outer_measure.union_of_separated
@@ -177,7 +177,7 @@ noncomputable def bisect (I : BoundedInterval) : BoundedInterval × BoundedInter
 
 
 /-- The left half of bisection has half the original length -/
-lemma bisect_fst_length (I : BoundedInterval) :
+lemma bisect_fst_length (I : BoundedInterval) : 
     |(I.bisect.fst)|ₗ = |I|ₗ / 2 := by
   unfold bisect midpoint endpoints length
   cases I with
@@ -200,7 +200,7 @@ lemma bisect_fst_length (I : BoundedInterval) :
     rw [h, max_div_two]
 
 /-- The right half of bisection has half the original length -/
-lemma bisect_snd_length (I : BoundedInterval) :
+lemma bisect_snd_length (I : BoundedInterval) : 
     |(I.bisect.snd)|ₗ = |I|ₗ / 2 := by
   unfold bisect midpoint endpoints length
   cases I with
@@ -223,7 +223,7 @@ lemma bisect_snd_length (I : BoundedInterval) :
     rw [h, max_div_two]
 
 /-- Bisecting preserves total length -/
-lemma bisect_length_sum (I : BoundedInterval) :
+lemma bisect_length_sum (I : BoundedInterval) : 
     |(I.bisect.fst)|ₗ + |(I.bisect.snd)|ₗ = |I|ₗ := by
   rw [bisect_fst_length, bisect_snd_length]
   ring
@@ -241,7 +241,7 @@ lemma bisect_snd_a (I : BoundedInterval) : (I.bisect.snd).a = I.midpoint := by
   cases I <;> simp [BoundedInterval.a, midpoint]
 
 /-- The midpoint equals a + length/2 when a ≤ b (non-degenerate interval) -/
-lemma midpoint_eq_a_add_half_length (I : BoundedInterval) (h : I.a ≤ I.b) :
+lemma midpoint_eq_a_add_half_length (I : BoundedInterval) (h : I.a ≤ I.b) : 
     I.midpoint = I.a + |I|ₗ / 2 := by
   unfold midpoint endpoints length
   cases I with
@@ -260,7 +260,7 @@ lemma midpoint_eq_a_add_half_length (I : BoundedInterval) (h : I.a ≤ I.b) :
 
 
 /-- The midpoint is in the first half of bisection (as the right endpoint of {name}`BoundedInterval.Icc`) -/
-lemma midpoint_mem_bisect_fst (I : BoundedInterval) (h : I.toSet.Nonempty) :
+lemma midpoint_mem_bisect_fst (I : BoundedInterval) (h : I.toSet.Nonempty) : 
     I.midpoint ∈ (I.bisect.fst).toSet := by
   obtain ⟨x, hx⟩ := h
   unfold bisect midpoint endpoints toSet at *
@@ -279,7 +279,7 @@ lemma midpoint_mem_bisect_fst (I : BoundedInterval) (h : I.toSet.Nonempty) :
     simp only [Set.mem_Icc]; exact ⟨by linarith, by linarith⟩
 
 /-- The midpoint is in the second half of bisection (as the left endpoint of {name}`BoundedInterval.Icc`) -/
-lemma midpoint_mem_bisect_snd (I : BoundedInterval) (h : I.toSet.Nonempty) :
+lemma midpoint_mem_bisect_snd (I : BoundedInterval) (h : I.toSet.Nonempty) : 
     I.midpoint ∈ (I.bisect.snd).toSet := by
   obtain ⟨x, hx⟩ := h
   unfold bisect midpoint endpoints toSet at *
@@ -299,7 +299,7 @@ lemma midpoint_mem_bisect_snd (I : BoundedInterval) (h : I.toSet.Nonempty) :
 
 
 /-- A point is in I.bisect.snd iff it's in I.toSet and at or above the midpoint -/
-lemma mem_bisect_snd_iff (I : BoundedInterval) (x : ℝ) (hx : x ∈ I.toSet) :
+lemma mem_bisect_snd_iff (I : BoundedInterval) (x : ℝ) (hx : x ∈ I.toSet) : 
     x ∈ (I.bisect.snd).toSet ↔ x ≥ I.midpoint := by
   unfold bisect midpoint endpoints toSet at *
   cases I with
@@ -329,7 +329,7 @@ lemma mem_bisect_snd_iff (I : BoundedInterval) (x : ℝ) (hx : x ∈ I.toSet) :
     · intro h; exact ⟨h, by linarith⟩
 
 /-- A point is in I.bisect.fst iff it's in I.toSet and below the midpoint -/
-lemma mem_bisect_fst_iff (I : BoundedInterval) (x : ℝ) (hx : x ∈ I.toSet) :
+lemma mem_bisect_fst_iff (I : BoundedInterval) (x : ℝ) (hx : x ∈ I.toSet) : 
     x ∈ (I.bisect.fst).toSet ↔ x ≤ I.midpoint := by
   unfold bisect midpoint endpoints toSet at *
   cases I with
@@ -397,11 +397,11 @@ end BoundedInterval
 
 namespace Box
 /-- The diameter of a box is the supremum of Euclidean distances between points in the box -/
-noncomputable def diameter {d:ℕ} (B: Box d) : ℝ :=
+noncomputable def diameter {d : ℕ} (B : Box d) : ℝ :=
   sSup { r | ∃ x ∈ B.toSet, ∃ y ∈ B.toSet, r = √(∑ i, (x i - y i)^2) }
 
 /-- Diameter is always nonnegative -/
-lemma diameter_nonneg {d:ℕ} (B: Box d) : 0 ≤ B.diameter := by
+lemma diameter_nonneg {d : ℕ} (B : Box d) : 0 ≤ B.diameter := by
   unfold diameter
   by_cases h : B.toSet.Nonempty
   · obtain ⟨x, hx⟩ := h
@@ -478,14 +478,14 @@ lemma diameter_nonneg {d:ℕ} (B: Box d) : 0 ≤ B.diameter := by
     simp [sSup]
 
 /-- Empty box has diameter 0 -/
-lemma diameter_of_empty {d:ℕ} (B: Box d) (h: B.toSet = ∅) :
+lemma diameter_of_empty {d : ℕ} (B : Box d) (h : B.toSet = ∅) : 
     B.diameter = 0 := by
   unfold diameter
   simp [h, sSup]
 
 /-- Any two points in a box have Euclidean distance at most the diameter -/
-lemma dist_le_diameter {d:ℕ} (B: Box d) {x y: EuclideanSpace' d}
-    (hx: x ∈ B.toSet) (hy: y ∈ B.toSet) :
+lemma dist_le_diameter {d : ℕ} (B : Box d) {x y : EuclideanSpace' d}
+    (hx : x ∈ B.toSet) (hy : y ∈ B.toSet) : 
     √(∑ i, (x i - y i)^2) ≤ B.diameter := by
   unfold diameter
   apply le_csSup
@@ -557,7 +557,7 @@ lemma dist_le_diameter {d:ℕ} (B: Box d) {x y: EuclideanSpace' d}
     we can find two points in the interval with separation exceeding the target.
     This is the key density fact: achievable differences are dense in \[0, length\]. -/
 lemma BoundedInterval.exists_points_with_diff {I : BoundedInterval}
-    (h_nonempty : I.toSet.Nonempty) {t : ℝ} (ht_nonneg : 0 ≤ t) (ht : t < |I|ₗ) :
+    (h_nonempty : I.toSet.Nonempty) {t : ℝ} (ht_nonneg : 0 ≤ t) (ht : t < |I|ₗ) : 
     ∃ x ∈ I.toSet, ∃ y ∈ I.toSet, t < |x - y| := by
   -- Since t < |I|ₗ = max (b - a) 0 and t ≥ 0, we have b - a > t ≥ 0
   have h_len_pos : 0 < |I|ₗ := lt_of_le_of_lt ht_nonneg ht
@@ -638,7 +638,7 @@ lemma BoundedInterval.exists_points_with_diff {I : BoundedInterval}
     This is the key fact: the supremum of pairwise distances equals the diagonal.
     For closed intervals, the diagonal is achieved at corners.
     For open intervals, the diagonal is the limit (supremum) of achievable distances. -/
-lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
+lemma diameter_eq_sqrt_sum_sq {d : ℕ} (B : Box d) (h : B.toSet.Nonempty) : 
     B.diameter = √(∑ i, |B.side i|ₗ^2) := by
   unfold diameter
   -- Use csSup_eq_of_forall_le_of_forall_lt_exists_gt:
@@ -666,7 +666,7 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
     calc (x i - y i)^2 = |x i - y i|^2 := by rw [sq_abs]
       _ ≤ |B.side i|ₗ^2 := by
           apply sq_le_sq' <;> [linarith [abs_nonneg (x i - y i), coord_bound]; exact coord_bound]
-  · -- ∀ c < b, ∃ a ∈ s, c < a (density: can get arbitrarily close to b)
+  · -- ∀ c < b, ∃ a ∈ s, c < a (density : can get arbitrarily close to b)
     intro c hc
     -- Need to find x, y ∈ B with √(∑ (x i - y i)²) > c
     -- Strategy: for each coordinate, pick points near opposite ends of the interval
@@ -698,7 +698,7 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
       have h_c_lt : c < √(∑ i, |B.side i|ₗ^2) := hc
       -- Since c < √(∑ side²), we have c² < ∑ side² (for c ≥ 0) or c < 0
       by_cases hc_nonneg : 0 ≤ c
-      · -- c ≥ 0 case: we need to construct points with large distance
+      · -- c ≥ 0 case : we need to construct points with large distance
         -- Strategy: use exists_points_with_diff for positive-length coordinates
         -- Each interval is nonempty (from h: B.toSet.Nonempty)
         have h_interval_nonempty : ∀ i, (B.side i).toSet.Nonempty := by
@@ -719,12 +719,12 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
             (0 < |B.side i|ₗ → |B.side i|ₗ * ratio < |xi - yi|) := by
           intro i
           by_cases h_len_zero : |B.side i|ₗ = 0
-          · -- Zero-length interval: xi = yi gives 0 ≤ 0
+          · -- Zero-length interval : xi = yi gives 0 ≤ 0
             obtain ⟨xi, hxi⟩ := h_interval_nonempty i
             refine ⟨xi, hxi, xi, hxi, ?_, ?_⟩
             · simp [h_len_zero]
             · simp [h_len_zero]
-          · -- Positive-length interval: use exists_points_with_diff
+          · -- Positive-length interval : use exists_points_with_diff
             have h_len_pos : 0 < |B.side i|ₗ := by
               apply lt_of_le_of_ne; simp [BoundedInterval.length]; exact Ne.symm h_len_zero
             have h_target_lt : |B.side i|ₗ * ratio < |B.side i|ₗ := by
@@ -755,7 +755,7 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
         use √(∑ i, (x i - y i)^2)
         constructor
         · exact ⟨x, hx_box, y, hy_box, rfl⟩
-        · -- Need: c < √(∑ (x_i - y_i)²)
+        · -- Need : c < √(∑ (x_i - y_i)²)
           rw [← Real.sqrt_sq hc_nonneg]
           apply Real.sqrt_lt_sqrt (sq_nonneg c)
           -- Need: c² < ∑ (x_i - y_i)²
@@ -802,7 +802,7 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
                 _ ≤ |B.side j|ₗ * ratio := mul_nonneg (by simp [BoundedInterval.length]) h_ratio_nonneg
             calc (|B.side j|ₗ * ratio)^2 < |x j - y j|^2 := h_sq_lt
               _ = (x j - y j)^2 := by rw [sq_abs]
-      · -- c < 0 case: any distance ≥ 0 > c
+      · -- c < 0 case : any distance ≥ 0 > c
         push_neg at hc_nonneg
         obtain ⟨x, hx⟩ := h
         use 0
@@ -812,8 +812,8 @@ lemma diameter_eq_sqrt_sum_sq {d:ℕ} (B: Box d) (h: B.toSet.Nonempty) :
 
 /-- If a box intersects two sets, any two points (one from each set)
     in the box have distance at most the diameter -/
-lemma diameter_ge_dist_of_intersects {d:ℕ} (B: Box d) (E F : Set (EuclideanSpace' d))
-    (hE : (B.toSet ∩ E).Nonempty) (hF : (B.toSet ∩ F).Nonempty) :
+lemma diameter_ge_dist_of_intersects {d : ℕ} (B : Box d) (E F : Set (EuclideanSpace' d))
+    (hE : (B.toSet ∩ E).Nonempty) (hF : (B.toSet ∩ F).Nonempty) : 
     set_dist E F ≤ B.diameter := by
   obtain ⟨x, hx_box, hx_E⟩ := hE
   obtain ⟨y, hy_box, hy_F⟩ := hF
@@ -848,8 +848,8 @@ lemma diameter_ge_dist_of_intersects {d:ℕ} (B: Box d) (E F : Set (EuclideanSpa
 
 /-- If B.diameter < set\_dist E F, then B cannot intersect both E and F.
     This is the core geometric fact needed for finite additivity of separated sets. -/
-lemma not_intersects_both_of_diameter_lt {d:ℕ} (B: Box d) (E F : Set (EuclideanSpace' d))
-    (h : B.diameter < set_dist E F) :
+lemma not_intersects_both_of_diameter_lt {d : ℕ} (B : Box d) (E F : Set (EuclideanSpace' d))
+    (h : B.diameter < set_dist E F) : 
     ¬((B.toSet ∩ E).Nonempty ∧ (B.toSet ∩ F).Nonempty) := by
   intro ⟨hE, hF⟩
   -- If B intersects both, then set_dist E F ≤ B.diameter
@@ -859,12 +859,12 @@ lemma not_intersects_both_of_diameter_lt {d:ℕ} (B: Box d) (E F : Set (Euclidea
 
 open Classical in
 /-- Decidable equality for boxes, needed for {name}`Finset` operations -/
-noncomputable instance {d:ℕ} : DecidableEq (Box d) := instDecidableEqOfLawfulBEq
+noncomputable instance {d : ℕ} : DecidableEq (Box d) := instDecidableEqOfLawfulBEq
 
 /-- Subdivide a box by bisecting each coordinate axis, producing 2^d sub-boxes.
     Each sub-box is formed by taking one half-interval from each coordinate.
     We use {name}`Finset.univ` (all possible d-bit patterns) to enumerate all 2^d combinations. -/
-noncomputable def subdivide {d:ℕ} (B: Box d) : Finset (Box d) :=
+noncomputable def subdivide {d : ℕ} (B : Box d) : Finset (Box d) :=
   -- For each choice ∈ Fin d → Bool (which half to take for each coordinate),
   -- construct a sub-box by taking the left half (if false) or right half (if true)
   Finset.univ.image fun (choice : Fin d → Bool) =>
@@ -873,7 +873,7 @@ noncomputable def subdivide {d:ℕ} (B: Box d) : Finset (Box d) :=
         if choice i then right else left }
 
 /-- The volume of a subdivided box equals the sum of its sub-box volumes -/
-lemma volume_subdivide {d:ℕ} (B: Box d) :
+lemma volume_subdivide {d : ℕ} (B : Box d) : 
     ∑ B' ∈ B.subdivide, |B'|ᵥ = |B|ᵥ := by
   unfold subdivide Box.volume
   -- Establish that each coordinate's length splits into two halves
@@ -939,10 +939,10 @@ lemma volume_subdivide {d:ℕ} (B: Box d) :
       have h_bisect_eq : (B.side i).bisect.fst = (B.side i).bisect.snd := by
         cases hc₁i : c₁ i <;> cases hc₂i : c₂ i <;>
         simp only [hc₁i, hc₂i, Bool.false_eq_true, ↓reduceIte] at hside hi_ne
-        · exact (hi_ne rfl).elim  -- false/false case: contradiction
-        · exact hside             -- false/true case: hside : fst = snd
-        · exact hside.symm        -- true/false case: hside : snd = fst
-        · exact (hi_ne rfl).elim  -- true/true case: contradiction
+        · exact (hi_ne rfl).elim  -- false/false case : contradiction
+        · exact hside             -- false/true case : hside : fst = snd
+        · exact hside.symm        -- true/false case : hside : snd = fst
+        · exact (hi_ne rfl).elim  -- true/true case : contradiction
       -- When fst = snd, the interval is degenerate (point), so length = 0
       have h_len_zero : |(B.side i).bisect.snd|ₗ = 0 := by
         rw [← h_bisect_eq]
@@ -998,7 +998,7 @@ lemma volume_subdivide {d:ℕ} (B: Box d) :
     Note: The hypothesis that B is nonempty is necessary because bisection always creates closed
     intervals, which can turn degenerate open intervals ({given -show}`a` {lean}`Ioo a a`) into
     nonempty singletons. -/
-lemma subdivide_diameter_bound {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) :
+lemma subdivide_diameter_bound {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) : 
     ∀ B' ∈ B.subdivide, B'.diameter ≤ B.diameter / Real.sqrt 2 := by
   intro B' hB'
   -- Extract the choice function that defines B'
@@ -1015,8 +1015,8 @@ lemma subdivide_diameter_bound {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) :
         ≤ B.diameter / 2 := h
       _ ≤ B.diameter / √2 := by
           apply div_le_div_of_nonneg_left (diameter_nonneg B)
-          · exact Real.sqrt_pos.mpr (by norm_num : (0:ℝ) < 2)
-          · calc √2 ≤ √4 := Real.sqrt_le_sqrt (by norm_num : (2:ℝ) ≤ 4)
+          · exact Real.sqrt_pos.mpr (by norm_num : (0 : ℝ) < 2)
+          · calc √2 ≤ √4 := Real.sqrt_le_sqrt (by norm_num : (2 : ℝ) ≤ 4)
               _ = 2 := by norm_num
   -- Now prove B'.diameter ≤ B.diameter / 2
   -- Key: |B'.side i|ₗ = |B.side i|ₗ / 2 for all i, so diagonal is halved
@@ -1051,17 +1051,17 @@ lemma subdivide_diameter_bound {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) :
 
 /-- Subdivide a box k times, producing a {name}`Finset` of boxes.
     After k iterations, each original box becomes up to 2^(d\*k) sub-boxes. -/
-noncomputable def subdivide_iter {d:ℕ} (B: Box d) : ℕ → Finset (Box d)
+noncomputable def subdivide_iter {d : ℕ} (B : Box d) : ℕ → Finset (Box d)
   | 0 => {B}
   | k+1 => (subdivide_iter B k).biUnion Box.subdivide
 
-lemma subdivide_iter_zero {d:ℕ} (B: Box d) : subdivide_iter B 0 = {B} := rfl
+lemma subdivide_iter_zero {d : ℕ} (B : Box d) : subdivide_iter B 0 = {B} := rfl
 
-lemma subdivide_iter_succ {d:ℕ} (B: Box d) (k: ℕ) :
+lemma subdivide_iter_succ {d : ℕ} (B : Box d) (k : ℕ) : 
     subdivide_iter B (k+1) = (subdivide_iter B k).biUnion Box.subdivide := rfl
 
 /-- All sides in {name}`Box.subdivide` (single level) are {name}`BoundedInterval.Icc` intervals -/
-lemma subdivide_side_is_Icc {d:ℕ} (B: Box d) (B' : Box d) (hB' : B' ∈ B.subdivide) (i : Fin d) :
+lemma subdivide_side_is_Icc {d : ℕ} (B : Box d) (B' : Box d) (hB' : B' ∈ B.subdivide) (i : Fin d) : 
     ∃ a b, B'.side i = Icc a b := by
   simp only [subdivide, Finset.mem_image, Finset.mem_univ, true_and] at hB'
   obtain ⟨c, rfl⟩ := hB'
@@ -1069,16 +1069,16 @@ lemma subdivide_side_is_Icc {d:ℕ} (B: Box d) (B' : Box d) (hB' : B' ∈ B.subd
   -- B'.side i = if c i then (B.side i).bisect.snd else (B.side i).bisect.fst
   simp only  -- This introduces the if-then-else in the goal
   split_ifs with hc
-  · -- snd case: (B.side i).bisect.snd is Icc
+  · -- snd case : (B.side i).bisect.snd is Icc
     unfold BoundedInterval.bisect BoundedInterval.endpoints BoundedInterval.midpoint
     cases B.side i <;> exact ⟨_, _, rfl⟩
-  · -- fst case: (B.side i).bisect.fst is Icc
+  · -- fst case : (B.side i).bisect.fst is Icc
     unfold BoundedInterval.bisect BoundedInterval.endpoints BoundedInterval.midpoint
     cases B.side i <;> exact ⟨_, _, rfl⟩
 
 /-- All sides in {name}`Box.subdivide_iter` for k ≥ 1 are {name}`BoundedInterval.Icc` intervals -/
-lemma subdivide_iter_side_is_Icc {d:ℕ} (B: Box d) (k : ℕ) (B' : Box d)
-    (hB' : B' ∈ subdivide_iter B (k+1)) (i : Fin d) :
+lemma subdivide_iter_side_is_Icc {d : ℕ} (B : Box d) (k : ℕ) (B' : Box d)
+    (hB' : B' ∈ subdivide_iter B (k+1)) (i : Fin d) : 
     ∃ a b, B'.side i = Icc a b := by
   induction k generalizing B' with
   | zero =>
@@ -1091,8 +1091,8 @@ lemma subdivide_iter_side_is_Icc {d:ℕ} (B: Box d) (k : ℕ) (B' : Box d)
     exact subdivide_side_is_Icc B'' B' hB'_sub i
 
 /-- All boxes in {name}`Box.subdivide_iter` have the same side lengths at each coordinate -/
-lemma subdivide_iter_side_length {d:ℕ} (B : Box d) (k : ℕ) (B' : Box d)
-    (hB' : B' ∈ subdivide_iter B k) (i : Fin d) :
+lemma subdivide_iter_side_length {d : ℕ} (B : Box d) (k : ℕ) (B' : Box d)
+    (hB' : B' ∈ subdivide_iter B k) (i : Fin d) : 
     |B'.side i|ₗ = |B.side i|ₗ / 2^k := by
   induction k generalizing B' with
   | zero =>
@@ -1110,7 +1110,7 @@ lemma subdivide_iter_side_length {d:ℕ} (B : Box d) (k : ℕ) (B' : Box d)
     · rw [BoundedInterval.bisect_fst_length, h1]; ring
 
 /-- A nonempty box remains nonempty after subdivision -/
-lemma subdivide_one_step_nonempty {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) :
+lemma subdivide_one_step_nonempty {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) : 
     ∀ B' ∈ B.subdivide, B'.toSet.Nonempty := by
   intro B' hB'
   unfold subdivide at hB'
@@ -1128,7 +1128,7 @@ lemma subdivide_one_step_nonempty {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) :
   · exact BoundedInterval.midpoint_mem_bisect_fst (B.side i) h_side_nonempty
 
 /-- A nonempty box remains nonempty after k iterations of subdivision -/
-lemma subdivide_iter_nonempty {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (k: ℕ) :
+lemma subdivide_iter_nonempty {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : ℕ) : 
     ∀ B' ∈ subdivide_iter B k, B'.toSet.Nonempty := by
   induction k with
   | zero =>
@@ -1142,8 +1142,8 @@ lemma subdivide_iter_nonempty {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (k: ℕ)
 
 /-- Grid alignment: sides in {name}`Box.subdivide_iter` start at grid positions.
     Requires nonempty box to ensure sides have a ≤ b (backwards intervals break the formula). -/
-lemma subdivide_iter_side_grid {d:ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : ℕ) (B' : Box d)
-    (hB' : B' ∈ subdivide_iter B k) (i : Fin d) :
+lemma subdivide_iter_side_grid {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : ℕ) (B' : Box d)
+    (hB' : B' ∈ subdivide_iter B k) (i : Fin d) : 
     ∃ j : ℕ, j < 2^k ∧ (B'.side i).a = (B.side i).a + j * (|B.side i|ₗ / 2^k) := by
   induction k generalizing B' with
   | zero =>
@@ -1159,7 +1159,7 @@ lemma subdivide_iter_side_grid {d:ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : 
     have h_len := subdivide_iter_side_length B k B'' hB'' i
     simp only
     split_ifs with hc
-    · -- snd case: start at midpoint of B''
+    · -- snd case : start at midpoint of B''
       use 2 * j'' + 1
       constructor
       · omega
@@ -1167,14 +1167,14 @@ lemma subdivide_iter_side_grid {d:ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : 
         rw [BoundedInterval.bisect_snd_a]
         have h_B''_len : |B''.side i|ₗ = |B.side i|ₗ / 2 ^ k := h_len
         by_cases h_nondeg : (B''.side i).a ≤ (B''.side i).b
-        · -- Non-degenerate: use midpoint_eq_a_add_half_length
+        · -- Non-degenerate : use midpoint_eq_a_add_half_length
           rw [BoundedInterval.midpoint_eq_a_add_half_length _ h_nondeg, hj''_eq, h_B''_len]
           have h2k : (2 : ℝ) ^ (k + 1) = 2 * 2 ^ k := by ring
           rw [h2k]
           have h2k_ne : (2 : ℝ) ^ k ≠ 0 := by positivity
           field_simp [h2k_ne]
           push_cast; ring
-        · -- Degenerate case: impossible for nonempty boxes (all sides have a ≤ b)
+        · -- Degenerate case : impossible for nonempty boxes (all sides have a ≤ b)
           -- B'' is nonempty since B is nonempty
           have hB''_nonempty : B''.toSet.Nonempty := subdivide_iter_nonempty B hB k B'' hB''
           -- Therefore (B''.side i) is nonempty
@@ -1185,7 +1185,7 @@ lemma subdivide_iter_side_grid {d:ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : 
             BoundedInterval.nonempty_implies_le _ h_side_nonempty
           -- Contradiction with ¬h_nondeg
           exact absurd h_order h_nondeg
-    · -- fst case: start at B''.a (left endpoint preserved)
+    · -- fst case : start at B''.a (left endpoint preserved)
       use 2 * j''
       constructor
       · omega
@@ -1197,7 +1197,7 @@ lemma subdivide_iter_side_grid {d:ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : 
         push_cast; ring
 
 /-- Volume is preserved through iterative subdivision -/
-lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) :
+lemma volume_subdivide_iter {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : ℕ) : 
     ∑ B' ∈ subdivide_iter B k, |B'|ᵥ = |B|ᵥ := by
   induction k with
   | zero => simp [subdivide_iter]
@@ -1250,16 +1250,16 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
       have h_same_len : |B₁.side i|ₗ = |B₂.side i|ₗ := by rw [h_len₁, h_len₂]
       -- Case analysis on c₁ i and c₂ i
       cases hc₁ : c₁ i <;> cases hc₂ : c₂ i <;> simp only [hc₁, hc₂, ite_true] at h_side_eq
-      · -- fst = fst case: endpoint equality implies parent equality
+      · -- fst = fst case : endpoint equality implies parent equality
         obtain ⟨ha, hb⟩ := BoundedInterval.bisect_fst_eq_endpoints h_side_eq
         -- Both sides are Icc with same endpoints
         simp only [h_side₁, h_side₂, BoundedInterval.a, BoundedInterval.b] at ha hb ⊢
         simp [ha, hb]
-      · -- fst = snd cross case: parity contradiction via grid positions
+      · -- fst = snd cross case : parity contradiction via grid positions
         -- Key insight: Grid positions are integers, but fst=snd requires half-integer offset
         -- For degenerate case (L=0): all intervals collapse, so B₁=B₂
         by_cases hL : |B.side i|ₗ = 0
-        · -- Degenerate case: all sides at dimension i are singletons
+        · -- Degenerate case : all sides at dimension i are singletons
           -- When length = 0 for nonempty box, a = b (singleton)
           -- All subdivisions have same singleton side
           have h1a : (B₁.side i).a = (B.side i).a := by rw [hj₁, hL]; simp
@@ -1285,7 +1285,7 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
           -- Both Icc intervals have same a and b, so they're equal
           simp only [h_side₁, h_side₂, BoundedInterval.a, BoundedInterval.b] at h1a h2a h1b h2b ⊢
           simp [h1a, h2a, h1b, h2b]
-        · -- Non-degenerate case: derive parity contradiction
+        · -- Non-degenerate case : derive parity contradiction
           -- From h_side_eq: bisect.fst of B₁ = bisect.snd of B₂
           -- So (B₁.side i).a = (B₂.side i).midpoint = (B₂.side i).a + |B₂.side i|ₗ/2
           have h_fst_a := BoundedInterval.bisect_fst_a (B₁.side i)
@@ -1301,7 +1301,7 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
           -- Substitute grid formulas
           rw [hj₁, hj₂, h_len₂] at h_a_eq
           -- j₁ * step = j₂ * step + step/2 where step = |B.side i|ₗ / 2^(k'+2)
-          have hstep_pos : (0:ℝ) < |B.side i|ₗ / 2 ^ (k' + 2) := by
+          have hstep_pos : (0 : ℝ) < |B.side i|ₗ / 2 ^ (k' + 2) := by
             apply div_pos
             · exact lt_of_le_of_ne (BoundedInterval.length_nonneg _) (Ne.symm hL)
             · positivity
@@ -1311,8 +1311,8 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
                           j₂ * (|B.side i|ₗ / 2^(k'+1)) + (|B.side i|ₗ / 2^(k'+1)) / 2 := by
             have := h_a_eq; linarith
           -- Multiply both sides by 2^(k'+2) / L to get: 2*j₁ = 2*j₂ + 1
-          have h2k1_ne : (2:ℝ) ^ (k' + 1) ≠ 0 := by positivity
-          have hL_pos : (0:ℝ) < |B.side i|ₗ := lt_of_le_of_ne (BoundedInterval.length_nonneg _) (Ne.symm hL)
+          have h2k1_ne : (2 : ℝ) ^ (k' + 1) ≠ 0 := by positivity
+          have hL_pos : (0 : ℝ) < |B.side i|ₗ := lt_of_le_of_ne (BoundedInterval.length_nonneg _) (Ne.symm hL)
           have hL_ne : |B.side i|ₗ ≠ 0 := hL
           have h_step_ne : |B.side i|ₗ / 2^(k'+1) ≠ 0 := by positivity
           have h_parity : (2 * j₁ : ℝ) = 2 * j₂ + 1 := by
@@ -1328,9 +1328,9 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
             have := h_parity
             norm_cast at this
           omega
-      · -- snd = fst cross case: symmetric to fst = snd
+      · -- snd = fst cross case : symmetric to fst = snd
         by_cases hL : |B.side i|ₗ = 0
-        · -- Degenerate case: identical to fst = snd case
+        · -- Degenerate case : identical to fst = snd case
           have h1a : (B₁.side i).a = (B.side i).a := by rw [hj₁, hL]; simp
           have h2a : (B₂.side i).a = (B.side i).a := by rw [hj₂, hL]; simp
           have h1len : |B₁.side i|ₗ = 0 := by rw [h_len₁, hL]; simp
@@ -1351,7 +1351,7 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
             linarith
           simp only [h_side₁, h_side₂, BoundedInterval.a, BoundedInterval.b] at h1a h2a h1b h2b ⊢
           simp [h1a, h2a, h1b, h2b]
-        · -- Non-degenerate case: derive parity contradiction (symmetric argument)
+        · -- Non-degenerate case : derive parity contradiction (symmetric argument)
           -- From h_side_eq: bisect.snd of B₁ = bisect.fst of B₂
           -- So (B₁.side i).midpoint = (B₂.side i).a
           have h_snd_a := BoundedInterval.bisect_snd_a (B₁.side i)
@@ -1372,8 +1372,8 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
                           j₂ * (|B.side i|ₗ / 2^(k'+1)) := by
             have := h_a_eq; linarith
           -- Multiply both sides by 2^(k'+2) / L to get: 2*j₁ + 1 = 2*j₂
-          have h2k1_ne : (2:ℝ) ^ (k' + 1) ≠ 0 := by positivity
-          have hL_pos : (0:ℝ) < |B.side i|ₗ := lt_of_le_of_ne (BoundedInterval.length_nonneg _) (Ne.symm hL)
+          have h2k1_ne : (2 : ℝ) ^ (k' + 1) ≠ 0 := by positivity
+          have hL_pos : (0 : ℝ) < |B.side i|ₗ := lt_of_le_of_ne (BoundedInterval.length_nonneg _) (Ne.symm hL)
           have hL_ne : |B.side i|ₗ ≠ 0 := hL
           have h_step_ne : |B.side i|ₗ / 2^(k'+1) ≠ 0 := by positivity
           have h_parity : (2 * j₁ + 1 : ℝ) = 2 * j₂ := by
@@ -1389,7 +1389,7 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
             have := h_parity
             norm_cast at this
           omega
-      · -- snd = snd case: endpoint equality implies parent equality
+      · -- snd = snd case : endpoint equality implies parent equality
         obtain ⟨ha, hb⟩ := BoundedInterval.bisect_snd_eq_endpoints h_side_eq
         -- Both sides are Icc with same endpoints
         simp only [h_side₁, h_side₂, BoundedInterval.a, BoundedInterval.b] at ha hb ⊢
@@ -1397,7 +1397,7 @@ lemma volume_subdivide_iter {d:ℕ} (B: Box d) (hB : B.toSet.Nonempty) (k: ℕ) 
 
 /-- Diameter bound after k iterations of subdivision.
     Each iteration reduces diameter by factor of √2. -/
-lemma diameter_subdivide_iter {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (k: ℕ) :
+lemma diameter_subdivide_iter {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : ℕ) : 
     ∀ B' ∈ subdivide_iter B k, B'.diameter ≤ B.diameter / (Real.sqrt 2) ^ k := by
   induction k with
   | zero =>
@@ -1424,17 +1424,17 @@ lemma diameter_subdivide_iter {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (k: ℕ)
     Each subdivision reduces diameter by factor of √2, so after k iterations:
     diameter ≤ original\_diameter / (√2)^k
     We need (√2)^k > diameter/r, i.e., k > log(diameter/r) / log(√2) = 2·log₂(diameter/r). -/
-noncomputable def iter_count {d:ℕ} (B: Box d) (r: ℝ) : ℕ :=
+noncomputable def iter_count {d : ℕ} (B : Box d) (r : ℝ) : ℕ :=
   if B.diameter ≤ 0 then 0
   else if B.diameter < r then 0
   else Nat.ceil (2 * Real.log (B.diameter / r) / Real.log 2) + 1
 
 /-- After iter\_count subdivisions, all sub-boxes have diameter < r -/
-lemma diameter_lt_of_iter_count {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (r: ℝ) (hr: 0 < r) :
+lemma diameter_lt_of_iter_count {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (r : ℝ) (hr : 0 < r) : 
     ∀ B' ∈ subdivide_iter B (B.iter_count r), B'.diameter < r := by
   intro B' hB'
   by_cases h_diam_le : B.diameter ≤ 0
-  · -- Degenerate case: diameter ≤ 0 means all sub-boxes also have diameter ≤ 0 < r
+  · -- Degenerate case : diameter ≤ 0 means all sub-boxes also have diameter ≤ 0 < r
     simp only [iter_count, h_diam_le, ↓reduceIte, subdivide_iter] at hB'
     simp only [Finset.mem_singleton] at hB'
     rw [hB']
@@ -1446,7 +1446,7 @@ lemma diameter_lt_of_iter_count {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (r: �
       simp only [iter_count, not_le.mpr h_diam_le, h_small, ↓reduceIte, subdivide_iter] at hB'
       simp only [Finset.mem_singleton] at hB'
       rw [hB']; exact h_small
-    · -- Need subdivisions: B.diameter ≥ r, so we use the logarithmic formula
+    · -- Need subdivisions : B.diameter ≥ r, so we use the logarithmic formula
       push_neg at h_small
       have h_iter_bound := diameter_subdivide_iter B hB (B.iter_count r) B' hB'
       -- Show that B.diameter / (√2)^k < r for k = iter_count
@@ -1481,14 +1481,14 @@ lemma diameter_lt_of_iter_count {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (r: �
             -- (√2)^k = 2^(k/2)
             have hsqrt_pow : (Real.sqrt 2) ^ (B.iter_count r) =
                              (2 : ℝ) ^ (((B.iter_count r) : ℝ) / 2) := by
-              have h1 : Real.sqrt 2 = (2 : ℝ) ^ ((1:ℝ) / 2) := Real.sqrt_eq_rpow 2
+              have h1 : Real.sqrt 2 = (2 : ℝ) ^ ((1 : ℝ) / 2) := Real.sqrt_eq_rpow 2
               conv_lhs => rw [h1]
-              rw [← Real.rpow_natCast ((2:ℝ) ^ ((1:ℝ)/2)) (B.iter_count r)]
-              rw [← Real.rpow_mul (by norm_num : (0:ℝ) ≤ 2)]
+              rw [← Real.rpow_natCast ((2 : ℝ) ^ ((1 : ℝ)/2)) (B.iter_count r)]
+              rw [← Real.rpow_mul (by norm_num : (0 : ℝ) ≤ 2)]
               congr 1; ring
             -- 2^(k/2) > B.diameter/r
             have h2pow_gt : (2 : ℝ) ^ (((B.iter_count r) : ℝ) / 2) > B.diameter / r := by
-              rw [Real.rpow_def_of_pos (by norm_num : (0:ℝ) < 2)]
+              rw [Real.rpow_def_of_pos (by norm_num : (0 : ℝ) < 2)]
               have hsimp : Real.log (B.diameter / r) / Real.log 2 * Real.log 2 =
                           Real.log (B.diameter / r) := by field_simp
               have h_exp_ineq : Real.log 2 * (((B.iter_count r) : ℝ) / 2) >
@@ -1510,7 +1510,7 @@ lemma diameter_lt_of_iter_count {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (r: �
 
 /-- Subdivided boxes cover the original box: any point in B.toSet is contained in
     some box in subdivide\_iter B k. -/
-lemma subdivide_iter_covers {d:ℕ} (B : Box d) (k : ℕ) (x : EuclideanSpace' d)
+lemma subdivide_iter_covers {d : ℕ} (B : Box d) (k : ℕ) (x : EuclideanSpace' d)
     (hx : x ∈ B.toSet) : ∃ B' ∈ subdivide_iter B k, x ∈ B'.toSet := by
   induction k with
   | zero =>
@@ -1529,7 +1529,7 @@ lemma subdivide_iter_covers {d:ℕ} (B : Box d) (k : ℕ) (x : EuclideanSpace' d
     · -- B' ∈ subdivide_iter B (k+1)
       simp only [subdivide_iter_succ, Finset.mem_biUnion]
       exact ⟨B'', hB''_mem, by simp only [subdivide, Finset.mem_image, Finset.mem_univ, true_and]; exact ⟨c, rfl⟩⟩
-    · -- x ∈ B'.toSet: for each i, x i is in the appropriate half
+    · -- x ∈ B'.toSet : for each i, x i is in the appropriate half
       intro i
       have hx_i : x i ∈ (B''.side i).toSet := by
         have := hx_B''
@@ -1554,7 +1554,7 @@ lemma volume_nonneg {d : ℕ} (B : Box d) : 0 ≤ B.volume := by
   exact le_max_right _ _
 
 /-- Closed boxes (all sides are {name}`BoundedInterval.Icc`) in Euclidean space are compact sets. -/
-lemma isCompact {d : ℕ} (B : Box d) (h_closed : ∀ i, ∃ a b, B.side i = BoundedInterval.Icc a b) :
+lemma isCompact {d : ℕ} (B : Box d) (h_closed : ∀ i, ∃ a b, B.side i = BoundedInterval.Icc a b) : 
     IsCompact B.toSet := by
   -- Use Tychonoff: product of compact sets is compact
   rw [Box.toSet_eq_ofLp_preimage]
@@ -1571,8 +1571,8 @@ namespace Lebesgue_outer_measure
 
 /-- Any ℕ-indexed cover gives an upper bound on outer measure.
     Follows directly from the infimum definition. -/
-lemma le_of_nat_cover {d:ℕ} (hd: 0 < d) (E: Set (EuclideanSpace' d))
-    (S : ℕ → Box d) (hcover : E ⊆ ⋃ n, (S n).toSet) :
+lemma le_of_nat_cover {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d))
+    (S : ℕ → Box d) (hcover : E ⊆ ⋃ n, (S n).toSet) : 
     Lebesgue_outer_measure E ≤ ∑' n, (S n).volume.toEReal := by
   rw [Lebesgue_outer_measure_eq_nat_indexed hd]
   apply csInf_le
@@ -1595,8 +1595,8 @@ lemma le_of_nat_cover {d:ℕ} (hd: 0 < d) (E: Set (EuclideanSpace' d))
     2. Use {name}`Encodable` instance to define {lit}`S` of type {lean}`ℕ → Box d` via decoding
     3. Pad with zero-volume box for invalid decodings
     4. Apply {name}`Lebesgue_outer_measure.le_of_nat_cover` and bound the enumerated sum -/
-lemma le_of_finset_cover {d:ℕ} (hd: 0 < d) (E: Set (EuclideanSpace' d))
-    (I : ℕ → Finset (Box d)) (hcover : E ⊆ ⋃ n, ⋃ B ∈ I n, B.toSet) :
+lemma le_of_finset_cover {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d))
+    (I : ℕ → Finset (Box d)) (hcover : E ⊆ ⋃ n, ⋃ B ∈ I n, B.toSet) : 
     Lebesgue_outer_measure E ≤ ∑' n, (∑ B ∈ I n, B.volume).toEReal := by
   -- Define the sigma type for enumeration
   let SigmaType := (n : ℕ) × (I n : Set (Box d))
@@ -1795,10 +1795,10 @@ lemma le_of_finset_cover {d:ℕ} (hd: 0 < d) (E: Set (EuclideanSpace' d))
 
 /-- For any set with finite outer measure, we can find a cover whose volume is within ε of the outer measure.
     This follows from the definition of outer measure as an infimum. -/
-lemma exists_cover_close {d:ℕ} (hd: 0 < d)
-    (E: Set (EuclideanSpace' d)) (ε: ℝ) (hε: 0 < ε)
-    (h_finite: Lebesgue_outer_measure E ≠ ⊤) :
-    ∃ (S: ℕ → Box d), E ⊆ ⋃ n, (S n).toSet ∧
+lemma exists_cover_close {d : ℕ} (hd : 0 < d)
+    (E : Set (EuclideanSpace' d)) (ε : ℝ) (hε : 0 < ε)
+    (h_finite : Lebesgue_outer_measure E ≠ ⊤) : 
+    ∃ (S : ℕ → Box d), E ⊆ ⋃ n, (S n).toSet ∧
       ∑' n, (S n).volume.toEReal ≤ Lebesgue_outer_measure E + ε := by
   -- Use the ℕ-indexed characterization of outer measure
   rw [Lebesgue_outer_measure_eq_nat_indexed hd] at h_finite ⊢
@@ -1806,13 +1806,13 @@ lemma exists_cover_close {d:ℕ} (hd: 0 < d)
   -- Key fact: inf + ε is not a lower bound (since ε > 0)
   -- Therefore, there exists some cover with volume < inf + ε, which implies ≤ inf + ε
 
-  have h_not_lb : ¬ IsGLB (((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) ''
-      { S | E ⊆ ⋃ n, (S n).toSet }) (sInf (((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) ''
+  have h_not_lb : ¬ IsGLB (((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) ''
+      { S | E ⊆ ⋃ n, (S n).toSet }) (sInf (((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) ''
       { S | E ⊆ ⋃ n, (S n).toSet }) + (ε : EReal)) := by
     intro h_glb
     -- If inf + ε were the GLB, then inf ≤ inf + ε ≤ inf (since inf is also a lower bound)
     -- This would imply ε ≤ 0, contradiction
-    let img_set := ((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }
+    let img_set := ((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }
     let inf_val := sInf img_set
     -- sInf img_set is the GLB of img_set
     have h_inf_glb : IsGLB img_set inf_val := isGLB_sInf img_set
@@ -1850,7 +1850,7 @@ lemma exists_cover_close {d:ℕ} (hd: 0 < d)
 
   -- Since sInf is the infimum and sInf + ε is not a lower bound,
   -- there must exist some cover with volume ≤ sInf + ε
-  let img_set := ((fun S: ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }
+  let img_set := ((fun S : ℕ → Box d ↦ ∑' n, (S n).volume.toEReal)) '' { S | E ⊆ ⋃ n, (S n).toSet }
   let inf_val := sInf img_set
   -- From h_not_lb, inf_val + ε is not a GLB, which means it's not a lower bound
   -- (since if it were a lower bound ≥ inf_val, it would have to equal inf_val to be a GLB)
@@ -1917,8 +1917,8 @@ end Lebesgue_outer_measure
          \* Sum volumes separately: m\*(E) + m\*(F) ≤ sum of refined cover ≤ m\*(E ∪ F) + ε
          \* Take ε → 0 to conclude
 -/
-theorem Lebesgue_outer_measure.union_of_separated {d:ℕ} (hd: 0 < d) {E F : Set (EuclideanSpace' d)}
-    (hsep: set_dist E F > 0) :
+theorem Lebesgue_outer_measure.union_of_separated {d : ℕ} (hd : 0 < d) {E F : Set (EuclideanSpace' d)}
+    (hsep : set_dist E F > 0) : 
     Lebesgue_outer_measure (E ∪ F) = Lebesgue_outer_measure E + Lebesgue_outer_measure F := by
 
   -- Direction 1: m*(E ∪ F) ≤ m*(E) + m*(F) [Subadditivity]
@@ -1979,7 +1979,7 @@ theorem Lebesgue_outer_measure.union_of_separated {d:ℕ} (hd: 0 < d) {E F : Set
           intro n B' hB'
           by_cases hnonempty : (S n).toSet.Nonempty
           · exact Box.diameter_lt_of_iter_count (S n) hnonempty r hr_pos B' hB'
-          · -- Empty box case: iter_count = 0 when diameter ≤ 0, so subdivide_iter = {S n}
+          · -- Empty box case : iter_count = 0 when diameter ≤ 0, so subdivide_iter = {S n}
             have h_empty : (S n).toSet = ∅ := Set.not_nonempty_iff_eq_empty.mp hnonempty
             have h_diam_zero : (S n).diameter = 0 := Box.diameter_of_empty (S n) h_empty
             -- iter_count = 0 since diameter = 0 ≤ 0
@@ -2085,7 +2085,7 @@ theorem Lebesgue_outer_measure.union_of_separated {d:ℕ} (hd: 0 < d) {E F : Set
                   _ ≤ (S n).volume := by
                     by_cases hn : (S n).toSet.Nonempty
                     · exact le_of_eq (h_vol_eq n hn)
-                    · -- Empty box: volume = 0, and sum over subdivisions ≤ 0 = vol
+                    · -- Empty box : volume = 0, and sum over subdivisions ≤ 0 = vol
                       have hempty : (S n).toSet = ∅ := Set.not_nonempty_iff_eq_empty.mp hn
                       have hvol_zero : (S n).volume = 0 := Box.volume_eq_zero_of_empty (S n) hempty
                       rw [hvol_zero]
@@ -2114,7 +2114,7 @@ theorem Lebesgue_outer_measure.union_of_separated {d:ℕ} (hd: 0 < d) {E F : Set
 
 example : set_dist (Ico 0 1).toSet (Icc 1 2).toSet = 0 := by
   apply le_antisymm
-  · -- set_dist ≤ 0: by contradiction, if set_dist > 0, we find a closer pair
+  · -- set_dist ≤ 0 : by contradiction, if set_dist > 0, we find a closer pair
     by_contra hne
     simp only [not_le] at hne
     -- So set_dist > 0
@@ -2152,7 +2152,7 @@ example : set_dist (Ico 0 1).toSet (Icc 1 2).toSet = 0 := by
         exact dist_nonneg
       · rw [← hdist_val]; exact hmem
     linarith
-  · -- 0 ≤ set_dist: infimum of nonnegative values is nonnegative
+  · -- 0 ≤ set_dist : infimum of nonnegative values is nonnegative
     unfold set_dist
     apply le_csInf
     · -- Nonempty
@@ -2164,8 +2164,8 @@ example : set_dist (Ico 0 1).toSet (Icc 1 2).toSet = 0 := by
       exact dist_nonneg
 
 /-- Exercise 1.2.4 -/
-theorem dist_of_disj_compact_pos {d:ℕ} (E F: Set (EuclideanSpace' d)) (hEn: E.Nonempty) (hFn: F.Nonempty)
-    (hE: IsCompact E) (hF: IsCompact F) (hdisj: E ∩ F = ∅) :
+theorem dist_of_disj_compact_pos {d : ℕ} (E F : Set (EuclideanSpace' d)) (hEn : E.Nonempty) (hFn : F.Nonempty)
+    (hE : IsCompact E) (hF : IsCompact F) (hdisj : E ∩ F = ∅) : 
     set_dist E F > 0 := by
   sorry
 
@@ -2174,7 +2174,7 @@ theorem dist_of_disj_compact_pos {d:ℕ} (E F: Set (EuclideanSpace' d)) (hEn: E.
 -- ========================================================================
 
 /-- Sum of geometric series δ/2^\{n+2\} equals δ/2 -/
-lemma tsum_geometric_inflate {δ : ℝ} (_hδ : 0 < δ) :
+lemma tsum_geometric_inflate {δ : ℝ} (_hδ : 0 < δ) : 
     ∑' n : ℕ, δ / 2^(n+2) = δ / 2 := by
   -- ∑ δ/2^{n+2} = δ/4 * ∑ (1/2)^n = δ/4 * 2 = δ/2
   have h_eq : (fun n => δ / 2^(n+2)) = (fun n => δ / 4 * (1/2 : ℝ)^n) := by
@@ -2184,11 +2184,11 @@ lemma tsum_geometric_inflate {δ : ℝ} (_hδ : 0 < δ) :
     have h2n : (2 : ℝ) ^ n ≠ 0 := by positivity
     field_simp [h2n]
     rw [← mul_pow]; norm_num
-  rw [h_eq, tsum_mul_left, tsum_geometric_of_lt_one (by norm_num : (0:ℝ) ≤ 1/2) (by norm_num : (1:ℝ)/2 < 1)]
+  rw [h_eq, tsum_mul_left, tsum_geometric_of_lt_one (by norm_num : (0 : ℝ) ≤ 1/2) (by norm_num : (1 : ℝ)/2 < 1)]
   ring
 /-- When P\_nonempty ⊆ P, the loss from scaling is bounded by δ/4. -/
 lemma card_ratio_bound {P_nonempty P : Finset α} (hP_nonempty_sub : P_nonempty ⊆ P)
-    {δ : ℝ} (hδ_pos : 0 < δ) (hcard_pos : 0 < P.card) :
+    {δ : ℝ} (hδ_pos : 0 < δ) (hcard_pos : 0 < P.card) : 
     P_nonempty.card * (δ / (4 * P.card)) ≤ δ / 4 := by
   have hP_card_pos : (0 : ℝ) < P.card := Nat.cast_pos.mpr hcard_pos
   have h_card_bound : P_nonempty.card ≤ P.card := Finset.card_le_card hP_nonempty_sub
@@ -2204,7 +2204,7 @@ lemma partition_volume_bound {d : ℕ} {P : Finset (Box d)}
     {P_nonempty : Finset (Box d)} (_hP_nonempty_sub : P_nonempty ⊆ P)
     {B' : (B : Box d) → B ∈ P_nonempty → Box d}
     {ε : ℝ} (_hε_pos : 0 < ε)
-    (h_vol_bound : ∀ B (hB : B ∈ P_nonempty), B.volume ≤ (B' B hB).volume + ε) :
+    (h_vol_bound : ∀ B (hB : B ∈ P_nonempty), B.volume ≤ (B' B hB).volume + ε) : 
     ∑ B ∈ P_nonempty, B.volume ≤
       ∑ x : { B // B ∈ P_nonempty }, (B' x.1 x.2).volume + P_nonempty.card * ε := by
   calc ∑ B ∈ P_nonempty, B.volume
@@ -2234,7 +2234,7 @@ lemma injective_of_shrunk_nonempty {d : ℕ} {P : Finset (Box d)}
     {B' : (B : Box d) → B ∈ P_nonempty → Box d}
     (hP_disj : (P : Set (Box d)).PairwiseDisjoint Box.toSet)
     (h_sub : ∀ B (hB : B ∈ P_nonempty), (B' B hB).toSet ⊆ B.toSet)
-    (h_nonempty : ∀ B (hB : B ∈ P_nonempty), (B' B hB).toSet.Nonempty) :
+    (h_nonempty : ∀ B (hB : B ∈ P_nonempty), (B' B hB).toSet.Nonempty) : 
     Function.Injective (fun x : { B // B ∈ P_nonempty } => B' x.1 x.2) := by
   intro ⟨B₁, hB₁⟩ ⟨B₂, hB₂⟩ h_boxes_eq
   by_contra h_ne
@@ -2252,7 +2252,7 @@ lemma injective_of_shrunk_nonempty {d : ℕ} {P : Finset (Box d)}
   exact Set.not_nonempty_empty (h_B'₁_nonempty.mono h_in_inter)
 
 /-- Every bounded interval ({name}`BoundedInterval.Ioo`, {name}`BoundedInterval.Icc`, {name}`BoundedInterval.Ioc`, {name}`BoundedInterval.Ico`) is a bounded set -/
-lemma BoundedInterval.isBounded (I: BoundedInterval) : Bornology.IsBounded I.toSet := by
+lemma BoundedInterval.isBounded (I : BoundedInterval) : Bornology.IsBounded I.toSet := by
   cases I with
   | Ioo a b => simp only [toSet]; exact Metric.isBounded_Ioo a b
   | Icc a b => simp only [toSet]; exact Metric.isBounded_Icc a b
@@ -2260,14 +2260,14 @@ lemma BoundedInterval.isBounded (I: BoundedInterval) : Bornology.IsBounded I.toS
   | Ico a b => simp only [toSet]; exact Metric.isBounded_Ico a b
 
 /-- Every box is bounded (product of bounded intervals) -/
-lemma Box.isBounded {d:ℕ} (B: Box d) : Bornology.IsBounded B.toSet := by
+lemma Box.isBounded {d : ℕ} (B : Box d) : Bornology.IsBounded B.toSet := by
   rw [Box.toSet_eq_ofLp_preimage]
   exact (PiLp.antilipschitzWith_ofLp 2 (fun _ : Fin d => ℝ)).isBounded_preimage
     (Bornology.IsBounded.pi (fun i => BoundedInterval.isBounded (B.side i)))
 
 /-- Enlarge a box to an open box with controlled volume increase -/
-lemma Box.inflate {d:ℕ} (B: Box d) (δ: ℝ) (hδ: 0 < δ) :
-    ∃ B': Box d, B.toSet ⊆ interior B'.toSet ∧ IsOpen (interior B'.toSet) ∧ |B'|ᵥ ≤ |B|ᵥ + δ := by
+lemma Box.inflate {d : ℕ} (B : Box d) (δ : ℝ) (hδ : 0 < δ) : 
+    ∃ B' : Box d, B.toSet ⊆ interior B'.toSet ∧ IsOpen (interior B'.toSet) ∧ |B'|ᵥ ≤ |B|ᵥ + δ := by
   -- Handle dimension 0 separately (trivial case)
   by_cases hd : d = 0
   · subst hd
@@ -2371,8 +2371,8 @@ lemma Box.inflate {d:ℕ} (B: Box d) (δ: ℝ) (hδ: 0 < δ) :
 
 /-- Shrink a box to a closed sub-box with controlled volume decrease.
     The output is always nonempty when the input is nonempty. -/
-lemma Box.shrink_to_closed {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (δ: ℝ) (hδ: 0 < δ) :
-    ∃ B': Box d, B'.toSet ⊆ B.toSet ∧ IsClosed B'.toSet ∧ |B'|ᵥ ≥ |B|ᵥ - δ ∧ B'.toSet.Nonempty := by
+lemma Box.shrink_to_closed {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (δ : ℝ) (hδ : 0 < δ) : 
+    ∃ B' : Box d, B'.toSet ⊆ B.toSet ∧ IsClosed B'.toSet ∧ |B'|ᵥ ≥ |B|ᵥ - δ ∧ B'.toSet.Nonempty := by
   -- Handle dimension 0 separately (trivial case)
   by_cases hd : d = 0
   · subst hd
@@ -2389,7 +2389,7 @@ lemma Box.shrink_to_closed {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (δ: ℝ) (
     fun i => Box.side_nonempty_of_nonempty B hB i
   -- Check if all sides have strictly positive length
   by_cases h_all_pos : ∀ i : Fin d, 0 < |B.side i|ₗ
-  · -- Non-degenerate case: all sides have positive length
+  · -- Non-degenerate case : all sides have positive length
     -- Define shrunken volume function g(ε) = ∏ᵢ max(Lᵢ - 2ε, 0)
     let g : ℝ → ℝ := fun ε => ∏ i : Fin d, max (|B.side i|ₗ - 2 * ε) 0
     -- g is continuous (max ∘ (f, g) is continuous when f, g are)
@@ -2526,7 +2526,7 @@ lemma Box.shrink_to_closed {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (δ: ℝ) (
              _ ≤ |B.side i|ₗ := hL_bound i
              _ = (B.side i).b - (B.side i).a := by simp only [BoundedInterval.length, h_max]
       linarith
-  · -- Degenerate case: some side has zero length, volume is 0
+  · -- Degenerate case : some side has zero length, volume is 0
     push_neg at h_all_pos
     obtain ⟨i₀, hi₀⟩ := h_all_pos
     have hvol_zero : |B|ᵥ = 0 := by
@@ -2555,7 +2555,7 @@ lemma Box.shrink_to_closed {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (δ: ℝ) (
         simp only [BoundedInterval.length, BoundedInterval.a, BoundedInterval.b, sub_self]
         exact max_eq_right (le_refl 0)
       rw [hvol', hvol_zero]; linarith
-    · -- B'.toSet.Nonempty (degenerate case): B' = {x} is a singleton containing x
+    · -- B'.toSet.Nonempty (degenerate case) : B' = {x} is a singleton containing x
       use x
       simp only [Box.mem_toSet]
       intro i
@@ -2563,7 +2563,7 @@ lemma Box.shrink_to_closed {d:ℕ} (B: Box d) (hB: B.toSet.Nonempty) (δ: ℝ) (
 
 namespace IsElementary
 /-- Elementary sets are bounded (finite union of bounded boxes) -/
-lemma isBounded {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: IsElementary E) :
+lemma isBounded {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsElementary E) : 
     Bornology.IsBounded E := by
   obtain ⟨S, hS_eq⟩ := hE
   rw [hS_eq]
@@ -2580,7 +2580,7 @@ lemma measure_of_empty_eq {d : ℕ} {E : Set (EuclideanSpace' d)}
 
 
 /-- Finite indexed union of boxes is elementary (uses {name}`IsElementary.union'` which takes a finset of sets) -/
-lemma iUnion_boxes {d : ℕ} {ι : Type*} [Fintype ι] (B : ι → Box d) :
+lemma iUnion_boxes {d : ℕ} {ι : Type*} [Fintype ι] (B : ι → Box d) : 
     IsElementary (⋃ i, (B i).toSet) := by
   classical
   -- Convert indexed union to finset-based union
@@ -2601,7 +2601,7 @@ lemma iUnion_boxes {d : ℕ} {ι : Type*} [Fintype ι] (B : ι → Box d) :
 
 /-- The measure of a finite union of boxes (indexed by finset membership) is at most the sum of volumes.
     This is finite subadditivity specialized to boxes with a finset index. -/
-lemma measure_le_finset_boxes_volume' {d : ℕ} (t : Finset ℕ) (B : ℕ → Box d) :
+lemma measure_le_finset_boxes_volume' {d : ℕ} (t : Finset ℕ) (B : ℕ → Box d) : 
     (IsElementary.iUnion_boxes (fun (n : { n // n ∈ t }) => B n.1)).measure ≤ ∑ n ∈ t, (B n).volume := by
   classical
   -- Convert to the Finset of sets form and use IsElementary.measure_of_union'
@@ -2679,7 +2679,7 @@ lemma measure_le_finset_boxes_volume' {d : ℕ} (t : Finset ℕ) (B : ℕ → Bo
     This is the key step using Heine-Borel compactness: inflate boxes to open cover,
     extract finite subcover of compact approximation, use finite subadditivity. -/
 lemma measure_le_cover_sum {d : ℕ} (_hd : 0 < d) {E : Set (EuclideanSpace' d)}
-    (hE : IsElementary E) (S : ℕ → Box d) (hS_cover : E ⊆ ⋃ n, (S n).toSet) :
+    (hE : IsElementary E) (S : ℕ → Box d) (hS_cover : E ⊆ ⋃ n, (S n).toSet) : 
     (hE.measure : EReal) ≤ ∑' n, (S n).volume.toEReal := by
   -- Handle empty case directly
   by_cases hE_empty : E = ∅
@@ -3008,8 +3008,8 @@ lemma measure_le_cover_sum {d : ℕ} (_hd : 0 < d) {E : Set (EuclideanSpace' d)}
 /-- Direction 1: Elementary measure is a lower bound for outer measure
     (Partition gives a finite cover, outer measure is infimum over covers)
     Uses measure\_le\_cover\_sum for the core Heine-Borel argument. -/
-lemma measure_le_outer_measure {d:ℕ} (hd: 0 < d) {E: Set (EuclideanSpace' d)}
-    (hE: IsElementary E) : (hE.measure : EReal) ≤ Lebesgue_outer_measure E := by
+lemma measure_le_outer_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpace' d)}
+    (hE : IsElementary E) : (hE.measure : EReal) ≤ Lebesgue_outer_measure E := by
   -- Use ε-argument: show ∀ ε > 0, hE.measure ≤ m*(E) + ε
   apply EReal.le_of_forall_pos_le_add'
   intro ε hε_pos
@@ -3037,8 +3037,8 @@ lemma measure_le_outer_measure {d:ℕ} (hd: 0 < d) {E: Set (EuclideanSpace' d)}
 
 /-- Direction 2: Outer measure is bounded by elementary measure
     (Uses: m\*(E) ≤ J\*(E) for bounded E, and J\*(E) ≤ hE.measure for elementary E) -/
-lemma outer_measure_le_measure {d:ℕ} (_hd: 0 < d) {E: Set (EuclideanSpace' d)}
-    (hE: IsElementary E) : Lebesgue_outer_measure E ≤ (hE.measure : EReal) := by
+lemma outer_measure_le_measure {d : ℕ} (_hd : 0 < d) {E : Set (EuclideanSpace' d)}
+    (hE : IsElementary E) : Lebesgue_outer_measure E ≤ (hE.measure : EReal) := by
   -- Step 1: Lebesgue outer measure ≤ Jordan outer measure (for bounded sets)
   have h_le_jordan : Lebesgue_outer_measure E ≤ Jordan_outer_measure E :=
     Lebesgue_outer_measure_le_Jordan hE.isBounded
@@ -3053,13 +3053,13 @@ lemma outer_measure_le_measure {d:ℕ} (_hd: 0 < d) {E: Set (EuclideanSpace' d)}
 end IsElementary
 
 /-- Dimension 0 case of Lemma 1.2.6 -/
-lemma Lebesgue_outer_measure.elementary_dim_zero (E: Set (EuclideanSpace' 0)) (hE: IsElementary E) :
+lemma Lebesgue_outer_measure.elementary_dim_zero (E : Set (EuclideanSpace' 0)) (hE : IsElementary E) : 
     Lebesgue_outer_measure E = hE.measure := by
   -- In dimension 0, EuclideanSpace' 0 is a singleton (only the empty function Fin 0 → ℝ)
   -- Outer measure is 1 for nonempty sets, 0 for empty set
   rw [Lebesgue_outer_measure_of_dim_zero]
   by_cases hne : E.Nonempty
-  · -- Case: E is nonempty → E = Set.univ (singleton type), outer measure = 1
+  · -- Case : E is nonempty → E = Set.univ (singleton type), outer measure = 1
     simp only [hne, ↓reduceIte]
     -- In dim 0, any nonempty elementary set is Set.univ (entire singleton space)
     -- The partition has one box covering univ, with volume = empty product = 1
@@ -3093,7 +3093,7 @@ lemma Lebesgue_outer_measure.elementary_dim_zero (E: Set (EuclideanSpace' 0)) (h
       rw [hE_eq_univ, hB_univ]
     rw [h_eq, IsElementary.measure_of_box, hB_vol]
     rfl
-  · -- Case: E is empty → outer measure = 0 = hE.measure
+  · -- Case : E is empty → outer measure = 0 = hE.measure
     have hE_empty : E = ∅ := Set.not_nonempty_iff_eq_empty.mp hne
     simp only [hne, if_false]
     -- Need: (0 : EReal) = hE.measure
@@ -3108,10 +3108,10 @@ lemma Lebesgue_outer_measure.elementary_dim_zero (E: Set (EuclideanSpace' 0)) (h
 -- ========================================================================
 /-- Lemma 1.2.6 (Outer measure of elementary sets).
     For any elementary set E, Lebesgue outer measure equals elementary measure. -/
-theorem Lebesgue_outer_measure.elementary {d:ℕ} (E: Set (EuclideanSpace' d)) (hE: IsElementary E) :
+theorem Lebesgue_outer_measure.elementary {d : ℕ} (E : Set (EuclideanSpace' d)) (hE : IsElementary E) : 
     Lebesgue_outer_measure E = hE.measure := by
   by_cases hd : d = 0
-  · -- Dimension 0 case: trivial edge case (EuclideanSpace' 0 is a singleton)
+  · -- Dimension 0 case : trivial edge case (EuclideanSpace' 0 is a singleton)
     -- In dim 0, all boxes have volume 1, E is either empty (measure 0) or univ (measure 1)
     subst hd
     -- This edge case requires careful handling of the partition structure in dim 0
@@ -3125,7 +3125,7 @@ theorem Lebesgue_outer_measure.elementary {d:ℕ} (E: Set (EuclideanSpace' d)) (
     · exact IsElementary.measure_le_outer_measure hd' hE
 
 /-- Cantor's theorem -/
-theorem EuclideanSpace'.uncountable (d:ℕ) (hd: 0 < d) : Uncountable (EuclideanSpace' d) := by
+theorem EuclideanSpace'.uncountable (d : ℕ) (hd : 0 < d) : Uncountable (EuclideanSpace' d) := by
   -- Embed ℝ into EuclideanSpace' d via x ↦ (x, 0, 0, ..., 0)
   let f : ℝ → EuclideanSpace' d := fun x => .toLp 2 (fun i => if i = ⟨0, hd⟩ then x else 0)
   have hf : Function.Injective f := fun x y hxy => by
@@ -3136,7 +3136,7 @@ theorem EuclideanSpace'.uncountable (d:ℕ) (hd: 0 < d) : Uncountable (Euclidean
 
 /-- No uncountable subadditivity: the unit cube has measure 1, but decomposed into
 singletons (each with measure 0), the sum is 0. -/
-example {d:ℕ} {hd: 0 < d} : ∃ (S:Type) (E: S → Set (EuclideanSpace' d)), ¬ Lebesgue_outer_measure (⋃ i, E i) ≤ ∑' i, Lebesgue_outer_measure (E i) := by
+example {d : ℕ} {hd : 0 < d} : ∃ (S : Type) (E : S → Set (EuclideanSpace' d)), ¬ Lebesgue_outer_measure (⋃ i, E i) ≤ ∑' i, Lebesgue_outer_measure (E i) := by
   use (Box.unit_cube d).toSet
   use fun x => {x.val}
   -- ⋃ x, {x.val} = unit cube
@@ -3165,14 +3165,14 @@ example {d:ℕ} {hd: 0 < d} : ∃ (S:Type) (E: S → Set (EuclideanSpace' d)), �
    ======================================================================== -/
 
 /-- The distance on {lean}`EuclideanSpace' 1` equals the distance in ℝ via {name}`EuclideanSpace'.equiv_Real` -/
-lemma EuclideanSpace'_dist_eq_Real_dist (x y : EuclideanSpace' 1) :
+lemma EuclideanSpace'_dist_eq_Real_dist (x y : EuclideanSpace' 1) : 
     dist x y = dist (EuclideanSpace'.equiv_Real x) (EuclideanSpace'.equiv_Real y) := by
   rw [EuclideanSpace.dist_eq, Real.dist_eq]
   simp only [Fin.zero_eta, Real.sqrt_sq_eq_abs, EuclideanSpace'.equiv_Real, Equiv.coe_fn_mk,
     Fin.sum_univ_one, Real.dist_eq, abs_abs]
 
 /-- Preimage of closed interval \[a,b\] under {name}`EuclideanSpace'.equiv_Real` equals the corresponding 1D box -/
-lemma preimage_Icc_eq_box (a b : ℝ) :
+lemma preimage_Icc_eq_box (a b : ℝ) : 
     EuclideanSpace'.equiv_Real ⁻¹' Set.Icc a b = (BoundedInterval.Icc a b).toBox.toSet := by
   rw [BoundedInterval.coe_of_box]
   ext x
@@ -3189,7 +3189,7 @@ lemma preimage_Icc_eq_box (a b : ℝ) :
 lemma tsum_geometric_eps (ε : ℝ) (_hε : 0 < ε) : ∑' n : ℕ, ε / 2^(n+1) = ε := by
   have h_eq : (fun n => ε / 2^(n+1)) = (fun n => ε / 2 * (1/2 : ℝ)^n) := by
     ext n
-    have : (2:ℝ)^(n+1) = 2 * 2^n := by ring
+    have : (2 : ℝ)^(n+1) = 2 * 2^n := by ring
     rw [this]
     field_simp; simp
   rw [h_eq, tsum_mul_left, tsum_geometric_of_lt_one (by norm_num) (by norm_num)]
@@ -3205,19 +3205,19 @@ lemma tsum_interval_lengths (ε : ℝ) (hε : 0 < ε) : ∑' n : ℕ, (2 * ε / 
 lemma tsum_interval_summable (ε : ℝ) : Summable (fun n => 2 * ε / 2^(n+1) : ℕ → ℝ) := by
   have h_eq : (fun n => 2 * ε / 2^(n+1)) = (fun n => ε * (1/2 : ℝ)^n) := by
     ext n
-    have h_pow : (2:ℝ)^(n+1) = 2 * 2^n := by ring
+    have h_pow : (2 : ℝ)^(n+1) = 2 * 2^n := by ring
     rw [h_pow]; field_simp; ring_nf; simp
   rw [h_eq]
-  have h_abs : |(1/2:ℝ)| < 1 := by
-    simp only [abs_of_pos (by norm_num : (0:ℝ) < 1/2)]
+  have h_abs : |(1/2 : ℝ)| < 1 := by
+    simp only [abs_of_pos (by norm_num : (0 : ℝ) < 1/2)]
     norm_num
-  have h_geom : Summable (fun n => (1/2:ℝ)^n) := summable_geometric_of_abs_lt_one h_abs
+  have h_geom : Summable (fun n => (1/2 : ℝ)^n) := summable_geometric_of_abs_lt_one h_abs
   exact h_geom.mul_left ε
 
 namespace Lebesgue_outer_measure
 
 /-- Lebesgue outer measure of a closed interval \[a,b\] equals b - a -/
-lemma of_Icc (a b : ℝ) (hab : a ≤ b) :
+lemma of_Icc (a b : ℝ) (hab : a ≤ b) : 
     Lebesgue_outer_measure (EuclideanSpace'.equiv_Real ⁻¹' Set.Icc a b) = ((b - a : ℝ) : EReal) := by
   -- [a,b] is a single box in 1D, hence elementary with measure b - a
   let B : Box 1 := (BoundedInterval.Icc a b).toBox
@@ -3235,7 +3235,7 @@ lemma of_Icc (a b : ℝ) (hab : a ≤ b) :
   rw [max_eq_left (sub_nonneg.mpr hab)]
 
 /-- Lebesgue measure of an open interval ≤ length (when a < b) -/
-lemma of_Ioo_le (a b : ℝ) (h : a < b) :
+lemma of_Ioo_le (a b : ℝ) (h : a < b) : 
     Lebesgue_outer_measure (EuclideanSpace'.equiv_Real ⁻¹' Set.Ioo a b) ≤ ((b - a : ℝ) : EReal) := by
   have hab : a ≤ b := le_of_lt h
   calc Lebesgue_outer_measure (EuclideanSpace'.equiv_Real ⁻¹' Set.Ioo a b)
@@ -3249,7 +3249,7 @@ end Lebesgue_outer_measure
 
 /-- Monotonicity of Jordan outer measure, for two bounded sets -/
 lemma Jordan_outer_measure_mono {E F : Set (EuclideanSpace' 1)}
-    (hEF: E ⊆ F) (_hF: Bornology.IsBounded F) :
+    (hEF : E ⊆ F) (_hF : Bornology.IsBounded F) : 
     Jordan_outer_measure E ≤ Jordan_outer_measure F := by
   -- Jordan_outer_measure E = sInf { m | ∃ A elem, E ⊆ A ∧ m = |A| }
   -- If E ⊆ F and F ⊆ A, then E ⊆ A, so the set for F is a subset of the set for E
@@ -3273,17 +3273,17 @@ lemma Jordan_outer_measure_mono {E F : Set (EuclideanSpace' 1)}
 namespace Remark_1_2_8
 
 /-- Rationals in \[0,1\] form a nonempty countable set. -/
-lemma rationals_unit_interval_nonempty : (Set.Icc (0:ℝ) 1 ∩ Set.range (fun q:ℚ ↦ (q:ℝ))).Nonempty := by
+lemma rationals_unit_interval_nonempty : (Set.Icc (0 : ℝ) 1 ∩ Set.range (fun q : ℚ ↦ (q : ℝ))).Nonempty := by
   use 0
   constructor
   · simp
   · use 0; simp
 
-lemma rationals_unit_interval_countable : (Set.Icc (0:ℝ) 1 ∩ Set.range (fun q:ℚ ↦ (q:ℝ))).Countable :=
+lemma rationals_unit_interval_countable : (Set.Icc (0 : ℝ) 1 ∩ Set.range (fun q : ℚ ↦ (q : ℝ))).Countable :=
   Set.Countable.mono Set.inter_subset_right (Set.countable_range _)
 
 /-- An enumeration function of rationals in \[0,1\] -/
-noncomputable def q_enum : ℕ → { x : ℝ // x ∈ Set.Icc (0:ℝ) 1 ∩ Set.range (fun q:ℚ ↦ (q:ℝ)) } :=
+noncomputable def q_enum : ℕ → { x : ℝ // x ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun q : ℚ ↦ (q : ℝ)) } :=
   (rationals_unit_interval_countable.exists_surjective rationals_unit_interval_nonempty).choose
 
 lemma q_enum_surj : Function.Surjective q_enum :=
@@ -3292,12 +3292,12 @@ lemma q_enum_surj : Function.Surjective q_enum :=
 /-- An enumeration of rationals in \[0,1\] as real numbers -/
 noncomputable def q (n : ℕ) : ℝ := (q_enum n).val
 
-lemma q_mem (n : ℕ) : q n ∈ Set.Icc (0:ℝ) 1 ∩ Set.range (fun r:ℚ ↦ (r:ℝ)) :=
+lemma q_mem (n : ℕ) : q n ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun r : ℚ ↦ (r : ℝ)) :=
   (q_enum n).property
 
-lemma q_in_unit_interval (n : ℕ) : q n ∈ Set.Icc (0:ℝ) 1 := (q_mem n).1
+lemma q_in_unit_interval (n : ℕ) : q n ∈ Set.Icc (0 : ℝ) 1 := (q_mem n).1
 
-lemma q_surj : ∀ x ∈ Set.Icc (0:ℝ) 1 ∩ Set.range (fun r:ℚ ↦ (r:ℝ)), ∃ n, q n = x := by
+lemma q_surj : ∀ x ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun r : ℚ ↦ (r : ℝ)), ∃ n, q n = x := by
   intro x hx
   obtain ⟨n, hn⟩ := q_enum_surj ⟨x, hx⟩
   use n
@@ -3342,9 +3342,9 @@ lemma U_real_subset (ε : ℝ) (hε : 0 < ε) : U_real ε ⊆ Set.Ioo (-ε) (1 +
   have hr : radius ε n ≤ ε := by
     unfold radius
     apply div_le_self (le_of_lt hε)
-    calc (1:ℝ) ≤ 2^1 := by norm_num
+    calc (1 : ℝ) ≤ 2^1 := by norm_num
       _ ≤ 2^(n+1) := by
-        apply pow_le_pow_right₀ (by norm_num : (1:ℝ) ≤ 2)
+        apply pow_le_pow_right₀ (by norm_num : (1 : ℝ) ≤ 2)
         omega
   constructor
   · calc -ε ≤ 0 - ε := by linarith
@@ -3377,10 +3377,10 @@ lemma U_isBounded (ε : ℝ) (hε : 0 < ε) : Bornology.IsBounded (U ε) := by
   linarith
 
 /-- Bound on each component interval's Lebesgue measure -/
-lemma component_lebesgue_le (ε : ℝ) (hε : 0 < ε) (n : ℕ) :
+lemma component_lebesgue_le (ε : ℝ) (hε : 0 < ε) (n : ℕ) : 
     Lebesgue_outer_measure (EuclideanSpace'.equiv_Real ⁻¹' Set.Ioo (q n - ε / 2^(n+1)) (q n + ε / 2^(n+1)))
     ≤ ((2 * ε / 2^(n+1) : ℝ) : EReal) := by
-  have h_rad_pos : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0:ℝ) < 2) (n+1))
+  have h_rad_pos : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0 : ℝ) < 2) (n+1))
   have h_lt : q n - ε / 2^(n+1) < q n + ε / 2^(n+1) := by linarith
   have h_length : (q n + ε / 2^(n+1)) - (q n - ε / 2^(n+1)) = 2 * ε / 2^(n+1) := by ring
   have h1 := Lebesgue_outer_measure.of_Ioo_le (q n - ε / 2^(n+1)) (q n + ε / 2^(n+1)) h_lt
@@ -3388,7 +3388,7 @@ lemma component_lebesgue_le (ε : ℝ) (hε : 0 < ε) (n : ℕ) :
   exact h1
 
 /-- Closure of U\_real contains \[0,1\] (density of rationals) -/
-lemma U_real_closure_contains_unit_interval (ε : ℝ) (hε : 0 < ε) :
+lemma U_real_closure_contains_unit_interval (ε : ℝ) (hε : 0 < ε) : 
     Set.Icc 0 1 ⊆ closure (U_real ε) := by
   intro x hx
   rw [mem_closure_iff_nhds]
@@ -3397,7 +3397,7 @@ lemma U_real_closure_contains_unit_interval (ε : ℝ) (hε : 0 < ε) :
   rw [Metric.mem_nhds_iff] at ht
   obtain ⟨δ, hδ_pos, hδ_sub⟩ := ht
   -- Find a rational in [0,1] close to x
-  have h_rat_exists : ∃ r : ℚ, (r:ℝ) ∈ Set.Icc (0:ℝ) 1 ∧ |(r:ℝ) - x| < δ := by
+  have h_rat_exists : ∃ r : ℚ, (r : ℝ) ∈ Set.Icc (0 : ℝ) 1 ∧ |(r : ℝ) - x| < δ := by
     by_cases h : x < δ
     · use 0
       constructor
@@ -3409,25 +3409,25 @@ lemma U_real_closure_contains_unit_interval (ε : ℝ) (hε : 0 < ε) :
       use r
       constructor
       · constructor
-        · have : (0:ℝ) ≤ x - δ := by linarith
+        · have : (0 : ℝ) ≤ x - δ := by linarith
           linarith
         · linarith [hx.2]
       · rw [abs_sub_comm, abs_sub_lt_iff]
         constructor <;> linarith
   obtain ⟨r, hr_in, hr_close⟩ := h_rat_exists
   -- r is in Set.range of Rat.cast
-  have hr_range : (r:ℝ) ∈ Set.range (fun s:ℚ ↦ (s:ℝ)) := ⟨r, rfl⟩
+  have hr_range : (r : ℝ) ∈ Set.range (fun s : ℚ ↦ (s : ℝ)) := ⟨r, rfl⟩
   -- So there exists n with q n = r
-  have hr_inter : (r:ℝ) ∈ Set.Icc (0:ℝ) 1 ∩ Set.range (fun s:ℚ ↦ (s:ℝ)) := ⟨hr_in, hr_range⟩
+  have hr_inter : (r : ℝ) ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun s : ℚ ↦ (s : ℝ)) := ⟨hr_in, hr_range⟩
   obtain ⟨n, hn⟩ := q_surj r hr_inter
   -- q n = r, and q n is in U_real (in the interval around itself)
   have hqn_in_U : q n ∈ U_real ε := by
     simp only [U_real, Set.mem_iUnion, Set.mem_Ioo]
     use n
     constructor
-    · have : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0:ℝ) < 2) (n+1))
+    · have : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0 : ℝ) < 2) (n+1))
       linarith
-    · have : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0:ℝ) < 2) (n+1))
+    · have : 0 < ε / 2^(n+1) := div_pos hε (pow_pos (by norm_num : (0 : ℝ) < 2) (n+1))
       linarith
   -- q n is close to x (since q n = r)
   have hqn_in_ball : q n ∈ Metric.ball x δ := by
@@ -3465,7 +3465,7 @@ lemma Jordan_outer_unit_box : Jordan_outer_measure unit_box_1D.toSet = 1 := by
   exact unit_box_volume
 
 /-- Closure of U contains the preimage of \[0,1\] -/
-lemma U_closure_contains_unit_box (ε : ℝ) (hε : 0 < ε) :
+lemma U_closure_contains_unit_box (ε : ℝ) (hε : 0 < ε) : 
     unit_box_1D.toSet ⊆ closure (U ε) := by
   -- Key insight: For a homeomorphism f, closure(f⁻¹(S)) = f⁻¹(closure(S))
   -- Since U ε = equiv_Real⁻¹(U_real ε) and equiv_Real is a homeomorphism:
@@ -3493,7 +3493,7 @@ lemma U_closure_contains_unit_box (ε : ℝ) (hε : 0 < ε) :
 
 /-- Jordan outer measure of U ≥ 1.
     Proof uses: density of ℚ → closure(U) ⊇ \[0,1\] → Jordan\_outer(U) ≥ Jordan\_outer(\[0,1\]) = 1. -/
-lemma U_jordan_outer_ge (ε : ℝ) (hε : 0 < ε) :
+lemma U_jordan_outer_ge (ε : ℝ) (hε : 0 < ε) : 
     Jordan_outer_measure (U ε) ≥ 1 := by
   -- By JordanMeasurable.outer_measure_of_closure, Jordan_outer(closure U) = Jordan_outer(U)
   have h_closure_eq := JordanMeasurable.outer_measure_of_closure (U_isBounded ε hε)
@@ -3516,7 +3516,7 @@ lemma U_jordan_outer_ge (ε : ℝ) (hε : 0 < ε) :
     3. Each component bounded: m\*(E\_n) ≤ 2ε/2^\{n+1\} (component\_lebesgue\_le)
     4. Geometric sum: ∑' 2ε/2^\{n+1\} = 2ε (tsum\_interval\_lengths)
     5. {name}`EReal` tsum comparison: ∑' m\*(E\_n) ≤ ∑' (2ε/2^\{n+1\}) = 2ε -/
-lemma U_lebesgue_le (ε : ℝ) (hε : 0 < ε) :
+lemma U_lebesgue_le (ε : ℝ) (hε : 0 < ε) : 
     Lebesgue_outer_measure (U ε) ≤ ((2 * ε : ℝ) : EReal) := by
   -- U = ⋃_n (component intervals in EuclideanSpace' 1)
   let E : ℕ → Set (EuclideanSpace' 1) := fun n =>
@@ -3535,7 +3535,7 @@ lemma U_lebesgue_le (ε : ℝ) (hε : 0 < ε) :
     have h_g_nonneg : ∀ n, 0 ≤ 2 * ε / 2^(n+1) := by
       intro n
       apply div_nonneg (by linarith : 0 ≤ 2 * ε)
-      exact pow_nonneg (by norm_num : (0:ℝ) ≤ 2) _
+      exact pow_nonneg (by norm_num : (0 : ℝ) ≤ 2) _
     have h_tsum_eq := tsum_interval_lengths ε hε
     rw [← h_tsum_eq]
     -- Lebesgue outer measure is non-negative (sInf of sums of box volumes ≥ 0)
@@ -3561,7 +3561,7 @@ end Remark_1_2_8
     U is open and bounded. By countable subadditivity, m\*(U) ≤ 2ε.
     By density of ℚ, closure(U) ⊇ \[0,1\], so m\*,J(U) ≥ 1.
     For ε = 1/3, we get m\*(U) ≤ 2/3 < 1 ≤ m\*,J(U), contradicting Jordan measurability. -/
-example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
+example : ∃ (E : Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
     IsOpen E ∧ ¬ JordanMeasurable E := by
   use Remark_1_2_8.U (1/3)
   refine ⟨Remark_1_2_8.U_isBounded (1/3) (by norm_num),
@@ -3572,7 +3572,7 @@ example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
     Remark_1_2_8.U_jordan_outer_ge (1/3) (by norm_num)
   -- Step 2: Lebesgue outer measure of U ≤ 2/3 (from countable subadditivity)
   have h_lebesgue : Lebesgue_outer_measure (Remark_1_2_8.U (1/3)) ≤ (2/3 : EReal) := by
-    have := Remark_1_2_8.U_lebesgue_le (1/3) (by norm_num : (0:ℝ) < 1/3)
+    have := Remark_1_2_8.U_lebesgue_le (1/3) (by norm_num : (0 : ℝ) < 1/3)
     have h_eq : (2 * (1/3 : ℝ) : EReal) = (2/3 : EReal) := by
       simp only [one_div]
       norm_cast
@@ -3615,7 +3615,7 @@ example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
   linarith
 
 /-- Remark 1.2.8: The complement of U in \[-2,2\] is compact but not Jordan measurable. -/
-example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
+example : ∃ (E : Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
     IsCompact E ∧ ¬ JordanMeasurable E := by
   -- Let B = [-2, 2] lifted to EuclideanSpace' 1
   let B : Set (EuclideanSpace' 1) := EuclideanSpace'.equiv_Real ⁻¹' Set.Icc (-2) 2
@@ -3680,7 +3680,7 @@ example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
     -- U ⊆ B (since U ⊆ (-1/3, 4/3) ⊆ [-2, 2])
     have hU_sub_B : U ⊆ B := by
       intro x hx
-      have h_sub := Remark_1_2_8.U_real_subset (1/3) (by norm_num : (0:ℝ) < 1/3)
+      have h_sub := Remark_1_2_8.U_real_subset (1/3) (by norm_num : (0 : ℝ) < 1/3)
       -- hx : x ∈ U means equiv_Real x ∈ U_real
       have hx' : EuclideanSpace'.equiv_Real x ∈ Remark_1_2_8.U_real (1/3) := hx
       have hx_real := h_sub hx'
@@ -3698,7 +3698,7 @@ example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
       have h_outer : Jordan_outer_measure U ≥ 1 :=
         Remark_1_2_8.U_jordan_outer_ge (1/3) (by norm_num)
       have h_lebesgue : Lebesgue_outer_measure U ≤ (2/3 : EReal) := by
-        have := Remark_1_2_8.U_lebesgue_le (1/3) (by norm_num : (0:ℝ) < 1/3)
+        have := Remark_1_2_8.U_lebesgue_le (1/3) (by norm_num : (0 : ℝ) < 1/3)
         have h_eq : (2 * (1/3 : ℝ) : EReal) = (2/3 : EReal) := by simp only [one_div]; norm_cast
         calc Lebesgue_outer_measure U ≤ 2 * (1/3 : ℝ) := this
           _ = (2/3 : EReal) := h_eq
@@ -3724,13 +3724,13 @@ example : ∃ (E: Set (EuclideanSpace' 1)), Bornology.IsBounded E ∧
       linarith
     exact hU_not_jm hUB_jm
 
-def AlmostDisjoint {d:ℕ} (B B': Box d) : Prop := interior B.toSet ∩ interior B'.toSet = ∅
+def AlmostDisjoint {d : ℕ} (B B' : Box d) : Prop := interior B.toSet ∩ interior B'.toSet = ∅
 
 -- Helpers for theorem IsElementary.almost_disjoint
 /-- Measure is additive on unions of elementary sets with disjoint interiors: μ(E ∪ F) = μ(E) + μ(F). -/
-lemma IsElementary.measure_of_almostDisjUnion {d:ℕ} {E F: Set (EuclideanSpace' d)}
-    (hE: IsElementary E) (hF: IsElementary F)
-    (h: interior E ∩ interior F = ∅) :
+lemma IsElementary.measure_of_almostDisjUnion {d : ℕ} {E F : Set (EuclideanSpace' d)}
+    (hE : IsElementary E) (hF : IsElementary F)
+    (h : interior E ∩ interior F = ∅) : 
     (hE.union hF).measure = hE.measure + hF.measure := by
   -- Strategy: Use decomposition E ∪ F = E ∪ (F \ E) which is disjoint,
   -- then show (F \ E).measure = hF.measure by using that E ∩ F has measure zero
@@ -3865,7 +3865,7 @@ lemma IsElementary.measure_of_almostDisjUnion {d:ℕ} {E F: Set (EuclideanSpace'
 
 /-- Split a {lean}`Fin (n+1)` indexed union into a {lean}`Fin n` indexed union plus the last element.
     This is a general helper for induction on finite unions. -/
-lemma Fin.iUnion_succ_eq_union_last {α : Type*} {n : ℕ} (f : Fin (n + 1) → Set α) :
+lemma Fin.iUnion_succ_eq_union_last {α : Type*} {n : ℕ} (f : Fin (n + 1) → Set α) : 
     (⋃ i, f i) = (⋃ i : Fin n, f (Fin.castSucc i)) ∪ f (Fin.last n) := by
   ext x
   simp only [Set.mem_iUnion, Set.mem_union]
@@ -3883,7 +3883,7 @@ lemma Fin.iUnion_succ_eq_union_last {α : Type*} {n : ℕ} (f : Fin (n + 1) → 
 
 /-- When boxes are pairwise almost-disjoint, restricting to the first n boxes preserves this. -/
 lemma AlmostDisjoint.pairwise_castSucc {d n : ℕ} {B : Fin (n + 1) → Box d}
-    (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) :
+    (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) : 
     Pairwise (Function.onFun AlmostDisjoint (fun i => B (Fin.castSucc i))) := by
   intro i j hij
   simp only [Function.onFun]
@@ -3894,7 +3894,7 @@ lemma AlmostDisjoint.pairwise_castSucc {d n : ℕ} {B : Fin (n + 1) → Box d}
 
 /-- When boxes are pairwise almost-disjoint, any of the first n is almost-disjoint from the last. -/
 lemma AlmostDisjoint.castSucc_last {d n : ℕ} {B : Fin (n + 1) → Box d}
-    (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) (i : Fin n) :
+    (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) (i : Fin n) : 
     AlmostDisjoint (B (Fin.castSucc i)) (B (Fin.last n)) := by
   apply hdisj
   intro heq
@@ -3905,7 +3905,7 @@ lemma AlmostDisjoint.castSucc_last {d n : ℕ} {B : Fin (n + 1) → Box d}
 /-- For any {name}`BoundedInterval`, interior (closure I) ⊆ closure (interior I).
     This holds because all interval types ({name}`BoundedInterval.Ioo`, {name}`BoundedInterval.Icc`, {name}`BoundedInterval.Ioc`, {name}`BoundedInterval.Ico`) have closure = {name}`BoundedInterval.Icc`
     and interior = {name}`BoundedInterval.Ioo`, so interior(closure(I)) = {name}`BoundedInterval.Ioo` ⊆ {name}`BoundedInterval.Icc` = closure(interior(I)). -/
-lemma BoundedInterval.interior_closure_subset_closure_interior (I : BoundedInterval) :
+lemma BoundedInterval.interior_closure_subset_closure_interior (I : BoundedInterval) : 
     interior (closure (I : Set ℝ)) ⊆ closure (interior (I : Set ℝ)) := by
   cases I with
   | Ioo a b =>
@@ -3951,7 +3951,7 @@ lemma Box.interior_frontier_eq_empty {d : ℕ} (B : Box d) : interior (frontier 
 /-- The interior of a finite union of box frontiers is empty. This is because each box frontier
     is a closed set with empty interior, and we can apply {name}`interior_union_isClosed_of_interior_empty`
     iteratively. -/
-lemma interior_iUnion_Box_frontier_eq_empty {d n : ℕ} (B : Fin n → Box d) :
+lemma interior_iUnion_Box_frontier_eq_empty {d n : ℕ} (B : Fin n → Box d) : 
     interior (⋃ i, frontier (B i).toSet) = ∅ := by
   induction n with
   | zero => simp
@@ -3961,7 +3961,7 @@ lemma interior_iUnion_Box_frontier_eq_empty {d n : ℕ} (B : Fin n → Box d) :
     · exact Box.interior_frontier_eq_empty (B (Fin.last m))
     · exact ih (fun i => B (Fin.castSucc i))
 
-theorem IsElementary.almost_disjoint {d k:ℕ} {E: Set (EuclideanSpace' d)} (hE: IsElementary E) (B: Fin k → Box d) (hEB: E = ⋃ i, (B i).toSet) (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) : hE.measure = ∑ i, |B i|ᵥ := by
+theorem IsElementary.almost_disjoint {d k : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsElementary E) (B : Fin k → Box d) (hEB : E = ⋃ i, (B i).toSet) (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) : hE.measure = ∑ i, |B i|ᵥ := by
   induction k generalizing E with
   | zero =>
     -- E = ⋃ i : Fin 0, (B i).toSet = ∅, so hE.measure = 0 = ∑ i : Fin 0, ...
@@ -4073,7 +4073,7 @@ theorem IsElementary.almost_disjoint {d k:ℕ} {E: Set (EuclideanSpace' d)} (hE:
 
 /-- Restricting pairwise almost-disjoint from ℕ to {lean}`Fin N` preserves the property. -/
 lemma AlmostDisjoint.restrict_fin {d : ℕ} {B : ℕ → Box d}
-    (h : Pairwise (Function.onFun AlmostDisjoint B)) (N : ℕ) :
+    (h : Pairwise (Function.onFun AlmostDisjoint B)) (N : ℕ) : 
     Pairwise (Function.onFun AlmostDisjoint (fun i : Fin N => B i.val)) := by
   intro i j hij
   simp only [Function.onFun]
@@ -4084,7 +4084,7 @@ lemma AlmostDisjoint.restrict_fin {d : ℕ} {B : ℕ → Box d}
 /-- For nonneg Real sequences, if all partial sums are ≤ c (an {name}`EReal` bound), then {name}`tsum` ≤ c.
     This is the converse direction of {name}`EReal.finset_sum_le_tsum`. -/
 lemma EReal.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : EReal}
-    (hf : ∀ n, 0 ≤ f n) (h : ∀ N, (∑ i ∈ Finset.range N, f i : EReal) ≤ c) :
+    (hf : ∀ n, 0 ≤ f n) (h : ∀ N, (∑ i ∈ Finset.range N, f i : EReal) ≤ c) : 
     ∑' n, (f n).toEReal ≤ c := by
   -- Convert to ENNReal where tsum_le_of_sum_range_le is available
   let g : ℕ → ENNReal := fun n => ENNReal.ofReal (f n)
@@ -4130,7 +4130,7 @@ lemma EReal.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : EReal}
 
 /-- Lemma 1.2.9 (Outer measure of countable unions of almost disjoint boxes).
     For pairwise almost disjoint boxes, m*(⋃ Bᵢ) = ∑' m*(Bᵢ) = ∑' |Bᵢ|. -/
-theorem Lebesgue_outer_measure.union_of_almost_disjoint {d:ℕ} {B : ℕ → Box d} (h : Pairwise (Function.onFun AlmostDisjoint B)) :
+theorem Lebesgue_outer_measure.union_of_almost_disjoint {d : ℕ} {B : ℕ → Box d} (h : Pairwise (Function.onFun AlmostDisjoint B)) : 
     Lebesgue_outer_measure (⋃ i, (B i).toSet) = ∑' i, Lebesgue_outer_measure (B i).toSet := by
   -- Simplify: m*(Bᵢ) = |Bᵢ| for each box (Lemma 1.2.6 + measure_of_box)
   have h_box_measure : ∀ i, Lebesgue_outer_measure (B i).toSet = (B i).volume.toEReal := by
@@ -4193,7 +4193,7 @@ theorem Lebesgue_outer_measure.union_of_almost_disjoint {d:ℕ} {B : ℕ → Box
     -- Step 3: Apply EReal.tsum_le_of_sum_range_le
     exact EReal.tsum_le_of_sum_range_le (fun n => Box.volume_nonneg (B n)) h_range_le
 
-theorem Lebesgue_outer_measure.univ {d:ℕ} {hd: 0 < d} : Lebesgue_outer_measure (Set.univ : Set (EuclideanSpace' d)) = ⊤ := by
+theorem Lebesgue_outer_measure.univ {d : ℕ} {hd : 0 < d} : Lebesgue_outer_measure (Set.univ : Set (EuclideanSpace' d)) = ⊤ := by
   -- Strategy: Show m*(univ) ≥ N for any N by taking N disjoint unit boxes, hence m*(univ) = ⊤
 
   -- Define unit box at integer lattice point a
@@ -4205,7 +4205,7 @@ theorem Lebesgue_outer_measure.univ {d:ℕ} {hd: 0 < d} : Lebesgue_outer_measure
     simp only [Box.volume, UnitBox]
     simp only [BoundedInterval.length, BoundedInterval.b, BoundedInterval.a]
     simp only [add_sub_cancel_left]
-    simp only [max_eq_left (by norm_num : (0:ℝ) ≤ 1)]
+    simp only [max_eq_left (by norm_num : (0 : ℝ) ≤ 1)]
     simp only [Finset.prod_const_one]
 
   -- Unit boxes at different lattice points have disjoint interiors
@@ -4295,7 +4295,7 @@ theorem Lebesgue_outer_measure.univ {d:ℕ} {hd: 0 < d} : Lebesgue_outer_measure
     _ ≤ Lebesgue_outer_measure (Set.univ : Set (EuclideanSpace' d)) := h_arb_large N
 
 /-- Remark 1.2.10 -/
-theorem Box.sum_volume_eq {d:ℕ} (B B': ℕ → Box d) (hdisj: Pairwise (Function.onFun AlmostDisjoint B)) (hdisj': Pairwise (Function.onFun AlmostDisjoint B')) (hcover: (⋃ n, (B n).toSet) = (⋃ n, (B' n).toSet)) :
+theorem Box.sum_volume_eq {d : ℕ} (B B' : ℕ → Box d) (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) (hdisj' : Pairwise (Function.onFun AlmostDisjoint B')) (hcover : (⋃ n, (B n).toSet) = (⋃ n, (B' n).toSet)) : 
     ∑' n, (B n).volume = ∑' n, (B' n).volume := by
   -- Establish outer measure equality using union_of_almost_disjoint (Lemma 1.2.9)
   have hB := Lebesgue_outer_measure.union_of_almost_disjoint hdisj
@@ -4348,33 +4348,33 @@ theorem Box.sum_volume_eq {d:ℕ} (B B': ℕ → Box d) (hdisj: Pairwise (Functi
 
 /-- Exercise 1.2.5: For any set that equals a countable union of almost disjoint boxes,
     the Lebesgue outer measure equals the Jordan inner measure. -/
-theorem Lebesgue_outer_measure.eq_Jordan_inner_of_boxes {d:ℕ} (E: Set (EuclideanSpace' d)) (B: ℕ → Box d)
-    (hE: E = ⋃ n, (B n).toSet) (hdisj: Pairwise (Function.onFun AlmostDisjoint B)) :
+theorem Lebesgue_outer_measure.eq_Jordan_inner_of_boxes {d : ℕ} (E : Set (EuclideanSpace' d)) (B : ℕ → Box d)
+    (hE : E = ⋃ n, (B n).toSet) (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) : 
     Lebesgue_outer_measure E = Jordan_inner_measure E := by
   sorry
 
-def IsCube {d:ℕ} (B: Box d) : Prop := ∃ r, ∀ i, |B.side i|ₗ = r
+def IsCube {d : ℕ} (B : Box d) : Prop := ∃ r, ∀ i, |B.side i|ₗ = r
 
-noncomputable def DyadicCube {d:ℕ} (n:ℤ) (a: Fin d → ℤ) : Box d := { side := fun i ↦ Icc (a i/2^n) ((a i + 1)/2^n) }
+noncomputable def DyadicCube {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : Box d := { side := fun i ↦ Icc (a i/2^n) ((a i + 1)/2^n) }
 
-lemma DyadicCube.isCube {d:ℕ} (n:ℤ) (a: Fin d → ℤ) : IsCube (DyadicCube n a) := by
+lemma DyadicCube.isCube {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : IsCube (DyadicCube n a) := by
   -- All sides have length 1/2^n
   use |2^(-n : ℤ)|
   intro i
   simp only [DyadicCube, BoundedInterval.length, BoundedInterval.b, BoundedInterval.a]
   -- Show ((a i + 1)/2^n - a i/2^n) = 1/2^n
-  have h : (↑(a i) + 1) / (2:ℝ) ^ n - ↑(a i) / (2:ℝ) ^ n = (2:ℝ) ^ (-n) := by
+  have h : (↑(a i) + 1) / (2 : ℝ) ^ n - ↑(a i) / (2 : ℝ) ^ n = (2 : ℝ) ^ (-n) := by
     simp only [zpow_neg, ← sub_div]; norm_cast; simp [add_sub_cancel_left]
   rw [h]
-  simp only [max_eq_left (zpow_nonneg (by norm_num : (0:ℝ) ≤ 2) (-n))]
-  exact (abs_of_nonneg (zpow_nonneg (by norm_num : (0:ℝ) ≤ 2) (-n))).symm
+  simp only [max_eq_left (zpow_nonneg (by norm_num : (0 : ℝ) ≤ 2) (-n))]
+  exact (abs_of_nonneg (zpow_nonneg (by norm_num : (0 : ℝ) ≤ 2) (-n))).symm
 
-def Box.IsDyadicAtScale {d:ℕ} (B: Box d) (n:ℤ) : Prop := ∃ a: Fin d → ℤ, B = DyadicCube n a
+def Box.IsDyadicAtScale {d : ℕ} (B : Box d) (n : ℤ) : Prop := ∃ a : Fin d → ℤ, B = DyadicCube n a
 
-def Box.IsDyadic {d:ℕ} (B: Box d) : Prop := ∃ n:ℕ, B.IsDyadicAtScale n
+def Box.IsDyadic {d : ℕ} (B : Box d) : Prop := ∃ n : ℕ, B.IsDyadicAtScale n
 
 /-- Dyadic boxes have all sides as closed intervals ({name}`BoundedInterval.Icc`). -/
-lemma Box.IsDyadic.all_sides_Icc {d : ℕ} {B : Box d} (hB : B.IsDyadic) :
+lemma Box.IsDyadic.all_sides_Icc {d : ℕ} {B : Box d} (hB : B.IsDyadic) : 
     ∀ i, ∃ a b, B.side i = BoundedInterval.Icc a b := by
   obtain ⟨n, ⟨a, rfl⟩⟩ := hB
   intro i
@@ -4384,26 +4384,26 @@ lemma Box.IsDyadic.all_sides_Icc {d : ℕ} {B : Box d} (hB : B.IsDyadic) :
 -- Helper lemmas for Lemma 1.2.11
 namespace DyadicCube
 /-- The sidelength of a dyadic cube at scale n is 2^(-n). -/
-lemma sidelength {d:ℕ} (n:ℤ) (a: Fin d → ℤ) (i : Fin d) :
-    |(DyadicCube n a).side i|ₗ = (2:ℝ)^(-n) := by
+lemma sidelength {d : ℕ} (n : ℤ) (a : Fin d → ℤ) (i : Fin d) : 
+    |(DyadicCube n a).side i|ₗ = (2 : ℝ)^(-n) := by
   simp only [DyadicCube, BoundedInterval.length, BoundedInterval.b, BoundedInterval.a]
-  have h : (↑(a i) + 1) / (2:ℝ) ^ n - ↑(a i) / (2:ℝ) ^ n = (2:ℝ) ^ (-n) := by
+  have h : (↑(a i) + 1) / (2 : ℝ) ^ n - ↑(a i) / (2 : ℝ) ^ n = (2 : ℝ) ^ (-n) := by
     simp only [zpow_neg, ← sub_div]; norm_cast; simp [add_sub_cancel_left]
-  rw [h, max_eq_left (zpow_nonneg (by norm_num : (0:ℝ) ≤ 2) (-n))]
+  rw [h, max_eq_left (zpow_nonneg (by norm_num : (0 : ℝ) ≤ 2) (-n))]
 
 /-- Dyadic cubes at scale n ≥ 0 have sidelength at most 1. -/
-lemma sidelength_le_one {d:ℕ} {n:ℕ} (a: Fin d → ℤ) (i : Fin d) :
-    |(DyadicCube (n:ℤ) a).side i|ₗ ≤ 1 := by
+lemma sidelength_le_one {d : ℕ} {n : ℕ} (a : Fin d → ℤ) (i : Fin d) : 
+    |(DyadicCube (n : ℤ) a).side i|ₗ ≤ 1 := by
   rw [DyadicCube.sidelength]
-  have h1 : (1:ℝ) ≤ 2^n := by
-    calc (1:ℝ) = 2^(0:ℕ) := by norm_num
-      _ ≤ 2^n := pow_le_pow_right₀ (by norm_num : 1 ≤ (2:ℝ)) (Nat.zero_le n)
-  calc (2:ℝ)^(-(n:ℤ)) = 1 / 2^n := by rw [zpow_neg, zpow_natCast]; ring
+  have h1 : (1 : ℝ) ≤ 2^n := by
+    calc (1 : ℝ) = 2^(0 : ℕ) := by norm_num
+      _ ≤ 2^n := pow_le_pow_right₀ (by norm_num : 1 ≤ (2 : ℝ)) (Nat.zero_le n)
+  calc (2 : ℝ)^(-(n : ℤ)) = 1 / 2^n := by rw [zpow_neg, zpow_natCast]; ring
     _ ≤ 1 / 1 := by apply div_le_div_of_nonneg_left (by norm_num) (by norm_num) h1
     _ = 1 := by norm_num
 
 /-- The interior of a dyadic cube. -/
-lemma interior {d:ℕ} (n:ℤ) (a: Fin d → ℤ) :
+lemma interior {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : 
     interior (DyadicCube n a).toSet =
     {x | ∀ i, x i ∈ Set.Ioo ((a i : ℝ) / 2^n) (((a i : ℝ) + 1) / 2^n)} := by
   rw [Box.interior_toSet]
@@ -4411,7 +4411,7 @@ lemma interior {d:ℕ} (n:ℤ) (a: Fin d → ℤ) :
     Set.mem_setOf_eq, DyadicCube, BoundedInterval.toSet, interior_Icc]; rfl
 
 /-- Dyadic cubes at the same scale with different indices have disjoint interiors. -/
-lemma almost_disjoint_same_scale {d:ℕ} {n:ℤ} {a b : Fin d → ℤ} (hab : a ≠ b) :
+lemma almost_disjoint_same_scale {d : ℕ} {n : ℤ} {a b : Fin d → ℤ} (hab : a ≠ b) : 
     AlmostDisjoint (DyadicCube n a) (DyadicCube n b) := by
   simp only [AlmostDisjoint]
   rw [DyadicCube.interior, DyadicCube.interior]
@@ -4424,7 +4424,7 @@ lemma almost_disjoint_same_scale {d:ℕ} {n:ℤ} {a b : Fin d → ℤ} (hab : a 
   have hbi : x i ∈ Set.Ioo ((b i : ℝ) / 2^n) (((b i : ℝ) + 1) / 2^n) := hb i
   rw [Set.mem_Ioo] at hai hbi
   -- Both intervals contain x i, so a i = b i
-  have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num : (0:ℝ) < 2) n
+  have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num : (0 : ℝ) < 2) n
   have ha_floor : ⌊x i * 2^n⌋ = a i := by
     apply Int.floor_eq_iff.mpr
     constructor
@@ -4442,14 +4442,14 @@ lemma almost_disjoint_same_scale {d:ℕ} {n:ℤ} {a b : Fin d → ℤ} (hab : a 
   exact ha_floor.symm.trans hb_floor
 
 /-- The dyadic cubes at scale n cover all of ℝᵈ. -/
-lemma cover_univ {d:ℕ} (n:ℤ) :
+lemma cover_univ {d : ℕ} (n : ℤ) : 
     (⋃ (a : Fin d → ℤ), (DyadicCube n a).toSet) = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, Set.mem_univ, iff_true]
   use fun i => ⌊x i * 2^n⌋
   intro i
   simp only [DyadicCube, BoundedInterval.toSet, Set.mem_Icc]
-  have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num : (0:ℝ) < 2) n
+  have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num : (0 : ℝ) < 2) n
   constructor
   · have h1 : (⌊x i * 2^n⌋ : ℝ) ≤ x i * 2^n := Int.floor_le _
     calc (⌊x i * 2^n⌋ : ℝ) / 2^n ≤ x i * 2^n / 2^n :=
@@ -4463,20 +4463,20 @@ lemma cover_univ {d:ℕ} (n:ℤ) :
     exact hle.le
 
 /-- Dyadic cubes at the same scale are pairwise almost disjoint. -/
-lemma pairwise_almost_disjoint {d:ℕ} (n:ℤ) :
+lemma pairwise_almost_disjoint {d : ℕ} (n : ℤ) : 
     Pairwise (Function.onFun AlmostDisjoint (DyadicCube n : (Fin d → ℤ) → Box d)) := by
   intro a b hab
   simp only [Function.onFun]
   exact DyadicCube.almost_disjoint_same_scale hab
 
 /-- Two dyadic cubes are either almost disjoint or one contains the other. -/
-lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
+lemma nesting {d : ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} : 
     AlmostDisjoint (DyadicCube n a) (DyadicCube m b) ∨
     (DyadicCube n a).toSet ⊆ (DyadicCube m b).toSet ∨
     (DyadicCube m b).toSet ⊆ (DyadicCube n a).toSet := by
   -- Case analysis on the relationship between n and m
   rcases lt_trichotomy n m with hn | rfl | hm
-  · -- n < m: The cube at scale m has smaller cells (2^(-m) < 2^(-n))
+  · -- n < m : The cube at scale m has smaller cells (2^(-m) < 2^(-n))
     -- Either DyadicCube m b ⊆ DyadicCube n a (if b is in the right position) or almost disjoint
     -- Check if DyadicCube m b ⊆ DyadicCube n a by checking containment of intervals
     by_cases h_subset : ∀ i, (a i : ℝ) / 2^n ≤ (b i : ℝ) / 2^m ∧ ((b i : ℝ) + 1) / 2^m ≤ ((a i : ℝ) + 1) / 2^n
@@ -4496,22 +4496,22 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
       intro ha hb
       have hai := ha i
       have hbi := hb i
-      have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num : (0:ℝ) < 2) n
-      have h2m_pos : (0:ℝ) < 2^m := zpow_pos (by norm_num : (0:ℝ) < 2) m
+      have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num : (0 : ℝ) < 2) n
+      have h2m_pos : (0 : ℝ) < 2^m := zpow_pos (by norm_num : (0 : ℝ) < 2) m
       have h_mn_pos : 0 < m - n := Int.sub_pos_of_lt hn
-      have h_zpow_eq : (2:ℝ)^(m-n) * 2^n = 2^m := by
-        rw [← zpow_add₀ (by norm_num : (2:ℝ) ≠ 0)]
+      have h_zpow_eq : (2 : ℝ)^(m-n) * 2^n = 2^m := by
+        rw [← zpow_add₀ (by norm_num : (2 : ℝ) ≠ 0)]
         congr 1
         omega
       -- hi says: if a_i/2^n ≤ b_i/2^m then (a_i+1)/2^n < (b_i+1)/2^m
       -- Case 1: a_i/2^n > b_i/2^m (the hypothesis of hi fails)
       -- Case 2: a_i/2^n ≤ b_i/2^m but (a_i+1)/2^n < (b_i+1)/2^m (hi applies)
       by_cases h_left : (b i : ℝ) / 2^m < (a i : ℝ) / 2^n
-      · -- b_i/2^m < a_i/2^n: left endpoint of b is before left endpoint of a
+      · -- b_i/2^m < a_i/2^n : left endpoint of b is before left endpoint of a
         by_cases h_disj : ((b i : ℝ) + 1) / 2^m ≤ (a i : ℝ) / 2^n
         · -- Intervals (b_i/2^m, (b_i+1)/2^m) and (a_i/2^n, (a_i+1)/2^n) don't overlap
           linarith [hai.1, hbi.2]
-        · -- Intervals overlap: b_i/2^m < a_i/2^n < (b_i+1)/2^m
+        · -- Intervals overlap : b_i/2^m < a_i/2^n < (b_i+1)/2^m
           push_neg at h_disj
           -- a_i * 2^(m-n) lies strictly between b_i and b_i+1
           -- But a_i * 2^(m-n) is an integer (since m > n implies m-n > 0)
@@ -4520,12 +4520,12 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
             simp only [div_mul_cancel₀ _ (ne_of_gt h2m_pos)] at h1
             calc (b i : ℝ) < (a i : ℝ) / 2^n * 2^m := h1
               _ = (a i : ℝ) * (2^m / 2^n) := by ring
-              _ = (a i : ℝ) * 2^(m-n) := by rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+              _ = (a i : ℝ) * 2^(m-n) := by rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
           have hhi : (a i : ℝ) * 2^(m-n) < (b i : ℝ) + 1 := by
             have h1 : (a i : ℝ) / 2^n * 2^m < ((b i : ℝ) + 1) / 2^m * 2^m := by nlinarith
             simp only [div_mul_cancel₀ _ (ne_of_gt h2m_pos)] at h1
             calc (a i : ℝ) * 2^(m-n) = (a i : ℝ) * (2^m / 2^n) := by
-                    rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+                    rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
               _ = (a i : ℝ) / 2^n * 2^m := by ring
               _ < (b i : ℝ) + 1 := h1
           -- a_i * 2^(m-n) is an integer in (b_i, b_i+1), contradiction
@@ -4547,7 +4547,7 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
         by_cases h_disj : ((a i : ℝ) + 1) / 2^n ≤ (b i : ℝ) / 2^m
         · -- Intervals don't overlap
           linarith [hai.2, hbi.1]
-        · -- Intervals overlap: b_i/2^m < (a_i+1)/2^n < (b_i+1)/2^m
+        · -- Intervals overlap : b_i/2^m < (a_i+1)/2^n < (b_i+1)/2^m
           push_neg at h_disj
           -- (a_i+1) * 2^(m-n) lies strictly between b_i and b_i+1
           have hlo : (b i : ℝ) < ((a i : ℝ) + 1) * 2^(m-n) := by
@@ -4555,12 +4555,12 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
             simp only [div_mul_cancel₀ _ (ne_of_gt h2m_pos)] at h1
             calc (b i : ℝ) < ((a i : ℝ) + 1) / 2^n * 2^m := h1
               _ = ((a i : ℝ) + 1) * (2^m / 2^n) := by ring
-              _ = ((a i : ℝ) + 1) * 2^(m-n) := by rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+              _ = ((a i : ℝ) + 1) * 2^(m-n) := by rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
           have hhi : ((a i : ℝ) + 1) * 2^(m-n) < (b i : ℝ) + 1 := by
             have h1 : ((a i : ℝ) + 1) / 2^n * 2^m < ((b i : ℝ) + 1) / 2^m * 2^m := by nlinarith
             simp only [div_mul_cancel₀ _ (ne_of_gt h2m_pos)] at h1
             calc ((a i : ℝ) + 1) * 2^(m-n) = ((a i : ℝ) + 1) * (2^m / 2^n) := by
-                    rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+                    rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
               _ = ((a i : ℝ) + 1) / 2^n * 2^m := by ring
               _ < (b i : ℝ) + 1 := h1
           -- (a_i+1) * 2^(m-n) is an integer in (b_i, b_i+1), contradiction
@@ -4575,14 +4575,14 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
           rw [hk] at hlo hhi
           have : (b i : ℤ) < k ∧ k < b i + 1 := ⟨by exact_mod_cast hlo, by exact_mod_cast hhi⟩
           omega
-  · -- n = m: Same scale, use almost_disjoint_same_scale or equality
+  · -- n = m : Same scale, use almost_disjoint_same_scale or equality
     by_cases hab : a = b
     · subst hab
       right; left
       exact Set.Subset.refl _
     · left
       exact DyadicCube.almost_disjoint_same_scale hab
-  · -- m < n: The cube at scale n has smaller cells (2^(-n) < 2^(-m))
+  · -- m < n : The cube at scale n has smaller cells (2^(-n) < 2^(-m))
     -- Either DyadicCube n a ⊆ DyadicCube m b (if a is in the right position) or almost disjoint
     by_cases h_subset : ∀ i, (b i : ℝ) / 2^m ≤ (a i : ℝ) / 2^n ∧ ((a i : ℝ) + 1) / 2^n ≤ ((b i : ℝ) + 1) / 2^m
     · -- DyadicCube n a ⊆ DyadicCube m b
@@ -4601,16 +4601,16 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
       intro ha hb
       have hai := ha i
       have hbi := hb i
-      have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num : (0:ℝ) < 2) n
-      have h2m_pos : (0:ℝ) < 2^m := zpow_pos (by norm_num : (0:ℝ) < 2) m
+      have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num : (0 : ℝ) < 2) n
+      have h2m_pos : (0 : ℝ) < 2^m := zpow_pos (by norm_num : (0 : ℝ) < 2) m
       have h_nm_pos : 0 < n - m := Int.sub_pos_of_lt hm
       -- hi says: if b_i/2^m ≤ a_i/2^n then (a_i+1)/2^n > (b_i+1)/2^m
       by_cases h_left : (a i : ℝ) / 2^n < (b i : ℝ) / 2^m
-      · -- a_i/2^n < b_i/2^m: left endpoint of a is before left endpoint of b
+      · -- a_i/2^n < b_i/2^m : left endpoint of a is before left endpoint of b
         by_cases h_disj : ((a i : ℝ) + 1) / 2^n ≤ (b i : ℝ) / 2^m
         · -- Intervals don't overlap
           linarith [hai.2, hbi.1]
-        · -- Intervals overlap: a_i/2^n < b_i/2^m < (a_i+1)/2^n
+        · -- Intervals overlap : a_i/2^n < b_i/2^m < (a_i+1)/2^n
           push_neg at h_disj
           -- b_i * 2^(n-m) lies strictly between a_i and a_i+1
           have hlo : (a i : ℝ) < (b i : ℝ) * 2^(n-m) := by
@@ -4618,12 +4618,12 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
             simp only [div_mul_cancel₀ _ (ne_of_gt h2n_pos)] at h1
             calc (a i : ℝ) < (b i : ℝ) / 2^m * 2^n := h1
               _ = (b i : ℝ) * (2^n / 2^m) := by ring
-              _ = (b i : ℝ) * 2^(n-m) := by rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+              _ = (b i : ℝ) * 2^(n-m) := by rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
           have hhi : (b i : ℝ) * 2^(n-m) < (a i : ℝ) + 1 := by
             have h1 : (b i : ℝ) / 2^m * 2^n < ((a i : ℝ) + 1) / 2^n * 2^n := by nlinarith
             simp only [div_mul_cancel₀ _ (ne_of_gt h2n_pos)] at h1
             calc (b i : ℝ) * 2^(n-m) = (b i : ℝ) * (2^n / 2^m) := by
-                    rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+                    rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
               _ = (b i : ℝ) / 2^m * 2^n := by ring
               _ < (a i : ℝ) + 1 := h1
           -- b_i * 2^(n-m) is an integer in (a_i, a_i+1), contradiction
@@ -4645,7 +4645,7 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
         by_cases h_disj : ((b i : ℝ) + 1) / 2^m ≤ (a i : ℝ) / 2^n
         · -- Intervals don't overlap
           linarith [hai.1, hbi.2]
-        · -- Intervals overlap: a_i/2^n < (b_i+1)/2^m < (a_i+1)/2^n
+        · -- Intervals overlap : a_i/2^n < (b_i+1)/2^m < (a_i+1)/2^n
           push_neg at h_disj
           -- (b_i+1) * 2^(n-m) lies strictly between a_i and a_i+1
           have hlo : (a i : ℝ) < ((b i : ℝ) + 1) * 2^(n-m) := by
@@ -4653,12 +4653,12 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
             simp only [div_mul_cancel₀ _ (ne_of_gt h2n_pos)] at h1
             calc (a i : ℝ) < ((b i : ℝ) + 1) / 2^m * 2^n := h1
               _ = ((b i : ℝ) + 1) * (2^n / 2^m) := by ring
-              _ = ((b i : ℝ) + 1) * 2^(n-m) := by rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+              _ = ((b i : ℝ) + 1) * 2^(n-m) := by rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
           have hhi : ((b i : ℝ) + 1) * 2^(n-m) < (a i : ℝ) + 1 := by
             have h1 : ((b i : ℝ) + 1) / 2^m * 2^n < ((a i : ℝ) + 1) / 2^n * 2^n := by nlinarith
             simp only [div_mul_cancel₀ _ (ne_of_gt h2n_pos)] at h1
             calc ((b i : ℝ) + 1) * 2^(n-m) = ((b i : ℝ) + 1) * (2^n / 2^m) := by
-                    rw [← zpow_sub₀ (by norm_num : (2:ℝ) ≠ 0)]
+                    rw [← zpow_sub₀ (by norm_num : (2 : ℝ) ≠ 0)]
               _ = ((b i : ℝ) + 1) / 2^m * 2^n := by ring
               _ < (a i : ℝ) + 1 := h1
           -- (b_i+1) * 2^(n-m) is an integer in (a_i, a_i+1), contradiction
@@ -4676,22 +4676,22 @@ lemma nesting {d:ℕ} {n m : ℤ} {a : Fin d → ℤ} {b : Fin d → ℤ} :
 
 end DyadicCube
 /-- For any point x in an open set E, there exists a dyadic cube containing x with the cube contained in E. -/
-lemma IsOpen.exists_dyadic_cube_subset {d:ℕ} {E : Set (EuclideanSpace' d)} (hE : IsOpen E)
-    {x : EuclideanSpace' d} (hx : x ∈ E) :
-    ∃ n : ℕ, ∃ a : Fin d → ℤ, x ∈ (DyadicCube (n:ℤ) a).toSet ∧
-    (DyadicCube (n:ℤ) a).toSet ⊆ E := by
+lemma IsOpen.exists_dyadic_cube_subset {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsOpen E)
+    {x : EuclideanSpace' d} (hx : x ∈ E) : 
+    ∃ n : ℕ, ∃ a : Fin d → ℤ, x ∈ (DyadicCube (n : ℤ) a).toSet ∧
+    (DyadicCube (n : ℤ) a).toSet ⊆ E := by
   -- Since E is open, there exists ε > 0 such that B(x, ε) ⊆ E
   rw [Metric.isOpen_iff] at hE
   obtain ⟨ε, hε_pos, hball⟩ := hE x hx
   -- Choose n large enough that the dyadic cube containing x has diameter < ε
   -- Diameter of dyadic cube at scale n is ≤ √d * 2^(-n)
   -- We need √d * 2^(-n) < ε, i.e., √d / ε < 2^n
-  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt (Real.sqrt d / ε) (by norm_num : (1:ℝ) < 2)
+  obtain ⟨n, hn⟩ := pow_unbounded_of_one_lt (Real.sqrt d / ε) (by norm_num : (1 : ℝ) < 2)
   use n
   -- Find the dyadic cube containing x at scale n
   let a : Fin d → ℤ := fun i => ⌊x i * 2^n⌋
   use a
-  have h2n_pos : (0:ℝ) < 2^n := by positivity
+  have h2n_pos : (0 : ℝ) < 2^n := by positivity
   constructor
   · -- x ∈ DyadicCube n a
     intro i
@@ -4710,9 +4710,9 @@ lemma IsOpen.exists_dyadic_cube_subset {d:ℕ} {E : Set (EuclideanSpace' d)} (hE
     apply hball
     simp only [Metric.mem_ball]
     -- y is in the dyadic cube containing x, so |y i - x i| ≤ 2^(-n) for all i
-    have h2n_inv : (2:ℝ)^(-n:ℤ) = 1 / 2^n := by rw [zpow_neg, zpow_natCast]; ring
-    have h_zpow : (2:ℝ) ^ (↑n:ℤ) = 2 ^ n := zpow_natCast 2 n
-    have hyi : ∀ i, |y i - x i| ≤ 2^(-n:ℤ) := fun i => by
+    have h2n_inv : (2 : ℝ)^(-n : ℤ) = 1 / 2^n := by rw [zpow_neg, zpow_natCast]; ring
+    have h_zpow : (2 : ℝ) ^ (↑n : ℤ) = 2 ^ n := zpow_natCast 2 n
+    have hyi : ∀ i, |y i - x i| ≤ 2^(-n : ℤ) := fun i => by
       have hyi_mem := hy i
       simp only [DyadicCube, BoundedInterval.toSet, Set.mem_Icc, h_zpow] at hyi_mem
       -- hyi_mem : ⌊x i * 2^n⌋ / 2^n ≤ y i ∧ y i ≤ (⌊x i * 2^n⌋ + 1) / 2^n
@@ -4733,27 +4733,27 @@ lemma IsOpen.exists_dyadic_cube_subset {d:ℕ} {E : Set (EuclideanSpace' d)} (hE
       -- Lower bound: floor/2^n ≤ y i and x i - 1/2^n ≤ floor/2^n, so x i - 1/2^n ≤ y i
       refine ⟨?_, ?_⟩
       · linarith [hyi_mem.1, hbound]
-      · -- Upper bound: y i ≤ (floor+1)/2^n and floor/2^n ≤ x i
+      · -- Upper bound : y i ≤ (floor+1)/2^n and floor/2^n ≤ x i
         -- So y i - x i ≤ (floor+1)/2^n - floor/2^n = 1/2^n
         linarith [hyi_mem.2, hxi_floor, hwidth]
     -- dist y x ≤ √d * 2^(-n) < ε
-    have hdist : dist y x ≤ Real.sqrt d * (2:ℝ)^(-n:ℤ) := by
+    have hdist : dist y x ≤ Real.sqrt d * (2 : ℝ)^(-n : ℤ) := by
       rw [EuclideanSpace.dist_eq]
       have hdist_eq : ∀ i, dist (y i) (x i) = |y i - x i| := fun i => Real.dist_eq (y i) (x i)
       simp_rw [hdist_eq]
-      have hsqrt_mul : Real.sqrt d * (2:ℝ)^(-n:ℤ) = Real.sqrt (d * ((2:ℝ)^(-n:ℤ))^2) := by
-        rw [Real.sqrt_mul (by positivity : (d:ℝ) ≥ 0), Real.sqrt_sq (by positivity)]
+      have hsqrt_mul : Real.sqrt d * (2 : ℝ)^(-n : ℤ) = Real.sqrt (d * ((2 : ℝ)^(-n : ℤ))^2) := by
+        rw [Real.sqrt_mul (by positivity : (d : ℝ) ≥ 0), Real.sqrt_sq (by positivity)]
       rw [hsqrt_mul]
       apply Real.sqrt_le_sqrt
       calc ∑ i, |y i - x i|^2
-          ≤ ∑ _i : Fin d, ((2:ℝ)^(-n:ℤ))^2 := by
+          ≤ ∑ _i : Fin d, ((2 : ℝ)^(-n : ℤ))^2 := by
             apply Finset.sum_le_sum
             intro i _
             have h := hyi i
-            have h2n_nn : (0:ℝ) ≤ (2:ℝ)^(-n:ℤ) := by positivity
+            have h2n_nn : (0 : ℝ) ≤ (2 : ℝ)^(-n : ℤ) := by positivity
             exact sq_le_sq' (by nlinarith [abs_nonneg (y i - x i)]) h
-        _ = d * ((2:ℝ)^(-n:ℤ))^2 := by rw [Finset.sum_const, Finset.card_fin]; ring
-    calc dist y x ≤ Real.sqrt d * (2:ℝ)^(-n:ℤ) := hdist
+        _ = d * ((2 : ℝ)^(-n : ℤ))^2 := by rw [Finset.sum_const, Finset.card_fin]; ring
+    calc dist y x ≤ Real.sqrt d * (2 : ℝ)^(-n : ℤ) := hdist
       _ = Real.sqrt d / 2^n := by rw [h2n_inv]; ring
       _ < ε := by
           rw [div_lt_iff₀ h2n_pos]
@@ -4761,15 +4761,15 @@ lemma IsOpen.exists_dyadic_cube_subset {d:ℕ} {E : Set (EuclideanSpace' d)} (hE
             _ < ε * 2^n := by nlinarith [hn, hε_pos]
 
 /-- For a point x, the unique dyadic cube at scale n containing x. -/
-noncomputable def dyadicCubeContaining {d:ℕ} (n:ℤ) (x : EuclideanSpace' d) : Box d :=
+noncomputable def dyadicCubeContaining {d : ℕ} (n : ℤ) (x : EuclideanSpace' d) : Box d :=
   DyadicCube n (fun i => ⌊x i * 2^n⌋)
 
 /-- The dyadic cube containing x at scale n indeed contains x. -/
-lemma dyadicCubeContaining_mem {d:ℕ} (n:ℤ) (x : EuclideanSpace' d) :
+lemma dyadicCubeContaining_mem {d : ℕ} (n : ℤ) (x : EuclideanSpace' d) : 
     x ∈ (dyadicCubeContaining n x).toSet := by
   intro i
   simp only [dyadicCubeContaining, DyadicCube, BoundedInterval.toSet, Set.mem_Icc]
-  have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num : (0:ℝ) < 2) n
+  have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num : (0 : ℝ) < 2) n
   constructor
   · have h1 : (⌊x i * 2^n⌋ : ℝ) ≤ x i * 2^n := Int.floor_le _
     calc (⌊x i * 2^n⌋ : ℝ) / 2^n ≤ x i * 2^n / 2^n := div_le_div_of_nonneg_right h1 (le_of_lt h2n_pos)
@@ -4782,7 +4782,7 @@ lemma dyadicCubeContaining_mem {d:ℕ} (n:ℤ) (x : EuclideanSpace' d) :
     exact h3.le
 
 /-- The interior of a dyadic cube is nonempty. -/
-lemma dyadicCubeInteriorNonempty {d:ℕ} (n:ℤ) (a: Fin d → ℤ) :
+lemma dyadicCubeInteriorNonempty {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : 
     (interior (s := (DyadicCube n a).toSet)).Nonempty := by
   rw [Box.interior_toSet]
   exact (Set.univ_pi_nonempty_iff.mpr (fun k => by
@@ -4796,7 +4796,7 @@ lemma Box.toSet_nonempty_of_IsDyadic {d : ℕ} {B : Box d} (hB : B.IsDyadic) : B
 
 /-- At the same scale, dyadic cubes with different indices cannot have one contained in the other
     (since containment would imply empty interior for one). -/
-lemma dyadicCubeNoProperContainmentSameScale {d:ℕ} {n:ℤ} {a b : Fin d → ℤ}
+lemma dyadicCubeNoProperContainmentSameScale {d : ℕ} {n : ℤ} {a b : Fin d → ℤ}
     (h_sub : (DyadicCube n a).toSet ⊆ (DyadicCube n b).toSet) : a = b := by
   by_contra hne
   have h_ad := DyadicCube.almost_disjoint_same_scale (n := n) (a := a) (b := b) hne
@@ -4815,14 +4815,14 @@ lemma dyadicCubeNoProperContainmentSameScale {d:ℕ} {n:ℤ} {a b : Fin d → �
 
 /-- A larger dyadic cube (coarser scale n) cannot be contained in a smaller dyadic cube (finer scale m)
     when d > 0. This is because the sidelength 2^(-n) > 2^(-m) when n < m. -/
-lemma dyadicCubeLargerNotInSmaller {d:ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n < m)
+lemma dyadicCubeLargerNotInSmaller {d : ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n < m)
     {a b : Fin d → ℤ} : ¬((DyadicCube n a).toSet ⊆ (DyadicCube m b).toSet) := by
   intro h_sub
   -- Pick any coordinate (d > 0 guarantees this exists)
   let i : Fin d := ⟨0, hd⟩
   -- Compare sidelengths: 2^(-n) > 2^(-m) when n < m
-  have h_side_ineq : (2:ℝ)^(-m) < (2:ℝ)^(-n) := by
-    apply zpow_lt_zpow_right₀ (by norm_num : 1 < (2:ℝ))
+  have h_side_ineq : (2 : ℝ)^(-m) < (2 : ℝ)^(-n) := by
+    apply zpow_lt_zpow_right₀ (by norm_num : 1 < (2 : ℝ))
     omega
   -- Construct the left endpoint of DyadicCube n a
   let x_left : EuclideanSpace' d := .toLp 2 (fun j => (a j : ℝ) / 2^n)
@@ -4832,7 +4832,7 @@ lemma dyadicCubeLargerNotInSmaller {d:ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n < m
     simp only [x_left, DyadicCube, BoundedInterval.toSet, Set.mem_Icc]
     constructor
     · exact le_refl _
-    · have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num) n
+    · have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num) n
       apply le_of_lt
       apply div_lt_div_of_pos_right _ h2n_pos
       linarith
@@ -4843,7 +4843,7 @@ lemma dyadicCubeLargerNotInSmaller {d:ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n < m
     intro j
     simp only [x_right, DyadicCube, BoundedInterval.toSet, Set.mem_Icc]
     constructor
-    · have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num) n
+    · have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num) n
       apply le_of_lt
       apply div_lt_div_of_pos_right _ h2n_pos
       linarith
@@ -4855,13 +4855,13 @@ lemma dyadicCubeLargerNotInSmaller {d:ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n < m
   -- From h_left_in: (a i)/2^n ≥ (b i)/2^m
   -- From h_right_in: ((a i)+1)/2^n ≤ ((b i)+1)/2^m
   -- So: 2^(-n) = ((a i)+1)/2^n - (a i)/2^n ≤ ((b i)+1)/2^m - (b i)/2^m = 2^(-m)
-  have h_len_sub : (2:ℝ)^(-n) ≤ (2:ℝ)^(-m) := by
-    have h2n_pos : (0:ℝ) < 2^n := zpow_pos (by norm_num) n
-    have h2m_pos : (0:ℝ) < 2^m := zpow_pos (by norm_num) m
-    calc (2:ℝ)^(-n) = ((a i : ℝ) + 1) / 2^n - (a i : ℝ) / 2^n := by
+  have h_len_sub : (2 : ℝ)^(-n) ≤ (2 : ℝ)^(-m) := by
+    have h2n_pos : (0 : ℝ) < 2^n := zpow_pos (by norm_num) n
+    have h2m_pos : (0 : ℝ) < 2^m := zpow_pos (by norm_num) m
+    calc (2 : ℝ)^(-n) = ((a i : ℝ) + 1) / 2^n - (a i : ℝ) / 2^n := by
             simp only [zpow_neg, ← sub_div]; norm_cast; simp [add_sub_cancel_left]
       _ ≤ ((b i : ℝ) + 1) / 2^m - (b i : ℝ) / 2^m := by linarith [h_left_in.1, h_right_in.2]
-      _ = (2:ℝ)^(-m) := by
+      _ = (2 : ℝ)^(-m) := by
             simp only [zpow_neg, ← sub_div]; norm_cast; simp [add_sub_cancel_left]
   linarith
 
@@ -4873,9 +4873,9 @@ Note: every dyadic cube is nonempty
     3. Take maximal cubes (not strictly contained in another cube in the collection)
     4. By {name}`DyadicCube.nesting`, distinct maximal cubes are almost disjoint
     5. E equals the union of these maximal cubes -/
-theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) (hE: IsOpen E)
-    (hE_nonempty : E.Nonempty) :
-    ∃ B: ℕ → Box d, (E = ⋃ n, (B n).toSet) ∧ (∀ n, (B n).IsDyadic) ∧
+theorem IsOpen.eq_union_boxes {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d)) (hE : IsOpen E)
+    (hE_nonempty : E.Nonempty) : 
+    ∃ B : ℕ → Box d, (E = ⋃ n, (B n).toSet) ∧ (∀ n, (B n).IsDyadic) ∧
     Pairwise (Function.onFun AlmostDisjoint B) := by
   classical
   -- Construct maximal dyadic cubes
@@ -4888,13 +4888,13 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
   -- For each x ∈ E, find the minimal scale n such that the dyadic cube at scale n containing x is in Q
   -- Minimal scale corresponds to maximal cube (smaller n = coarser = larger cubes)
   have h_exists_min_scale : ∀ x ∈ E, ∃ n₀ : ℕ, ∃ a : Fin d → ℤ,
-      x ∈ (DyadicCube (n₀:ℤ) a).toSet ∧ (DyadicCube (n₀:ℤ) a).toSet ⊆ E ∧
-      (∀ m < n₀, ∀ b : Fin d → ℤ, x ∈ (DyadicCube (m:ℤ) b).toSet → ¬(DyadicCube (m:ℤ) b).toSet ⊆ E) := by
+      x ∈ (DyadicCube (n₀ : ℤ) a).toSet ∧ (DyadicCube (n₀ : ℤ) a).toSet ⊆ E ∧
+      (∀ m < n₀, ∀ b : Fin d → ℤ, x ∈ (DyadicCube (m : ℤ) b).toSet → ¬(DyadicCube (m : ℤ) b).toSet ⊆ E) := by
     intro x hx
     -- By exists_dyadic_cube_subset, there exists some scale with cube ⊆ E
     obtain ⟨n, a, hxa, hcube⟩ := hE.exists_dyadic_cube_subset hx
     -- Find the minimal such scale using Nat.find
-    let P : ℕ → Prop := fun m => ∃ b : Fin d → ℤ, x ∈ (DyadicCube (m:ℤ) b).toSet ∧ (DyadicCube (m:ℤ) b).toSet ⊆ E
+    let P : ℕ → Prop := fun m => ∃ b : Fin d → ℤ, x ∈ (DyadicCube (m : ℤ) b).toSet ∧ (DyadicCube (m : ℤ) b).toSet ⊆ E
     have hP : ∃ m, P m := ⟨n, a, hxa, hcube⟩
     let n₀ := Nat.find hP
     obtain ⟨a₀, ha₀_mem, ha₀_sub⟩ := Nat.find_spec hP
@@ -4930,7 +4930,7 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
       -- If E = univ, all scale-0 cubes are in Q_max
       -- If E ≠ univ, near the boundary, cubes at arbitrarily fine scales are maximal
       by_cases hE_univ : E = Set.univ
-      · -- E = univ: All scale-0 cubes are maximal (no coarser scale exists)
+      · -- E = univ : All scale-0 cubes are maximal (no coarser scale exists)
         -- First, show Fin d → ℤ is infinite (since d > 0 and ℤ is infinite)
         haveI : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
         haveI : Infinite (Fin d → ℤ) := Function.infinite_of_right
@@ -4942,7 +4942,7 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
         constructor
         · simp only [hE_univ]; exact Set.subset_univ _
         · intro q hq _; omega
-      · -- E ≠ univ: Near boundary, cubes at arbitrarily fine scales are maximal
+      · -- E ≠ univ : Near boundary, cubes at arbitrarily fine scales are maximal
         -- Key insight: Since E ≠ univ, there exists y ∉ E. For any x ∈ E, the maximal
         -- cube containing x cannot contain y. As we move x closer to y (within E),
         -- the maximal cubes must become smaller, giving arbitrarily fine scales.
@@ -5088,17 +5088,17 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
     rcases DyadicCube.nesting (n := (B_idx i).1) (m := (B_idx j).1)
         (a := (B_idx i).2) (b := (B_idx j).2) with h_ad | h_ij | h_ji
     · exact h_ad
-    · -- B i ⊆ B j: analyze by scale comparison
+    · -- B i ⊆ B j : analyze by scale comparison
       exfalso
       -- h_ij : (DyadicCube (B_idx i).1 (B_idx i).2).toSet ⊆ (DyadicCube (B_idx j).1 (B_idx j).2).toSet
       -- If B_i ⊆ B_j strictly, then (B_idx j).1 < (B_idx i).1 (j is coarser)
       -- By maximality of B_i, since B_i ⊆ B_j and j.1 < i.1, we have B_j ⊈ E
       -- But B_j ∈ Q_max implies B_j ⊆ E. Contradiction.
       rcases lt_trichotomy (B_idx j).1 (B_idx i).1 with hji_lt | hji_eq | hji_gt
-      · -- (B_idx j).1 < (B_idx i).1: j is coarser scale
+      · -- (B_idx j).1 < (B_idx i).1 : j is coarser scale
         -- B_i ⊆ B_j and j.1 < i.1 contradicts maximality of B_i
         exact hi_mem.2 (B_idx j) hji_lt h_ij hj_mem.1
-      · -- Same scale: cubes are either equal or disjoint
+      · -- Same scale : cubes are either equal or disjoint
         -- If B_i ⊆ B_j at same scale, they must be equal
         have h_ij' : (DyadicCube (↑(B_idx i).1) (B_idx i).2).toSet ⊆
             (DyadicCube (↑(B_idx i).1) (B_idx j).2).toSet := by
@@ -5108,17 +5108,17 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
         have hidx_eq : B_idx i = B_idx j := Prod.ext hji_eq.symm (funext fun x => congrFun heq x)
         -- By injectivity of B_idx (from Denumerable enumeration), i = j
         exact hij (hB_idx_inj hidx_eq)
-      · -- (B_idx i).1 < (B_idx j).1: i is coarser scale (larger cube), j is finer (smaller cube)
+      · -- (B_idx i).1 < (B_idx j).1 : i is coarser scale (larger cube), j is finer (smaller cube)
         -- h_ij says larger cube ⊆ smaller cube, geometrically impossible for d > 0
         have h_scale_lt : (↑(B_idx i).1 : ℤ) < ↑(B_idx j).1 := by exact_mod_cast hji_gt
         exact dyadicCubeLargerNotInSmaller hd h_scale_lt h_ij
-    · -- B j ⊆ B i: symmetric case
+    · -- B j ⊆ B i : symmetric case
       exfalso
       rcases lt_trichotomy (B_idx i).1 (B_idx j).1 with hij_lt | hij_eq | hij_gt
       · -- i coarser (larger), j finer (smaller), B_j ⊆ B_i is geometrically valid
         -- This contradicts maximality of B_j: B_j ⊆ B_i ⊆ E, and i is coarser
         exact hj_mem.2 (B_idx i) hij_lt h_ji hi_mem.1
-      · -- Same scale: use injectivity as in the symmetric case above
+      · -- Same scale : use injectivity as in the symmetric case above
         have h_ji' : (DyadicCube (↑(B_idx j).1) (B_idx j).2).toSet ⊆
             (DyadicCube (↑(B_idx j).1) (B_idx i).2).toSet := by
           convert h_ji using 3; simp only [Nat.cast_inj]; exact hij_eq.symm
@@ -5130,13 +5130,13 @@ theorem IsOpen.eq_union_boxes {d:ℕ} (hd : 0 < d) (E: Set (EuclideanSpace' d)) 
         have h_scale_lt : (↑(B_idx j).1 : ℤ) < ↑(B_idx i).1 := by exact_mod_cast hij_gt
         exact dyadicCubeLargerNotInSmaller hd h_scale_lt h_ji
 
-theorem Lebesgue_outer_measure.of_open {d:ℕ} (E: Set (EuclideanSpace' d)) (hE: IsOpen E) : Lebesgue_outer_measure E = Jordan_inner_measure E := by
+theorem Lebesgue_outer_measure.of_open {d : ℕ} (E : Set (EuclideanSpace' d)) (hE : IsOpen E) : Lebesgue_outer_measure E = Jordan_inner_measure E := by
   by_cases hd : d = 0
-  · -- Dimension 0: In dim 0, open sets are either ∅ or Set.univ
+  · -- Dimension 0 : In dim 0, open sets are either ∅ or Set.univ
     subst hd
     rw [Lebesgue_outer_measure_of_dim_zero]
     by_cases hne : E.Nonempty
-    · -- Case: E is nonempty → E = Set.univ in dimension 0
+    · -- Case : E is nonempty → E = Set.univ in dimension 0
       simp only [hne, ↓reduceIte]
       -- Show Jordan_inner_measure E = 1
       -- E = Set.univ since EuclideanSpace' 0 is singleton and E is nonempty
@@ -5207,7 +5207,7 @@ theorem Lebesgue_outer_measure.of_open {d:ℕ} (E: Set (EuclideanSpace' d)) (hE:
         exact (h_ge.antisymm h_le).symm
       rw [h_jordan_eq_1]
       norm_num
-    · -- Case: E is empty
+    · -- Case : E is empty
       have hE_empty : E = ∅ := Set.not_nonempty_iff_eq_empty.mp hne
       simp only [hne, if_false]
       subst hE_empty
@@ -5235,7 +5235,7 @@ theorem Lebesgue_outer_measure.of_open {d:ℕ} (E: Set (EuclideanSpace' d)) (hE:
   · push_neg at hd
     have hd' : 0 < d := Nat.pos_of_ne_zero hd
     by_cases hE_empty : E = ∅
-    · -- Empty set case: use Lebesgue_outer_measure.of_empty and Jordan_inner_measure ∅ = 0
+    · -- Empty set case : use Lebesgue_outer_measure.of_empty and Jordan_inner_measure ∅ = 0
       subst hE_empty
       rw [Lebesgue_outer_measure.of_empty]
       -- Show (0 : EReal) = ↑(Jordan_inner_measure ∅)
@@ -5259,7 +5259,7 @@ theorem Lebesgue_outer_measure.of_open {d:ℕ} (E: Set (EuclideanSpace' d)) (hE:
           · use ∅, IsElementary.empty d; simp [IsElementary.measure_of_empty]
       rw [h_jordan_empty]
       norm_num
-    · -- Main case: E nonempty open set in dimension > 0
+    · -- Main case : E nonempty open set in dimension > 0
       have hE_nonempty : E.Nonempty := Set.nonempty_iff_ne_empty.mpr hE_empty
       -- Decompose E into almost-disjoint dyadic boxes
       obtain ⟨B, hE_eq, hB_dyadic, hB_disj⟩ := IsOpen.eq_union_boxes hd' E hE hE_nonempty
@@ -5267,10 +5267,10 @@ theorem Lebesgue_outer_measure.of_open {d:ℕ} (E: Set (EuclideanSpace' d)) (hE:
       exact Lebesgue_outer_measure.eq_Jordan_inner_of_boxes E B hE_eq hB_disj
 
 /-- Lemma 1.2.12 (Outer regularity). m\*(E) = inf\{m\*(U) : E ⊆ U, U open\}. -/
-theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgue_outer_measure E = sInf { M | ∃ U, E ⊆ U ∧ IsOpen U ∧ M = Lebesgue_outer_measure U} := by
+theorem Lebesgue_outer_measure.eq {d : ℕ} (E : Set (EuclideanSpace' d)) : Lebesgue_outer_measure E = sInf { M | ∃ U, E ⊆ U ∧ IsOpen U ∧ M = Lebesgue_outer_measure U} := by
   let S := { M | ∃ U, E ⊆ U ∧ IsOpen U ∧ M = Lebesgue_outer_measure U}
   apply le_antisymm
-  · -- ≤ direction: m*(E) ≤ sInf S (by monotonicity, m*(E) is a lower bound)
+  · -- ≤ direction : m*(E) ≤ sInf S (by monotonicity, m*(E) is a lower bound)
     apply le_csInf
     · -- S is nonempty (Set.univ is open and contains E)
       exact ⟨Lebesgue_outer_measure Set.univ, Set.univ, Set.subset_univ E, isOpen_univ, rfl⟩
@@ -5278,15 +5278,15 @@ theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgu
       intro M ⟨U, hE_sub_U, _hU_open, hM_eq⟩
       rw [hM_eq]
       exact Lebesgue_outer_measure.mono hE_sub_U
-  · -- ≥ direction: sInf S ≤ m*(E) (main work)
+  · -- ≥ direction : sInf S ≤ m*(E) (main work)
     -- Handle dimension 0 separately
     by_cases hd : d = 0
-    · -- d = 0: In dimension 0, EuclideanSpace' 0 is a singleton type
+    · -- d = 0 : In dimension 0, EuclideanSpace' 0 is a singleton type
       subst hd
       have h_singleton : ∀ (y z : EuclideanSpace' 0), y = z := fun y z =>
         PiLp.ext fun i => Fin.elim0 i
       by_cases hE_empty : E = ∅
-      · -- E = ∅: m*(∅) = 0, and sInf S ≥ 0 (all outer measures are ≥ 0)
+      · -- E = ∅ : m*(∅) = 0, and sInf S ≥ 0 (all outer measures are ≥ 0)
         -- Actually we need sInf S ≤ m*(E) = 0
         -- Since ∅ is open and contains E = ∅, m*(∅) ∈ S
         rw [hE_empty]
@@ -5297,7 +5297,7 @@ theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgu
           exact Lebesgue_outer_measure.nonneg U
         · exact ⟨∅, Set.Subset.rfl, isOpen_empty, rfl⟩
         · exact le_refl _
-      · -- E ≠ ∅: Then E = Set.univ (since every nonempty set in a singleton is univ)
+      · -- E ≠ ∅ : Then E = Set.univ (since every nonempty set in a singleton is univ)
         have hE_univ : E = Set.univ := by
           ext x; constructor
           · intro _; exact Set.mem_univ x
@@ -5319,7 +5319,7 @@ theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgu
     have hd_pos : 0 < d := Nat.pos_of_ne_zero hd
     -- Case split on whether m*(E) = ⊤
     by_cases h_top : Lebesgue_outer_measure E = ⊤
-    · -- m*(E) = ⊤: trivially sInf S ≤ ⊤
+    · -- m*(E) = ⊤ : trivially sInf S ≤ ⊤
       rw [h_top]
       exact le_top
     -- m*(E) is finite: use ε-argument
@@ -5513,7 +5513,7 @@ theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgu
               summable_geometric_of_lt_one (by norm_num) (by norm_num)
             have h_formula := h_summable.sum_add_tsum_nat_add 1
             simp only [Finset.range_one, Finset.sum_singleton, pow_zero] at h_formula
-            rw [tsum_geometric_of_lt_one (by norm_num : (0:ℝ) ≤ 1/2) (by norm_num : (1:ℝ)/2 < 1)] at h_formula
+            rw [tsum_geometric_of_lt_one (by norm_num : (0 : ℝ) ≤ 1/2) (by norm_num : (1 : ℝ)/2 < 1)] at h_formula
             linarith
           rw [h_geom_sum_one]; ring
         -- Convert EReal tsum: ∑' n, (ε/2 / 2^(n+1)).toEReal = (ε/2 : EReal)
@@ -5544,7 +5544,7 @@ theorem Lebesgue_outer_measure.eq {d:ℕ} (E: Set (EuclideanSpace' d)) : Lebesgu
 
 /-- For any set E and ε > 0, there exists an open U ⊇ E with m*(U) ≤ m*(E) + ε.
     This follows from outer regularity (Lemma 1.2.12). -/
-lemma Lebesgue_outer_measure.exists_open_superset_measure_le {d:ℕ} (E: Set (EuclideanSpace' d)) (ε : EReal) (hε : 0 < ε) :
+lemma Lebesgue_outer_measure.exists_open_superset_measure_le {d : ℕ} (E : Set (EuclideanSpace' d)) (ε : EReal) (hε : 0 < ε) : 
     ∃ U : Set (EuclideanSpace' d), IsOpen U ∧ E ⊆ U ∧ Lebesgue_outer_measure U ≤ Lebesgue_outer_measure E + ε := by
   -- By outer regularity (Lebesgue_outer_measure.eq):
   -- m*(E) = sInf { m*(U) | E ⊆ U ∧ IsOpen U }
@@ -5635,4 +5635,4 @@ lemma Lebesgue_outer_measure.finite_of_compact {d : ℕ} {E : Set (EuclideanSpac
   exact ne_top_of_le_ne_top h_B_finite (Lebesgue_outer_measure.mono h_E_sub_B)
 
 /-- Exercise 1.2.6 -/
-example : ∃ (d:ℕ) (E: Set (EuclideanSpace' d)), Lebesgue_outer_measure E ≠ sSup { M | ∃ U, U ⊆ E ∧ IsOpen U ∧ M = Lebesgue_outer_measure U} := by sorry
+example : ∃ (d : ℕ) (E : Set (EuclideanSpace' d)), Lebesgue_outer_measure E ≠ sSup { M | ∃ U, U ⊆ E ∧ IsOpen U ∧ M = Lebesgue_outer_measure U} := by sorry

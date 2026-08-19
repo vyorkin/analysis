@@ -14,13 +14,13 @@ that are not specific to measure theory but are used throughout the formalizatio
 /-- max distributes over division by 2 -/
 lemma max_div_two (x : ℝ) : max x 0 / 2 = max (x / 2) 0 := by
   by_cases hx : 0 ≤ x
-  · simp [max_eq_left hx, max_eq_left (div_nonneg hx (by norm_num : (0:ℝ) < 2).le)]
+  · simp [max_eq_left hx, max_eq_left (div_nonneg hx (by norm_num : (0 : ℝ) < 2).le)]
   · push_neg at hx
     simp [max_eq_right (le_of_lt hx), max_eq_right (by linarith : x / 2 ≤ 0)]
 
 /-- The square root function is subadditive: {lean}`√(x + y) ≤ √x + √y` for non-negative reals.
     This follows from the fact that `(√x + √y)² = x + y + 2√(xy) ≥ x + y`. -/
-lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) : 
     √(x + y) ≤ √x + √y := by
   by_cases hxy : x + y = 0
   · simp [hxy]
@@ -42,7 +42,7 @@ lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 /-- The square root function is subadditive over finite sums: `√(∑ᵢ xᵢ) ≤ ∑ᵢ √xᵢ`
     for non-negative terms. This is a consequence of the concavity of sqrt. -/
 lemma Real.sqrt_sum_le_sum_sqrt {ι : Type*} [Fintype ι] [DecidableEq ι] (f : ι → ℝ)
-    (hf : ∀ i, 0 ≤ f i) :
+    (hf : ∀ i, 0 ≤ f i) : 
     √(∑ i, f i) ≤ ∑ i, √(f i) := by
   -- Proof by induction on the Finset
   let s := (Finset.univ : Finset ι)
@@ -64,7 +64,7 @@ lemma Real.sqrt_sum_le_sum_sqrt {ι : Type*} [Fintype ι] [DecidableEq ι] (f : 
 -- =============================================================================
 
 /-- For {name}`EReal`, adding a positive real value to a value that is neither {lean (type := "EReal")}`⊥` nor {lean (type := "EReal")}`⊤` gives a strictly greater result. -/
-lemma EReal.lt_add_of_pos_coe {x : EReal} {ε : ℝ} (hε : 0 < ε) (h_ne_bot : x ≠ ⊥) (h_ne_top : x ≠ ⊤) :
+lemma EReal.lt_add_of_pos_coe {x : EReal} {ε : ℝ} (hε : 0 < ε) (h_ne_bot : x ≠ ⊥) (h_ne_top : x ≠ ⊤) : 
     x < x + ↑ε := by
   have h_eps : (0 : EReal) < (ε : EReal) := EReal.coe_pos.mpr hε
   have : 0 + x < ↑ε + x := EReal.add_lt_add_of_lt_of_le h_eps (le_refl x) h_ne_bot h_ne_top
@@ -83,20 +83,20 @@ lemma EReal.le_of_forall_pos_le_add' {a b : EReal}
     | bot => simp at ha_gt
     | top =>
       -- a = ⊤, b ≠ ⊤ means ⊤ ≤ b + 1 must hold by h, but b + 1 < ⊤
-      specialize h 1 (by norm_num : (0:ℝ) < 1)
+      specialize h 1 (by norm_num : (0 : ℝ) < 1)
       have hb1 : b + (1 : ℝ) < ⊤ := by
         cases b with
         | bot => exact bot_lt_top
         | top => exact (hb rfl).elim
         | coe b' =>
-          have : (b' : EReal) + (1:ℝ) = ((b' + 1) : ℝ) := by norm_cast
+          have : (b' : EReal) + (1 : ℝ) = ((b' + 1) : ℝ) := by norm_cast
           rw [this]; exact EReal.coe_lt_top _
       exact not_le.mpr hb1 h
     | coe a' =>
       induction b using EReal.rec with
       | bot =>
         -- b = ⊥, so a' > ⊥ always. But ⊥ + ε = ⊥, so h gives a' ≤ ⊥, contradiction
-        specialize h 1 (by norm_num : (0:ℝ) < 1)
+        specialize h 1 (by norm_num : (0 : ℝ) < 1)
         simp at h
       | top => exact hb rfl
       | coe b' =>
@@ -109,7 +109,7 @@ lemma EReal.le_of_forall_pos_le_add' {a b : EReal}
 
 /-- Multiplication distributes over finite sums for EReal when all summands are non-negative.
     This is needed because EReal lacks a general {name}`LeftDistribClass` instance. -/
-lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal) (hf : ∀ i, 0 ≤ f i) :
+lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal) (hf : ∀ i, 0 ≤ f i) : 
     c * (∑ i, f i) = ∑ i, c * f i := by
   induction n with
   | zero => simp
@@ -124,7 +124,7 @@ lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal)
 /-- For non-negative reals, {name}`Real.toEReal` commutes with finite sums.
     Uses induction on the finset with {name}`EReal.coe_add`. -/
 lemma EReal.coe_finset_sum {α : Type*} {s : Finset α} {f : α → ℝ}
-    (hf : ∀ a ∈ s, 0 ≤ f a) :
+    (hf : ∀ a ∈ s, 0 ≤ f a) : 
     (∑ a ∈ s, f a).toEReal = ∑ a ∈ s, (f a).toEReal := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -139,7 +139,7 @@ lemma EReal.coe_finset_sum {α : Type*} {s : Finset α} {f : α → ℝ}
 
 /-- Helper: Coercion from ENNReal to EReal preserves summability.
     All ENNReal sequences are summable, and their coercions to EReal are also summable. -/
-lemma Summable.coe_ennreal {α : Type*} {f : α → ENNReal} :
+lemma Summable.coe_ennreal {α : Type*} {f : α → ENNReal} : 
     Summable (fun x => ↑(f x) : α → EReal) := by
   -- All ENNReal sequences are summable
   have h_sum : Summable f := ENNReal.summable
@@ -166,7 +166,7 @@ lemma Summable.coe_ennreal {α : Type*} {f : α → ENNReal} :
     {lean}`(∑' n, ↑(a n) : EReal) + (∑' n, ↑(b n) : EReal) = (∑' n, ↑(a n + b n) : EReal)`
 
     This follows from {name}`ENNReal.tsum_add` and the fact that coercion commutes with addition. -/
-lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} :
+lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} : 
     (∑' n, ↑(a n) : EReal) + (∑' n, ↑(b n) : EReal) = (∑' n, ↑(a n + b n) : EReal) := by
   -- Use ENNReal.tsum_add: ∑' n, (a n + b n) = ∑' n, a n + ∑' n, b n
   have h_tsum_add : (∑' n, (a n + b n) : ENNReal) = (∑' n, a n : ENNReal) + (∑' n, b n : ENNReal) := by
@@ -198,7 +198,7 @@ lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} :
   exact h_tsum_add.symm
 
 /-- ENNReal coercion to EReal commutes with finite sums -/
-lemma EReal.coe_ennreal_finset_sum {α : Type*} {s : Finset α} {f : α → ENNReal} :
+lemma EReal.coe_ennreal_finset_sum {α : Type*} {s : Finset α} {f : α → ENNReal} : 
     (∑ a ∈ s, f a : ENNReal).toEReal = ∑ a ∈ s, (f a).toEReal := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -207,7 +207,7 @@ lemma EReal.coe_ennreal_finset_sum {α : Type*} {s : Finset α} {f : α → ENNR
 /-- Finite sum embedded in EReal is bounded by tsum.
     For nonnegative reals, finite partial sums are always ≤ the infinite sum.
     Strategy: Convert to ENNReal where sum_le_tsum holds, then transfer via coercion. -/
-lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Finset ℕ) :
+lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Finset ℕ) : 
     (∑ n ∈ t, f n : EReal) ≤ ∑' n, (f n).toEReal := by
   -- Convert LHS to EReal via coe_finset_sum
   have hf_t : ∀ a ∈ t, 0 ≤ f a := fun a _ => hf a
@@ -244,7 +244,7 @@ lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Fi
     If f n + g n ≤ h n pointwise, then ∑' f.toEReal + ∑' g.toEReal ≤ ∑' h.toEReal. -/
 lemma EReal.tsum_add_le_of_nonneg_pointwise {f g h : ℕ → ℝ}
     (hf_nn : ∀ n, 0 ≤ f n) (hg_nn : ∀ n, 0 ≤ g n)
-    (h_pw : ∀ n, f n + g n ≤ h n) :
+    (h_pw : ∀ n, f n + g n ≤ h n) : 
     (∑' n, (f n).toEReal) + (∑' n, (g n).toEReal) ≤ ∑' n, (h n).toEReal := by
   -- Convert to ENNReal where we have better tsum properties
   -- For non-negative reals, x.toEReal = (ENNReal.ofReal x : EReal)
@@ -292,7 +292,7 @@ lemma EReal.tsum_add_le_of_nonneg_pointwise {f g h : ℕ → ℝ}
     Routes through ENNReal where tsum comparison is unconditional. -/
 lemma EReal.tsum_le_coe_tsum_of_forall_le {f : ℕ → EReal} {g : ℕ → ℝ}
     (hf_nn : ∀ n, 0 ≤ f n) (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g)
-    (h_le : ∀ n, f n ≤ (g n : EReal)) :
+    (h_le : ∀ n, f n ≤ (g n : EReal)) : 
     ∑' n, f n ≤ (∑' n, g n : EReal) := by
   -- Define ENNReal version of g
   let g' : ℕ → ENNReal := fun n => ENNReal.ofReal (g n)
@@ -336,7 +336,7 @@ lemma EReal.tsum_le_coe_tsum_of_forall_le {f : ℕ → EReal} {g : ℕ → ℝ}
 
 /-- Coercion from ℝ to EReal commutes with tsum for nonneg summable sequences.
     For nonneg g with Summable g: ↑(∑' n, g n : ℝ) = ∑' n, ↑(g n) : EReal -/
-lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g) :
+lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g) : 
     (↑(∑' n, g n) : EReal) = ∑' n, (g n : EReal) := by
   -- Route through ENNReal using ofReal_tsum_of_nonneg
   let g' : ℕ → ENNReal := fun n => ENNReal.ofReal (g n)
@@ -365,7 +365,7 @@ lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_
 /-- If all partial sums of a nonnegative EReal sequence are bounded by M, then the tsum is bounded by M.
     This is a generalization of {name}`ENNReal.tsum_le_of_sum_range_le` to EReal. -/
 lemma EReal.tsum_le_of_sum_range_le_of_nonneg {f : ℕ → EReal} {M : EReal}
-    (h_nn : ∀ n, 0 ≤ f n) (h : ∀ N : ℕ, ∑ n ∈ Finset.range N, f n ≤ M) :
+    (h_nn : ∀ n, 0 ≤ f n) (h : ∀ N : ℕ, ∑ n ∈ Finset.range N, f n ≤ M) : 
     ∑' n, f n ≤ M := by
   -- Convert to ENNReal where tsum_le_of_sum_range_le is available
   let g : ℕ → ENNReal := fun n => (f n).toENNReal
@@ -425,10 +425,10 @@ lemma EReal.tsum_coe_ennreal_eq_top_of_tsum_eq_top {α : Type*} {f : α → ENNR
   exact h_map.symm
 
 /-- Tsum of a positive constant over an infinite type is {lean (type := "EReal")}`⊤` in {name}`EReal` -/
-lemma EReal.tsum_const_eq_top_of_pos {α : Type*} [Infinite α] {c : EReal} (hc : 0 < c) :
+lemma EReal.tsum_const_eq_top_of_pos {α : Type*} [Infinite α] {c : EReal} (hc : 0 < c) : 
     ∑' (_ : α), c = ⊤ := by
   by_cases h_top : c = ⊤
-  · -- c = ⊤: convert through ENNReal
+  · -- c = ⊤ : convert through ENNReal
     rw [h_top, ← EReal.coe_ennreal_top]
     apply EReal.tsum_coe_ennreal_eq_top_of_tsum_eq_top
     exact ENNReal.tsum_const_eq_top_of_ne_zero (by simp : (⊤ : ENNReal) ≠ 0)

@@ -11,18 +11,18 @@ and {name}`tsum` to describe the concepts defined in Chapter 0.
 -/
 
 /-- A version of {name}`Set.indicator` suitable for this text. -/
-noncomputable abbrev Set.indicator' {X: Type*} (E: Set X) := indicator E (fun _ ↦ (1:ℝ))
+noncomputable abbrev Set.indicator' {X : Type*} (E : Set X) := indicator E (fun _ ↦ (1 : ℝ))
 
-theorem Set.indicator'_apply {X: Type*} (E: Set X) (x: X) [Decidable (x ∈ E)] : indicator' E x = if x ∈ E then 1 else 0 := indicator_apply _ _ _
+theorem Set.indicator'_apply {X : Type*} (E : Set X) (x : X) [Decidable (x ∈ E)] : indicator' E x = if x ∈ E then 1 else 0 := indicator_apply _ _ _
 
-theorem Set.indicator'_of_mem {X: Type*} {E:Set X} {x:X} (h: x ∈ E) : indicator' E x = 1 :=
+theorem Set.indicator'_of_mem {X : Type*} {E : Set X} {x : X} (h : x ∈ E) : indicator' E x = 1 :=
   indicator_of_mem h _
 
-theorem Set.indicator'_of_notMem {X: Type*} {E:Set X} {x:X} (h: x ∉ E) : indicator' E x = 0 :=
+theorem Set.indicator'_of_notMem {X : Type*} {E : Set X} {x : X} (h : x ∉ E) : indicator' E x = 0 :=
   indicator_of_notMem h _
 
 /-- A version of {name}`EuclideanSpace` suitable for this text. -/
-noncomputable abbrev EuclideanSpace' (n: ℕ) := EuclideanSpace ℝ (Fin n)
+noncomputable abbrev EuclideanSpace' (n : ℕ) := EuclideanSpace ℝ (Fin n)
 
 abbrev EuclideanSpace'.equiv_Real : EuclideanSpace' 1 ≃ ℝ where
   toFun x := x ⟨ 0, by simp ⟩
@@ -36,15 +36,15 @@ abbrev Real.equiv_EuclideanSpace' : ℝ ≃ EuclideanSpace' 1 := EuclideanSpace'
 
 instance EuclideanSpace'.inst_coeReal : Coe ℝ (EuclideanSpace' 1) := ⟨Real.equiv_EuclideanSpace'⟩
 
-abbrev EuclideanSpace'.toReal (x: EuclideanSpace' 1) : ℝ := EuclideanSpace'.equiv_Real x
-abbrev Real.toEuclideanSpace' (x: ℝ) : EuclideanSpace' 1 := Real.equiv_EuclideanSpace' x
+abbrev EuclideanSpace'.toReal (x : EuclideanSpace' 1) : ℝ := EuclideanSpace'.equiv_Real x
+abbrev Real.toEuclideanSpace' (x : ℝ) : EuclideanSpace' 1 := Real.equiv_EuclideanSpace' x
 
-theorem EuclideanSpace'.norm_eq {n:ℕ} (x: EuclideanSpace' n) : ‖x‖ = √(∑ i, (x i)^2) := by
+theorem EuclideanSpace'.norm_eq {n : ℕ} (x : EuclideanSpace' n) : ‖x‖ = √(∑ i, (x i)^2) := by
   convert EuclideanSpace.norm_eq x using 3 with i
   simp
 
 /-- Each coordinate of a Euclidean vector is bounded by its norm. -/
-lemma EuclideanSpace'.coord_le_norm {d : ℕ} (x : EuclideanSpace' d) (i : Fin d) :
+lemma EuclideanSpace'.coord_le_norm {d : ℕ} (x : EuclideanSpace' d) (i : Fin d) : 
     |x i| ≤ ‖x‖ := by
   have h1 : (x i)^2 ≤ ∑ j, (x j)^2 :=
     Finset.single_le_sum (f := fun j => (x j)^2) (fun _ _ => sq_nonneg _) (Finset.mem_univ i)
@@ -53,7 +53,7 @@ lemma EuclideanSpace'.coord_le_norm {d : ℕ} (x : EuclideanSpace' d) (i : Fin d
 
 infix:100 " ⬝ " => inner ℝ
 
-theorem EuclideanSpace'.dot_apply {n:ℕ} (x y: EuclideanSpace' n) : x ⬝ y = ∑ i, (x i)*(y i) := by
+theorem EuclideanSpace'.dot_apply {n : ℕ} (x y : EuclideanSpace' n) : x ⬝ y = ∑ i, (x i)*(y i) := by
   convert PiLp.inner_apply x y using 2 with i
   simp [inner, mul_comm]
 
@@ -63,7 +63,7 @@ theorem EuclideanSpace'.dot_apply {n:ℕ} (x y: EuclideanSpace' n) : x ⬝ y = �
 #check ENNReal.mul_top
 #check lt_top_iff_ne_top
 
-def EuclideanSpace'.prod_equiv (d₁ d₂:ℕ) : EuclideanSpace' (d₁ + d₂) ≃ EuclideanSpace' d₁ × EuclideanSpace' d₂ where
+def EuclideanSpace'.prod_equiv (d₁ d₂ : ℕ) : EuclideanSpace' (d₁ + d₂) ≃ EuclideanSpace' d₁ × EuclideanSpace' d₂ where
   toFun x :=
     (.toLp 2 (fun ⟨i, hi⟩ => x ⟨i, by omega⟩),
      .toLp 2 (fun ⟨i, hi⟩ => x ⟨i + d₁, by omega⟩))
@@ -82,19 +82,19 @@ def EuclideanSpace'.prod_equiv (d₁ d₂:ℕ) : EuclideanSpace' (d₁ + d₂) �
     · simp [dif_pos hi]
     · simp [show ¬(i + d₁ < d₁) by omega]
 
-def EuclideanSpace'.prod {d₁ d₂:ℕ} (E₁: Set (EuclideanSpace' d₁)) (E₂: Set (EuclideanSpace' d₂)) : Set (EuclideanSpace' (d₁+d₂)) := (EuclideanSpace'.prod_equiv d₁ d₂).symm '' (E₁ ×ˢ E₂)
+def EuclideanSpace'.prod {d₁ d₂ : ℕ} (E₁ : Set (EuclideanSpace' d₁)) (E₂ : Set (EuclideanSpace' d₂)) : Set (EuclideanSpace' (d₁+d₂)) := (EuclideanSpace'.prod_equiv d₁ d₂).symm '' (E₁ ×ˢ E₂)
 
 open Filter
 
-theorem ENNReal.upward_continuous {x y:ℕ → ENNReal} (hx: Monotone x) (hy: Monotone y)
- {x₀ y₀ : ENNReal} (hx_lim: atTop.Tendsto x (nhds x₀))
- (hy_lim: atTop.Tendsto y (nhds y₀)) :
+theorem ENNReal.upward_continuous {x y : ℕ → ENNReal} (hx : Monotone x) (hy : Monotone y)
+ {x₀ y₀ : ENNReal} (hx_lim : atTop.Tendsto x (nhds x₀))
+ (hy_lim : atTop.Tendsto y (nhds y₀)) : 
   atTop.Tendsto (fun n ↦ x n * y n) (nhds (x₀ * y₀)) := by
   -- This proof is written to follow the structure of the original text.
   have hx_lt : ∀ n, x n ≤ x₀ := hx.ge_of_tendsto hx_lim
   have hy_lt : ∀ n, y n ≤ y₀ := hy.ge_of_tendsto hy_lim
-  have zero_conv : atTop.Tendsto (fun n:ℕ ↦ (0:ENNReal)) (nhds 0) := tendsto_const_nhds
-  have top_conv : atTop.Tendsto (fun n:ℕ ↦ (⊤:ENNReal)) (nhds ⊤) := tendsto_const_nhds
+  have zero_conv : atTop.Tendsto (fun n : ℕ ↦ (0 : ENNReal)) (nhds 0) := tendsto_const_nhds
+  have top_conv : atTop.Tendsto (fun n : ℕ ↦ (⊤ : ENNReal)) (nhds ⊤) := tendsto_const_nhds
   obtain rfl | hx₀ := eq_zero_or_pos x₀
   . simp; convert zero_conv with n; simp [nonpos_iff_eq_zero.mp (hx_lt n)]
   obtain rfl | hy₀ := eq_zero_or_pos y₀
@@ -148,16 +148,16 @@ theorem ENNReal.upward_continuous {x y:ℕ → ENNReal} (hx: Monotone x) (hy: Mo
   set y₀' : NNReal := y₀.toNNReal
   have hxx₀' : x₀ = x₀' := by rw [coe_toNNReal]; order
   have hyy₀' : y₀ = y₀' := by rw [coe_toNNReal]; order
-  have hxx' (n:ℕ) : x n = x' n := by rw [coe_toNNReal]; specialize hx_lt n; order
-  have hyy' (n:ℕ) : y n = y' n := by rw [coe_toNNReal]; specialize hy_lt n; order
+  have hxx' (n : ℕ) : x n = x' n := by rw [coe_toNNReal]; specialize hx_lt n; order
+  have hyy' (n : ℕ) : y n = y' n := by rw [coe_toNNReal]; specialize hy_lt n; order
   change atTop.Tendsto (fun n ↦ x n) (nhds x₀) at hx_lim
   change atTop.Tendsto (fun n ↦ y n) (nhds y₀) at hy_lim
   simp [hxx', hyy', hxx₀', hyy₀',←coe_mul] at *
   solve_by_elim [Filter.Tendsto.mul]
 
-example : ∃ (x y:ℕ → ENNReal) (_hx: Antitone x) (_hy: Antitone y)
- (x₀ y₀:ENNReal) (_hx_lim: atTop.Tendsto x (nhds x₀))
- (_hy_lim: atTop.Tendsto y (nhds y₀)), ¬ atTop.Tendsto (fun n ↦ x n * y n) (nhds (x₀ * y₀)) := by
+example : ∃ (x y : ℕ → ENNReal) (_hx : Antitone x) (_hy : Antitone y)
+ (x₀ y₀ : ENNReal) (_hx_lim : atTop.Tendsto x (nhds x₀))
+ (_hy_lim : atTop.Tendsto y (nhds y₀)), ¬ atTop.Tendsto (fun n ↦ x n * y n) (nhds (x₀ * y₀)) := by
   let x : ℕ → ENNReal := fun n => (1 : ENNReal) / (n : ENNReal)
   let y : ℕ → ENNReal := fun _ => ⊤
   refine ⟨x, y, ?hx, ?hy, 0, ⊤, ?hx_lim, ?hy_lim, ?not_conv⟩
@@ -186,15 +186,15 @@ example : ∃ (x y:ℕ → ENNReal) (_hx: Antitone x) (_hy: Antitone y)
 #check Equiv.tsum_eq
 
 /-- Exercise 0.0.1 -/
-example {A:Type} {x : A → ENNReal} (hx: ∑' α, x α < ⊤) :
-  ∃ E: Set A, Countable E ∧ ∀ α ∉ E, x α = 0 := by
+example {A : Type} {x : A → ENNReal} (hx : ∑' α, x α < ⊤) : 
+  ∃ E : Set A, Countable E ∧ ∀ α ∉ E, x α = 0 := by
   refine ⟨{a | x a ≠ 0}, ?_, ?_⟩
   · simpa [Set.mem_setOf_eq] using
       (Summable.countable_support_ennreal (ne_of_lt hx))
   · aesop
 
 /-- Theorem 0.0.2 (Tonelli's theorem for series)  -/
-theorem ENNReal.tsum_of_tsum (x: ℕ → ℕ → ENNReal) : ∑' p:ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := by
+theorem ENNReal.tsum_of_tsum (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := by
   -- This proof is written to largely follow the structure of the original text.
   refine' le_antisymm _ _
   . rw [ENNReal.tsum_eq_iSup_sum]; apply iSup_le; intro F
@@ -225,18 +225,18 @@ theorem ENNReal.tsum_of_tsum (x: ℕ → ℕ → ENNReal) : ∑' p:ℕ × ℕ, x
     _ ≤ _ := ENNReal.sum_le_tsum _
 
 /-- Theorem 0.0.2 -/
-theorem ENNReal.tsum_of_tsum' (x: ℕ → ℕ → ENNReal) : ∑' p:ℕ × ℕ, x p.1 p.2 = ∑' m, ∑' n, x n m := by
+theorem ENNReal.tsum_of_tsum' (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' m, ∑' n, x n m := by
   calc
-    ∑' p:ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := ENNReal.tsum_of_tsum x
+    ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := ENNReal.tsum_of_tsum x
     _ = ∑' m, ∑' n, x n m := ENNReal.tsum_comm (f := x)
 
 #check ENNReal.tsum_comm
 
 /-- Exercise 0.0.2 (Tonelli's theorem for series over arbitrary sets). -/
-example {A B:Type*} (x: A → B → ENNReal) : ∑' p:A × B, x p.1 p.2 = ∑' a, ∑' b, x a b := by
+example {A B : Type*} (x : A → B → ENNReal) : ∑' p : A × B, x p.1 p.2 = ∑' a, ∑' b, x a b := by
   simpa using ENNReal.tsum_prod (f := x)
 
-example {A B:Type*} (x: A → B → ENNReal) : ∑' p:A × B, x p.1 p.2 = ∑' b, ∑' a, x a b := by
+example {A B : Type*} (x : A → B → ENNReal) : ∑' p : A × B, x p.1 p.2 = ∑' b, ∑' a, x a b := by
   calc
     ∑' p : A × B, x p.1 p.2 = ∑' a, ∑' b, x a b := ENNReal.tsum_prod (f := x)
     _ = ∑' b, ∑' a, x a b := ENNReal.tsum_comm (f := x)
@@ -248,9 +248,9 @@ noncomputable instance EReal.inst_negPart : NegPart EReal where
   negPart := fun x ↦ if x ≤ 0 then -x else 0
 
 /-- Axiom 0.0.4 (Axiom of choice). -/
-noncomputable def Set.choose {A: Type*} {E: A → Type*} (hE: ∀ n, Nonempty (E n)) :
+noncomputable def Set.choose {A : Type*} {E : A → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := fun n ↦ (hE n).some
 
 /-- Corollary 0.0.5 (Axiom of countable choice) -/
-noncomputable def Countable.choose {E: ℕ → Type*} (hE: ∀ n, Nonempty (E n)) :
+noncomputable def Countable.choose {E : ℕ → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := Set.choose hE

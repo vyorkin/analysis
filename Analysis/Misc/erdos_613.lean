@@ -10,7 +10,7 @@ open scoped BigOperators
     {given (type := "Finset V")}`S` of {name}`k` distinct neighbors of {name}`x` such that every
     edge {given -show}`y` {lean}`s(x, y)` with {lean}`y ∈ S` is present in {lean}`G` and colored
     {name}`col`.  (No restriction on edges inside {name}`S`.) -/
-def hasMonoStar {V:Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
+def hasMonoStar {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
     (col : Fin 2) (k : ℕ) : Prop :=
   ∃ (x : V) (S : Finset V),
     S.card = k ∧
@@ -22,7 +22,7 @@ def hasMonoStar {V:Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
 “Color-{name}`col` monochromatic triangle”: there exist {name}`a`, {name}`b`, {name}`c` with all three edges
 present in {lean}`G` and colored {name}`col`.  (Adjacency already forces distinctness.)
 -/
-def hasMonoTriangle {V:Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
+def hasMonoTriangle {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
     (col : Fin 2) : Prop :=
   ∃ a b c : V,
     G.Adj a b ∧ G.Adj b c ∧ G.Adj a c ∧
@@ -38,7 +38,7 @@ for *every* 2‑coloring of unordered pairs, either color {lean (type := "Fin 2"
 This only *states* the claim (as a {lean}`Prop`).  You can later prove it from the
 explicit construction, or assume it as an axiom while you develop the rest. -/
 def Pikhurko_n5_statement : Prop :=
-  ∃ (V:Type) (G : SimpleGraph V),
+  ∃ (V : Type) (G : SimpleGraph V),
     G.edgeSet.ncard = 44 ∧
     ∀ (color : Sym2 V → Fin 2),
       hasMonoStar G color 0 5 ∨ hasMonoTriangle G color 1
@@ -148,7 +148,7 @@ open V
 deriving instance Fintype for V
 
 /-- An explicit equivalence showing {name}`V` has 2+5+3+5+1 = 16 elements. -/
-def VEquiv :
+def VEquiv : 
     V ≃ ((((Fin 2 ⊕ Fin 5) ⊕ Fin 3) ⊕ Fin 5) ⊕ Unit) where
   toFun
   | A1 i  => Sum.inl (Sum.inl (Sum.inl (Sum.inl i)))
@@ -186,7 +186,7 @@ lemmas from Approach A:
 lemma degree_apex : G.degree apex = 15 := by
   classical
   -- Neighbors of `apex` are exactly all vertices ≠ `apex`.
-  have hN :
+  have hN : 
       G.neighborFinset apex = (Finset.univ.erase apex) := by
     ext v; constructor
     · intro hv
@@ -239,7 +239,7 @@ lemma degree_A1 (i : Fin 2) : G.degree (A1 i) = 7 := by
           aesop
         _ = 0 := by simp
       . calc
-        _ = Finset.card (∅: Finset (Fin 5)) := by
+        _ = Finset.card (∅ : Finset (Fin 5)) := by
           congr; ext; simp [-iff_false]
           simp_rw [←Equiv.eq_symm_apply VEquiv]
           simp [VEquiv]
@@ -266,19 +266,19 @@ lemma degree_B1 (j : Fin 5) : G.degree (B1 j) = 3 := by
             simp [VEquiv]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 5)) := by
+          _ = Finset.card (∅ : Finset (Fin 5)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 3)) := by
+          _ = Finset.card (∅ : Finset (Fin 3)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 5)) := by
+          _ = Finset.card (∅ : Finset (Fin 5)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv]
@@ -307,7 +307,7 @@ lemma degree_A2 (i : Fin 3) : G.degree (A2 i) = 8 := by
             simp [VEquiv]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 5)) := by
+          _ = Finset.card (∅ : Finset (Fin 5)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv]
@@ -322,7 +322,7 @@ lemma degree_A2 (i : Fin 3) : G.degree (A2 i) = 8 := by
             convert Finset.card_erase_of_mem (show i ∈ Finset.univ by simp)
             grind
       . calc
-          _ = Finset.card (Finset.univ: Finset (Fin 5)) := by
+          _ = Finset.card (Finset.univ : Finset (Fin 5)) := by
             congr; ext; simp
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv]
@@ -350,7 +350,7 @@ lemma degree_B2 (j : Fin 5) : G.degree (B2 j) = 4 := by
             simp [VEquiv, G, GAdj]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 5)) := by
+          _ = Finset.card (∅ : Finset (Fin 5)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv, G, GAdj]
@@ -362,7 +362,7 @@ lemma degree_B2 (j : Fin 5) : G.degree (B2 j) = 4 := by
             simp [VEquiv, G, GAdj]
           _ = _ := by simp
       . calc
-          _ = Finset.card (∅: Finset (Fin 5)) := by
+          _ = Finset.card (∅ : Finset (Fin 5)) := by
             congr; ext; simp [-iff_false]
             simp_rw [←Equiv.eq_symm_apply VEquiv]
             simp [VEquiv, G, GAdj]
@@ -409,7 +409,7 @@ open V
 namespace Finset
 variable {α : Type*}
 
-lemma exists_subset_card_eq (s : Finset α) {k : ℕ} (hk : k ≤ s.card) :
+lemma exists_subset_card_eq (s : Finset α) {k : ℕ} (hk : k ≤ s.card) : 
   ∃ t ⊆ s, t.card = k := by
   exact Finset.le_card_iff_exists_subset_card.mp hk
 
@@ -432,7 +432,7 @@ noncomputable def redNeighbors (color : Sym2 V → Fin 2) : Finset V :=
 /-- If there is no blue `K_{1,5}`, then the apex has at most 4 blue neighbors. -/
 lemma blueNeighbors_card_le_4
     (color : Sym2 V → Fin 2)
-    (hNoBlueStar : ¬ hasMonoStar G color 0 5) :
+    (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (blueNeighbors color).card ≤ 4 := by
   classical
   -- Suppose ≥5 blue neighbors; extract a 5-subset and get a blue star.
@@ -470,11 +470,11 @@ lemma blueNeighbors_card_le_4
 /-- If there is no blue `K_{1,5}`, then at least {lean}`11` neighbors of {name}`apex` are red. -/
 lemma red_from_apex_at_least_11
     (color : Sym2 V → Fin 2)
-    (hNoBlueStar : ¬ hasMonoStar G color 0 5) :
+    (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (redNeighbors color).card ≥ 11 := by
   classical
   -- Split neighbors of apex into blue vs. non-blue; identify non-blue with red.
-  have hsplit :
+  have hsplit : 
       (blueNeighbors color).card
       + ((G.neighborFinset apex).filter (fun v => ¬ (color (s(apex, v)) = 0))).card
       = (G.neighborFinset apex).card := by
@@ -483,7 +483,7 @@ lemma red_from_apex_at_least_11
         (s := G.neighborFinset apex)
         (p := fun v => color (s(apex, v)) = 0))
 
-  have hred_is_notblue :
+  have hred_is_notblue : 
       (G.neighborFinset apex).filter (fun v => ¬ (color (s(apex, v)) = 0))
       =
       redNeighbors color := by
@@ -551,7 +551,7 @@ noncomputable def redBlock2 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => ¬ inBlock1 v)
 
 /-- Partition of the red neighbors of {name}`apex` into the two blocks. -/
-lemma redBlocks_partition_card (color : Sym2 V → Fin 2) :
+lemma redBlocks_partition_card (color : Sym2 V → Fin 2) : 
   (redBlock1 color).card + (redBlock2 color).card = (redNeighbors color).card := by
   classical
   -- Standard `filter` + `filter (¬p)` partition identity.
@@ -563,7 +563,7 @@ lemma redBlocks_partition_card (color : Sym2 V → Fin 2) :
 one of the two blocks receives at least six red edges from {name}`apex`. -/
 lemma exists_block_receives_at_least_6_red
     (color : Sym2 V → Fin 2)
-    (hNoBlueStar : ¬ hasMonoStar G color 0 5) :
+    (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (redBlock1 color).card ≥ 6 ∨ (redBlock2 color).card ≥ 6 := by
   classical
   -- Total red edges from `apex` is at least 11 (done earlier).
@@ -650,7 +650,7 @@ noncomputable def redBlock2B2 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => isB2 v)
 
 /-- {name}`redBlock1` is exactly the disjoint union of its {name}`A1` and {name}`B1` parts. -/
-lemma redBlock1_eq_union (color : Sym2 V → Fin 2) :
+lemma redBlock1_eq_union (color : Sym2 V → Fin 2) : 
   redBlock1 color =
     redBlock1A1 color ∪ redBlock1B1 color := by
   ext v; constructor
@@ -668,7 +668,7 @@ lemma redBlock1_eq_union (color : Sym2 V → Fin 2) :
       exact Finset.mem_filter.2 ⟨hRN, (inBlock1_iff v).2 (Or.inr hB1)⟩
 
 /-- {name}`redBlock2` is exactly the disjoint union of its {name}`A2` and {name}`B2` parts. -/
-lemma redBlock2_eq_union (color : Sym2 V → Fin 2) :
+lemma redBlock2_eq_union (color : Sym2 V → Fin 2) : 
   redBlock2 color =
     redBlock2A2 color ∪ redBlock2B2 color := by
   ext v; constructor
@@ -692,7 +692,7 @@ lemma redBlock2_eq_union (color : Sym2 V → Fin 2) :
         cases v <;> simp_all [inBlock1, isB2]⟩
 
 /-- The two parts of {name}`redBlock1` are disjoint. -/
-lemma redA1_redB1_disjoint (color : Sym2 V → Fin 2) :
+lemma redA1_redB1_disjoint (color : Sym2 V → Fin 2) : 
   Disjoint (redBlock1A1 color) (redBlock1B1 color) := by
   classical
   refine Finset.disjoint_left.2 ?_
@@ -702,7 +702,7 @@ lemma redA1_redB1_disjoint (color : Sym2 V → Fin 2) :
   exact (not_isA1_and_isB1 v) ⟨hA1, hB1⟩
 
 /-- The two parts of {name}`redBlock2` are disjoint. -/
-lemma redA2_redB2_disjoint (color : Sym2 V → Fin 2) :
+lemma redA2_redB2_disjoint (color : Sym2 V → Fin 2) : 
   Disjoint (redBlock2A2 color) (redBlock2B2 color) := by
   classical
   refine Finset.disjoint_left.2 ?_
@@ -712,7 +712,7 @@ lemma redA2_redB2_disjoint (color : Sym2 V → Fin 2) :
   exact (not_isA2_and_isB2 v) ⟨hA2, hB2⟩
 
 /-- Cardinal decompositions of the blocks. -/
-lemma redBlock1_card_eq_sum (color : Sym2 V → Fin 2) :
+lemma redBlock1_card_eq_sum (color : Sym2 V → Fin 2) : 
   (redBlock1 color).card
     = (redBlock1A1 color).card + (redBlock1B1 color).card := by
   classical
@@ -732,7 +732,7 @@ lemma redBlock1_card_eq_sum (color : Sym2 V → Fin 2) :
   have := by simpa [hU, hI, add_comm] using this
   exact this
 
-lemma redBlock2_card_eq_sum (color : Sym2 V → Fin 2) :
+lemma redBlock2_card_eq_sum (color : Sym2 V → Fin 2) : 
   (redBlock2 color).card
     = (redBlock2A2 color).card + (redBlock2B2 color).card := by
   classical
@@ -757,7 +757,7 @@ def B1Set : Finset V := (Finset.univ.image fun j : Fin 5 => B1 j)
 /-- All {name}`B2`-vertices as a finset (image of {lean}`Fin 5`). -/
 def B2Set : Finset V := (Finset.univ.image fun j : Fin 5 => B2 j)
 
-lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) :
+lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) : 
   redBlock1B1 color ⊆ B1Set := by
   classical
   intro v hv
@@ -771,7 +771,7 @@ lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) :
   | B2 _ => cases hB1
   | apex => cases hB1
 
-lemma redBlock2B2_subset_B2Set (color : Sym2 V → Fin 2) :
+lemma redBlock2B2_subset_B2Set (color : Sym2 V → Fin 2) : 
   redBlock2B2 color ⊆ B2Set := by
   classical
   intro v hv
@@ -795,11 +795,11 @@ lemma card_B2Set_le_5 : (B2Set).card ≤ 5 := by
   simpa [B2Set, Fintype.card_fin] using
     (Finset.card_image_le : (Finset.univ.image (fun j : Fin 5 => B2 j)).card ≤ (Finset.univ : Finset (Fin 5)).card)
 
-lemma redBlock1B1_card_le_5 (color : Sym2 V → Fin 2) :
+lemma redBlock1B1_card_le_5 (color : Sym2 V → Fin 2) : 
   (redBlock1B1 color).card ≤ 5 :=
   (Finset.card_le_card (redBlock1B1_subset_B1Set color)).trans card_B1Set_le_5
 
-lemma redBlock2B2_card_le_5 (color : Sym2 V → Fin 2) :
+lemma redBlock2B2_card_le_5 (color : Sym2 V → Fin 2) : 
   (redBlock2B2 color).card ≤ 5 :=
   (Finset.card_le_card (redBlock2B2_subset_B2Set color)).trans card_B2Set_le_5
 
@@ -808,7 +808,7 @@ lemma redBlock2B2_card_le_5 (color : Sym2 V → Fin 2) :
 /-- If block 1 receives at least 6 red neighbors from {name}`apex`, then one of them lies in {name}`A1`. -/
 lemma exists_red_A1_of_block1_ge6
     (color : Sym2 V → Fin 2)
-    (h6 : 6 ≤ (redBlock1 color).card) :
+    (h6 : 6 ≤ (redBlock1 color).card) : 
     ∃ i : Fin 2, G.Adj apex (A1 i) ∧ color (s(apex, A1 i)) = 1 := by
   classical
   -- From the decomposition `|redBlock1| = |A1-part| + |B1-part|`
@@ -840,7 +840,7 @@ lemma exists_red_A1_of_block1_ge6
 /-- If block 2 receives at least 6 red neighbors from {name}`apex`, then one of them lies in {name}`A2`. -/
 lemma exists_red_A2_of_block2_ge6
     (color : Sym2 V → Fin 2)
-    (h6 : 6 ≤ (redBlock2 color).card) :
+    (h6 : 6 ≤ (redBlock2 color).card) : 
     ∃ i : Fin 3, G.Adj apex (A2 i) ∧ color (s(apex, A2 i)) = 1 := by
   classical
   have hdecomp := redBlock2_card_eq_sum color
@@ -867,7 +867,7 @@ lemma exists_red_A2_of_block2_ge6
 in the appropriate clique {name}`A1` or {name}`A2`. -/
 lemma exists_red_clique_neighbor
     (color : Sym2 V → Fin 2)
-    (hNoBlueStar : ¬ hasMonoStar G color 0 5) :
+    (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (∃ i : Fin 2, G.Adj apex (A1 i) ∧ color (s(apex, A1 i)) = 1) ∨
     (∃ i : Fin 3, G.Adj apex (A2 i) ∧ color (s(apex, A2 i)) = 1) := by
   classical
@@ -890,7 +890,7 @@ open V
 lemma A1_mem_redBlock1_of_red
     (color : Sym2 V → Fin 2) (i : Fin 2)
     (_hAdj : G.Adj apex (A1 i))
-    (hRed : color (s(apex, A1 i)) = 1) :
+    (hRed : color (s(apex, A1 i)) = 1) : 
     A1 i ∈ redBlock1 color := by
   classical
   -- First: `A1 i` is a red neighbor of `apex`.
@@ -906,7 +906,7 @@ lemma A1_mem_redBlock1_of_red
 lemma A2_mem_redBlock2_of_red
     (color : Sym2 V → Fin 2) (i : Fin 3)
     (_hAdj : G.Adj apex (A2 i))
-    (hRed : color (s(apex, A2 i)) = 1) :
+    (hRed : color (s(apex, A2 i)) = 1) : 
     A2 i ∈ redBlock2 color := by
   classical
   have hRN : A2 i ∈ redNeighbors color := by
@@ -924,16 +924,16 @@ lemma triangle_or_blueStar_from_block1
     (h6 : 6 ≤ (redBlock1 color).card)
     (i : Fin 2)
     (hAdj : G.Adj apex (A1 i))
-    (hRedApexA1 : color (s(apex, A1 i)) = 1) :
+    (hRedApexA1 : color (s(apex, A1 i)) = 1) : 
     hasMonoTriangle G color 1 ∨ hasMonoStar G color 0 5 := by
   classical
   -- Put `y0 := A1 i` into `redBlock1`.
   have hy0_in : A1 i ∈ redBlock1 color := A1_mem_redBlock1_of_red color i hAdj hRedApexA1
   -- We want 5 vertices in `redBlock1 \ {A1 i}`.
-  have h5 :
+  have h5 : 
     5 ≤ ((redBlock1 color).erase (A1 i)).card := by
     -- `card (erase y0) + 1 = card`  ⇒  `card (erase y0) ≥ 5` from `card ≥ 6`
-    have hcard :
+    have hcard : 
         ((redBlock1 color).erase (A1 i)).card + 1 = (redBlock1 color).card :=
       Finset.card_erase_add_one hy0_in
     -- turn `6 ≤ RHS` into `5 ≤ LHS`
@@ -1022,13 +1022,13 @@ lemma triangle_or_blueStar_from_block2
     (h6 : 6 ≤ (redBlock2 color).card)
     (i : Fin 3)
     (hAdj : G.Adj apex (A2 i))
-    (hRedApexA2 : color (s(apex, A2 i)) = 1) :
+    (hRedApexA2 : color (s(apex, A2 i)) = 1) : 
     hasMonoTriangle G color 1 ∨ hasMonoStar G color 0 5 := by
   classical
   have hy0_in : A2 i ∈ redBlock2 color := A2_mem_redBlock2_of_red color i hAdj hRedApexA2
-  have h5 :
+  have h5 : 
     5 ≤ ((redBlock2 color).erase (A2 i)).card := by
-    have hcard :
+    have hcard : 
         ((redBlock2 color).erase (A2 i)).card + 1 = (redBlock2 color).card :=
       Finset.card_erase_add_one hy0_in
     have : 6 ≤ ((redBlock2 color).erase (A2 i)).card + 1 := by simpa [hcard] using h6
@@ -1097,7 +1097,7 @@ lemma triangle_or_blueStar_from_block2
 /-- **Main step (n=5):** If there is no blue `K_{1,5}`, then the red color class contains a triangle. -/
 theorem red_triangle_of_no_blue_star
     (color : Sym2 V → Fin 2)
-    (hNoBlueStar : ¬ hasMonoStar G color 0 5) :
+    (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     hasMonoTriangle G color 1 := by
   classical
   -- One of the two blocks has ≥6 red neighbors from `apex`.

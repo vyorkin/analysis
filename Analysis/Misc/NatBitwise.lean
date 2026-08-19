@@ -22,7 +22,7 @@ namespace Nat
 
 /-- {lean}`n.testBit i = true` if and only if {name}`i` appears in {lean}`n.bitIndices`.
     This connects the pointwise bit test with the list of set bit positions. -/
-lemma testBit_iff_mem_bitIndices (n i : ℕ) :
+lemma testBit_iff_mem_bitIndices (n i : ℕ) : 
     n.testBit i = true ↔ i ∈ n.bitIndices := by
   constructor
   · intro h
@@ -61,7 +61,7 @@ lemma testBit_iff_mem_bitIndices (n i : ℕ) :
 /-- {name}`Nat.testBit` of a sum of distinct powers of 2 equals membership in the index set.
     For a finset {name}`s` of natural numbers,
     {given -show}`j` {lean}`(∑ i ∈ s, 2^i).testBit j = true ↔ j ∈ s`. -/
-lemma testBit_finset_sum_pow_two {s : Finset ℕ} {i : ℕ} :
+lemma testBit_finset_sum_pow_two {s : Finset ℕ} {i : ℕ} : 
     (s.sum (2^·)).testBit i = true ↔ i ∈ s := by
   rw [testBit_iff_mem_bitIndices]
   constructor
@@ -77,9 +77,9 @@ lemma testBit_finset_sum_pow_two {s : Finset ℕ} {i : ℕ} :
 
 /-- {name}`Nat.testBit` of a sum of {lean (type := "ℕ")}`2^j.val` over {lean}`Finset (Fin k)` equals membership.
     This is the {name}`Fin`-indexed version of {name}`Nat.testBit_finset_sum_pow_two`. -/
-lemma testBit_sum_pow_two_fin {k : ℕ} {s : Finset (Fin k)} (j : Fin k) :
-    (s.sum fun i => (2:ℕ)^i.val).testBit j.val ↔ j ∈ s := by
-  have h : s.sum (fun i => (2:ℕ)^i.val) = (s.image (·.val)).sum (2^·) := by
+lemma testBit_sum_pow_two_fin {k : ℕ} {s : Finset (Fin k)} (j : Fin k) : 
+    (s.sum fun i => (2 : ℕ)^i.val).testBit j.val ↔ j ∈ s := by
+  have h : s.sum (fun i => (2 : ℕ)^i.val) = (s.image (·.val)).sum (2^·) := by
     rw [Finset.sum_image]
     intro x _ y _ hxy
     exact Fin.val_injective hxy

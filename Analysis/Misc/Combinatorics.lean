@@ -8,7 +8,7 @@ General combinatorics lemmas about Fin, Finset, and boolean choices.
 
 /-- Distributive law: product of sums over Fin d equals sum over boolean choices of products.
     This is the key identity: ∏ᵢ (aᵢ + bᵢ) = ∑\_\{c : Fin d → Bool\} ∏ᵢ (if cᵢ then bᵢ else aᵢ) -/
-lemma Fin.prod_add_eq_sum_prod_choice (d : ℕ) (a b : Fin d → ℝ) :
+lemma Fin.prod_add_eq_sum_prod_choice (d : ℕ) (a b : Fin d → ℝ) : 
     ∏ i, (a i + b i) = ∑ c : Fin d → Bool, ∏ i, (if c i then b i else a i) := by
   induction d with
   | zero =>

@@ -10,14 +10,14 @@ Some examples of proofs and quantifiers in Lean
 -/
 
 /-- Proposition A.6.1 -/
-example : ∀ ε > (0:ℝ), ∃ δ > 0, 2 * δ < ε := by
+example : ∀ ε > (0 : ℝ), ∃ δ > 0, 2 * δ < ε := by
   intro ε hε
   use ε / 3
   constructor
   . positivity
   . linarith
 
-example : ¬ ∃ δ > 0, ∀ ε > (0:ℝ), 2 * δ < ε := by
+example : ¬ ∃ δ > 0, ∀ ε > (0 : ℝ), 2 * δ < ε := by
   sorry
 
 open Real in

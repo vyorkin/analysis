@@ -9,7 +9,7 @@ Some examples of how variables and quantifiers are used in Lean
 
 namespace VariableExample1
 
-variable (X:Type) (x y:X)
+variable (X : Type) (x y : X)
 
 #check x = x
 #check x = y
@@ -20,32 +20,32 @@ end VariableExample1
 
 namespace VariableExample2
 
-variable (x:ℝ)
+variable (x : ℝ)
 
 #check x+3
 #check x+3 = 5
 
-example (h: x = 2) : x + 3 = 5 := by linarith
+example (h : x = 2) : x + 3 = 5 := by linarith
 
-example (h: x ≠ 2) : x + 3 ≠ 5 := by
+example (h : x ≠ 2) : x + 3 ≠ 5 := by
   contrapose! h
   linarith
 
-example : ¬ ∀ (x:ℝ), x + 3 = 5 := by
+example : ¬ ∀ (x : ℝ), x + 3 = 5 := by
   simp
   use 0
   simp
 
-example : ¬ ∀ (x:ℝ), x + 3 ≠ 5 := by
+example : ¬ ∀ (x : ℝ), x + 3 ≠ 5 := by
   simp
   use 2
   norm_num
 
-example : ∃ (x:ℝ), x + 3 = 5 := by
+example : ∃ (x : ℝ), x + 3 = 5 := by
   use 2
   norm_num
 
-example : ∀ (x:ℝ), (x+1)^2 = x^2 + 2*x + 1 := by
+example : ∀ (x : ℝ), (x+1)^2 = x^2 + 2*x + 1 := by
   intro x
   ring
 
@@ -59,12 +59,12 @@ example : 0 = 0 := by
     norm_num
   rfl
 
-example : ¬ ∀ (x:ℝ), x + 155 = 497 := by
+example : ¬ ∀ (x : ℝ), x + 155 = 497 := by
   simp
   use 0
   norm_num
 
-example : ¬ ∀ x > (0:ℝ), x^2 > x := by
+example : ¬ ∀ x > (0 : ℝ), x^2 > x := by
   simp
   use 0.5
   norm_num
@@ -85,7 +85,7 @@ example : ∀ x, (3 < x ∧ x < 2) → (6 < 2*x ∧ 2*x < 4) := by
   . linarith
   linarith
 
-example : ∃ (x:ℝ), x^2 + 2*x - 8 = 0 := by
+example : ∃ (x : ℝ), x^2 + 2*x - 8 = 0 := by
   use 2
   norm_num
 

@@ -23,36 +23,36 @@ namespace Chapter11
 open BoundedInterval Chapter9 Chapter10
 
 /-- Proposition 11.10.1 (Integration by parts formula) / Exercise 11.10.1 -/
-theorem integ_of_mul_deriv {a b:ℝ} (hab: a ≤ b) {F G: ℝ → ℝ}
-  (hF: DifferentiableOn ℝ F (Icc a b)) (hG : DifferentiableOn ℝ G (Icc a b))
-  (hF': IntegrableOn (derivWithin F (Icc a b)) (Icc a b))
-  (hG': IntegrableOn (derivWithin G (Icc a b)) (Icc a b)) :
+theorem integ_of_mul_deriv {a b : ℝ} (hab : a ≤ b) {F G : ℝ → ℝ}
+  (hF : DifferentiableOn ℝ F (Icc a b)) (hG : DifferentiableOn ℝ G (Icc a b))
+  (hF' : IntegrableOn (derivWithin F (Icc a b)) (Icc a b))
+  (hG' : IntegrableOn (derivWithin G (Icc a b)) (Icc a b)) : 
   integ (F * derivWithin G (Icc a b)) (Icc a b) = F b * G b - F a * G a -
     integ (G * derivWithin F (Icc a b)) (Icc a b) := by
     sorry
 
 /-- Theorem 11.10.2.  Need to add continuity of α due to our conventions on {name}`α_length` -/
 theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
-  {a b:ℝ} {α f:ℝ → ℝ}
-  (hα_diff: DifferentiableOn ℝ α (Icc a b)) (hαcont: Continuous α)
-  (hα': IntegrableOn (derivWithin α (Icc a b)) (Icc a b))
-  (hf: PiecewiseConstantOn f (Icc a b)) :
+  {a b : ℝ} {α f : ℝ → ℝ}
+  (hα_diff : DifferentiableOn ℝ α (Icc a b)) (hαcont : Continuous α)
+  (hα' : IntegrableOn (derivWithin α (Icc a b)) (Icc a b))
+  (hf : PiecewiseConstantOn f (Icc a b)) : 
   IntegrableOn (f * derivWithin α (Icc a b)) (Icc a b) ∧
   Chapter11.integ (f * derivWithin α (Icc a b)) (Icc a b) = RS_integ f (Icc a b) α := by
   -- This proof is adapted from the structure of the original text.
   set α' := derivWithin α (Icc a b)
-  have hf_integ: IntegrableOn f (Icc a b) := (integ_of_piecewise_const hf).1
-  observe hfα'_integ: IntegrableOn (f * α') (Icc a b)
+  have hf_integ : IntegrableOn f (Icc a b) := (integ_of_piecewise_const hf).1
+  observe hfα'_integ : IntegrableOn (f * α') (Icc a b)
   refine ⟨ hfα'_integ, ?_ ⟩
   choose P hP using hf
   rw [PiecewiseConstantOn.RS_integ_def hP α, hfα'_integ.split P]
   apply Finset.sum_congr rfl; intro J hJ
   calc
-    _ = Chapter11.integ ((constant_value_on f (J:Set ℝ)) • α') J := by
+    _ = Chapter11.integ ((constant_value_on f (J : Set ℝ)) • α') J := by
       apply Chapter11.integ_congr; intro x hx
       simp only [Pi.mul_apply, Pi.smul_apply, smul_eq_mul]; congr
       exact (hP J hJ).eq hx
-    _ = constant_value_on f (J:Set ℝ) * Chapter11.integ α' J := ((hα'.mono' (P.contains _ hJ)).smul _).2
+    _ = constant_value_on f (J : Set ℝ) * Chapter11.integ α' J := ((hα'.mono' (P.contains _ hJ)).smul _).2
     _ = _ := by
       congr
       have hJsub (hJab : J.a ≤ J.b) : J ⊆ Ioo (J.a - 1) (J.b + 1) :=
@@ -77,15 +77,15 @@ theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
 
 /-- Corollary 11.10.3 -/
 theorem RS_integ_eq_integ_of_mul_deriv
-  {a b:ℝ} (hab: a < b) {α f:ℝ → ℝ} (hα: Monotone α)
-  (hα_diff: DifferentiableOn ℝ α (Icc a b)) (hαcont: Continuous α)
-  (hα': IntegrableOn (derivWithin α (Icc a b)) (Icc a b))
-  (hf: RS_IntegrableOn f (Icc a b) α) :
+  {a b : ℝ} (hab : a < b) {α f : ℝ → ℝ} (hα : Monotone α)
+  (hα_diff : DifferentiableOn ℝ α (Icc a b)) (hαcont : Continuous α)
+  (hα' : IntegrableOn (derivWithin α (Icc a b)) (Icc a b))
+  (hf : RS_IntegrableOn f (Icc a b) α) : 
   IntegrableOn (f * derivWithin α (Icc a b)) (Icc a b) ∧
   integ (f * derivWithin α (Icc a b)) (Icc a b) = RS_integ f (Icc a b) α := by
   -- This proof is adapted from the structure of the original text.
   set α' := derivWithin α (Icc a b)
-  have hfα'_bound: BddOn (f * α') (Icc a b) := by
+  have hfα'_bound : BddOn (f * α') (Icc a b) := by
     have ⟨ M, hM ⟩ := hf.1; have ⟨ N, hN ⟩ := hα'.1
     use M * N; intro x hx; specialize hM _ hx; specialize hN _ hx
     simp [abs_mul]; gcongr; linarith [abs_nonneg (f x)]
@@ -126,8 +126,8 @@ theorem RS_integ_eq_integ_of_mul_deriv
   refine ⟨ ⟨ hfα'_bound, ?_ ⟩, ?_ ⟩ <;> linarith
 
 /-- Lemma 11.10.5 / Exercise 11.10.2 -/
-theorem PiecewiseConstantOn.RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f:ℝ → ℝ}
-  (hφ_cont: Continuous φ) (hφ_mono: Monotone φ) (hf: PiecewiseConstantOn f (Icc (φ a) (φ b))) :
+theorem PiecewiseConstantOn.RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
+  (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : PiecewiseConstantOn f (Icc (φ a) (φ b))) : 
   PiecewiseConstantOn (f ∘ φ) (Icc a b) ∧ RS_integ (f ∘ φ) (Icc a b) φ =
     integ f (Icc (φ a) (φ b)) := by
   -- This proof is adapted from the structure of the original text.
@@ -137,15 +137,15 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f:ℝ �
     intro J hJ; simp [P, (· ∈ ·)] at hJ; exact hf J hJ.1
   rw [integ_def hf]
   unfold PiecewiseConstantWith.integ
-  set φ_inv : P.intervals → Set ℝ := fun J ↦ { x:ℝ | x ∈ Set.Icc a b ∧ φ x ∈ (J:Set ℝ) }
-  have hφ_inv_bounded (J: P.intervals) : Bornology.IsBounded (φ_inv J) := by
+  set φ_inv : P.intervals → Set ℝ := fun J ↦ { x : ℝ | x ∈ Set.Icc a b ∧ φ x ∈ (J : Set ℝ) }
+  have hφ_inv_bounded (J : P.intervals) : Bornology.IsBounded (φ_inv J) := by
     apply Bornology.IsBounded.subset (Icc_bounded a b); intro _; aesop
-  have hφ_inv_connected (J: P.intervals) : (φ_inv J).OrdConnected := by sorry
+  have hφ_inv_connected (J : P.intervals) : (φ_inv J).OrdConnected := by sorry
   set φ_inv' : P.intervals → BoundedInterval := fun J ↦ ((BoundedInterval.ordConnected_iff _).mp ⟨ hφ_inv_bounded J, hφ_inv_connected J ⟩).choose
-  have hφ_inv' (J:P.intervals) : φ_inv J = φ_inv' J :=
+  have hφ_inv' (J : P.intervals) : φ_inv J = φ_inv' J :=
     ((BoundedInterval.ordConnected_iff _).mp ⟨ hφ_inv_bounded J, hφ_inv_connected J ⟩).choose_spec
-  have hφ_inv_nonempty (J:P.intervals) : (φ_inv J).Nonempty := by sorry
-  have hφ_inv_const {J:P.intervals} : ConstantOn (f ∘ φ) (φ_inv' J) ∧ constant_value_on (f ∘ φ) (φ_inv' J) = constant_value_on f J := by
+  have hφ_inv_nonempty (J : P.intervals) : (φ_inv J).Nonempty := by sorry
+  have hφ_inv_const {J : P.intervals} : ConstantOn (f ∘ φ) (φ_inv' J) ∧ constant_value_on (f ∘ φ) (φ_inv' J) = constant_value_on f J := by
     sorry
   set Q : Partition (Icc a b) := {
     intervals := .image φ_inv' .univ
@@ -176,8 +176,8 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f:ℝ �
   ext; apply (P.exists_unique _ h3).unique <;> simp [J.property, K.property, mem_iff, h1, h2]
 
 /-- Proposition 11.10.6 (Change of variables formula II). -/
-theorem RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
-  (hφ_cont: Continuous φ) (hφ_mono: Monotone φ) (hf: IntegrableOn f (Icc (φ a) (φ b))) :
+theorem RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
+  (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : IntegrableOn f (Icc (φ a) (φ b))) : 
   RS_IntegrableOn (f ∘ φ) (Icc a b) φ ∧
   RS_integ (f ∘ φ) (Icc a b) φ = integ f (Icc (φ a) (φ b)) := by
   -- This proof is adapted from the structure of the original text.
@@ -206,11 +206,11 @@ theorem RS_integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
   refine ⟨ ⟨ hfφ_bdd, ?_ ⟩, ?_ ⟩ <;> linarith
 
 /-- Proposition 11.10.7 (Change of variables formula III). -/
-theorem integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
-  (hφ_diff: DifferentiableOn ℝ φ (Icc a b))
-  (hφ_cont: Continuous φ) (hφ_mono: Monotone φ)
-  (hφ': IntegrableOn (derivWithin φ (Icc a b)) (Icc a b))
-  (hf: IntegrableOn f (Icc (φ a) (φ b))) :
+theorem integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
+  (hφ_diff : DifferentiableOn ℝ φ (Icc a b))
+  (hφ_cont : Continuous φ) (hφ_mono : Monotone φ)
+  (hφ' : IntegrableOn (derivWithin φ (Icc a b)) (Icc a b))
+  (hf : IntegrableOn f (Icc (φ a) (φ b))) : 
   IntegrableOn (f ∘ φ * derivWithin φ (Icc a b)) (Icc a b) ∧
   integ (f ∘ φ * derivWithin φ (Icc a b)) (Icc a b) =
     integ f (Icc (φ a) (φ b)) := by
@@ -219,7 +219,7 @@ theorem integ_of_comp {a b:ℝ} (hab: a < b) {φ f: ℝ → ℝ}
  refine ⟨ h2.1, by aesop ⟩
 
 /-- Exercise 11.10.3 -/
-example {a b:ℝ} (hab: a < b) {f: ℝ → ℝ} (hf: IntegrableOn f (Icc a b)) :
+example {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b)) : 
   IntegrableOn (fun x ↦ f (-x)) (Icc (-b) (-a)) ∧
   integ (fun x ↦ f (-x)) (Icc (-b) (-a)) = integ f (Icc a b) := by
   sorry
