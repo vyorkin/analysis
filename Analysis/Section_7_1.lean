@@ -3,41 +3,41 @@ import Mathlib.Tactic
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 7.1: Finite series
+# Analysis I, раздел 7.1: Конечные ряды
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Technical note: it is convenient in Lean to extend finite sequences (usually by zero) to be
-functions on the entire integers.
+Техническое замечание: в Lean удобно расширять конечные последовательности (обычно нулями) до
+функций, определённых на всём множестве целых чисел.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 -/
 
--- This makes available the convenient notation `∑ n ∈ A, f n` to denote summation of `f n` for
--- `n` ranging over a finite set `A`.
+-- Это открывает удобную нотацию `∑ n ∈ A, f n` для суммы `f n` по `n`,
+-- пробегающему конечное множество `A`.
 open BigOperators
 
 /-!
-- API for summation over finite sets (encoded using Mathlib's {name}`Finset` type), using the
-  {name}`Finset.sum` method and the `∑ n ∈ A, f n` notation.
-- Fubini's theorem for finite series
+- API для суммирования по конечным множествам (закодированным с помощью типа Mathlib {name}`Finset`)
+  через метод {name}`Finset.sum` и нотацию `∑ n ∈ A, f n`.
+- Теорема Фубини для конечных рядов
 
-We do not attempt to replicate the full API for {name}`Finset.sum` here, but in subsequent sections we
-shall make liberal use of this API.
+Мы не пытаемся здесь воспроизвести полное API для {name}`Finset.sum`, но в последующих разделах
+будем активно этим API пользоваться.
 
 -/
 
--- This is a technical device to avoid Mathlib's insistence on decidable equality for finite sets.
+-- Это техническая уловка, чтобы обойти требование Mathlib о разрешимости равенства для
+-- конечных множеств.
 open Classical
 
 namespace Finset
 
--- We use `Finset.Icc` to describe finite intervals in the integers. `Finset.mem_Icc` is the
--- standard Mathlib tool for checking membership in such intervals.
+-- Мы используем `Finset.Icc` для описания конечных интервалов целых чисел. `Finset.mem_Icc` —
+-- стандартный инструмент Mathlib для проверки принадлежности такому интервалу.
 #check mem_Icc
 
 /-- Definition 7.1.1 -/
@@ -45,8 +45,8 @@ theorem sum_of_empty {n m : ℤ} (h : n < m) (a : ℤ → ℝ) : ∑ i ∈ Icc m
   rw [sum_eq_zero]; intro _; rw [mem_Icc]; grind
 
 /--
-  Definition 7.1.1. This is similar to Mathlib's {name}`Finset.sum_Icc_succ_top` except that the
-  latter involves summation over the natural numbers rather than integers.
+  Definition 7.1.1. Похоже на {name}`Finset.sum_Icc_succ_top` из Mathlib, за исключением того, что
+  последняя суммирует по натуральным числам, а не по целым.
 -/
 theorem sum_of_nonempty {n m : ℤ} (h : n ≥ m-1) (a : ℤ → ℝ) : 
     ∑ i ∈ Icc m (n+1), a i = ∑ i ∈ Icc m n, a i + a (n+1) := by
@@ -103,12 +103,12 @@ theorem finite_series_of_rearrange {n : ℕ} {X' : Type*} (X : Finset X') (hcard
   (f : X' → ℝ) (g h : Icc (1 : ℤ) n → X) (hg : Function.Bijective g) (hh : Function.Bijective h) : 
     ∑ i ∈ Icc (1 : ℤ) n, (if hi : i ∈ Icc (1 : ℤ) n then f (g ⟨ i, hi ⟩) else 0)
     = ∑ i ∈ Icc (1 : ℤ) n, (if hi : i ∈ Icc (1 : ℤ) n then f (h ⟨ i, hi ⟩) else 0) := by
-  -- This proof is written to broadly follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   revert X n; intro n
   induction' n with n hn
   . simp
   intro X hX g h hg hh
-  -- A technical step: we extend g, h to the entire integers using a slightly artificial map π
+  -- Технический шаг: расширяем g, h на все целые числа с помощью немного искусственного отображения π
   set π : ℤ → Icc (1 : ℤ) (n+1) :=
     fun i ↦ if hi : i ∈ Icc (1 : ℤ) (n+1) then ⟨ i, hi ⟩ else ⟨ 1, by simp ⟩
   have hπ (g : Icc (1 : ℤ) (n+1) → X) : 
@@ -170,8 +170,8 @@ theorem finite_series_of_rearrange {n : ℕ} {X' : Type*} (X : Finset X') (hcard
     _ = _ := by apply sum_congr rfl; grind
 
 /--
-  This fact ensures that Definition 7.1.6 would be well-defined even if we did not appeal to the
-  existing {name}`Finset.sum` method.
+  Этот факт гарантирует, что Definition 7.1.6 было бы корректно определено, даже если бы мы не
+  обращались к существующему методу {name}`Finset.sum`.
 -/
 theorem exist_bijection {n : ℕ} {Y : Type*} (X : Finset Y) (hcard : X.card = n) : 
     ∃ g : Icc (1 : ℤ) n → X, Function.Bijective g := by
@@ -197,8 +197,8 @@ theorem finite_series_of_singleton {X' : Type*} (f : X' → ℝ) (x₀ : X') : �
   sorry
 
 /--
-  A technical lemma relating a sum over a finset with a sum over a fintype. Combines well with
-  tools such as `map_finite_series` below.
+  Техническая лемма, связывающая сумму по finset с суммой по fintype. Хорошо сочетается с такими
+  инструментами, как `map_finite_series` ниже.
 -/
 theorem finite_series_of_fintype {X' : Type*} (f : X' → ℝ) (X : Finset X') : 
     ∑ x ∈ X, f x = ∑ x : X, f x.val := (sum_coe_sort X f).symm
@@ -208,7 +208,7 @@ theorem map_finite_series {X : Type*} [Fintype X] [Fintype Y] (f : X → ℝ) {g
   (hg : Function.Bijective g) : 
     ∑ x, f x = ∑ y, f (g y) := by sorry
 
--- Proposition 7.1.11(d) is `rfl` in our formalism and is therefore omitted.
+-- Proposition 7.1.11(d) в нашей формализации — это `rfl`, поэтому она опущена.
 
 /-- Proposition 7.1.11(e) / Exercise 7.1.2 -/
 theorem finite_series_of_disjoint_union {Z : Type*} {X Y : Finset Z} (hdisj : Disjoint X Y) (f : Z → ℝ) : 
@@ -288,15 +288,16 @@ theorem finite_series_comm {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : 
       finite_series_of_finite_series _ _ (fun z ↦ f (z.2, z.1))]
 
 
--- Exercise 7.1.3 : develop as many analogues as you can of the above theory for finite products
--- instead of finite sums.
+-- Exercise 7.1.3: разработайте как можно больше аналогов приведённой выше теории для конечных
+-- произведений вместо конечных сумм.
 
 #check Nat.factorial_zero
 #check Nat.factorial_succ
 
 /--
-  Exercise 7.1.4. Note: there may be some technicalities passing back and forth between natural
-  numbers and integers. Look into the tactics {tactic}`zify`, {tactic}`norm_cast`, and {tactic}`omega`
+  Exercise 7.1.4. Замечание: при переходе туда-обратно между натуральными и целыми числами могут
+  возникнуть технические трудности. Обратите внимание на тактики {tactic}`zify`, {tactic}`norm_cast`
+  и {tactic}`omega`
 -/
 theorem binomial_theorem (x y : ℝ) (n : ℕ) : 
     (x + y)^n
@@ -319,8 +320,9 @@ theorem sum_union_disjoint {n : ℕ} {S : Type*} [Fintype S]
     ∑ s, f s = ∑ i, ∑ s ∈ E i, f s := by
   sorry
 
-/-- {given}`aᵢ` Exercise 7.1.7. Uses {lean}`Fin m` (so {lean}`aᵢ < m`) instead of the book's {lean}`aᵢ ≤ m`;
-  the bound is baked into the type, and {kw (of := «term_<_»)}`<` replaces {kw (of := «term_≤_»)}`≤` to match the 0-indexed shift. -/
+/-- {given}`aᵢ` Exercise 7.1.7. Использует {lean}`Fin m` (то есть {lean}`aᵢ < m`) вместо {lean}`aᵢ ≤ m`
+  из книги; граница здесь "зашита" в сам тип, а {kw (of := «term_<_»)}`<` заменяет
+  {kw (of := «term_≤_»)}`≤`, чтобы соответствовать сдвигу на индексацию с нуля. -/
 theorem sum_finite_col_row_counts {n m : ℕ} (a : Fin n → Fin m) : 
     ∑ i, (a i : ℕ) = ∑ j : Fin m, {i : Fin n | j < a i}.toFinset.card := by
   sorry

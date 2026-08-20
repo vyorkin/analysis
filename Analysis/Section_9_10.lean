@@ -1,20 +1,19 @@
 import Mathlib.Tactic
 /-!
-# Analysis I, Section 9.10: Limits at infinity
+# Analysis I, раздел 9.10: Пределы на бесконечности
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Bare-bones API for the Mathlib versions of adherent at infinity, and limits at infinity.
+Основные конструкции и результаты этого раздела:
+- Минимальное API для версий Mathlib понятий прикосновения на бесконечности и предела на бесконечности.
 -/
 
 namespace Chapter9
 
-/-- Definition 9.10.1 (Infinite adherent point).  We use {lean}`¬ BddAbove X` as our notation for `+∞` being an adherent point -/
+/-- Definition 9.10.1 (бесконечная точка прикосновения). Мы используем {lean}`¬ BddAbove X` как нашу нотацию для того, что `+∞` является точкой прикосновения -/
 theorem BddAbove.unbounded_iff (X : Set ℝ) : ¬ BddAbove X ↔ ∀ M, ∃ x ∈ X, x > M := by
   simp [bddAbove_def]
 
@@ -36,7 +35,7 @@ theorem BddBelow.unbounded_iff' (X : Set ℝ) : ¬ BddBelow X ↔ sInf ((fun x :
     use x, hx; revert M; simp [EReal.forall]
   intro h M; specialize h (M : EReal) ?_ <;>simp_all
 
-/-- Definition 9.10.13 (Limit at infinity) -/
+/-- Definition 9.10.13 (предел на бесконечности) -/
 theorem Filter.Tendsto.AtTop.iff {X : Set ℝ} (f : ℝ → ℝ) (L : ℝ) : Filter.Tendsto f (.atTop ⊓ .principal X) (nhds L) ↔ ∀ ε > (0 : ℝ), ∃ M, ∀ x ∈ X ∩ .Ici M, |f x - L| < ε := by
   rw [LinearOrderedAddCommGroup.tendsto_nhds]
   peel with ε hε

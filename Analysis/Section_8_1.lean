@@ -1,38 +1,39 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 8.1: Countability
+# Analysis I, раздел 8.1: Счётность
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Custom notions for "equal cardinality", "countable", and "at most countable".  Note that Mathlib's
-{name}`Countable` typeclass corresponds to what we call "at most countable" in this text.
-- Countability of the integers and rationals.
+- Собственные понятия "равномощности", "счётности" и "не более чем счётности". Заметьте, что
+typeclass Mathlib {name}`Countable` соответствует тому, что в этом тексте называется "не более чем
+счётным".
+- Счётность целых и рациональных чисел.
 
-Note that as the Chapter 3 set theory has been deprecated, we will not re-use relevant constructions from that theory here, replacing them with Mathlib counterparts instead.
+Заметьте, что поскольку теория множеств Главы 3 устарела, мы не будем переиспользовать
+соответствующие конструкции из неё здесь, заменяя их аналогами из Mathlib.
 
 -/
 
 namespace Chapter8
 
-/-- The definition of equal cardinality. For simplicity we restrict attention to the Type 0 universe.
-This is analogous to `Chapter3.SetTheory.Set.EqualCard`, but we are not using the latter since
-the Chapter 3 set theory is deprecated. -/
+/-- Определение равномощности. Для простоты мы ограничиваемся вселенной Type 0.
+Это аналогично `Chapter3.SetTheory.Set.EqualCard`, но мы не используем последнее, поскольку
+теория множеств Главы 3 устарела. -/
 abbrev EqualCard (X Y : Type) : Prop := ∃ f : X → Y, Function.Bijective f
 
-/-- Relation with Mathlib's {name}`Equiv` concept -/
+/-- Связь с понятием {name}`Equiv` из Mathlib -/
 theorem EqualCard.iff {X Y : Type} : EqualCard X Y ↔ Nonempty (X ≃ Y) := by
   simp [EqualCard]; constructor
   . intro ⟨ f, hf ⟩; exact ⟨ .ofBijective f hf ⟩
   intro ⟨ e ⟩; exact ⟨ e.toFun, e.bijective ⟩
 
-/-- Equivalence with Mathlib's {name}`Cardinal.mk` concept -/
+/-- Эквивалентность с понятием {name}`Cardinal.mk` из Mathlib -/
 theorem EqualCard.iff' {X Y : Type} : EqualCard X Y ↔ Cardinal.mk X = Cardinal.mk Y := by
   simp [Cardinal.eq, iff]
 
@@ -64,13 +65,13 @@ theorem AtMostCountable.equiv {X Y : Type} (hXY : EqualCard X Y) :
   AtMostCountable X ↔ AtMostCountable Y := by
   simp [AtMostCountable, CountablyInfinite.equiv hXY, Finite.equiv hXY]
 
-/-- Equivalence with Mathlib's {name}`Denumerable` concept (cf. Remark 8.1.2) -/
+/-- Эквивалентность с понятием {name}`Denumerable` из Mathlib (ср. Remark 8.1.2) -/
 theorem CountablyInfinite.iff (X : Type) : CountablyInfinite X ↔ Nonempty (Denumerable X) := by
   simp [CountablyInfinite, EqualCard.iff]; constructor
   . intro ⟨ e ⟩; exact ⟨ Denumerable.mk' e ⟩
   intro ⟨ h ⟩; exact ⟨ h.eqv X ⟩
 
-/-- Equivalence with Mathlib's {name}`Countable` typeclass -/
+/-- Эквивалентность с typeclass {name}`Countable` из Mathlib -/
 theorem CountablyInfinite.iff' (X : Type) : CountablyInfinite X ↔ Countable X ∧ Infinite X := by
   rw [iff, nonempty_denumerable_iff]
 
@@ -109,17 +110,17 @@ example : CountablyInfinite (.univ \ {0} : Set ℕ) := by sorry
 example : CountablyInfinite ((fun n : ℕ ↦ 2*n) '' .univ) := by sorry
 
 
-/-- Proposition 8.1.4 (Well ordering principle) / Exercise 8.1.2 -/
-theorem Nat.exists_unique_min {X : Set ℕ} (hX : X.Nonempty) : 
+/-- Proposition 8.1.4 (принцип полной упорядоченности) / Exercise 8.1.2 -/
+theorem Nat.exists_unique_min {X : Set ℕ} (hX : X.Nonempty) :
   ∃! m ∈ X, ∀ n ∈ X, m ≤ n := by
   sorry
 
 def Int.exists_unique_min : Decidable (∀ (X : Set ℤ) (hX : X.Nonempty), ∃! m ∈ X, ∀ n ∈ X, m ≤ n) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- Первая строка этого построения должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def NNRat.exists_unique_min : Decidable (∀ (X : Set NNRat) (hX : X.Nonempty), ∃! m ∈ X, ∀ n ∈ X, m ≤ n) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- Первая строка этого построения должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 
@@ -141,13 +142,13 @@ theorem Nat.min_eq_sInf {X : Set ℕ} (hX : X.Nonempty) : min X = sInf X := by
   sorry
 
 open Classical in
-/-- Equivalence with Mathlib's {name}`Nat.find` method -/
+/-- Эквивалентность с методом {name}`Nat.find` из Mathlib -/
 theorem Nat.min_eq_find {X : Set ℕ} (hX : X.Nonempty) : min X = Nat.find hX := by
   symm; rw [Nat.find_eq_iff]; have := min_spec hX; grind
 
 /-- Proposition 8.1.5 -/
 theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ → X, Function.Bijective f ∧ StrictMono f := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let a : ℕ → ℕ := Nat.strongRec (fun n a ↦ min { x ∈ X | ∀ (m : ℕ) (h : m < n), x ≠ a m h })
   have ha : ∀ n, a n = min { x ∈ X | ∀ (m : ℕ) (h : m < n), x ≠ a m } := Nat.strongRec.eq_def _
   have ha_infinite (n : ℕ) : Infinite { x ∈ X | ∀ (m : ℕ) (h : m < n), x ≠ a m } := by
@@ -196,7 +197,7 @@ theorem Nat.atMostCountable_subset (X : Set ℕ) : AtMostCountable X := by
 
 /-- Corollary 8.1.7 -/
 theorem AtMostCountable.subset {X : Type} (hX : AtMostCountable X) (Y : Set X) : AtMostCountable Y := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain ⟨ f, hf ⟩ | hX := hX
   . let f' : Y → f '' Y := fun y ↦ ⟨ f y, by aesop ⟩
     have hf' : Function.Bijective f' := by
@@ -224,7 +225,7 @@ theorem CountablyInfinite.union {A : Type} {X Y : Set A} (hX : CountablyInfinite
 
 /-- Corollary 8.1.11 -/
 theorem Int.countablyInfinite : CountablyInfinite ℤ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have h1 : CountablyInfinite {n : ℤ | n ≥ 0} := by
     rw [CountablyInfinite.iff_image_inj]
     use ⟨ (↑· : ℕ → ℤ), by intro _ _ _; simp_all ⟩
@@ -241,7 +242,7 @@ theorem Int.countablyInfinite : CountablyInfinite ℤ := by
 
 /-- Lemma 8.1.12 -/
 theorem CountablyInfinite.lower_diag : CountablyInfinite { n : ℕ × ℕ | n.2 ≤ n.1 } := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let A := { n : ℕ × ℕ | n.2 ≤ n.1 }
   let a : ℕ → ℕ := fun n ↦ ∑ m ∈ .range (n+1), m
   have ha : StrictMono a := by
@@ -292,7 +293,7 @@ theorem CountablyInfinite.prod {X Y : Type} (hX : CountablyInfinite X) (hY : Cou
 
 /-- Corollary 8.1.15 -/
 theorem Rat.countablyInfinite : CountablyInfinite ℚ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have : CountablyInfinite { n : ℤ | n ≠ 0 } := by
     sorry
   apply Int.countablyInfinite.prod at this
@@ -319,7 +320,7 @@ example (A : Type) : AtMostCountable A ↔ ∃ f : A → ℕ, Function.Injective
 example {I X : Type} (hI : AtMostCountable I) (A : I → Set X) (hA : ∀ i, AtMostCountable (A i)) : 
   AtMostCountable (⋃ i, A i) := by sorry
 
-/-- Exercise 8.1.10.  Note the lack of the `noncomputable` keyword in the {lit}`abbrev`. -/
+/-- Exercise 8.1.10. Обратите внимание на отсутствие ключевого слова `noncomputable` перед {lit}`abbrev`. -/
 abbrev explicit_bijection : ℕ → ℚ := sorry
 
 theorem explicit_bijection_spec : Function.Bijective explicit_bijection := by sorry

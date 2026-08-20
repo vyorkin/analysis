@@ -1,13 +1,13 @@
 import Mathlib.Tactic
 import Analysis.Section_7_3
 /-!
-# Analysis I, Section 7.4: Rearrangement of series
+# Analysis I, раздел 7.4: Перестановка рядов
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Rearrangement of non-negative or absolutely convergent series.
+- Перестановка неотрицательных или абсолютно сходящихся рядов.
 -/
 
 namespace Chapter7
@@ -22,7 +22,7 @@ theorem Series.sum_eq_sum (b : ℕ → ℝ) {N : ℤ} (hN : N ≥ 0) : ∑ n ∈
 theorem Series.converges_of_permute_nonneg {a : ℕ → ℝ} (ha : (a : Series).nonneg) (hconv : (a : Series).converges)
   {f : ℕ → ℕ} (hf : Function.Bijective f) : 
     (fun n ↦ a (f n) : Series).converges ∧ (a : Series).sum = (fun n ↦ a (f n) : Series).sum := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set af : ℕ → ℝ := fun n ↦ a (f n)
   have haf : (af : Series).nonneg := by
     intro n; by_cases h : n ≥ 0 <;> simp [h, af]
@@ -117,11 +117,11 @@ theorem Series.permuted_zeta_2_eq_zeta_2 :
   (fun n : ℕ ↦ if Even n then 1/(n+2 : ℝ)^2 else 1/(n : ℝ)^2 : Series).sum = (fun n : ℕ ↦ 1/(n+1 : ℝ)^2 : Series).sum := by
     sorry
 
-/-- Proposition 7.4.3 (Rearrangement of series) -/
+/-- Proposition 7.4.3 (перестановка ряда) -/
 theorem Series.absConverges_of_permute {a : ℕ → ℝ} (ha : (a : Series).absConverges)
   {f : ℕ → ℕ} (hf : Function.Bijective f) : 
     (fun n ↦ a (f n) : Series).absConverges  ∧ (a : Series).sum = (fun n ↦ a (f n) : Series).sum := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set L := (a : Series).abs.sum
   have hconv := converges_of_absConverges ha
   unfold absConverges at ha
@@ -208,8 +208,8 @@ theorem Series.absConverges_of_subseries {a : ℕ → ℝ} (ha : (a : Series).ab
 
 /--
 {given -show}`n : ℕ`
-Exercise 7.4.2 : reprove Proposition 7.4.3 using Proposition 7.4.1, Proposition 7.2.14,
-and expressing {lean}`a n` as the difference of {lean}`a n + |a n|` and {lean}`|a n|`.
+Exercise 7.4.2: докажите Proposition 7.4.3 заново, используя Proposition 7.4.1, Proposition 7.2.14,
+и представив {lean}`a n` как разность {lean}`a n + |a n|` и {lean}`|a n|`.
 -/
 theorem Series.absConverges_of_permute' {a : ℕ → ℝ} (ha : (a : Series).absConverges)
   {f : ℕ → ℕ} (hf : Function.Bijective f) : 

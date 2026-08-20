@@ -3,20 +3,19 @@ import Analysis.Section_8_1
 import Analysis.Section_8_2
 
 /-!
-# Analysis I, Section 8.3: Uncountable sets
+# Analysis I, раздел 8.3: Несчётные множества
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Uncountable sets.
+- Несчётные множества.
 
-Some non-trivial API is provided beyond what is given in the textbook in order connect these
-notions with existing summation notions.
+Помимо того, что дано в учебнике, здесь предоставлено некоторое нетривиальное API, чтобы связать
+эти понятия с уже существующими понятиями суммирования.
 
 -/
 
@@ -24,7 +23,7 @@ namespace Chapter8
 
 /-- Theorem 8.3.1 -/
 theorem EqualCard.power_set_false (X : Type) : ¬ EqualCard X (Set X) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra!; choose f hf using this
   set A := {x | x ∉ f x }; choose x hx using hf.2 A
   by_cases h : x ∈ A <;> have h' := h
@@ -43,7 +42,7 @@ theorem Uncountable.equiv {X Y : Type} (hXY : EqualCard X Y) :
 
 /-- Corollary 8.3.3 -/
 theorem Uncountable.power_set_nat : Uncountable (Set ℕ) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [Uncountable.iff]
   unfold AtMostCountable
   have : ¬ CountablyInfinite (Set ℕ) := by
@@ -64,7 +63,7 @@ theorem Uncountable.power_set_nat : Uncountable (Set ℕ) := by
 open Real in
 /-- Corollary 8.3.4 -/
 theorem Uncountable.real : Uncountable ℝ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set a : ℕ → ℝ := fun n ↦ (10 : ℝ)^(-(n : ℝ))
   set f : Set ℕ → ℝ := fun A ↦ ∑' n : A, a n
   have hsummable (A : Set ℕ) : Summable (fun n : A ↦ a n) := by
@@ -161,7 +160,7 @@ example {X : Type} [Finite X] : Nat.card (Set X) = 2 ^ Nat.card X := by
   sorry
 
 open Classical in
-/-- Exercise 8.3.2.  Some subtle type changes due to how sets are implemented in Mathlib. Also we shift the sequence {lit}`D` by one so that we can work in {lean}`Set A` rather than {lean}`Set B`. -/
+/-- Exercise 8.3.2. Из-за того, как множества реализованы в Mathlib, встречаются некоторые тонкие смены типа. Также мы сдвигаем последовательность {lit}`D` на единицу, чтобы работать в {lean}`Set A`, а не в {lean}`Set B`. -/
 theorem Schroder_Bernstein_lemma {X : Type} {A B C : Set X} (hAB : A ⊆ B) (hBC : B ⊆ C) (f : C ↪ A) : 
   let D : ℕ → Set A := Nat.rec ((f.image ∘ ((B.embeddingOfSubset _ hBC).image)) {x : B | ↑x ∉ A}) (fun _ ↦ (f.image ∘ ((B.embeddingOfSubset _ hBC).image) ∘ (A.embeddingOfSubset _ hAB).image))
   Set.univ.PairwiseDisjoint D ∧

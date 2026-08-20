@@ -5,15 +5,17 @@ import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
-# Analysis I, Section 7.5: The root and ratio tests
+# Analysis I, раздел 7.5: Признаки Коши и Даламбера
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original text.  When there is a choice between a more idiomatic Lean solution and a more faithful translation, I have generally chosen the latter.  In particular, there will be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- The root and ratio tests/
+- Признаки Коши (корневой) и Даламбера (по отношению).
 
-A point that is only implicitly stated in the text is that for the root and ratio tests, the lim inf and lim sup should be interpreted within the extended reals.  The Lean formalizations below make this point more explicit.
+Момент, который в тексте лишь подразумевается: для этих признаков lim inf и lim sup следует
+понимать в расширенных вещественных числах. Приведённые ниже формализации на Lean делают это
+явным.
 
 -/
 
@@ -21,10 +23,10 @@ namespace Chapter7
 
 open Filter Real EReal
 
-/-- Theorem 7.5.1(a) (Root test).  A technical condition is needed to ensure the limsup is finite. -/
+/-- Theorem 7.5.1(a) (признак Коши). Нужно техническое условие, гарантирующее конечность limsup. -/
 theorem Series.root_test_pos {s : Series}
   (h : atTop.limsup (fun n ↦ ((|s.seq n|^(1/(n : ℝ)) : ℝ) : EReal)) < 1) : s.absConverges := by
-    -- This proof is written to follow the structure of the original text.
+    -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     set α' : EReal := atTop.limsup (fun n ↦ ↑(|s.seq n|^(1/(n : ℝ)) : ℝ))
     have hpos : 0 ≤ α' := by
       apply le_limsup_of_frequently_le (Frequently.of_forall _) (by isBoundedDefault)
@@ -74,10 +76,10 @@ theorem Series.root_test_pos {s : Series}
     by_cases hn : n ≥ N <;> simp [hn] <;> grind
 
 
-/-- Theorem 7.5.1(b) (Root test) -/
+/-- Theorem 7.5.1(b) (признак Коши) -/
 theorem Series.root_test_neg {s : Series}
   (h : atTop.limsup (fun n ↦ ((|s.seq n|^(1/(n : ℝ)) : ℝ) : EReal)) > 1) : s.diverges := by
-    -- This proof is written to follow the structure of the original text.
+    -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     apply frequently_lt_of_lt_limsup (by isBoundedDefault) at h
     apply diverges_of_nodecay
     by_contra this; rw [LinearOrderedAddCommGroup.tendsto_nhds] at this; specialize this 1 (by positivity)
@@ -86,12 +88,12 @@ theorem Series.root_test_neg {s : Series}
     rw [show (1 : EReal) = (1 : ℝ) by simp, EReal.coe_lt_coe_iff] at hs
     linarith
 
-/-- Theorem 7.5.1(c) (Root test) / Exercise 7.5.3 -/
+/-- Theorem 7.5.1(c) (признак Коши) / Exercise 7.5.3 -/
 theorem Series.root_test_inconclusive : ∃ s : Series,
   atTop.Tendsto (fun n ↦ |s.seq n|^(1/(n : ℝ))) (nhds 1) ∧ s.diverges := by
     sorry
 
-/-- Theorem 7.5.1 (Root test) / Exercise 7.5.3 -/
+/-- Theorem 7.5.1 (признак Коши) / Exercise 7.5.3 -/
 theorem Series.root_test_inconclusive' : ∃ s : Series,
   atTop.Tendsto (fun n ↦ |s.seq n|^(1/(n : ℝ))) (nhds 1) ∧ s.absConverges := by
     sorry
@@ -105,7 +107,7 @@ theorem Series.ratio_ineq {c : ℤ → ℝ} (m : ℤ) (hpos : ∀ n ≥ m, c n >
   ∧ atTop.limsup (fun n ↦ (((c n)^(1/(n : ℝ)) : ℝ) : EReal)) ≤
     atTop.limsup (fun n ↦ ↑(c (n+1) / c n : ℝ))
     := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   refine ⟨ ?_, liminf_le_limsup ?_ ?_, ?_ ⟩ <;> try isBoundedDefault
   . sorry
   set L' := limsup (fun n ↦ ((c (n+1) / c n : ℝ) : EReal)) .atTop
@@ -175,7 +177,7 @@ theorem Series.ratio_ineq {c : ℤ → ℝ} (m : ℤ) (hpos : ∀ n ≥ m, c n >
       . apply (continuous_const_rpow (by positivity)).tendsto'; simp
       exact tendsto_inv_atTop_zero.comp tendsto_intCast_atTop_atTop
 
-/-- Corollary 7.5.3 (Ratio test, convergence). -/
+/-- Corollary 7.5.3 (признак Даламбера, сходимость). -/
 theorem Series.ratio_test_pos {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
   (h : atTop.limsup (fun n ↦ ((|s.seq (n+1)| / |s.seq n| : ℝ) : EReal)) < 1) : s.absConverges := by
     apply Series.root_test_pos (lt_of_le_of_lt _ h)
@@ -183,19 +185,19 @@ theorem Series.ratio_test_pos {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
     convert hnon using 1 with n
     simp
 
-/-- Corollary 7.5.3 (Ratio test, divergence). -/
+/-- Corollary 7.5.3 (признак Даламбера, расходимость). -/
 theorem Series.ratio_test_neg {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
   (h : atTop.liminf (fun n ↦ ((|s.seq (n+1)| / |s.seq n| : ℝ) : EReal)) > 1) : s.diverges := by
     apply Series.root_test_neg (lt_of_lt_of_le h _)
     convert (ratio_ineq s.m _).1.trans (ratio_ineq s.m _).2.1 with n; rfl
     all_goals convert hnon using 1 with n; simp
 
-/-- Corollary 7.5.3(i) (Ratio test inconclusive, diverges) / Exercise 7.5.3 -/
+/-- Corollary 7.5.3(i) (признак Даламбера неоднозначен, расходится) / Exercise 7.5.3 -/
 theorem Series.ratio_test_inconclusive : ∃ s : Series, (∀ n ≥ s.m, s.seq n ≠ 0) ∧
   atTop.Tendsto (fun n ↦ |s.seq (n+1)| / |s.seq n|) (nhds 1) ∧ s.diverges := by
     sorry
 
-/-- Corollary 7.5.3(ii) (Ratio test inconclusive, absConverges) / Exercise 7.5.3 -/
+/-- Corollary 7.5.3(ii) (признак Даламбера неоднозначен, абсолютно сходится) / Exercise 7.5.3 -/
 theorem Series.ratio_test_inconclusive' : ∃ s : Series, (∀ n ≥ s.m, s.seq n ≠ 0) ∧
   atTop.Tendsto (fun n ↦ |s.seq (n+1)| / |s.seq n|) (nhds 1) ∧ s.absConverges := by
     sorry

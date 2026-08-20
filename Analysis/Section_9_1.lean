@@ -2,26 +2,25 @@ import Mathlib.Tactic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Analysis.Section_6_4
 /-!
-# Analysis I, Section 9.1: Subsets of the real line
+# Analysis I, раздел 9.1: Подмножества вещественной прямой
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Review of Mathlib intervals.
-- Adherent points, limit points, isolated points.
-- Closed sets and closure.
-- The Heine-Borel theorem for the real line.
+- Обзор интервалов Mathlib.
+- Точки прикосновения, предельные точки, изолированные точки.
+- Замкнутые множества и замыкание.
+- Теорема Гейне-Бореля для вещественной прямой.
 
 -/
 
 variable (I : Type*)
 
-/- Definition 9.1.1 (Intervals) -/
+/- Definition 9.1.1 (интервалы) -/
 #check Set.Icc_def
 #check Set.Ico_def
 #check Set.Ioc_def
@@ -57,8 +56,8 @@ example {a b : EReal} (h : a = b) : Set.Icc a b = {a} := by
   sorry
 
 /--
-Definition 9.1.5.  Note that a slightly different {name}`Real.Adherent` was defined in
-Chapter 6.4
+Definition 9.1.5. Заметьте, что немного другое понятие {name}`Real.Adherent` было определено в
+Главе 6.4
 -/
 abbrev Real.adherent' (ε : ℝ) (x : ℝ) (X : Set ℝ) := ∃ y ∈ X, |x - y| ≤ ε
 
@@ -72,14 +71,14 @@ example : (0.5 : ℝ).adherent' 1.1 {1,2,3} := by sorry
 
 namespace Chapter9
 
-/-- Definition 9.1.8 (Adherent points). -/
+/-- Definition 9.1.8 (точки прикосновения). -/
 abbrev AdherentPt (x : ℝ) (X : Set ℝ) := ∀ ε > (0 : ℝ), ε.adherent' x X
 
 example : AdherentPt 1 (.Ioo 0 1) := by sorry
 
 example : ¬ AdherentPt 2 (.Ioo 0 1) := by sorry
 
-/-- Definition 9.1.10 (Closure).  Here we identify this definition with the Mathlib version. -/
+/-- Definition 9.1.10 (замыкание). Здесь мы отождествляем это определение с версией из Mathlib. -/
 theorem closure_def (X : Set ℝ) : closure X = { x | AdherentPt x X } := by
   ext; simp [Real.mem_closure_iff, AdherentPt, Real.adherent']
   constructor <;> intro h ε hε
@@ -88,28 +87,28 @@ theorem closure_def (X : Set ℝ) : closure X = { x | AdherentPt x X } := by
 theorem closure_def' (X : Set ℝ) (x : ℝ) : x ∈ closure X ↔ AdherentPt x X := by
   simp [closure_def]
 
-/-- identification of {name}`AdherentPt` with Mathlib's {name}`ClusterPt` -/
+/-- отождествление {name}`AdherentPt` с {name}`ClusterPt` из Mathlib -/
 theorem AdherentPt_def (x : ℝ) (X : Set ℝ) : AdherentPt x X = ClusterPt x (.principal X) := by
   rw [←closure_def', mem_closure_iff_clusterPt]
 
-/-- Lemma 9.1.11 / Exercise 9.1.1 (subset) -/
+/-- Lemma 9.1.11 / Exercise 9.1.1 (подмножество) -/
 theorem subset_closure (X : Set ℝ) : X ⊆ closure X := by sorry
 
-/-- Lemma 9.1.11 / Exercise 9.1.1 (union) -/
+/-- Lemma 9.1.11 / Exercise 9.1.1 (объединение) -/
 theorem closure_union (X Y : Set ℝ) : closure (X ∪ Y) = closure X ∪ closure Y := by sorry
 
-/-- Lemma 9.1.11 / Exercise 9.1.1 (inter) -/
+/-- Lemma 9.1.11 / Exercise 9.1.1 (пересечение) -/
 theorem closure_inter (X Y : Set ℝ) : closure (X ∩ Y) ⊆ closure X ∩ closure Y := by sorry
 
-/-- Lemma 9.1.11 / Exercise 9.1.1 (monotonicity) -/
+/-- Lemma 9.1.11 / Exercise 9.1.1 (монотонность) -/
 theorem closure_subset {X Y : Set ℝ} (h : X ⊆ Y) : closure X ⊆ closure Y := by sorry
 
-/-- Lemma 9.1.11 / Exercise 9.1.1 (sandwich) -/
+/-- Lemma 9.1.11 / Exercise 9.1.1 (зажатие с двух сторон) -/
 theorem closure_of_subset_closure {X Y : Set ℝ} (h : X ⊆ Y) (h' : Y ⊆ closure X) : closure Y = closure X := by sorry
 
 /-- Lemma 9.1.12 -/
 theorem closure_of_Ioo {a b : ℝ} (h : a < b) : closure (.Ioo a b) = .Icc a b := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   ext x; simp [closure_def, AdherentPt, Real.adherent']
   constructor
   . intro h; contrapose! h
@@ -172,7 +171,7 @@ theorem limit_of_AdherentPt (X : Set ℝ) (x : ℝ) :
 theorem AdherentPt.of_mem {X : Set ℝ} {x : ℝ} (h : x ∈ X) : AdherentPt x X := by
   rw [limit_of_AdherentPt]; use fun _ ↦ x; simp [h]
 
-/-- Definition 9.1.15.  Here we use the Mathlib definition. -/
+/-- Definition 9.1.15. Здесь мы используем определение из Mathlib. -/
 theorem isClosed_def (X : Set ℝ) : IsClosed X ↔ closure X = X :=
   closure_eq_iff_isClosed.symm
 
@@ -223,14 +222,14 @@ theorem isClosed_iff_limits_mem (X : Set ℝ) :
   . intro h _ L _ _; apply h L; rw [limit_of_AdherentPt]; solve_by_elim
   intro _ _ hx; rw [limit_of_AdherentPt] at hx; grind
 
-/-- Definition 9.1.18 (Limit points) -/
+/-- Definition 9.1.18 (предельные точки) -/
 abbrev LimitPt (x : ℝ) (X : Set ℝ) := AdherentPt x (X \ {x})
 
-/-- Identification with Mathlib's {name}`AccPt` -/
+/-- Отождествление с {name}`AccPt` из Mathlib -/
 theorem LimitPt.iff_AccPt (x : ℝ) (X : Set ℝ) : LimitPt x X ↔ AccPt x (.principal X) := by
   rw [accPt_principal_iff_clusterPt,←AdherentPt_def]
 
-/-- Definition 9.1.19 (Isolated points). -/
+/-- Definition 9.1.19 (изолированные точки). -/
 abbrev IsolatedPt (x : ℝ) (X : Set ℝ) := x ∈ X ∧ ∃ ε>0, ∀ y ∈ X \ {x}, |x-y| > ε
 
 /-- Example 9.1.19 -/
@@ -247,7 +246,7 @@ theorem LimitPt.iff_limit (x : ℝ) (X : Set ℝ) :
 
 /-- Lemma 9.1.21 -/
 theorem mem_Icc_isLimit {a b x : ℝ} (h : a < b) (hx : x ∈ Set.Icc a b) : LimitPt x (.Icc a b) := by
-  -- This proof is written to follow the structure of the original text, with some slight simplifications.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста, с небольшими упрощениями.
   simp at hx
   rw [LimitPt.iff_limit]
   obtain hxb | hxb := le_iff_lt_or_eq.1 hx.2
@@ -290,7 +289,7 @@ theorem mem_Iio_isLimit {a x : ℝ} (hx : x ∈ Set.Iio a) : LimitPt x (.Iio a) 
 theorem mem_R_isLimit {x : ℝ} : LimitPt x (.univ) := by
   sorry
 
-/-- Definition 9.1.22.  We use here Mathlib's {name}`Bornology.IsBounded` -/
+/-- Definition 9.1.22. Здесь мы используем {name}`Bornology.IsBounded` из Mathlib -/
 
 theorem isBounded_def (X : Set ℝ) : Bornology.IsBounded X ↔ ∃ M > 0, X ⊆ .Icc (-M) M := by
   simp [isBounded_iff_forall_norm_le]
@@ -318,7 +317,7 @@ theorem Q_unbounded : ¬ Bornology.IsBounded ((fun n : ℚ ↦ (n : ℝ)) '' .un
 /-- Example 9.1.23 (R) -/
 theorem R_unbounded : ¬ Bornology.IsBounded (.univ : Set ℝ) := by sorry
 
-/-- Theorem 9.1.24 / Exercise 9.1.13 (Heine-Borel theorem for the line). -/
+/-- Theorem 9.1.24 / Exercise 9.1.13 (теорема Гейне-Бореля для прямой). -/
 theorem Heine_Borel (X : Set ℝ) : 
   IsClosed X ∧ Bornology.IsBounded X ↔ ∀ a : ℕ → ℝ, (∀ n, a n ∈ X) →
   (∃ n : ℕ → ℕ, StrictMono n
@@ -365,7 +364,7 @@ example {X : Set ℝ} (hX : X ≠ ∅) : Bornology.IsBounded X ↔
 example {X : Set ℝ} (hX : Bornology.IsBounded X) : Bornology.IsBounded (closure X) := by
   sorry
 
-/-- Exercise 9.1.12.  As a followup: prove or disprove this exercise with {lean}`[Fintype I]` removed. -/
+/-- Exercise 9.1.12. В качестве продолжения: докажите или опровергните это утверждение без {lean}`[Fintype I]`. -/
 example {I : Type} [Fintype I] (X : I → Set ℝ) (hX : ∀ i, Bornology.IsBounded (X i)) : 
   Bornology.IsBounded (⋃ i, X i) := by
   sorry
