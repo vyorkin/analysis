@@ -4,35 +4,36 @@ import Mathlib.Algebra.Group.MinimalAxioms
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 4.2
+# Analysis I, раздел 4.2
 
-This file is a translation of Section 4.2 of Analysis I to Lean 4.
-All numbering refers to the original text.
+Этот файл — перевод раздела 4.2 книги Analysis I на Lean 4.
+Вся нумерация ссылается на оригинальный текст.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Definition of the "Section 4.2" rationals, `Section_4_2.Rat`, as formal quotients `a // b` of
-  integers `a b:ℤ`, up to equivalence.  (This is a quotient of a scaffolding type
-  `Section_4_2.PreRat`, which consists of formal quotients without any equivalence imposed.)
+- Определение рациональных чисел "раздела 4.2", `Section_4_2.Rat`, как формальных частных `a // b`
+  целых чисел `a b:ℤ`, с точностью до эквивалентности. (Это фактор вспомогательного типа
+  `Section_4_2.PreRat`, состоящего из формальных частных без какой-либо наложенной эквивалентности.)
 
-- Field operations and order on these rationals, as well as an embedding of {lean}`ℕ` and {lean}`ℤ`.
+- Операции поля и порядок на этих рациональных числах, а также вложение {lean}`ℕ` и {lean}`ℤ`.
 
-- Equivalence with the Mathlib rationals {name}`_root_.Rat` (or {lean}`ℚ`), which we will use going forward.
+- Эквивалентность с рациональными числами Mathlib {name}`_root_.Rat` (или {lean}`ℚ`), которые мы
+  будем использовать в дальнейшем.
 
-Note: here (and in the sequel) we use Mathlib's natural numbers {lean}`ℕ` and integers {lean}`ℤ` rather than
-the Chapter 2 natural numbers and Section 4.1 integers.
+Примечание: здесь (и далее) мы используем натуральные числа {lean}`ℕ` и целые числа {lean}`ℤ` из
+Mathlib, а не натуральные числа Главы 2 и целые числа раздела 4.1.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -58,32 +59,33 @@ theorem PreRat.eq (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) :
 
 abbrev Rat := Quotient PreRat.instSetoid
 
-/-- We give division a "junk" value of 0//1 if the denominator is zero -/
+/-- Мы присваиваем делению "мусорное" значение 0//1, если знаменатель равен нулю -/
 abbrev Rat.formalDiv (a b : ℤ) : Rat :=
   Quotient.mk PreRat.instSetoid (if h : b ≠ 0 then ⟨ a,b,h ⟩ else ⟨ 0, 1, by decide ⟩)
 
 infix:100 " // " => Rat.formalDiv
 
-/-- Definition 4.2.1 (Rationals) -/
+/-- Definition 4.2.1 (Рациональные числа) -/
 theorem Rat.eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : a // b = c // d ↔ a * d = c * b := by
   simp [formalDiv, hb, hd, Quotient.eq, PreRat.instSetoid]
 
-/-- Definition 4.2.1 (Rationals) -/
+/-- Definition 4.2.1 (Рациональные числа) -/
 theorem Rat.eq_diff (n : Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
   apply Quotient.ind _ n; intro ⟨ a, b, h ⟩
   refine ⟨ a, b, h, ?_ ⟩
   simp [formalDiv, h]
 
 /--
-  Decidability of equality. Hint: modify the proof of {lean}`DecidableEq Int` from the previous
-  section. However, because formal division handles the case of zero denominator separately, it
-  may be more convenient to avoid that operation and work directly with the {name}`Quotient` API.
+  Разрешимость равенства. Подсказка: измените доказательство {lean}`DecidableEq Int` из
+  предыдущего раздела. Однако поскольку формальное деление отдельно обрабатывает случай нулевого
+  знаменателя, может быть удобнее избегать этой операции и работать напрямую с API
+  {name}`Quotient`.
 
 -/
 instance Rat.decidableEq : DecidableEq Rat := by
   sorry
 
-/-- Lemma 4.2.3 (Addition well-defined) -/
+/-- Lemma 4.2.3 (Сложение определено корректно) -/
 instance Rat.add_inst : Add Rat where
   add := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*d+b*c) // (b*d)) (by
     intro ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ⟨ a', b', h1' ⟩ ⟨ c', d', h2' ⟩ h3 h4
@@ -91,29 +93,29 @@ instance Rat.add_inst : Add Rat where
     linear_combination d * d' * h3 + b * b' * h4
   )
 
-/-- Definition 4.2.2 (Addition of rationals) -/
+/-- Definition 4.2.2 (Сложение рациональных чисел) -/
 theorem Rat.add_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : 
     (a // b) + (c // d) = (a*d + b*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
-/-- Lemma 4.2.3 (Multiplication well-defined) -/
+/-- Lemma 4.2.3 (Умножение определено корректно) -/
 instance Rat.mul_inst : Mul Rat where
   mul := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*c) // (b*d)) (by sorry)
 
-/-- Definition 4.2.2 (Multiplication of rationals) -/
+/-- Definition 4.2.2 (Умножение рациональных чисел) -/
 theorem Rat.mul_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : 
     (a // b) * (c // d) = (a*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
-/-- Lemma 4.2.3 (Negation well-defined) -/
+/-- Lemma 4.2.3 (Отрицание определено корректно) -/
 instance Rat.neg_inst : Neg Rat where
   neg := Quotient.lift (fun ⟨ a, b, h1 ⟩ ↦ (-a) // b) (by sorry)
 
-/-- Definition 4.2.2 (Negation of rationals) -/
+/-- Definition 4.2.2 (Отрицание рациональных чисел) -/
 theorem Rat.neg_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : - (a // b) = (-a) // b := by
   convert Quotient.lift_mk _ _ _ <;> simp [hb]
 
-/-- Embedding the integers in the rationals -/
+/-- Вложение целых чисел в рациональные -/
 instance Rat.instIntCast : IntCast Rat where
   intCast a := a // 1
 
@@ -129,27 +131,28 @@ theorem Rat.coe_Nat_eq (n : ℕ) : (n : Rat) = n // 1 := rfl
 
 theorem Rat.of_Nat_eq (n : ℕ) : (ofNat(n) : Rat) = (ofNat(n) : Nat) // 1 := rfl
 
-/-- natCast distributes over successor -/
+/-- natCast дистрибутивен относительно следующего элемента -/
 theorem Rat.natCast_succ (n : ℕ) : ((n + 1 : ℕ) : Rat) = (n : Rat) + 1 := by sorry
 
-/-- intCast distributes over addition -/
+/-- intCast дистрибутивен относительно сложения -/
 lemma Rat.intCast_add (a b : ℤ) : (a : Rat) + (b : Rat) = (a+b : ℤ) := by sorry
 
-/-- intCast distributes over multiplication -/
+/-- intCast дистрибутивен относительно умножения -/
 lemma Rat.intCast_mul (a b : ℤ) : (a : Rat) * (b : Rat) = (a*b : ℤ) := by sorry
 
-/-- intCast commutes with negation -/
+/-- intCast коммутирует с отрицанием -/
 lemma Rat.intCast_neg (a : ℤ) : - (a : Rat) = (-a : ℤ) := rfl
 
 theorem Rat.coe_Int_inj : Function.Injective (fun n : ℤ ↦ (n : Rat)) := by sorry
 
 /--
-  Whereas the book leaves the inverse of 0 undefined, it is more convenient in Lean to assign a
-  "junk" value to this inverse; we arbitrarily choose this junk value to be 0.
+  В то время как в книге обратный элемент к 0 остаётся неопределённым, в Lean удобнее присвоить
+  этой обратной величине "мусорное" значение; мы произвольно выбираем в качестве такого
+  мусорного значения 0.
 -/
 instance Rat.instInv : Inv Rat where
   inv := Quotient.lift (fun ⟨ a, b, h1 ⟩ ↦ b // a) (by
-    sorry -- hint : split into the `a=0` and `a≠0` cases
+    sorry -- подсказка: разберите случаи `a=0` и `a≠0`
 )
 
 lemma Rat.inv_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a // b)⁻¹ = b // a := by
@@ -158,44 +161,44 @@ lemma Rat.inv_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a // b)⁻¹ = b // a := 
 @[simp]
 theorem Rat.inv_zero : (0 : Rat)⁻¹ = 0 := rfl
 
-/-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
+/-- Proposition 4.2.4 (законы алгебры) / Exercise 4.2.3 -/
 instance Rat.addGroup_inst : AddGroup Rat :=
 AddGroup.ofLeftAxioms (by
-  -- this proof is written to follow the structure of the original text.
+  -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   intro x y z
   obtain ⟨ a, b, hb, rfl ⟩ := eq_diff x
   obtain ⟨ c, d, hd, rfl ⟩ := eq_diff y
   obtain ⟨ e, f, hf, rfl ⟩ := eq_diff z
-  have hbd : b*d ≠ 0 := Int.mul_ne_zero hb hd     -- can also use `observe hbd : b*d ≠ 0` here
-  have hdf : d*f ≠ 0 := Int.mul_ne_zero hd hf     -- can also use `observe hdf : d*f ≠ 0` here
-  have hbdf : b*d*f ≠ 0 := Int.mul_ne_zero hbd hf -- can also use `observe hbdf : b*d*f ≠ 0` here
+  have hbd : b*d ≠ 0 := Int.mul_ne_zero hb hd     -- можно также использовать `observe hbd : b*d ≠ 0`
+  have hdf : d*f ≠ 0 := Int.mul_ne_zero hd hf     -- можно также использовать `observe hdf : d*f ≠ 0`
+  have hbdf : b*d*f ≠ 0 := Int.mul_ne_zero hbd hf -- можно также использовать `observe hbdf : b*d*f ≠ 0`
   rw [add_eq _ _ hb hd, add_eq _ _ hbd hf, add_eq _ _ hd hf,
       add_eq _ _ hb hdf, ←mul_assoc b, eq _ _ hbdf hbdf]
   ring
 )
  (by sorry) (by sorry)
 
-/-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
+/-- Proposition 4.2.4 (законы алгебры) / Exercise 4.2.3 -/
 instance Rat.instAddCommGroup : AddCommGroup Rat where
   add_comm := by sorry
 
-/-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
+/-- Proposition 4.2.4 (законы алгебры) / Exercise 4.2.3 -/
 instance Rat.instCommMonoid : CommMonoid Rat where
   mul_comm := by sorry
   mul_assoc := by sorry
   one_mul := by sorry
   mul_one := by sorry
 
-/-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
+/-- Proposition 4.2.4 (законы алгебры) / Exercise 4.2.3 -/
 instance Rat.instCommRing : CommRing Rat where
   left_distrib := by sorry
   right_distrib := by sorry
   zero_mul := by sorry
   mul_zero := by sorry
   mul_assoc := by sorry
-  -- Usually CommRing will generate a natCast instance and a proof for this.
-  -- However, we are using a custom natCast for which `natCast_succ` cannot
-  -- be proven automatically by `rfl`. Luckily we have proven it already.
+  -- Обычно CommRing сам генерирует инстанс natCast и доказательство для этого поля.
+  -- Однако мы используем собственный natCast, для которого `natCast_succ` не может
+  -- быть автоматически доказан через `rfl`. К счастью, мы уже доказали это ранее.
   natCast_succ := natCast_succ
 
 instance Rat.instRatCast : RatCast Rat where
@@ -214,12 +217,12 @@ theorem Rat.coe_Rat_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a/b : ℚ) = a // b
   have hq : num / den = q := Rat.num_div_den q
   rwa [div_eq_div_iff] at hq <;> simp [hden, hb]
 
-/-- Default definition of division -/
+/-- Определение деления по умолчанию -/
 instance Rat.instDivInvMonoid : DivInvMonoid Rat where
 
 theorem Rat.div_eq (q r : Rat) : q/r = q * r⁻¹ := by rfl
 
-/-- Proposition 4.2.4 (laws of algebra) / Exercise 4.2.3 -/
+/-- Proposition 4.2.4 (законы алгебры) / Exercise 4.2.3 -/
 instance Rat.instField : Field Rat where
   exists_pair_ne := by sorry
   mul_inv_cancel := by sorry
@@ -237,7 +240,7 @@ instance Rat.instField : Field Rat where
 
 example : (3//4) / (5//6) = 9 // 10 := by sorry
 
-/-- Definition of subtraction (rationals). -/
+/-- Определение вычитания (рациональных чисел). -/
 theorem Rat.sub_eq (a b : Rat) : a - b = a + (-b) := by rfl
 
 def Rat.coe_int_hom : ℤ →+* Rat where
@@ -247,29 +250,29 @@ def Rat.coe_int_hom : ℤ →+* Rat where
   map_add' := by sorry
   map_mul' := by sorry
 
-/-- Definition 4.2.6 (positivity) -/
+/-- Definition 4.2.6 (положительность) -/
 def Rat.isPos (q : Rat) : Prop := ∃ a b : ℤ, a > 0 ∧ b > 0 ∧ q = a/b
 
-/-- Definition 4.2.6 (negativity) -/
+/-- Definition 4.2.6 (отрицательность) -/
 def Rat.isNeg (q : Rat) : Prop := ∃ r : Rat, r.isPos ∧ q = -r
 
-/-- Lemma 4.2.7 (trichotomy of rationals) / Exercise 4.2.4 -/
+/-- Lemma 4.2.7 (трихотомия рациональных чисел) / Exercise 4.2.4 -/
 theorem Rat.trichotomous (x : Rat) : x = 0 ∨ x.isPos ∨ x.isNeg := by sorry
 
-/-- Lemma 4.2.7 (trichotomy of rationals) / Exercise 4.2.4 -/
+/-- Lemma 4.2.7 (трихотомия рациональных чисел) / Exercise 4.2.4 -/
 theorem Rat.not_zero_and_pos (x : Rat) : ¬(x = 0 ∧ x.isPos) := by sorry
 
-/-- Lemma 4.2.7 (trichotomy of rationals) / Exercise 4.2.4 -/
+/-- Lemma 4.2.7 (трихотомия рациональных чисел) / Exercise 4.2.4 -/
 theorem Rat.not_zero_and_neg (x : Rat) : ¬(x = 0 ∧ x.isNeg) := by sorry
 
-/-- Lemma 4.2.7 (trichotomy of rationals) / Exercise 4.2.4 -/
+/-- Lemma 4.2.7 (трихотомия рациональных чисел) / Exercise 4.2.4 -/
 theorem Rat.not_pos_and_neg (x : Rat) : ¬(x.isPos ∧ x.isNeg) := by sorry
 
-/-- Definition 4.2.8 (Ordering of the rationals) -/
+/-- Definition 4.2.8 (Порядок на рациональных числах) -/
 instance Rat.instLT : LT Rat where
   lt x y := (x-y).isNeg
 
-/-- Definition 4.2.8 (Ordering of the rationals) -/
+/-- Definition 4.2.8 (Порядок на рациональных числах) -/
 instance Rat.instLE : LE Rat where
   le x y := (x < y) ∨ (x = y)
 
@@ -279,39 +282,39 @@ theorem Rat.le_iff (x y : Rat) : x ≤ y ↔ (x < y) ∨ (x = y) := by rfl
 theorem Rat.gt_iff (x y : Rat) : x > y ↔ (x-y).isPos := by sorry
 theorem Rat.ge_iff (x y : Rat) : x ≥ y ↔ (x > y) ∨ (x = y) := by sorry
 
-/-- Proposition 4.2.9(a) (order trichotomy) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(a) (трихотомия порядка) / Exercise 4.2.5 -/
 theorem Rat.trichotomous' (x y : Rat) : x > y ∨ x < y ∨ x = y := by sorry
 
-/-- Proposition 4.2.9(a) (order trichotomy) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(a) (трихотомия порядка) / Exercise 4.2.5 -/
 theorem Rat.not_gt_and_lt (x y : Rat) : ¬ (x > y ∧ x < y):= by sorry
 
-/-- Proposition 4.2.9(a) (order trichotomy) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(a) (трихотомия порядка) / Exercise 4.2.5 -/
 theorem Rat.not_gt_and_eq (x y : Rat) : ¬ (x > y ∧ x = y):= by sorry
 
-/-- Proposition 4.2.9(a) (order trichotomy) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(a) (трихотомия порядка) / Exercise 4.2.5 -/
 theorem Rat.not_lt_and_eq (x y : Rat) : ¬ (x < y ∧ x = y):= by sorry
 
-/-- Proposition 4.2.9(b) (order is anti-symmetric) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(b) (порядок антисимметричен) / Exercise 4.2.5 -/
 theorem Rat.antisymm (x y : Rat) : x < y ↔ y > x := by sorry
 
-/-- Proposition 4.2.9(c) (order is transitive) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(c) (порядок транзитивен) / Exercise 4.2.5 -/
 theorem Rat.lt_trans {x y z : Rat} (hxy : x < y) (hyz : y < z) : x < z := by sorry
 
-/-- Proposition 4.2.9(d) (addition preserves order) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(d) (сложение сохраняет порядок) / Exercise 4.2.5 -/
 theorem Rat.add_lt_add_right {x y : Rat} (z : Rat) (hxy : x < y) : x + z < y + z := by sorry
 
-/-- Proposition 4.2.9(e) (positive multiplication preserves order) / Exercise 4.2.5 -/
+/-- Proposition 4.2.9(e) (умножение на положительное сохраняет порядок) / Exercise 4.2.5 -/
 theorem Rat.mul_lt_mul_right {x y z : Rat} (hxy : x < y) (hz : z.isPos) : x * z < y * z := by sorry
 
-/-- (Not from textbook) Establish the decidability of this order. -/
+/-- (Не из учебника) Устанавливает разрешимость этого порядка. -/
 instance Rat.decidableRel : DecidableRel (· ≤ · : Rat → Rat → Prop) := by
   intro n m
   have : ∀ (n : PreRat) (m : PreRat),
       Decidable (Quotient.mk PreRat.instSetoid n ≤ Quotient.mk PreRat.instSetoid m) := by
     intro ⟨ a,b,hb ⟩ ⟨ c,d,hd ⟩
-    -- at this point, the goal is morally `Decidable(a//b ≤ c//d)`, but there are technical
-    -- issues due to the junk value of formal division when the denominator vanishes.
-    -- It may be more convenient to avoid formal division and work directly with `Quotient.mk`.
+    -- на этом этапе цель, по сути, `Decidable(a//b ≤ c//d)`, но здесь возникают технические
+    -- сложности из-за мусорного значения формального деления, когда знаменатель обращается в ноль.
+    -- Может быть удобнее избегать формального деления и работать напрямую с `Quotient.mk`.
     cases (0 : ℤ).decLe (b*d) with
       | isTrue hbd =>
         cases (a * d).decLe (b * c) with
@@ -331,7 +334,7 @@ instance Rat.decidableRel : DecidableRel (· ≤ · : Rat → Rat → Prop) := b
             sorry
   exact Quotient.recOnSubsingleton₂ n m this
 
-/-- (Not from textbook) Rat has the structure of a linear ordering. -/
+/-- (Не из учебника) Rat обладает структурой линейного порядка. -/
 instance Rat.instLinearOrder : LinearOrder Rat where
   le_refl := sorry
   le_trans := sorry
@@ -340,7 +343,7 @@ instance Rat.instLinearOrder : LinearOrder Rat where
   le_total := sorry
   toDecidableLE := decidableRel
 
-/-- (Not from textbook) Rat has the structure of a strict ordered ring. -/
+/-- (Не из учебника) Rat обладает структурой строго упорядоченного кольца. -/
 instance Rat.instIsStrictOrderedRing : IsStrictOrderedRing Rat where
   add_le_add_left := by sorry
   add_le_add_right := by sorry
@@ -355,8 +358,8 @@ theorem Rat.mul_lt_mul_right_of_neg (x y z : Rat) (hxy : x < y) (hz : z.isNeg) :
 
 
 /--
-  Not in textbook: create an equivalence between Rat and ℚ. This requires some familiarity with
-  the API for Mathlib's version of the rationals.
+  Не из учебника: строит эквивалентность между Rat и ℚ. Для этого требуется некоторое знакомство
+  с API версии рациональных чисел из Mathlib.
 -/
 abbrev Rat.equivRat : Rat ≃ ℚ where
   toFun := Quotient.lift (fun ⟨ a, b, h ⟩ ↦ a / b) (by
@@ -365,19 +368,19 @@ abbrev Rat.equivRat : Rat ≃ ℚ where
   left_inv n := sorry
   right_inv n := sorry
 
-/-- Not in textbook: equivalence preserves order -/
+/-- Не из учебника: эквивалентность сохраняет порядок -/
 abbrev Rat.equivRat_order : Rat ≃o ℚ where
   toEquiv := equivRat
   map_rel_iff' := by sorry
 
-/-- Not in textbook: equivalence preserves ring operations -/
+/-- Не из учебника: эквивалентность сохраняет кольцевые операции -/
 abbrev Rat.equivRat_ring : Rat ≃+* ℚ where
   toEquiv := equivRat
   map_add' := by sorry
   map_mul' := by sorry
 
 /--
-  (Not from textbook) The textbook rationals are isomorphic (as a field) to the Mathlib rationals.
+  (Не из учебника) Рациональные числа учебника изоморфны (как поле) рациональным числам Mathlib.
 -/
 def Rat.equivRat_ring_symm : ℚ ≃+* Rat := Rat.equivRat_ring.symm
 

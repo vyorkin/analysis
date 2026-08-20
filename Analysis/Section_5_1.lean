@@ -4,32 +4,33 @@ import Analysis.Section_4_3
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 5.1: Cauchy sequences
+# Analysis I, раздел 5.1: Последовательности Коши
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Notion of a sequence of rationals
-- Notions of `ε`-steadiness, eventual `ε`-steadiness, and Cauchy sequences
+- Понятие последовательности рациональных чисел
+- Понятия `ε`-устойчивости, эвентуальной `ε`-устойчивости и последовательностей Коши
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
 namespace Chapter5
 
 /--
-  Definition 5.1.1 (Sequence). To avoid some technicalities involving dependent types, we extend
-  sequences by zero to the left of the starting point {name (full := Sequence.n₀)}`n₀`.
+  Definition 5.1.1 (Последовательность). Чтобы избежать некоторых технических сложностей,
+  связанных с зависимыми типами, мы продолжаем последовательности нулём слева от начальной точки
+  {name (full := Sequence.n₀)}`n₀`.
 -/
 @[ext]
 structure Sequence where
@@ -37,14 +38,16 @@ structure Sequence where
   seq : ℤ → ℚ
   vanish : ∀ n < n₀, seq n = 0
 
-/-- Sequences can be thought of as functions from {lean}`ℤ` to {lean}`ℚ`. -/
+/-- Последовательности можно рассматривать как функции из {lean}`ℤ` в {lean}`ℚ`. -/
 instance Sequence.instCoeFun : CoeFun Sequence (fun _ ↦ ℤ → ℚ) where
   coe := fun a ↦ a.seq
 
 /--
-Functions from {lean}`ℕ` to {lean}`ℚ` can be thought of as sequences starting from 0; {name}`Sequence.ofNatFun` performs this conversion.
+Функции из {lean}`ℕ` в {lean}`ℚ` можно рассматривать как последовательности, начинающиеся с 0;
+{name}`Sequence.ofNatFun` выполняет это преобразование.
 
-The {attr}`coe` attribute allows the delaborator to print {lean}`Sequence.ofNatFun f` as {lit}`↑f`, which is more concise; you may safely remove this if you prefer the more explicit notation.
+Атрибут {attr}`coe` позволяет делаборатору печатать {lean}`Sequence.ofNatFun f` как {lit}`↑f`, что
+более лаконично; вы можете спокойно убрать его, если предпочитаете более явную нотацию.
 -/
 @[coe]
 def Sequence.ofNatFun (f : ℕ → ℚ) : Sequence where
@@ -52,11 +55,13 @@ def Sequence.ofNatFun (f : ℕ → ℚ) : Sequence where
     seq n := if n ≥ 0 then f n.toNat else 0
     vanish := by grind
 
--- Notice how the delaborator prints this as `↑fun x ↦ ↑x ^ 2 : Sequence`.
+-- Обратите внимание, как делаборатор печатает это как `↑fun x ↦ ↑x ^ 2 : Sequence`.
 #check Sequence.ofNatFun (· ^ 2)
 
 /--
-If {given}`a : ℕ → ℚ` is used in a context where a {name}`Sequence` is expected, automatically coerce {name}`a` to {lean}`Sequence.ofNatFun a` (which will be pretty-printed as {lean (type :="Sequence")}`↑a`).
+Если {given}`a : ℕ → ℚ` используется в контексте, где ожидается {name}`Sequence`, автоматически
+приводит {name}`a` к {lean}`Sequence.ofNatFun a` (которое будет напечатано как
+{lean (type :="Sequence")}`↑a`).
 -/
 instance : Coe (ℕ → ℚ) Sequence where
   coe := Sequence.ofNatFun
@@ -96,13 +101,13 @@ abbrev Sequence.squares_from_three : Sequence := mk' 3 (·^2)
 /-- Example 5.1.2 (f) -/
 example (n : ℤ) (hn : n ≥ 3) : Sequence.squares_from_three n = n^2 := Sequence.eval_mk _ hn
 
--- need to temporarily leave the `Chapter5` namespace to introduce the following notation
+-- нужно временно выйти из пространства имён `Chapter5`, чтобы ввести следующую нотацию
 
 end Chapter5
 
 /--
-A slight generalization of Definition 5.1.3 - definition of {name}`ε`-steadiness for a sequence with an
-arbitrary starting point {lean}`a.n₀`
+Небольшое обобщение Definition 5.1.3 — определение {name}`ε`-устойчивости для последовательности
+с произвольной начальной точкой {lean}`a.n₀`
 -/
 abbrev Rat.Steady (ε : ℚ) (a : Chapter5.Sequence) : Prop :=
   ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m)
@@ -113,7 +118,7 @@ lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) :
 namespace Chapter5
 
 /--
-Definition 5.1.3 - definition of {name}`ε`-steadiness for a sequence starting at 0
+Definition 5.1.3 — определение {name}`ε`-устойчивости для последовательности, начинающейся с 0
 -/
 lemma Rat.Steady.coe (ε : ℚ) (a : ℕ → ℚ) : 
     ε.Steady a ↔ ∀ n m : ℕ, ε.Close (a n) (a m) := by
@@ -125,32 +130,32 @@ lemma Rat.Steady.coe (ε : ℚ) (a : ℕ → ℚ) :
   simp [h n m]
 
 /--
-Not in textbook: the sequence 3, 3 ... is 1-steady.
-Intended as a demonstration of {name}`Rat.Steady.coe`.
+Не из учебника: последовательность 3, 3 ... является 1-устойчивой.
+Служит демонстрацией {name}`Rat.Steady.coe`.
 -/
 example : (1 : ℚ).Steady ((fun _ : ℕ ↦ (3 : ℚ)) : Sequence) := by
   simp [Rat.Steady.coe, Rat.Close]
 
 /--
 {given -show}`hn : n ≥ 0, hm : m ≥ 0`
-Compare: if you need to work with {name}`Rat.Steady` on the coercion directly, there will be side
-conditions {lean}`hn : n ≥ 0` and {lean}`hm : m ≥ 0` that you will need to deal with.
+Для сравнения: если вам нужно работать напрямую с {name}`Rat.Steady` на приведении типа, появятся
+побочные условия {lean}`hn : n ≥ 0` и {lean}`hm : m ≥ 0`, которые придётся обрабатывать.
 -/
 example : (1 : ℚ).Steady ((fun _ : ℕ ↦ (3 : ℚ)) : Sequence) := by
   intro n _ m _; simp_all [Sequence.n0_coe, Sequence.eval_coe_at_int, Rat.Close]
 
 /--
-Example 5.1.5: The sequence `1, 0, 1, 0, ...` is 1-steady.
+Example 5.1.5: последовательность `1, 0, 1, 0, ...` является 1-устойчивой.
 -/
 example : (1 : ℚ).Steady ((fun n : ℕ ↦ if Even n then (1 : ℚ) else (0 : ℚ)) : Sequence) := by
   rw [Rat.Steady.coe]
   intro n m
-  -- Split into four cases based on whether n and m are even or odd
-  -- In each case, we know the exact value of a n and a m
+  -- Разбираем четыре случая в зависимости от того, чётны или нечётны n и m
+  -- В каждом случае мы знаем точное значение a n и a m
   split_ifs <;> simp [Rat.Close]
 
 /--
-Example 5.1.5: The sequence `1, 0, 1, 0, ...` is not ½-steady.
+Example 5.1.5: последовательность `1, 0, 1, 0, ...` не является ½-устойчивой.
 -/
 example : ¬ (0.5 : ℚ).Steady ((fun n : ℕ ↦ if Even n then (1 : ℚ) else (0 : ℚ)) : Sequence) := by
   rw [Rat.Steady.coe]
@@ -158,7 +163,7 @@ example : ¬ (0.5 : ℚ).Steady ((fun n : ℕ ↦ if Even n then (1 : ℚ) else 
   norm_num at h
 
 /--
-Example 5.1.5: The sequence 0.1, 0.01, 0.001, ... is 0.1-steady.
+Example 5.1.5: последовательность 0.1, 0.01, 0.001, ... является 0.1-устойчивой.
 -/
 example : (0.1 : ℚ).Steady ((fun n : ℕ ↦ (10 : ℚ) ^ (-(n : ℤ)-1) ) : Sequence) := by
   rw [Rat.Steady.coe]
@@ -172,36 +177,37 @@ example : (0.1 : ℚ).Steady ((fun n : ℕ ↦ (10 : ℚ) ^ (-(n : ℤ)-1) ) : S
   linarith [show (10 : ℚ) ^ (-(n : ℤ)-1) ≤ (10 : ℚ) ^ (-(m : ℤ)-1) by gcongr; norm_num]
 
 /--
-Example 5.1.5: The sequence 0.1, 0.01, 0.001, ... is not 0.01-steady. Left as an exercise.
+Example 5.1.5: последовательность 0.1, 0.01, 0.001, ... не является 0.01-устойчивой. Оставлено как упражнение.
 -/
 example : ¬(0.01 : ℚ).Steady ((fun n : ℕ ↦ (10 : ℚ) ^ (-(n : ℤ)-1) ) : Sequence) := by sorry
 
-/-- Example 5.1.5: The sequence 1, 2, 4, 8, ... is not ε-steady for any ε. Left as an exercise.
+/-- Example 5.1.5: последовательность 1, 2, 4, 8, ... не является ε-устойчивой ни для какого ε. Оставлено как упражнение.
 -/
 example (ε : ℚ) : ¬ ε.Steady ((fun n : ℕ ↦ (2 ^ (n+1) : ℚ) ) : Sequence) := by sorry
 
-/-- Example 5.1.5:The sequence 2, 2, 2, ... is ε-steady for any ε > 0.
+/-- Example 5.1.5: последовательность 2, 2, 2, ... является ε-устойчивой для любого ε > 0.
 -/
 example (ε : ℚ) (hε : ε>0) : ε.Steady ((fun _ : ℕ ↦ (2 : ℚ) ) : Sequence) := by
   rw [Rat.Steady.coe]; simp [Rat.Close]; positivity
 
 /--
-The sequence 10, 0, 0, ... is 10-steady.
+Последовательность 10, 0, 0, ... является 10-устойчивой.
 -/
 example : (10 : ℚ).Steady ((fun n : ℕ ↦ if n = 0 then (10 : ℚ) else (0 : ℚ)) : Sequence) := by
   rw [Rat.Steady.coe]; intro n m
-  -- Split into 4 cases based on whether n and m are 0 or not
+  -- Разбираем 4 случая в зависимости от того, равны ли n и m нулю
   split_ifs <;> simp [Rat.Close]
 
 /--
-The sequence 10, 0, 0, ... is not ε-steady for any smaller value of ε.
+Последовательность 10, 0, 0, ... не является ε-устойчивой ни для какого меньшего значения ε.
 -/
 example (ε : ℚ) (hε : ε<10) :  ¬ ε.Steady ((fun n : ℕ ↦ if n = 0 then (10 : ℚ) else (0 : ℚ)) : Sequence) := by
   contrapose! hε; rw [Rat.Steady.coe] at hε; specialize hε 0 1; simpa [Rat.Close] using hε
 
 /--
-  {name}`Sequence.from` starts {lean}`a : Sequence` from {name}`n₁`.  It is intended for use when {lean}`n₁ ≥ n₀`, but returns
-  the "junk" value of the original sequence {name}`a` otherwise.
+  {name}`Sequence.from` начинает {lean}`a : Sequence` с {name}`n₁`. Предполагается использовать
+  при {lean}`n₁ ≥ n₀`, но в противном случае возвращает "мусорное" значение исходной
+  последовательности {name}`a`.
 -/
 abbrev Sequence.from (a : Sequence) (n₁ : ℤ) : Sequence :=
   mk' (max a.n₀ n₁) (fun n ↦ a (n : ℤ))
@@ -211,7 +217,7 @@ lemma Sequence.from_eval (a : Sequence) {n₁ n : ℤ} (hn : n ≥ n₁) :
 
 end Chapter5
 
-/-- Definition 5.1.6 (Eventually ε-steady) -/
+/-- Definition 5.1.6 (Эвентуально ε-устойчива) -/
 abbrev Rat.EventuallySteady (ε : ℚ) (a : Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.Steady (a.from N)
 
 lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) : 
@@ -220,13 +226,13 @@ lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) :
 namespace Chapter5
 
 /--
-Example 5.1.7: The sequence 1, 1/2, 1/3, ... is not 0.1-steady
+Example 5.1.7: последовательность 1, 1/2, 1/3, ... не является 0.1-устойчивой
 -/
 lemma Sequence.ex_5_1_7_a : ¬ (0.1 : ℚ).Steady ((fun n : ℕ ↦ (n+1 : ℚ)⁻¹ ) : Sequence) := by
   intro h; rw [Rat.Steady.coe] at h; specialize h 0 2; simp [Rat.Close] at h; norm_num at h
 
 /--
-Example 5.1.7: The sequence `a_10, a_11, a_12, ...` is 0.1-steady
+Example 5.1.7: последовательность `a_10, a_11, a_12, ...` является 0.1-устойчивой
 -/
 lemma Sequence.ex_5_1_7_b : (0.1 : ℚ).Steady (((fun n : ℕ ↦ (n+1 : ℚ)⁻¹ ) : Sequence).from 10) := by
   rw [Rat.Steady]
@@ -245,7 +251,7 @@ lemma Sequence.ex_5_1_7_b : (0.1 : ℚ).Steady (((fun n : ℕ ↦ (n+1 : ℚ)⁻
   positivity
 
 /--
-Example 5.1.7: The sequence 1, 1/2, 1/3, ... is eventually 0.1-steady
+Example 5.1.7: последовательность 1, 1/2, 1/3, ... эвентуально 0.1-устойчива
 -/
 lemma Sequence.ex_5_1_7_c : (0.1 : ℚ).EventuallySteady ((fun n : ℕ ↦ (n+1 : ℚ)⁻¹ ) : Sequence) :=
   ⟨10, by simp, ex_5_1_7_b⟩
@@ -253,7 +259,7 @@ lemma Sequence.ex_5_1_7_c : (0.1 : ℚ).EventuallySteady ((fun n : ℕ ↦ (n+1 
 /--
 Example 5.1.7
 
-The sequence 10, 0, 0, ... is eventually ε-steady for every ε > 0. Left as an exercise.
+Последовательность 10, 0, 0, ... эвентуально ε-устойчива для любого ε > 0. Оставлено как упражнение.
 -/
 lemma Sequence.ex_5_1_7_d {ε : ℚ} (hε : ε>0) : 
     ε.EventuallySteady ((fun n : ℕ ↦ if n=0 then (10 : ℚ) else (0 : ℚ) ) : Sequence) := by sorry
@@ -263,7 +269,7 @@ abbrev Sequence.IsCauchy (a : Sequence) : Prop := ∀ ε > (0 : ℚ), ε.Eventua
 lemma Sequence.isCauchy_def (a : Sequence) : 
   a.IsCauchy ↔ ∀ ε > (0 : ℚ), ε.EventuallySteady a := by rfl
 
-/-- Definition of Cauchy sequences, for a sequence starting at {lean}`0` -/
+/-- Определение последовательностей Коши для последовательности, начинающейся с {lean}`0` -/
 lemma Sequence.IsCauchy.coe (a : ℕ → ℚ) : 
     (a : Sequence).IsCauchy ↔ ∀ ε > (0 : ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (a j) (a k) ≤ ε := by
@@ -299,22 +305,23 @@ lemma Sequence.IsCauchy.mk {n₀ : ℤ} (a : {n // n ≥ n₀} → ℚ) :
 noncomputable def Sequence.sqrt_two : Sequence := (fun n : ℕ ↦ ((⌊ (Real.sqrt 2)*10^n ⌋ / 10^n) : ℚ))
 
 /--
-  Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
+  Example 5.1.10. (Для этого требуется хорошее знакомство с Mathlib API для вещественных чисел.)
 -/
 theorem Sequence.ex_5_1_10_a : (1 : ℚ).Steady sqrt_two := by sorry
 
 /--
-  Example 5.1.10. (This requires extensive familiarity with Mathlib's API for the real numbers.)
+  Example 5.1.10. (Для этого требуется хорошее знакомство с Mathlib API для вещественных чисел.)
 -/
 theorem Sequence.ex_5_1_10_b : (0.1 : ℚ).Steady (sqrt_two.from 1) := by sorry
 
 theorem Sequence.ex_5_1_10_c : (0.1 : ℚ).EventuallySteady sqrt_two := by sorry
 
-/-- Proposition 5.1.11. The harmonic sequence, defined as a₁ = 1, a₂ = 1/2, ... is a Cauchy sequence. -/
+/-- Proposition 5.1.11. Гармоническая последовательность, определённая как a₁ = 1, a₂ = 1/2, ...,
+является последовательностью Коши. -/
 theorem Sequence.IsCauchy.harmonic : (mk' 1 (fun n ↦ (1 : ℚ)/n)).IsCauchy := by
   rw [IsCauchy.mk]
   intro ε hε
-  -- We go by reverse from the book - first choose N such that N > 1/ε
+  -- Мы действуем в обратном порядке по сравнению с книгой — сначала выбираем N такое, что N > 1/ε
   obtain ⟨ N, hN : N > 1/ε ⟩ := exists_nat_gt (1 / ε)
   have hN' : N > 0 := by
     observe : (1/ε) > 0
@@ -330,10 +337,11 @@ theorem Sequence.IsCauchy.harmonic : (mk' 1 (fun n ↦ (1 : ℚ)/n)).IsCauchy :=
   have hdist : Section_4_3.dist ((1 : ℚ)/j) ((1 : ℚ)/k) ≤ (1 : ℚ)/N := by
     rw [Section_4_3.dist_eq, abs_le']
     /-
-    We establish the following bounds:
+    Мы устанавливаем следующие оценки:
     - 1/j ∈ [0, 1/N]
     - 1/k ∈ [0, 1/N]
-    These imply that the distance between 1/j and 1/k is at most 1/N - when they are as "far apart" as possible.
+    Из этого следует, что расстояние между 1/j и 1/k не превосходит 1/N — когда они находятся
+    настолько "далеко друг от друга", насколько это возможно.
     -/
     have : 1/j ≤ (1 : ℚ)/N := by gcongr
     observe : (0 : ℚ) ≤ 1/j
@@ -347,19 +355,19 @@ theorem Sequence.IsCauchy.harmonic : (mk' 1 (fun n ↦ (1 : ℚ)/n)).IsCauchy :=
 abbrev BoundedBy {n : ℕ} (a : Fin n → ℚ) (M : ℚ) : Prop := ∀ i, |a i| ≤ M
 
 /--
-  Definition 5.1.12 (bounded sequences). Here we start sequences from {lean}`0` rather than {lean}`1` to align
-  better with Mathlib conventions.
+  Definition 5.1.12 (ограниченные последовательности). Здесь мы начинаем последовательности с
+  {lean}`0`, а не с {lean}`1`, чтобы лучше согласовываться с соглашениями Mathlib.
 -/
 lemma boundedBy_def {n : ℕ} (a : Fin n → ℚ) (M : ℚ) : BoundedBy a M ↔ ∀ i, |a i| ≤ M := by rfl
 
 abbrev Sequence.BoundedBy (a : Sequence) (M : ℚ) : Prop := ∀ n, |a n| ≤ M
 
-/-- Definition 5.1.12 (bounded sequences) -/
+/-- Definition 5.1.12 (ограниченные последовательности) -/
 lemma Sequence.boundedBy_def (a : Sequence) (M : ℚ) : a.BoundedBy M ↔ ∀ n, |a n| ≤ M := by rfl
 
 abbrev Sequence.IsBounded (a : Sequence) : Prop := ∃ M ≥ 0, a.BoundedBy M
 
-/-- Definition 5.1.12 (bounded sequences) -/
+/-- Definition 5.1.12 (ограниченные последовательности) -/
 lemma Sequence.isBounded_def (a : Sequence) : a.IsBounded ↔ ∃ M ≥ 0, a.BoundedBy M := by rfl
 
 /-- Example 5.1.13 (a) -/
@@ -387,7 +395,7 @@ example : ¬((fun n : ℕ ↦ (-1 : ℚ)^n) : Sequence).IsCauchy := by
 
 /-- Lemma 5.1.14 -/
 lemma IsBounded.finite {n : ℕ} (a : Fin n → ℚ) : ∃ M ≥ 0,  BoundedBy a M := by
-  -- this proof is written to follow the structure of the original text.
+  -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   induction' n with n hn
   . use 0; simp
   set a' : Fin n → ℚ := fun m ↦ a m.castSucc
@@ -399,7 +407,7 @@ lemma IsBounded.finite {n : ℕ} (a : Fin n → ℚ) : ∃ M ≥ 0,  BoundedBy a
   . grind
   convert h2; simp
 
-/-- Lemma 5.1.15 (Cauchy sequences are bounded) / Exercise 5.1.1 -/
+/-- Lemma 5.1.15 (Последовательности Коши ограничены) / Exercise 5.1.1 -/
 lemma Sequence.isBounded_of_isCauchy {a : Sequence} (h : a.IsCauchy) : a.IsBounded := by
   sorry
 

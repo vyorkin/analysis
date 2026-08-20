@@ -5,37 +5,37 @@ import Analysis.Tools.ExistsUnique
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 3.3: Functions
+# Analysis I, раздел 3.3: Функции
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- A notion of function `Function X Y` between two sets `X`, `Y` in the set theory of Section 3.1
-- Various relations with the Mathlib notion of a function `X → Y` between two types `X`, `Y`.
-  (Note from Section 3.1 that every `Set` `X` can also be viewed as a subtype
-  `{x : Object // x ∈ X }` of `Object`.)
-- Basic function properties and operations, such as composition, one-to-one and onto functions,
-  and inverses.
+- Понятие функции `Function X Y` между двумя множествами `X`, `Y` в теории множеств из раздела 3.1
+- Различные связи с понятием функции `X → Y` из Mathlib между двумя типами `X`, `Y`.
+  (Напомним из раздела 3.1, что любое множество `X` типа `Set` можно также рассматривать как подтип
+  `{x : Object // x ∈ X }` типа `Object`.)
+- Базовые свойства и операции над функциями, такие как композиция, инъективные и сюръективные
+  функции, а также обратные функции.
 
-In the rest of the book we will deprecate the Chapter 3 version of a function, and work with the
-Mathlib notion of a function instead.  Even within this section, we will switch to the Mathlib
-formalism for some of the examples involving number systems such as {lean}`ℤ` or {lean}`ℝ` that have not been
-implemented in the Chapter 3 framework.
+В оставшейся части книги мы откажемся от версии функции из Главы 3 и будем работать с понятием
+функции из Mathlib. Уже в этом разделе мы будем переходить на формализм Mathlib для некоторых
+примеров, использующих числовые системы вроде {lean}`ℤ` или {lean}`ℝ`, которые ещё не реализованы
+в рамках Главы 3.
 
-We will work here with the version {name}`Nat` of the natural numbers internal to the Chapter 3 set
-theory, though usually we will use coercions to then immediately translate to the Mathlib
-natural numbers {lean}`ℕ`.
+Здесь мы будем работать с версией {name}`Nat` натуральных чисел, внутренней для теории множеств
+Главы 3, хотя обычно мы будем использовать приведения типов, чтобы сразу же переходить к
+натуральным числам {lean}`ℕ` из Mathlib.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -47,8 +47,8 @@ export SetTheory (Set Object)
 variable [SetTheory]
 
 /--
-  Definition 3.3.1. {lean}`Function X Y` is the structure of functions from {lean}`X` to {lean}`Y`.
-  Analogous to the Mathlib type {lean}`X → Y`.
+  Definition 3.3.1. {lean}`Function X Y` — это структура функций из {lean}`X` в {lean}`Y`.
+  Аналог типа {lean}`X → Y` из Mathlib.
 -/
 @[ext]
 structure Function (X Y : Set) where
@@ -58,9 +58,9 @@ structure Function (X Y : Set) where
 #check Function.mk
 
 /--
-  Converting a Chapter 3 function {lean}`f: Function X Y` to a Mathlib function {lean}`f: X → Y`.
-  The Chapter 3 definition of a function was nonconstructive, so we have to use the
-  axiom of choice here.
+  Преобразование функции {lean}`f: Function X Y` из Главы 3 в функцию {lean}`f: X → Y` из Mathlib.
+  Определение функции в Главе 3 неконструктивно, поэтому здесь приходится использовать
+  аксиому выбора.
 -/
 noncomputable def Function.to_fn {X Y : Set} (f : Function X Y) : X → Y :=
   fun x ↦ (f.unique x).choose
@@ -70,7 +70,7 @@ noncomputable instance Function.inst_coefn (X Y : Set) : CoeFun (Function X Y) (
 
 theorem Function.to_fn_eval {X Y : Set} (f : Function X Y) (x : X) : f.to_fn x = f x := rfl
 
-/-- Converting a Mathlib function to a Chapter 3 {name}`Function` -/
+/-- Преобразование функции из Mathlib в {name}`Function` из Главы 3 -/
 abbrev Function.mk_fn {X Y : Set} (f : X → Y) : Function X Y :=
   Function.mk (fun x y ↦ y = f x) (by simp)
 
@@ -83,7 +83,7 @@ theorem Function.eval_of {X Y : Set} (f : X → Y) (x : X) : (Function.mk_fn f) 
   symm; rw [eval]
 
 
-/-- Example 3.3.3.   -/
+/-- Example 3.3.3. -/
 abbrev P_3_3_3a : Nat → Nat → Prop := fun x y ↦ (y : ℕ) = (x : ℕ)+1
 
 theorem SetTheory.Set.P_3_3_3a_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_3a x y := by
@@ -120,8 +120,8 @@ abbrev SetTheory.Set.P_3_3_3c : (Nat \ {(0 : Object)} : Set) → Nat → Prop :=
 
 theorem SetTheory.Set.P_3_3_3c_existsUnique (x : (Nat \ {(0 : Object)} : Set)) : 
     ∃! y : Nat, P_3_3_3c x y := by
-  -- Some technical unpacking here due to the subtle distinctions between the `Object` type,
-  -- sets converted to subtypes of `Object`, and subsets of those sets.
+  -- Здесь требуется небольшая техническая распаковка из-за тонких различий между типом `Object`,
+  -- множествами, приведёнными к подтипам `Object`, и подмножествами этих множеств.
   obtain ⟨ x, hx ⟩ := x; simp at hx; obtain ⟨ hx1, hx2 ⟩ := hx
   set n := ((⟨ x, hx1 ⟩ : Nat) : ℕ)
   have : x = (n : Nat) := by simp [n]
@@ -137,7 +137,7 @@ abbrev SetTheory.Set.f_3_3_3c : Function (Nat \ {(0 : Object)} : Set) Nat :=
 theorem SetTheory.Set.f_3_3_3c_eval (x : (Nat \ {(0 : Object)} : Set)) (y : Nat) : 
     y = f_3_3_3c x ↔ ((y+1 : ℕ) : Object) = x := Function.eval _ _ _
 
-/-- Create a version of a non-zero {lean}`n` inside {lean}`Nat \ {0}` for any natural number n. -/
+/-- Строит версию ненулевого {lean}`n` внутри {lean}`Nat \ {0}` для любого натурального числа n. -/
 abbrev SetTheory.Set.coe_nonzero (n : ℕ) (h : n ≠ 0) : (Nat \ {(0 : Object)} : Set) :=
   ⟨((n : ℕ) : Object), by
     simp [Object.ofnat_eq',h]
@@ -155,9 +155,9 @@ theorem SetTheory.Set.f_3_3_3c_eval''' (n : ℕ) :
     f_3_3_3c (coe_nonzero (2*n+3) (by positivity)) = (2*n+2 : ℕ) := by convert f_3_3_3c_eval' (2*n+2)
 
 /--
-  Example 3.3.4 is a little tricky to replicate with the current formalism as the real numbers
-  have not been constructed yet.  Instead, I offer some Mathlib counterparts, using the
-  Mathlib API for {name}`NNReal` and {lean}`ℝ`.
+  Example 3.3.4 довольно трудно воспроизвести в текущем формализме, так как вещественные числа
+  ещё не построены. Вместо этого я предлагаю несколько аналогов на Mathlib, использующих
+  Mathlib API для {name}`NNReal` и {lean}`ℝ`.
 -/
 example : ¬ ∃ f : ℝ → ℝ, ∀ x y, y = f x ↔ y^2 = x := by
   by_contra h
@@ -180,7 +180,7 @@ example : ∃ f : NNReal → NNReal, ∀ x y, y = f x ↔ y^2 = x := by
   · rw [h, NNReal.sq_sqrt]
   · rw [←h, NNReal.sqrt_sq]
 
-/-- Example 3.3.5. The unused variable {lit}`_x` is underscored to avoid triggering a linter. -/
+/-- Example 3.3.5. Неиспользуемая переменная {lit}`_x` помечена подчёркиванием, чтобы не срабатывал линтер. -/
 abbrev SetTheory.Set.P_3_3_5 : Nat → Nat → Prop := fun _x y ↦ y = 7
 
 theorem SetTheory.Set.P_3_3_5_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_5 x y := by
@@ -191,7 +191,7 @@ abbrev SetTheory.Set.f_3_3_5 : Function Nat Nat := Function.mk P_3_3_5 P_3_3_5_e
 theorem SetTheory.Set.f_3_3_5_eval (x : Nat) : f_3_3_5 x = 7 := by
   symm; rw [Function.eval]
 
-/-- Definition 3.3.8 (Equality of functions) -/
+/-- Definition 3.3.8 (Равенство функций) -/
 theorem Function.eq_iff {X Y : Set} (f g : Function X Y) : f = g ↔ ∀ x : X, f x = g x := by
   constructor <;> intro h
   . simp [h]
@@ -200,8 +200,8 @@ theorem Function.eq_iff {X Y : Set} (f g : Function X Y) : f = g ↔ ∀ x : X, 
   rwa [←Function.eval, h x, Function.eval]
 
 /--
-  Example 3.3.10 (simplified).  The second part of the example is tricky to replicate in this
-  formalism, so a Mathlib substitute is offered instead.
+  Example 3.3.10 (упрощённый вариант). Вторую часть примера трудно воспроизвести в этом
+  формализме, поэтому вместо неё предлагается аналог на Mathlib.
 -/
 abbrev SetTheory.Set.f_3_3_10a : Function Nat Nat := Function.mk_fn (fun x ↦ (x^2 + 2*x + 1 : ℕ))
 
@@ -227,20 +227,20 @@ abbrev SetTheory.Set.f_3_3_11 (X : Set) : Function (∅ : Set) X :=
 
 theorem SetTheory.Set.empty_function_unique {X : Set} (f g : Function (∅ : Set) X) : f = g := by sorry
 
-/-- Definition 3.3.13 (Composition) -/
+/-- Definition 3.3.13 (Композиция) -/
 noncomputable abbrev Function.comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) : 
     Function X Z :=
   Function.mk_fn (fun x ↦ g (f x))
 
--- `∘` is already taken in Mathlib for the composition of Mathlib functions,
--- so we use `○` here instead to avoid ambiguity.
+-- `∘` уже занят в Mathlib для композиции функций Mathlib,
+-- поэтому здесь мы используем `○`, чтобы избежать неоднозначности.
 infix:90 "○" => Function.comp
 
 theorem Function.comp_eval {X Y Z : Set} (g : Function Y Z) (f : Function X Y) (x : X) : 
     (g ○ f) x = g (f x) := Function.eval_of _ _
 
 /--
-  Compatibility with Mathlib's composition operation.
+  Совместимость с операцией композиции из Mathlib.
 -/
 theorem Function.comp_eq_comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) : 
     (g ○ f).to_fn = g.to_fn ∘ f.to_fn := by
@@ -260,7 +260,7 @@ theorem SetTheory.Set.f_circ_g_3_3_14 :
   simp [Function.eq_iff, Function.eval_of]
   intros; ring
 
-/-- Lemma 3.3.15 (Composition is associative) -/
+/-- Lemma 3.3.15 (Композиция ассоциативна) -/
 theorem SetTheory.Set.comp_assoc {W X Y Z : Set} (h : Function Y Z) (g : Function X Y)
   (f : Function W X) : 
     h ○ (g ○ f) = (h ○ g) ○ f := by
@@ -273,16 +273,16 @@ theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) :
   peel with x hx; tauto
 
 /--
-  Compatibility with Mathlib's {name}`Function.Injective`.  You may wish to use the {tactic}`unfold` tactic to
-  understand Mathlib concepts such as {name}`Function.Injective`.
+  Совместимость с {name}`Function.Injective` из Mathlib. Может быть полезно применить тактику
+  {tactic}`unfold`, чтобы разобраться в таких понятиях Mathlib, как {name}`Function.Injective`.
 -/
 theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) : 
     f.one_to_one ↔ Function.Injective f.to_fn := by
   rw [one_to_one_iff, Function.Injective]
 
 /--
-  Example 3.3.18.  One half of the example requires the integers, and so is expressed using
-  Mathlib functions instead of Chapter 3 functions.
+  Example 3.3.18. Одна половина примера требует целых чисел, поэтому она выражена
+  через функции Mathlib, а не функции Главы 3.
 -/
 theorem SetTheory.Set.f_3_3_18_one_to_one : 
     (Function.mk_fn (fun (n : Nat) ↦ ((n^2 : ℕ) : Nat))).one_to_one := by
@@ -306,13 +306,13 @@ theorem SetTheory.Set.two_to_one {X Y : Set} {f : Function X Y} (h : ¬ f.one_to
     ∃ x x' : X, x ≠ x' ∧ f x = f x' := by
   rw [Function.one_to_one] at h; aesop
 
-/-- Definition 3.3.20 (Onto functions) -/
+/-- Definition 3.3.20 (Сюръективные функции) -/
 abbrev Function.onto {X Y : Set} (f : Function X Y) : Prop := ∀ y : Y, ∃ x : X, f x = y
 
-/-- Compatibility with Mathlib's {name}`Function.Surjective` -/
+/-- Совместимость с {name}`Function.Surjective` из Mathlib -/
 theorem Function.onto_iff {X Y : Set} (f : Function X Y) : f.onto ↔ Function.Surjective f.to_fn := by rfl
 
-/-- Example 3.3.21 (using Mathlib) -/
+/-- Example 3.3.21 (с использованием Mathlib) -/
 example : ¬ Function.Surjective (fun (n : ℤ) ↦ n^2) := by
   unfold Function.Surjective; push_neg
   use (-1); intro a
@@ -324,15 +324,15 @@ example : Function.Surjective (fun (n : ℤ) ↦ ⟨ n^2, by use n ⟩ : ℤ →
   rintro ⟨b, ⟨a, ha⟩⟩; use a
   simp only [ha]
 
-/-- Definition 3.3.23 (Bijective functions) -/
+/-- Definition 3.3.23 (Биективные функции) -/
 abbrev Function.bijective {X Y : Set} (f : Function X Y) : Prop := f.one_to_one ∧ f.onto
 
-/-- Compatibility with Mathlib's {name}`Function.Bijective` -/
+/-- Совместимость с {name}`Function.Bijective` из Mathlib -/
 theorem Function.bijective_iff {X Y : Set} (f : Function X Y) : 
     f.bijective ↔ Function.Bijective f.to_fn := by
   rw [Function.bijective, Function.Bijective, one_to_one_iff', onto_iff]
 
-/-- Example 3.3.24 (using Mathlib) -/
+/-- Example 3.3.24 (с использованием Mathlib) -/
 abbrev f_3_3_24 : Fin 3 → ({3,4} : _root_.Set ℕ) := fun x ↦ match x with
 | 0 => ⟨ 3, by norm_num ⟩
 | 1 => ⟨ 3, by norm_num ⟩
@@ -356,8 +356,8 @@ abbrev h_3_3_24 : Fin 3 → ({3,4,5} : _root_.Set ℕ) := fun x ↦ match x with
 example : Function.Bijective h_3_3_24 := by decide
 
 /--
-  Example 3.3.25 is formulated using Mathlib rather than the set theory framework here to avoid
-  some tedious technical issues (cf. Exercise 3.3.2)
+  Example 3.3.25 сформулирован с использованием Mathlib, а не рамок теории множеств здесь,
+  чтобы избежать некоторых утомительных технических сложностей (ср. Exercise 3.3.2)
 -/
 example : Function.Bijective (fun n ↦ ⟨ n+1, by omega⟩ : ℕ → { n : ℕ // n ≠ 0 }) := by
   constructor
@@ -388,9 +388,9 @@ theorem Function.bijective_incorrect_def :
   push_neg; use 0, 1; simp [f]
 
 /--
-  We cannot use the notation {syntax term}`f⁻¹` for the inverse because in Mathlib's {name}`Inv` class, the inverse
-  of {name}`f` must be exactly of the same type of {name}`f`, and {lean}`Function Y X` is a different type from
-  {lean}`Function X Y`.
+  Мы не можем использовать нотацию {syntax term}`f⁻¹` для обратной функции, потому что в классе {name}`Inv`
+  из Mathlib обратная к {name}`f` должна иметь ровно тот же тип, что и {name}`f`, а {lean}`Function Y X` —
+  это другой тип, отличный от {lean}`Function X Y`.
 -/
 abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) : 
     Function Y X :=
@@ -407,7 +407,7 @@ abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
 theorem Function.inverse_eval {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) : 
     x = (f.inverse h) y ↔ f x = y := Function.eval _ _ _
 
-/-- Compatibility with Mathlib's notion of inverse -/
+/-- Совместимость с понятием обратной функции из Mathlib -/
 theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) : 
     (f.inverse h).to_fn = Function.invFun f.to_fn := by
   ext y; congr; symm
@@ -415,8 +415,8 @@ theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.b
   apply Function.rightInverse_invFun (f.bijective_iff.mp h).2
 
 /--
-  Exercise 3.3.1.  Although a proof operating directly on functions would be shorter,
-  the spirit of the exercise is to show these using the {name}`Function.eq_iff` definition.
+  Exercise 3.3.1. Хотя доказательство, работающее напрямую с функциями, было бы короче,
+  суть упражнения — показать это, используя определение {name}`Function.eq_iff`.
 -/
 theorem Function.refl {X Y : Set} (f : Function X Y) : f = f := by sorry
 
@@ -435,7 +435,7 @@ theorem Function.comp_of_surj {X Y Z : Set} {f : Function X Y} {g : Function Y Z
   (hg : g.onto) : (g ○ f).onto := by sorry
 
 /--
-  Exercise 3.3.3 - fill in the sorrys in the statements in a reasonable fashion.
+  Exercise 3.3.3 — заполните sorry в формулировках разумным образом.
 -/
 theorem empty_function_one_to_one_iff (X : Set) (f : Function ∅ X) : f.one_to_one ↔ sorry := by sorry
 
@@ -453,11 +453,11 @@ theorem Function.comp_cancel_right {X Y Z : Set} {f : Function X Y} {g g' : Func
   (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by sorry
 
 def Function.comp_cancel_left_without_hg : Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Function.comp_cancel_right_without_hg : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 /--
@@ -471,12 +471,12 @@ theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function 
 
 def Function.comp_injective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hinj : 
     (g ○ f).one_to_one), g.one_to_one) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Function.comp_surjective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hsurj : 
     (g ○ f).onto), f.onto) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 /-- Exercise 3.3.6 -/

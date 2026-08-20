@@ -3,23 +3,24 @@ import Analysis.Section_5_1
 
 
 /-!
-# Analysis I, Section 5.2: Equivalent Cauchy sequences
+# Analysis I, раздел 5.2: Эквивалентные последовательности Коши
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Notion of an ε-close and eventually ε-close sequences of rationals.
-- Notion of an equivalent Cauchy sequence of rationals.
+- Понятие ε-близких и эвентуально ε-близких последовательностей рациональных чисел.
+- Понятие эквивалентных последовательностей Коши рациональных чисел.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -32,7 +33,7 @@ abbrev Rat.EventuallyClose (ε : ℚ) (a b : Chapter5.Sequence) : Prop :=
 
 namespace Chapter5
 
-/-- Definition 5.2.1 ($ε$-close sequences) -/
+/-- Definition 5.2.1 ($ε$-близкие последовательности) -/
 lemma Rat.closeSeq_def (ε : ℚ) (a b : Sequence) : 
     ε.CloseSeq a b ↔ ∀ n, n ≥ a.n₀ → n ≥ b.n₀ → ε.Close (a n) (b n) := by rfl
 
@@ -46,11 +47,11 @@ example : ¬ (0.1 : ℚ).Steady ((fun n : ℕ ↦ ((-1)^n : ℚ)) : Sequence) :=
 /-- Example 5.2.2 (c) -/
 example : ¬ (0.1 : ℚ).Steady ((fun n : ℕ ↦ ((1.1 : ℚ) * (-1)^n)) : Sequence) := by sorry
 
-/-- Definition 5.2.3 (Eventually ε-close sequences) -/
+/-- Definition 5.2.3 (Эвентуально ε-близкие последовательности) -/
 lemma Rat.eventuallyClose_def (ε : ℚ) (a b : Sequence) : 
     ε.EventuallyClose a b ↔ ∃ N, ε.CloseSeq (a.from N) (b.from N) := by rfl
 
-/-- Definition 5.2.3 (Eventually ε-close sequences) -/
+/-- Definition 5.2.3 (Эвентуально ε-близкие последовательности) -/
 lemma Rat.eventuallyClose_iff (ε : ℚ) (a b : ℕ → ℚ) : 
     ε.EventuallyClose (a : Sequence) (b : Sequence) ↔ ∃ N, ∀ n ≥ N, |a n - b n| ≤ ε := by sorry
 
@@ -64,22 +65,22 @@ example : (0.1 : ℚ).EventuallyClose ((fun n : ℕ ↦ (1 : ℚ)+10^(-(n : ℤ)
 example : (0.01 : ℚ).EventuallyClose ((fun n : ℕ ↦ (1 : ℚ)+10^(-(n : ℤ)-1)) : Sequence)
   ((fun n : ℕ ↦ (1 : ℚ)-10^(-(n : ℤ)-1)) : Sequence) := by sorry
 
-/-- Definition 5.2.6 (Equivalent sequences) -/
+/-- Definition 5.2.6 (Эквивалентные последовательности) -/
 abbrev Sequence.Equiv (a b : ℕ → ℚ) : Prop :=
   ∀ ε > (0 : ℚ), ε.EventuallyClose (a : Sequence) (b : Sequence)
 
-/-- Definition 5.2.6 (Equivalent sequences) -/
+/-- Definition 5.2.6 (Эквивалентные последовательности) -/
 lemma Sequence.equiv_def (a b : ℕ → ℚ) : 
     Equiv a b ↔ ∀ (ε : ℚ), ε > 0 → ε.EventuallyClose (a : Sequence) (b : Sequence) := by rfl
 
-/-- Definition 5.2.6 (Equivalent sequences) -/
+/-- Definition 5.2.6 (Эквивалентные последовательности) -/
 lemma Sequence.equiv_iff (a b : ℕ → ℚ) : Equiv a b ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, |a n - b n| ≤ ε := by
   sorry
 
 /-- Proposition 5.2.8 -/
-lemma Sequence.equiv_example : 
-  -- This proof is perhaps more complicated than it needs to be; a shorter version may be
-  -- possible that is still faithful to the original text.
+lemma Sequence.equiv_example :
+  -- Это доказательство, возможно, сложнее, чем нужно; может существовать более короткий
+  -- вариант, всё ещё верный оригинальному тексту.
   Equiv (fun n : ℕ ↦ (1 : ℚ)+10^(-(n : ℤ)-1)) (fun n : ℕ ↦ (1 : ℚ)-10^(-(n : ℤ)-1)) := by
   set a := fun n : ℕ ↦ (1 : ℚ)+10^(-(n : ℤ)-1)
   set b := fun n : ℕ ↦ (1 : ℚ)-10^(-(n : ℤ)-1)

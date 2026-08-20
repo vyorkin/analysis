@@ -3,28 +3,28 @@ import Analysis.Section_3_3
 import Analysis.Section_3_5
 
 /-!
-# Analysis I, Section 3.6: Cardinality of sets
+# Analysis I, раздел 3.6: Мощность множеств
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Cardinality of a set
-- Finite and infinite sets
-- Connections with Mathlib equivalents
+- Мощность множества
+- Конечные и бесконечные множества
+- Связи с соответствующими понятиями из Mathlib
 
-After this section, these notions will be deprecated in favor of their Mathlib equivalents.
+После этого раздела данные понятия будут вытеснены их аналогами из Mathlib.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -34,7 +34,7 @@ export SetTheory (Set Object nat)
 
 variable [SetTheory]
 
-/-- Definition 3.6.1 (Equal cardinality) -/
+/-- Definition 3.6.1 (Равная мощность) -/
 abbrev SetTheory.Set.EqualCard (X Y : Set) : Prop := ∃ f : X → Y, Function.Bijective f
 
 /-- Example 3.6.2 -/
@@ -112,24 +112,24 @@ theorem SetTheory.Set.Example_3_6_7b {a b c d : Object} (hab : a ≠ b) (hac : a
 
 /-- Lemma 3.6.9 -/
 theorem SetTheory.Set.pos_card_nonempty {n : ℕ} (h : n ≥ 1) {X : Set} (hX : X.has_card n) : X ≠ ∅ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra! this
   have hnon : Fin n ≠ ∅ := by
     apply nonempty_of_inhabited (x := 0); rw [mem_Fin]; use 0, (by omega); rfl
   rw [has_card_iff] at hX
   choose f hf using hX
   sorry
-  -- obtain a contradiction from the fact that `f` is a bijection from the empty set to a
-  -- non-empty set.
+  -- получить противоречие из того факта, что `f` — биекция из пустого множества в
+  -- непустое множество.
 
 /-- Exercise 3.6.2a -/
 theorem SetTheory.Set.has_card_zero {X : Set} : X.has_card 0 ↔ X = ∅ := by sorry
 
 /-- Lemma 3.6.9 -/
-theorem SetTheory.Set.card_erase {n : ℕ} (h : n ≥ 1) {X : Set} (hX : X.has_card n) (x : X) : 
+theorem SetTheory.Set.card_erase {n : ℕ} (h : n ≥ 1) {X : Set} (hX : X.has_card n) (x : X) :
     (X \ {x.val}).has_card (n-1) := by
-  -- This proof has been rewritten from the original text to try to make it friendlier to
-  -- formalize in Lean.
+  -- Это доказательство переписано относительно оригинального текста в попытке сделать его
+  -- более удобным для формализации в Lean.
   rw [has_card_iff] at hX; choose f hf using hX
   set X' : Set := X \ {x.val}
   set ι : X' → X := fun ⟨y, hy⟩ ↦ ⟨ y, by aesop ⟩
@@ -147,9 +147,9 @@ theorem SetTheory.Set.card_erase {n : ℕ} (h : n ≥ 1) {X : Set} (hX : X.has_c
   have hg : Function.Bijective g := by sorry
   use g
 
-/-- Proposition 3.6.8 (Uniqueness of cardinality) -/
+/-- Proposition 3.6.8 (Единственность мощности) -/
 theorem SetTheory.Set.card_uniq {X : Set} {n m : ℕ} (h1 : X.has_card n) (h2 : X.has_card m) : n = m := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   revert X m; induction' n with n hn
   . intro _ _ h1 h2; rw [has_card_zero] at h1; contrapose! h1
     apply pos_card_nonempty _ h2; omega
@@ -195,12 +195,12 @@ abbrev SetTheory.Set.finite (X : Set) : Prop := ∃ n : ℕ, X.has_card n
 
 abbrev SetTheory.Set.infinite (X : Set) : Prop := ¬ finite X
 
-/-- Exercise 3.6.3, phrased using Mathlib natural numbers -/
+/-- Exercise 3.6.3, сформулированное с использованием натуральных чисел Mathlib -/
 theorem SetTheory.Set.bounded_on_finite {n : ℕ} (f : Fin n → nat) : ∃ M, ∀ i, (f i : ℕ) ≤ M := by sorry
 
 /-- Theorem 3.6.12 -/
 theorem SetTheory.Set.nat_infinite : infinite nat := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra this; choose n hn using this
   simp [has_card] at hn; symm at hn; simp [HasEquiv.Equiv] at hn
   choose f hf using hn; choose M hM using bounded_on_finite f
@@ -209,7 +209,7 @@ theorem SetTheory.Set.nat_infinite : infinite nat := by
   apply_fun nat_equiv.symm at hi; simp_all
 
 open Classical in
-/-- It is convenient for Lean purposes to give infinite sets the "junk" cardinality of zero. -/
+/-- Для удобства в Lean бесконечным множествам присваивается "мусорная" мощность, равная нулю. -/
 noncomputable def SetTheory.Set.card (X : Set) : ℕ := if h : X.finite then h.choose else 0
 
 theorem SetTheory.Set.has_card_card {X : Set} (hX : X.finite) : X.has_card (SetTheory.Set.card X) := by
@@ -312,14 +312,14 @@ lemma SetTheory.Set.pow_fun_eq_iff {A B : Set} (x y : ↑(A ^ B)) : x = y ↔ po
 theorem SetTheory.Set.card_pow {X Y : Set} (hY : Y.finite) (hX : X.finite) : 
     (Y ^ X).finite ∧ (Y ^ X).card = Y.card ^ X.card := by sorry
 
-/-- Exercise 3.6.5. You might find {name}`SetTheory.Set.prod_commutator` useful. -/
+/-- Exercise 3.6.5. Вам может пригодиться {name}`SetTheory.Set.prod_commutator`. -/
 theorem SetTheory.Set.prod_EqualCard_prod (A B : Set) : 
     EqualCard (A ×ˢ B) (B ×ˢ A) := by sorry
 
 noncomputable abbrev SetTheory.Set.pow_fun_equiv' (A B : Set) : ↑(A ^ B) ≃ (B → A) :=
   pow_fun_equiv (A:=A) (B:=B)
 
-/-- Exercise 3.6.6. You may find {name}`SetTheory.Set.curry_equiv` useful. -/
+/-- Exercise 3.6.6. Вам может пригодиться {name}`SetTheory.Set.curry_equiv`. -/
 theorem SetTheory.Set.pow_pow_EqualCard_pow_prod (A B C : Set) : 
     EqualCard ((A ^ B) ^ C) (A ^ (B ×ˢ C)) := by sorry
 
@@ -357,7 +357,7 @@ def SetTheory.Set.Permutations (n : ℕ) : Set := (Fin n ^ Fin n).specify (fun F
 /-- Exercise 3.6.12 (i), first part -/
 theorem SetTheory.Set.Permutations_finite (n : ℕ) : (Permutations n).finite := by sorry
 
-/- To continue Exercise 3.6.12 (i), we'll first develop some theory about `Permutations` and `Fin`. -/
+/- Чтобы продолжить Exercise 3.6.12 (i), сначала разовьём немного теории о `Permutations` и `Fin`. -/
 
 noncomputable def SetTheory.Set.Permutations_toFun {n : ℕ} (p : Permutations n) : (Fin n) → (Fin n) := by
   have := p.property
@@ -370,7 +370,7 @@ theorem SetTheory.Set.Permutations_bijective {n : ℕ} (p : Permutations n) :
 theorem SetTheory.Set.Permutations_inj {n : ℕ} (p1 p2 : Permutations n) : 
     Permutations_toFun p1 = Permutations_toFun p2 ↔ p1 = p2 := by sorry
 
-/-- This connects our concept of a permutation with Mathlib's {name}`Equiv` between {lean}`Fin n` and {lean}`Fin n`. -/
+/-- Это связывает наше понятие перестановки с {name}`Equiv` из Mathlib между {lean}`Fin n` и {lean}`Fin n`. -/
 noncomputable def SetTheory.Set.perm_equiv_equiv {n : ℕ} : Permutations n ≃ (Fin n ≃ Fin n) := {
   toFun := fun p => Equiv.ofBijective (Permutations_toFun p) (Permutations_bijective p)
   invFun := sorry
@@ -378,9 +378,10 @@ noncomputable def SetTheory.Set.perm_equiv_equiv {n : ℕ} : Permutations n ≃ 
   right_inv := sorry
 }
 
-/- Exercise 3.6.12 involves a lot of moving between `Fin n` and `Fin (n + 1)` so let's add some conveniences. -/
+/- Exercise 3.6.12 включает много перемещений между `Fin n` и `Fin (n + 1)`, поэтому добавим
+несколько удобств. -/
 
-/-- Any {lean}`Fin n` can be cast to {lean}`Fin (n + 1)`. Compare to Mathlib {name}`Fin.castSucc`. -/
+/-- Любой {lean}`Fin n` можно привести к {lean}`Fin (n + 1)`. Сравните с {name}`Fin.castSucc` из Mathlib. -/
 def SetTheory.Set.Fin.castSucc {n} (x : Fin n) : Fin (n + 1) :=
   Fin_embed _ _ (by omega) x
 
@@ -390,7 +391,7 @@ lemma SetTheory.Set.Fin.castSucc_inj {n} {x y : Fin n} : castSucc x = castSucc y
 @[simp]
 theorem SetTheory.Set.Fin.castSucc_ne {n} (x : Fin n) : castSucc x ≠ n := by sorry
 
-/-- Any {lean}`Fin (n + 1)` except {lean}`n` can be cast to {lean}`Fin n`. Compare to Mathlib {name}`Fin.castPred`. -/
+/-- Любой {lean}`Fin (n + 1)`, кроме {lean}`n`, можно привести к {lean}`Fin n`. Сравните с {name}`Fin.castPred` из Mathlib. -/
 noncomputable def SetTheory.Set.Fin.castPred {n} (x : Fin (n + 1)) (h : (x : ℕ) ≠ n) : Fin n :=
   Fin_mk _ (x : ℕ) (by have := Fin.toNat_lt x; omega)
 
@@ -402,20 +403,22 @@ theorem SetTheory.Set.Fin.castSucc_castPred {n} (x : Fin (n + 1)) (h : (x : ℕ)
 theorem SetTheory.Set.Fin.castPred_castSucc {n} (x : Fin n) (h : ((castSucc x : Fin (n + 1)) : ℕ) ≠ n) : 
     castPred (castSucc x) h = x := by sorry
 
-/-- Any natural {lean}`n` can be cast to {lean}`Fin (n + 1)`. Compare to Mathlib {name}`Fin.last`. -/
+/-- Любое натуральное {lean}`n` можно привести к {lean}`Fin (n + 1)`. Сравните с {name}`Fin.last` из Mathlib. -/
 def SetTheory.Set.Fin.last (n : ℕ) : Fin (n + 1) := Fin_mk _ n (by omega)
 
-/-- Now is a good time to prove this result, which will be useful for completing Exercise 3.6.12 (i). -/
+/-- Сейчас удобный момент доказать этот результат, который пригодится для завершения Exercise 3.6.12 (i). -/
 theorem SetTheory.Set.card_iUnion_card_disjoint {n m : ℕ} {S : Fin n → Set}
     (hSc : ∀ i, (S i).has_card m)
     (hSd : Pairwise fun i j => Disjoint (S i) (S j)) : 
     ((Fin n).iUnion S).finite ∧ ((Fin n).iUnion S).card = n * m := by sorry
 
-/- Finally, we'll set up a way to shrink `Fin (n + 1)` into `Fin n` (or expand the latter) by making a hole. -/
+/- Наконец, настроим способ сжимать `Fin (n + 1)` в `Fin n` (или расширять обратно), проделывая
+"дыру". -/
 
 /--
-  If some {lean}`x : Fin (n+1)` is never equal to {name}`i`, we can shrink it into {lean}`Fin n` by shifting all {lean}`(x : ℕ) > i` down by one.
-  Compare to Mathlib {name}`Fin.predAbove`.
+  Если некоторый {lean}`x : Fin (n+1)` никогда не равен {name}`i`, мы можем сжать его в
+  {lean}`Fin n`, сдвинув все {lean}`(x : ℕ) > i` на единицу вниз.
+  Сравните с {name}`Fin.predAbove` из Mathlib.
 -/
 noncomputable def SetTheory.Set.Fin.predAbove {n} (i : Fin (n + 1)) (x : Fin (n + 1)) (h : x ≠ i) : Fin n :=
   if hx : (x : ℕ) < i then
@@ -424,9 +427,10 @@ noncomputable def SetTheory.Set.Fin.predAbove {n} (i : Fin (n + 1)) (x : Fin (n 
     Fin_mk _ ((x : ℕ) - 1) (by sorry)
 
 /--
-  We can expand {lean}`x : Fin n` into {lean}`Fin (n + 1)` by shifting all {lean}`(x : ℕ) ≥ i` up by one.
-  The output is never {name}`i`, so it forms an inverse to the shrinking done by {name}`predAbove`.
-  Compare to Mathlib {name}`Fin.succAbove`.
+  Мы можем расширить {lean}`x : Fin n` до {lean}`Fin (n + 1)`, сдвинув все {lean}`(x : ℕ) ≥ i`
+  на единицу вверх. Результат никогда не равен {name}`i`, поэтому он образует обратную операцию
+  к сжатию, выполняемому {name}`predAbove`.
+  Сравните с {name}`Fin.succAbove` из Mathlib.
 -/
 noncomputable def SetTheory.Set.Fin.succAbove {n} (i : Fin (n + 1)) (x : Fin n) : Fin (n + 1) :=
   if (x : ℕ) < i then
@@ -452,18 +456,18 @@ theorem SetTheory.Set.Permutations_ih (n : ℕ) :
 
   have hSe : ∀ i, S i ≈ Permutations n := by
     intro i
-    -- Hint: you might find `perm_equiv_equiv`, `Fin.succAbove`, and `Fin.predAbove` useful.
+    -- Подсказка: вам могут пригодиться `perm_equiv_equiv`, `Fin.succAbove` и `Fin.predAbove`.
     have equiv : S i ≃ Permutations n := sorry
     use equiv, equiv.injective, equiv.surjective
 
-  -- Hint: you might find `card_iUnion_card_disjoint` and `Permutations_finite` useful.
+  -- Подсказка: вам могут пригодиться `card_iUnion_card_disjoint` и `Permutations_finite`.
   sorry
 
 /-- Exercise 3.6.12 (ii) -/
 theorem SetTheory.Set.Permutations_card (n : ℕ) : 
     (Permutations n).card = n.factorial := by sorry
 
-/-- Connections with Mathlib's {name}`Finite` -/
+/-- Связи с {name}`Finite` из Mathlib -/
 theorem SetTheory.Set.finite_iff_finite {X : Set} : X.finite ↔ Finite X := by
   rw [finite_iff_exists_equiv_fin, finite]
   constructor
@@ -477,13 +481,13 @@ theorem SetTheory.Set.finite_iff_finite {X : Set} : X.finite ↔ Finite X := by
   have eq := hn.some.trans (Fin.Fin_equiv_Fin n).symm
   exact ⟨eq, eq.bijective⟩
 
-/-- Connections with Mathlib's {name}`Set.Finite` -/
+/-- Связи с {name}`Set.Finite` из Mathlib -/
 theorem SetTheory.Set.finite_iff_set_finite {X : Set} : 
     X.finite ↔ (X : _root_.Set Object).Finite := by
   rw [finite_iff_finite]
   rfl
 
-/-- Connections with Mathlib's {name}`Nat.card` -/
+/-- Связи с {name}`Nat.card` из Mathlib -/
 theorem SetTheory.Set.card_eq_nat_card {X : Set} : X.card = Nat.card X := by
   by_cases hf : X.finite
   · by_cases hz : X.card = 0
@@ -501,7 +505,7 @@ theorem SetTheory.Set.card_eq_nat_card {X : Set} : X.card = Nat.card X := by
   right
   rwa [finite_iff_set_finite] at hf
 
-/-- Connections with Mathlib's {name}`Set.ncard` -/
+/-- Связи с {name}`Set.ncard` из Mathlib -/
 theorem SetTheory.Set.card_eq_ncard {X : Set} : X.card = (X : _root_.Set Object).ncard := by
   rw [card_eq_nat_card]
   rfl
