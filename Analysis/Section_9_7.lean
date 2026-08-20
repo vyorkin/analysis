@@ -4,24 +4,23 @@ import Analysis.Section_9_4
 
 
 /-!
-# Analysis I, Section 9.7: The intermediate value theorem
+# Analysis I, раздел 9.7: Теорема о промежуточном значении
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- The intermediate value theorem.
+Основные конструкции и результаты этого раздела:
+- Теорема о промежуточном значении.
 -/
 
 namespace Chapter9
 
-/-- Theorem 9.7.1 (Intermediate value theorem) -/
+/-- Theorem 9.7.1 (Теорема о промежуточном значении) -/
 theorem intermediate_value {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) {y : ℝ} (hy : y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) : 
   ∃ c ∈ Set.Icc a b, f c = y := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain hy_left | hy_right := hy
   . by_cases hya : y = f a; use a; grind
     by_cases hyb : y = f b; use b; grind
@@ -112,7 +111,7 @@ example : f_9_7_2 1 = 0 := by sorry
 /-- Remark 9.7.3 -/
 example : ∃ x : ℝ, 0 ≤ x ∧ x ≤ 2 ∧ x^2 = 2 := by sorry
 
-/-- Corollary 9.7.4 (Images of continuous functions) / Exercise 9.7.1 -/
+/-- Corollary 9.7.4 (Образы непрерывных функций) / Exercise 9.7.1 -/
 theorem continuous_image_Icc {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) {y : ℝ} (hy : sInf (f '' .Icc a b) ≤ y ∧ y ≤ sSup (f '' .Icc a b)) : ∃ c ∈ Set.Icc a b, f c = y := by
   sorry
 

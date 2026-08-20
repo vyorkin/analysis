@@ -3,23 +3,22 @@ import Mathlib.Data.Real.Sign
 import Mathlib.Topology.ContinuousOn
 import Analysis.Section_9_3
 /-!
-# Analysis I, Section 9.4: Continuous functions
+# Analysis I, раздел 9.4: Непрерывные функции
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Continuity of functions, using the Mathlib notions
+Основные конструкции и результаты этого раздела:
+- Непрерывность функций с использованием понятий Mathlib
 
 -/
 
 namespace Chapter9
 
 /--
-Definition 9.4.1.  Here we use the Mathlib definition of continuity.  The hypothesis {lean}`x₀ ∈ X` is not needed!
+Definition 9.4.1.  Здесь мы используем определение непрерывности из Mathlib.  Гипотеза {lean}`x₀ ∈ X` не нужна!
 -/
 theorem ContinuousWithinAt.iff (X : Set ℝ) (f : ℝ → ℝ)  (x₀ : ℝ) : 
   ContinuousWithinAt f X x₀ ↔ Convergesto X f (f x₀) x₀ := by

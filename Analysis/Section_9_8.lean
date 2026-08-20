@@ -2,16 +2,15 @@ import Mathlib.Tactic
 import Analysis.Section_9_6
 
 /-!
-# Analysis I, Section 9.8: Monotonic functions
+# Analysis I, раздел 9.8: Монотонные функции
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Review of Mathlib monotonicity concepts.
+Основные конструкции и результаты этого раздела:
+- Обзор понятий монотонности из Mathlib.
 -/
 
 namespace Chapter9
@@ -134,7 +133,7 @@ theorem mono_of_continuous_inj {a b : ℝ} (h : a < b) {f : ℝ → ℝ}
   StrictMonoOn f (.Icc a b) ∨ StrictAntiOn f (.Icc a b) := by
   sorry
 
-/-- Exercise 9.8.4 (without continuity) -/
+/-- Exercise 9.8.4 (без непрерывности) -/
 def MonotoneOn.exist_inverse_without_continuity : 
     Decidable (∀ (a b : ℝ) (_ : a < b) (f : ℝ → ℝ) (_ : StrictMonoOn f (.Icc a b)),
       f '' (.Icc a b) = .Icc (f a) (f b) ∧
@@ -142,10 +141,10 @@ def MonotoneOn.exist_inverse_without_continuity :
         finv '' (.Icc (f a) (f b)) = .Icc a b ∧
         (∀ x ∈ Set.Icc a b, finv (f x) = x) ∧
         ∀ y ∈ Set.Icc (f a) (f b), f (finv y) = y) := by
-  -- apply isFalse: strict mono alone doesn't guarantee a continuous inverse
+  -- apply isFalse: одной лишь строгой монотонности недостаточно, чтобы гарантировать непрерывность обратной функции
   sorry
 
-/-- Exercise 9.8.4 (without strict monotonicity) -/
+/-- Exercise 9.8.4 (без строгой монотонности) -/
 def MonotoneOn.exist_inverse_without_strictmono : 
     Decidable (∀ (a b : ℝ) (_ : a < b) (f : ℝ → ℝ) (_ : ContinuousOn f (.Icc a b))
         (_ : MonotoneOn f (.Icc a b)),
@@ -154,17 +153,17 @@ def MonotoneOn.exist_inverse_without_strictmono :
         finv '' (.Icc (f a) (f b)) = .Icc a b ∧
         (∀ x ∈ Set.Icc a b, finv (f x) = x) ∧
         ∀ y ∈ Set.Icc (f a) (f b), f (finv y) = y) := by
-  -- apply isFalse: e.g. a constant monotone f on [a,b] has no strict inverse
+  -- apply isFalse: например, у постоянной монотонной f на [a,b] нет строгой обратной функции
   sorry
 
 
 /-
-Exercise 9.8.4: state and prove an analogue of `MonotoneOn.exist_inverse` for `Antitone`
-functions.
+Exercise 9.8.4: сформулируйте и докажите аналог `MonotoneOn.exist_inverse` для убывающих
+(`Antitone`) функций.
 -/
 -- theorem AntitoneOn.exist_inverse {a b:ℝ} (h: a < b) (f: ℝ → ℝ) (hcont: ContinuousOn f (.Icc a b)) (hmono: StrictAntiOn f (.Icc a b)) : sorry := by sorry
 
-/-- An equivalence between the natural numbers and the rationals. -/
+/-- Биекция между натуральными числами и рациональными числами. -/
 noncomputable abbrev q_9_8_5 : ℕ ≃ ℚ := nonempty_equiv_of_countable.some
 
 noncomputable abbrev g_9_8_5 : ℚ → ℝ := fun q ↦ (2 : ℝ)^(-q_9_8_5.symm q : ℤ)

@@ -4,17 +4,16 @@ import Analysis.Section_9_3
 import Analysis.Section_9_4
 
 /-!
-# Analysis I, Section 9.6: The maximum principle
+# Analysis I, раздел 9.6: Принцип максимума
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Continuous functions on closed and bounded intervals are bounded.
-- Continuous functions on closed and bounded intervals attain their maximum and minimum.
+Основные конструкции и результаты этого раздела:
+- Непрерывные функции на замкнутых ограниченных интервалах ограничены.
+- Непрерывные функции на замкнутых ограниченных интервалах достигают своего максимума и минимума.
 -/
 
 namespace Chapter9
@@ -50,7 +49,7 @@ theorem why_7_6_3 {n : ℕ → ℕ} (hn : StrictMono n) (j : ℕ) : n j ≥ j :=
 /-- Lemma 9.6.3 -/
 theorem BddOn.of_continuous_on_compact {a b : ℝ} (_h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b) ) : 
   BddOn f (.Icc a b) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra! hunbound; simp at hunbound
   set x := fun (n : ℕ) ↦ (hunbound n).choose
   have hx (n : ℕ) : a ≤ x n ∧ x n ≤ b ∧ n < |f (x n)| := by
@@ -73,7 +72,7 @@ theorem BddOn.of_continuous_on_compact {a b : ℝ} (_h : a < b) {f : ℝ → ℝ
   have : n j ≥ (j : ℝ) := by simp [why j]
   linarith
 
-/- Definition 9.6.5.  Use the Mathlib `IsMaxOn` type. -/
+/- Definition 9.6.5.  Используйте тип `IsMaxOn` из Mathlib. -/
 #check isMaxOn_iff
 #check isMinOn_iff
 
@@ -82,10 +81,10 @@ theorem BddAboveOn.isMaxOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsM
 
 theorem BddBelowOn.isMinOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsMinOn f X x₀) : BddBelowOn f X := by sorry
 
-/-- Proposition 9.6.7 (Maximum principle) -/
+/-- Proposition 9.6.7 (Принцип максимума) -/
 theorem IsMaxOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   choose M hM using BddOn.of_continuous_on_compact h hf
   set E := f '' (.Icc a b)
   have hE : E ⊆ .Icc (-M) M := by rintro _ ⟨ x, hx, rfl ⟩; simp [hM x hx, ←abs_le]
@@ -187,7 +186,7 @@ theorem BddOn.mul (f g : ℝ → ℝ) (X : Set ℝ) (hf : BddOn f X) (hg : BddOn
 
 def BddOn.div : Decidable (∀ (f g : ℝ → ℝ) (X : Set ℝ) (_ : ∀ x ∈ X, g x ≠ 0) (_ : BddOn f X)
     (_ : BddOn g X), (BddOn (f / g) X)) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`, depending on whether you believe the given statement to be true or false.
+  -- первой строкой этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`, в зависимости от того, считаете ли вы данное утверждение истинным или ложным.
   sorry
 
 end Chapter9

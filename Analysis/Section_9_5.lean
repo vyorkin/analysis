@@ -4,21 +4,20 @@ import Analysis.Section_9_3
 import Analysis.Section_9_4
 
 /-!
-# Analysis I, Section 9.5: Left and right limits
+# Analysis I, раздел 9.5: Левые и правые пределы
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Left and right limits.
+Основные конструкции и результаты этого раздела:
+- Левые и правые пределы.
 -/
 
 namespace Chapter9
 
-/-- Definition 9.5.1.  We give left and right limits the "junk" value of 0 if the limit does not exist. -/
+/-- Definition 9.5.1.  Мы присваиваем левым и правым пределам "мусорное" значение 0, если предел не существует. -/
 abbrev RightLimitExists (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : Prop := ∃ L, (nhdsWithin x₀ (X ∩ .Ioi x₀)).Tendsto f (nhds L)
 
 open Classical in
@@ -53,7 +52,7 @@ theorem left_limit.eq' {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : LeftLim
   (nhdsWithin x₀ (X ∩ .Iio x₀)).Tendsto f (nhds (left_limit X f x₀)) := by
   simp [left_limit, h]; exact h.choose_spec
 
-/-- Example 9.5.2.  The second part of this example is no longer operative as we assign "junk" values to our functions instead of leaving them undefined. -/
+/-- Example 9.5.2.  Вторая часть этого примера больше не актуальна, так как мы присваиваем нашим функциям "мусорные" значения вместо того, чтобы оставлять их неопределёнными. -/
 example : right_limit .univ Real.sign 0 = 1 := by sorry
 
 example : left_limit .univ Real.sign 0 = -1 := by sorry
@@ -80,7 +79,7 @@ theorem left_limit.conv {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (had : Adhe
 theorem ContinuousAt.iff_eq_left_right_limit {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : x₀ ∈ X)
   (had_left : AdherentPt x₀ (X ∩ .Iio x₀)) (had_right : AdherentPt x₀ (X ∩ .Ioi x₀)) : 
   ContinuousWithinAt f X x₀ ↔ (RightLimitExists X f x₀ ∧ right_limit X f x₀ = f x₀) ∧ (LeftLimitExists X f x₀ ∧ left_limit X f x₀ = f x₀) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   constructor
   . sorry
   intro ⟨ ⟨ hre, hright⟩, ⟨ hle, lheft ⟩ ⟩
@@ -117,7 +116,7 @@ example : ¬ HasRemovableDiscontinuity .univ (fun x ↦ 1/x) 0 := by sorry
 
 example : ¬ HasJumpDiscontinuity .univ (fun x ↦ 1/x) 0 := by sorry
 
-/- Exercise 9.5.1: Write down a definition of what it would mean for a limit of a function to be `+∞` or `-∞`, apply to `fun x ↦ 1/x`, and state and prove a version of Proposition 9.3.9. -/
+/- Exercise 9.5.1: Сформулируйте определение того, что значит для предела функции быть `+∞` или `-∞`, примените его к `fun x ↦ 1/x`, а также сформулируйте и докажите версию Proposition 9.3.9. -/
 
 
 end Chapter9

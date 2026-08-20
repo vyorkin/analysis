@@ -1,9 +1,11 @@
 import Mathlib.Tactic
 
 /-!
-# API for ExistsUnique
+# API для ExistsUnique
 
-Here we review some of the API provided for {name}`ExistsUnique` in Mathlib, and provide some additional tools.  (Some of these might be suitable for upstreaming to Mathlib.)
+Здесь мы рассматриваем часть API, предоставляемого Mathlib для {name}`ExistsUnique`, и добавляем
+несколько дополнительных инструментов. (Некоторые из них, возможно, стоило бы перенести в сам
+Mathlib.)
 
 -/
 
@@ -13,7 +15,7 @@ Here we review some of the API provided for {name}`ExistsUnique` in Mathlib, and
 #check ExistsUnique.unique
 #check ExistsUnique.intro
 
-/-- This implements the axiom of unique choice. -/
+/-- Это реализует аксиому единственного выбора. -/
 noncomputable def ExistsUnique.choose {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : α := h.exists.choose
 
 theorem ExistsUnique.choose_spec {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : 
@@ -30,12 +32,12 @@ theorem ExistsUnique.choose_eq_choose {α : Sort*} {p : α → Prop} (h : ∃! x
   rw [←choose_iff]; exact (Exists.choose_spec h).1
 
 
-/-- An alternate form of the axiom of unique choice.   -/
+/-- Альтернативная форма аксиомы единственного выбора.   -/
 noncomputable def Subsingleton.choose {α : Sort*} [Subsingleton α] [hn : Nonempty α] : α := hn.some
 
 theorem Subsingleton.choose_spec {α : Sort*} [hs : Subsingleton α] [Nonempty α] (x : α) : x = hs.choose := Subsingleton.elim _ _
 
-/-- The equivalence between {name}`ExistsUnique` and {name}`Subsingleton`/{name}`Nonempty` does not require choice. -/
+/-- Эквивалентность между {name}`ExistsUnique` и {name}`Subsingleton`/{name}`Nonempty` не требует аксиомы выбора. -/
 theorem ExistsUnique.iff_subsingleton_nonempty  {α : Sort*} {p : α → Prop} : 
   (∃! x, p x) ↔ (Subsingleton {x // p x} ∧ Nonempty {x // p x}) := by
   constructor

@@ -5,30 +5,29 @@ import Analysis.Section_9_1
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 9.3: Limiting values of functions
+# Analysis I, раздел 9.3: Предельные значения функций
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Limits of continuous functions
-- Connection with Mathlib's filter convergence concepts
-- Limit laws for functions
+- Пределы непрерывных функций
+- Связь с понятиями сходимости по фильтру из Mathlib
+- Законы пределов для функций
 
-Technical point: in the text, the functions `f` studied are defined only on subsets `X` of {lean}`ℝ`, and
-left undefined elsewhere.  However, in Lean, this then creates some fiddly conversions when trying
-to restrict `f` to various subsets of `X` (which, technically, are not precisely subsets of {lean}`ℝ`,
-though they can be coerced to such).  To avoid this issue we will deviate from the text by having
-our functions defined on all of {lean}`ℝ` (with the understanding that they are assigned "junk" values
-outside of the domain `X` of interest).
+Технический момент: в тексте книги изучаемые функции `f` определены только на подмножествах `X` из
+{lean}`ℝ`, а вне этих подмножеств не определены. Однако в Lean это порождает возню с приведениями
+типов при попытке ограничить `f` на различные подмножества `X` (которые, строго говоря, не являются
+в точности подмножествами {lean}`ℝ`, хотя и приводятся к ним). Чтобы избежать этой проблемы, мы
+отступим от текста книги и будем определять наши функции на всём {lean}`ℝ` (с пониманием того, что
+вне интересующей нас области `X` им присваиваются "мусорные" значения).
 -/
 
 /-- Definition 9.3.1
-Note the books uses ≤ instead of <, but < matches mathlib's definition of neighborhood.
+Заметьте, что в книге используется ≤ вместо <, но < соответствует определению окрестности в mathlib.
 -/
 abbrev Real.CloseFn (ε : ℝ) (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) : Prop :=
   ∀ x ∈ X, |f x - L| < ε
@@ -40,12 +39,12 @@ abbrev Real.CloseNear (ε : ℝ) (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀
 namespace Chapter9
 
 /-- Example 9.3.2
-Slight change from the book to accomodate the change to {lean}`Real.CloseFn`
+Небольшое отличие от книги, связанное с изменением {lean}`Real.CloseFn`
 -/
 example : (5.1 : ℝ).CloseFn (.Icc 1 3) (fun x ↦ x^2) 4 := by sorry
 
 /-- Example 9.3.2
-Slight change from the book to accomodate the change to {lean}`Real.CloseFn`
+Небольшое отличие от книги, связанное с изменением {lean}`Real.CloseFn`
 -/
 example : (0.42 : ℝ).CloseFn (.Icc 1.9 2.1) (fun x ↦ x^2) 4 := by sorry
 
@@ -65,10 +64,10 @@ example : ¬(0.1 : ℝ).CloseFn (.Icc 1 3) (fun x ↦ x^2) 9 := by
 example : (0.1 : ℝ).CloseNear (.Icc 1 3) (fun x ↦ x^2) 9 3 := by
   sorry
 
-/-- Definition 9.3.6 (Convergence of functions at a point). -/
+/-- Definition 9.3.6 (Сходимость функций в точке). -/
 abbrev Convergesto (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀ : ℝ) : Prop := ∀ ε > (0 : ℝ), ε.CloseNear X f L x₀
 
-/-- Connection with Mathlib filter convergence concepts -/
+/-- Связь с понятиями сходимости по фильтру из Mathlib -/
 theorem Convergesto.iff (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀ : ℝ) : 
   Convergesto X f L x₀ ↔ (nhdsWithin x₀ X).Tendsto f (nhds L) := by
   unfold Convergesto Real.CloseNear Real.CloseFn nhdsWithin
@@ -105,56 +104,56 @@ theorem Convergesto.comp {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ} 
   Filter.atTop.Tendsto (fun n ↦ f (a n)) (nhds L) := by
   rw [iff_conv f L] at hf; solve_by_elim
 
--- Remark 9.3.11 is not quite true in Lean: the hypothesis `AdherentPt x₀ E` is safely removed
--- from most theorems (with the exception of Convergesto.uniq).
+-- Remark 9.3.11 не вполне верно для Lean: гипотезу `AdherentPt x₀ E` можно безопасно убрать
+-- из большинства теорем (за исключением Convergesto.uniq).
 
 /-- Corollary 9.3.13 -/
 theorem Convergesto.uniq {E : Set ℝ} {f : ℝ → ℝ} {L L' : ℝ} {x₀ : ℝ} (h : AdherentPt x₀ E)
   (hf : Convergesto E f L x₀) (hf' : Convergesto E f L' x₀) : L = L' := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let ⟨ a, ha, hconv ⟩ := (limit_of_AdherentPt _ _).mp h
   exact tendsto_nhds_unique (hf.comp ha hconv) (hf'.comp ha hconv)
 
-/-- Proposition 9.3.14 (Limit laws for functions, add) -/
+/-- Proposition 9.3.14 (Законы пределов для функций, сложение) -/
 theorem Convergesto.add {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f + g) (L + M) x₀ := by
-    -- This proof is written to follow the structure of the original text.
+    -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     rw [iff_conv _ _] at hf hg ⊢
     intro a ha hconv; specialize hf a ha hconv; specialize hg a ha hconv
     convert hf.add hg using 1
 
-/-- Proposition 9.3.14 (Limit laws for functions, sub) / Exercise 9.3.2 -/
+/-- Proposition 9.3.14 (Законы пределов для функций, вычитание) / Exercise 9.3.2 -/
 theorem Convergesto.sub {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f - g) (L - M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Limit laws for functions, max) / Exercise 9.3.2 -/
+/-- Proposition 9.3.14 (Законы пределов для функций, максимум) / Exercise 9.3.2 -/
 theorem Convergesto.max {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (max f g) (max L M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Limit laws for functions, min) / Exercise 9.3.2 -/
+/-- Proposition 9.3.14 (Законы пределов для функций, минимум) / Exercise 9.3.2 -/
 theorem Convergesto.min {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (min f g) (min L M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Limit laws for functions, smul) / Exercise 9.3.2 -/
+/-- Proposition 9.3.14 (Законы пределов для функций, умножение на скаляр) / Exercise 9.3.2 -/
 theorem Convergesto.smul {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (c : ℝ) : 
   Convergesto E (c • f) (c * L) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Limit laws for functions, mul) / Exercise 9.3.2 -/
+/-- Proposition 9.3.14 (Законы пределов для функций, умножение) / Exercise 9.3.2 -/
 theorem Convergesto.mul {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f * g) (L * M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Limit laws for functions, div) / Exercise 9.3.2.  The hypothesis in the book that g is non-vanishing on E can be dropped. -/
+/-- Proposition 9.3.14 (Законы пределов для функций, деление) / Exercise 9.3.2. Гипотезу из книги о том, что g не обращается в ноль на E, можно опустить. -/
 theorem Convergesto.div {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ} (hM : M ≠ 0)
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f / g) (L / M) x₀ := by
@@ -205,7 +204,7 @@ theorem Convergesto.local {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ}
   Convergesto E f L x₀ ↔ Convergesto (E ∩ .Ioo (x₀-δ) (x₀+δ)) f L x₀ := by
     sorry
 
-/-- Example 9.3.19.  The point of this example is somewhat blunted by the ability to remove the hypothesis that {lit}`g` is non-zero from the relevant part of Proposition 9.3.14 -/
+/-- Example 9.3.19.  Смысл этого примера несколько теряется из-за того, что мы можем убрать гипотезу о ненулевости {lit}`g` из соответствующей части Proposition 9.3.14 -/
 example : Convergesto .univ (fun x ↦ (x+2)/(x+1)) (4/3 : ℝ) 2 := by sorry
 
 /-- Example 9.3.20 -/
@@ -221,9 +220,9 @@ example : Filter.atTop.Tendsto (fun (n : ℕ) ↦ f_9_3_21 ((Real.sqrt 2)/n : �
 
 example : ¬ ∃ L, Convergesto .univ f_9_3_21 L 0 := by sorry
 
-/- Exercise 9.3.4: State a definition of limit superior and limit inferior for functions, and prove an analogue of Proposition 9.3.9 for those definitions. -/
+/- Exercise 9.3.4: Сформулируйте определение верхнего и нижнего предела для функций и докажите аналог Proposition 9.3.9 для этих определений. -/
 
-/-- Exercise 9.3.5 (Continuous version of squeeze test) -/
+/-- Exercise 9.3.5 (Непрерывная версия теоремы о двух милиционерах) -/
 theorem Convergesto.squeeze {E : Set ℝ} {f g h : ℝ → ℝ} {L : ℝ} {x₀ : ℝ}
   (hfg : ∀ x ∈ E, f x ≤ g x) (hgh : ∀ x ∈ E, g x ≤ h x)
   (hf : Convergesto E f L x₀) (hh : Convergesto E h L x₀) : 

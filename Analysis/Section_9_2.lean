@@ -1,17 +1,16 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 9.2: The algebra of real-valued functions
+# Analysis I, раздел 9.2: Алгебра вещественнозначных функций
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Recalling basic pointwise operations on functions.
+- Напоминание базовых поточечных операций над функциями.
 
 -/
 
@@ -20,7 +19,7 @@ namespace Chapter9
 open Classical in
 noncomputable abbrev function_example : ℝ → ℝ := fun x ↦ if x ∈ ((fun y : ℚ ↦ (y : ℝ)) '' .univ) then 1 else 0
 
-/-- Definition 9.2.1 (Arithmetic operations on functions). -/
+/-- Definition 9.2.1 (Арифметические операции над функциями). -/
 theorem add_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f + g) x = f x + g x := rfl
 
 theorem sub_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f - g) x = f x - g x := rfl
@@ -53,22 +52,22 @@ example : g_9_2_2 ∘ f_9_2_2 = fun x ↦ 2*x^2 := by grind
 
 /-- Exercise 9.2.1 (a) -/
 def Exercise_9_2_1a : Decidable (∀ (f g h : ℝ → ℝ), (f+g) ∘ h = f ∘ h + g ∘ h) := by
-  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /-- Exercise 9.2.1 (b) -/
 def Exercise_9_2_1b : Decidable (∀ (f g h : ℝ → ℝ), f ∘ (g + h) = f ∘ g + f ∘ h) := by
-  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /-- Exercise 9.2.1 (c) -/
 def Exercise_9_2_1c : Decidable (∀ (f g h : ℝ → ℝ), (f+g) * h = f * h + g * h) := by
-  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /-- Exercise 9.2.1 (d) -/
 def Exercise_9_2_1d : Decidable (∀ (f g h : ℝ → ℝ), f * (g+h) = f * g + f * h) := by
-  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
 end Chapter9

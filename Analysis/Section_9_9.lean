@@ -3,17 +3,16 @@ import Analysis.Section_6_1
 import Mathlib.Data.Nat.Nth
 import Analysis.Section_9_6
 /-!
-# Analysis I, Section 9.9: Uniform continuity
+# Analysis I, раздел 9.9: Равномерная непрерывность
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- API for Mathlib's {name}`UniformContinuousOn`.
-- Continuous functions on compact intervals are uniformly continuous.
+Основные конструкции и результаты этого раздела:
+- API для {name}`UniformContinuousOn` из Mathlib.
+- Непрерывные функции на компактных интервалах равномерно непрерывны.
 
 -/
 
@@ -43,7 +42,7 @@ example (x : ℝ) :
   let x₀ : ℝ := 0.1
   let δ : ℝ := 1/1010
   |x-x₀| ≤ δ → |f x - f x₀| ≤ ε := by
-  extract_lets -merge f ε x₀ δ -- need the `-merge` flag due to the collision of `ε` and `x₀`
+  extract_lets -merge f ε x₀ δ -- флаг `-merge` нужен из-за коллизии `ε` и `x₀`
   sorry
 
 example (x : ℝ) : 
@@ -63,7 +62,7 @@ example (x₀ x : ℝ) :
   extract_lets g ε δ
   sorry
 
-/-- Definition 9.9.2.  Here we use the Mathlib term {name}`UniformContinuousOn` -/
+/-- Definition 9.9.2.  Здесь мы используем термин {name}`UniformContinuousOn` из Mathlib -/
 theorem UniformContinuousOn.iff (f : ℝ → ℝ) (X : Set ℝ) : UniformContinuousOn f X  ↔
   ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ x₀ ∈ X, ∀ x ∈ X, δ.Close x x₀ → ε.Close (f x) (f x₀) := by
   simp_rw [Metric.uniformContinuousOn_iff_le, Real.Close]
@@ -79,8 +78,8 @@ example : ¬ UniformContinuousOn (fun x : ℝ ↦ 1/x) (Set.Ioo 0 2) := by
 end Chapter9
 
 /--
-Definition 9.9.5.  This is similar but not identical to {name}`Real.CloseSeq` from
-Section 6.1.
+Definition 9.9.5.  Это похоже, но не идентично {name}`Real.CloseSeq` из
+раздела 6.1.
 -/
 abbrev Real.CloseSeqs (ε : ℝ) (a b : Chapter6.Sequence) : Prop :=
   (a.m = b.m) ∧ ∀ n ≥ a.m, ε.Close (a n) (b n)
@@ -179,7 +178,7 @@ theorem UniformContinuousOn.of_bounded {E X : Set ℝ} {f : ℝ → ℝ}
 theorem UniformContinuousOn.of_continuousOn {a b : ℝ} {f : ℝ → ℝ}
   (hcont : ContinuousOn f (.Icc a b)) : 
   UniformContinuousOn f (.Icc a b) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra h; rw [iff_preserves_equiv] at h
   simp [-Set.mem_Icc] at h
   choose x hx y hy hequiv ε hε h using h
