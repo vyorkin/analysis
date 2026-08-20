@@ -3,71 +3,70 @@ import Mathlib.Tactic
 set_option doc.verso.suggestions false
 
 /-!
-# Analysis I, Section 3.1: Fundamentals (of set theory)
+# Analysis I, раздел 3.1: Основы теории множеств
 
-In this section we set up a version of Zermelo-Frankel set theory (with atoms) that tries to be
-as faithful as possible to the original text of Analysis I, Section 3.1. All numbering refers to
-the original text.
+В этом разделе мы выстраиваем версию теории множеств Цермело–Френкеля (с атомами), стараясь как
+можно точнее следовать оригинальному тексту Analysis I, раздел 3.1. Вся нумерация ссылается на
+оригинальный текст.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- A type `Chapter3.SetTheory.Set` of sets
-- A type `Chapter3.SetTheory.Object` of objects
-- An axiom that every set is (or can be coerced into) an object
-- The empty set {syntax term}`∅`, singletons {syntax term}`{y}`, and pairs {syntax term}`{y,z}`
-  (and more general finite tuples), with their attendant axioms
-- Pairwise union {syntax term}`X ∪ Y`, and their attendant axioms
-- Coercion of a set `A` to its associated type `A.toSubtype`, which is a subtype of `Object`, and
-  basic API.  (This is a technical construction needed to make the Zermelo-Frankel set theory
-  compatible with the dependent type theory of Lean.)
-- The specification `A.specify P` of a set `A` and a predicate `P: A.toSubtype → Prop` to the
-  subset of elements of `A` obeying `P`, and the axiom of specification.
-  TODO: somehow implement set builder elaboration for this.
-- The replacement `A.replace hP` of a set `A` via a predicate
-  `P: A.toSubtype → Object → Prop` obeying a uniqueness condition
-  `∀ x y y', P x y ∧ P x y' → y = y'`, and the axiom of replacement.
-- A bijective correspondence between the Mathlib natural numbers `ℕ` and a set
-  `Chapter3.Nat : Chapter3.Set` (the axiom of infinity).
-- Axioms of regularity, power set, and union (used in later sections of this chapter, but not
-  required here)
-- Connections with Mathlib's notion of a {name}`Set`
+- Тип `Chapter3.SetTheory.Set` множеств
+- Тип `Chapter3.SetTheory.Object` объектов
+- Аксиома о том, что каждое множество является объектом (или может быть приведено к)
+- Пустое множество {syntax term}`∅`, синглтоны {syntax term}`{y}` и пары {syntax term}`{y,z}`
+  (и более общие конечные кортежи) с соответствующими аксиомами
+- Попарное объединение {syntax term}`X ∪ Y` с соответствующими аксиомами
+- Приведение множества `A` к ассоциированному с ним типу `A.toSubtype`, являющемуся подтипом
+  `Object`, и базовое API. (Это техническая конструкция, нужная для согласования теории множеств
+  Цермело–Френкеля с теорией зависимых типов Lean.)
+- Спецификация `A.specify P` множества `A` и предиката `P: A.toSubtype → Prop` до подмножества
+  элементов `A`, удовлетворяющих `P`, и аксиома спецификации.
+  TODO: как-нибудь реализовать элаборацию set-builder нотации для этого.
+- Замена `A.replace hP` множества `A` через предикат
+  `P: A.toSubtype → Object → Prop`, удовлетворяющий условию однозначности
+  `∀ x y y', P x y ∧ P x y' → y = y'`, и аксиома замены.
+- Биективное соответствие между натуральными числами Mathlib `ℕ` и множеством
+  `Chapter3.Nat : Chapter3.Set` (аксиома бесконечности).
+- Аксиомы регулярности, степенного множества и объединения (используются в последующих разделах
+  этой главы, но не требуются здесь)
+- Связь с понятием {name}`Set` из Mathlib
 
-The other axioms of Zermelo-Frankel set theory are discussed in later sections.
+Остальные аксиомы теории множеств Цермело–Френкеля обсуждаются в следующих разделах.
 
-Some technical notes:
-- Mathlib of course has its own notion of a {name}`Set` (or more precisely, a type `Set X` associated to
-  each type `X`), which is not compatible with the notion `Chapter3.Set` defined here,
-  though we will try to make the notations match as much as possible.  This causes some notational
-  conflict: for instance, one may need to explicitly specify `(∅:Chapter3.Set)` instead of just {syntax term}`∅`
-  to indicate that one is using the `Chapter3.Set` version of the empty set, rather than the
-  Mathlib version of the empty set, and similarly for other notation defined here.
-- In Analysis I, we chose to work with an "impure" set theory, in which there could be more
-  `Object`s than just `Set`s.  In the type theory of Lean, this requires treating `Chapter3.Set`
-  and `Chapter3.Object` as distinct types. Occasionally this means we have to use a coercion
-  `(X: Chapter3.Object)` of a `Chapter3.Set` `X` to make into a `Chapter3.Object`: this is
-  mostly needed when manipulating sets of sets.
-- Strictly speaking, a set `X:Set` is not a type; however, we will coerce sets to types, and
-  specifically to a subtype of `Object`.  A similar coercion is in place for Mathlib's
-  formalization of sets.
-- After this chapter is concluded, the notion of a `Chapter3.SetTheory.Set` will be deprecated in
-  favor of the standard Mathlib notion of a {name}`Set` (or more precisely of the type `Set X` of a set
-  in a given type `X`).  However, due to various technical incompatibilities between set theory
-  and type theory, we will not attempt to create a full equivalence between these two
-  notions of sets. (As such, this makes this entire chapter optional from the point of view of
-  the rest of the book, though we retain it for pedagogical purposes.)
+Некоторые технические замечания:
+- У Mathlib, разумеется, есть собственное понятие {name}`Set` (точнее, тип `Set X`, связанный с
+  каждым типом `X`), несовместимое с определяемым здесь понятием `Chapter3.Set`, хотя мы и
+  постараемся максимально согласовать нотацию. Это порождает некоторый конфликт обозначений:
+  например, иногда придётся явно указывать `(∅:Chapter3.Set)` вместо просто {syntax term}`∅`,
+  чтобы обозначить, что имеется в виду версия пустого множества из `Chapter3.Set`, а не из Mathlib,
+  и аналогично для прочих нотаций, определённых здесь.
+- В Analysis I мы решили работать с "нечистой" теорией множеств, в которой `Object`-ов может быть
+  больше, чем просто `Set`-ов. В теории типов Lean это требует, чтобы `Chapter3.Set` и
+  `Chapter3.Object` были различными типами. Иногда из-за этого приходится использовать приведение
+  `(X: Chapter3.Object)` множества `Chapter3.Set` `X` к `Chapter3.Object`: обычно это нужно при
+  работе с множествами множеств.
+- Строго говоря, множество `X:Set` не является типом; тем не менее мы будем приводить множества к
+  типам, а именно к подтипу `Object`. Аналогичное приведение используется и в формализации множеств
+  в Mathlib.
+- После завершения этой главы понятие `Chapter3.SetTheory.Set` будет вытеснено стандартным понятием
+  {name}`Set` из Mathlib (точнее, типом `Set X` множества в заданном типе `X`). Однако из-за
+  различных технических несовместимостей между теорией множеств и теорией типов мы не будем
+  пытаться построить полную эквивалентность между этими двумя понятиями множества. (Из-за этого
+  вся эта глава оказывается необязательной с точки зрения остальной части книги, но мы сохраняем
+  её ради педагогической ценности.)
 
+## Советы от прошлых пользователей
 
-## Tips from past users
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
-
-- (Add tip here)
+- (Добавьте совет сюда)
 -/
 
 namespace Chapter3
@@ -76,7 +75,7 @@ namespace Chapter3
 becomes relevant when constructing models of set theory in the Chapter 3 epilogue. -/
 universe u v
 
-/-- The axioms of Zermelo-Frankel theory with atoms. -/
+/-- Аксиомы теории множеств Цермело–Френкеля с атомами. -/
 class SetTheory where
   Set : Type u -- Axiom 3.1
   Object : Type v -- Axiom 3.1
@@ -91,12 +90,19 @@ class SetTheory where
   set_to_object : Set ↪ Object -- Axiom 3.1
   -- Утверждение о том, что элемент входит в множество (принадлежит множеству).
   mem : Object → Set → Prop -- Axiom 3.1
+  -- Два множества равны, если у них одинаковые элементы (экстенсиональность).
   extensionality X Y : (∀ x, mem x X ↔ mem x Y) → X = Y -- Axiom 3.2
+  -- Существует множество без элементов.
   emptyset : Set -- Axiom 3.3
+  -- У пустого множества действительно нет элементов.
   emptyset_mem x : ¬ mem x emptyset -- Axiom 3.3
+  -- Множество, состоящее ровно из одного элемента y.
   singleton : Object → Set -- Axiom 3.4
+  -- x ∈ {y} тогда и только тогда, когда x = y.
   singleton_axiom x y : mem x (singleton y) ↔ x = y -- Axiom 3.4
+  -- Объединение двух множеств.
   union_pair : Set → Set → Set -- Axiom 3.5
+  -- x ∈ X ∪ Y тогда и только тогда, когда x ∈ X или x ∈ Y.
   union_pair_axiom X Y x : mem x (union_pair X Y) ↔ (mem x X ∨ mem x Y) -- Axiom 3.5
 
   -- Ниже в аксиомах 3.6/3.7 встречается запись `Subtype (mem . A)`.
@@ -287,7 +293,7 @@ class SetTheory where
   union : Set → Set -- Axiom 3.12
   union_axiom A x : mem x (union A) ↔ ∃ S, mem x S ∧ mem (set_to_object S) A -- Axiom 3.12
 
--- This enables one to use `Set` and `Object` instead of `SetTheory.Set` and `SetTheory.Object`.
+-- Это позволяет использовать `Set` и `Object` вместо `SetTheory.Set` и `SetTheory.Object`.
 export SetTheory (Set Object)
 
 -- "Атомы" — это объекты (Object), которые не являются множествами:
@@ -341,31 +347,62 @@ variable [SetTheory]
 -- написать `X : Set`, и Lean сам выведет, что `x` в `x ∈ X` обязан иметь тип `Object`
 -- — явно указывать `Object` не требуется.
 
-/-- Definition 3.1.1 (objects can be elements of sets) -/
+/-- Definition 3.1.1 (объекты могут быть элементами множеств) -/
 instance SetTheory.objects_mem_sets : Membership Object Set where
   mem X x := mem x X
 
--- Now we can use the `∈` notation between our `Object` and `Set`.
+-- Теперь можно использовать нотацию `∈` между нашими `Object` и `Set`.
 example (X : Set) (x : Object) : x ∈ X ↔ SetTheory.mem x X := by rfl
 
-/-- Axiom 3.1 (Sets are objects, coercion). -/
+-- `Coe` — это тайп-класс Lean, отвечающий за НЕЯВНЫЕ приведения типов:
+--   class Coe (α : Sort u) (β : Sort v) where
+--     coe : α → β
+-- Когда Lean ожидает терм типа `β`, а вы даёте терм типа `α`, для которого есть
+-- инстанс `Coe α β`, компилятор сам вставляет вызов `coe`, вставляя `↑x` вместо `x`.
+--
+-- Зачем он нужен здесь: `Set` и `Object` — разные Lean-типы (см. заметку про "нечистую"
+-- теорию множеств выше), хотя математически каждое множество ЯВЛЯЕТСЯ объектом (Axiom 3.1).
+-- У нас уже есть примитивная инъекция `set_to_object : Set ↪ Object`, но это обычная функция —
+-- пришлось бы всюду писать `set_to_object X` вручную. Инстанс `Coe Set Object` позволяет
+-- Lean вставлять это приведение автоматически везде, где ожидается `Object`, а передан `Set`
+-- (например, `(X : Object)`, как показано в примере ниже).
+
+/-- Axiom 3.1 (множества являются объектами, приведение типа). -/
 instance SetTheory.sets_are_objects : Coe Set Object where
   coe X := set_to_object X
 
--- Now we can treat a `Set` as an `Object` when needed.
+-- Теперь при необходимости можно рассматривать `Set` как `Object`.
 example (X : Set) : (X : Object) = SetTheory.set_to_object X := rfl
 
-/-- Axiom 3.1 (Sets are objects, injectivity). -/
--- `set_to_object : Set ↪ Object` — инъективное вложение; `.inj'` достаёт инъективность
--- (т.е. `f a = f b → a = b`), поэтому равенство в `Object` поднимается до равенства в `Set`.
+/-- Axiom 3.1 (множества являются объектами, инъективность). -/
 theorem SetTheory.Set.coe_eq {X Y : Set} (h : (X : Object) = (Y : Object)) : X = Y :=
+  -- `set_to_object : Set ↪ Object` — инъективное вложение (`Function.Embedding`), то есть
+  -- функция `set_to_object` вместе с доказательством своей инъективности внутри.
+  -- `.inj'` достаёт из этого доказательство инъективности:
+  -- для функции `set_to_object` оно имеет вид `set_to_object a = set_to_object b → a = b`.
+  --
+  -- А `(X : Object)` — это как раз `set_to_object X` (через инстанс `Coe Set Object` выше),
+  -- поэтому наша гипотеза `h : (X : Object) = (Y : Object)` — это в точности
+  -- `set_to_object X = set_to_object Y`. Подставляя её в `.inj'`
+  -- (с `a := X`, `b := Y`), получаем ровно то, что нужно: `X = Y`.
   set_to_object.inj' h
 
-/-- Axiom 3.1 (Sets are objects, iff lemma). -/
--- `⟨coe_eq, …⟩` строит `↔` из двух направлений:
--- `→` — это `coe_eq`, уже доказанный выше.
--- `←` — если `X = Y`, то `rintro rfl` подставляет `Y := X` повсюду,
---       и цель `(X : Object) = (X : Object)` закрывается `rfl`.
+/-- Axiom 3.1 (множества являются объектами, лемма-эквивалентность). -/
+-- Нужно доказать `(X : Object) = (Y : Object) ↔ X = Y` — то есть сразу обе импликации.
+-- То есть, если они равны как объекты, то они равны как множества и на оборот.
+--
+-- `Iff` — это структура из двух полей: доказательства "→" и доказательства "←".
+-- Анонимный конструктор `⟨_, _⟩` как раз и собирает `↔` из такой пары: `⟨доказательство →, доказательство ←⟩`.
+--
+-- Первый компонент, `coe_eq` — это готовое доказательство направления "→"
+-- (`(X : Object) = (Y : Object) → X = Y`), уже доказанное отдельной теоремой чуть выше —
+-- мы просто подставляем его как есть.
+--
+-- Второй компонент, `by rintro rfl; rfl` — доказательство направления "←"
+-- (`X = Y → (X : Object) = (Y : Object)`). `rintro rfl` вводит гипотезу `X = Y` и сразу же
+-- ею пользуется, заменяя `Y` на `X` всюду в цели (это короткая запись для `intro h; subst h`).
+-- После такой замены цель `(X : Object) = (Y : Object)` превращается в
+-- `(X : Object) = (X : Object)`, которая замыкается тривиальным `rfl`.
 --
 -- @[simp] позволяет тактите `simp` автоматически
 -- убирать приведение типов в равенствах множеств.
@@ -373,43 +410,57 @@ theorem SetTheory.Set.coe_eq {X Y : Set} (h : (X : Object) = (Y : Object)) : X =
 theorem SetTheory.Set.coe_eq_iff (X Y : Set) : (X : Object) = (Y : Object) ↔ X = Y :=
   ⟨coe_eq, by rintro rfl; rfl⟩
 
-/-- Axiom 3.2 (Equality of sets).
-The {attr}`@[ext]` tag allows the {tactic}`ext` tactic to work for sets. -/
+/-- Axiom 3.2 (равенство множеств).
+Атрибут {attr}`@[ext]` позволяет тактике {tactic}`ext` работать с множествами.
+Здесь мы просто ссылаемся на нашу уже существующую aксиому экстенсиональности. -/
 @[ext]
 theorem SetTheory.Set.ext {X Y : Set} (h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y :=
   extensionality X Y h
 
--- Axiom 3.2 (Equality of sets, ext_iff)
+-- Теперь нам доступно Set.ext_iff:
+
+-- Axiom 3.2 (равенство множеств, ext_iff)
 #check SetTheory.Set.ext_iff -- {X Y : Set} : X = Y ↔ ∀ (x : Object), x ∈ X ↔ x ∈ Y
 
+-- `EmptyCollection` — это тайп-класс Lean/Mathlib, который стоит за нотацией `∅`:
+--   class EmptyCollection (α : Type u) where
+--     emptyCollection : α
+-- Он даёт просто одно значение типа `α` — «пустой» элемент этого типа
+-- (для `List` это `[]`, для `Finset` — пустой конечный набор, и т.д.).
+--
+-- У нас уже есть примитивная константа `emptyset : Set` (Axiom 3.3),
+-- но писать `emptyset` вместо привычной `∅` не так удобно.
+-- Дав экземпляр `EmptyCollection Set`, мы позволяем
+-- Lean понимать нотацию `∅` (в контексте `Set`) как ссылку на наш `emptyset`.
 instance SetTheory.Set.instEmpty : EmptyCollection Set where
   emptyCollection := emptyset
 
--- Now we can use the `∅` notation to refer to `SetTheory.emptyset`.
+-- Теперь можно использовать нотацию `∅` для ссылки на `SetTheory.emptyset`.
 example : ∅ = SetTheory.emptyset := rfl
 
--- Make everything we define in `SetTheory.Set.*` accessible directly.
+-- Делаем всё, что определено в `SetTheory.Set.*`, доступным напрямую.
 open SetTheory.Set
 
 /--
-  Axiom 3.3 (empty set).
-  Note: in some applications one may have to explicitly cast {lean}`(∅ : Set)` to {name}`Set` due to
-  Mathlib's existing set theory notation.
+  Axiom 3.3 (пустое множество).
+  Здесь мы просто ссылаемся на нашу определенную выше аксиому.
+  Замечание: в некоторых случаях может понадобиться явно привести {lean}`(∅ : Set)` к {name}`Set`
+  из-за уже существующей в Mathlib нотации теории множеств.
 -/
 @[simp]
 theorem SetTheory.Set.not_mem_empty : ∀ x, x ∉ (∅ : Set) :=
   emptyset_mem
 
-/-- Empty set has no elements -/
+/-- У пустого множества нет элементов. -/
 theorem SetTheory.Set.eq_empty_iff_forall_notMem {X : Set} : X = ∅ ↔ (∀ x, x ∉ X) := by
   constructor
   · intro h
     rw [h]
-    exact not_mem_empty -- ∀ x, x ∉ (∅ : Set)
+    exact not_mem_empty -- Axiom 3.3 : ∀ x, x ∉ (∅ : Set)
   · intro h
     -- ext x
     -- ^^^ Использование тактики ext эквивалентно следующему:
-    rw [Set.ext_iff] -- (h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y
+    rw [Set.ext_iff] -- Axiom 3.2 : (h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y
     intro x
     constructor
     · intro hx
@@ -419,28 +470,60 @@ theorem SetTheory.Set.eq_empty_iff_forall_notMem {X : Set} : X = ∅ ↔ (∀ x,
       have hc := not_mem_empty x -- ∀ x, x ∉ (∅ : Set)
       contradiction
 
-/-- Empty set is unique -/
+/-- Более короткий вариант: после `Set.ext_iff` цель сводится к `∀ x, x ∈ X ↔ x ∈ ∅`, а
+    `x ∈ ∅` уже упрощается тактикой `simp`, так как `not_mem_empty` помечена `@[simp]`. -/
+theorem SetTheory.Set.eq_empty_iff_forall_notMem' {X : Set} : X = ∅ ↔ (∀ x, x ∉ X) := by
+  rw [Set.ext_iff]
+  simp
+
+/-- То же самое, но без `simp`: применяем `not_mem_empty` и `(h x).mp` напрямую тактикой
+    `apply`, вместо того чтобы сводить `x ∈ ∅` к `False` автоматически. -/
+theorem SetTheory.Set.eq_empty_iff_forall_notMem'' {X : Set} : X = ∅ ↔ (∀ x, x ∉ X) := by
+  rw [Set.ext_iff]
+  constructor
+  · intro h x hx
+    apply not_mem_empty x
+    apply (h x).mp
+    exact hx
+  · intro h x
+    constructor
+    · intro hx
+      have hh := h x
+      exact absurd hx hh
+    · intro hx
+      have hne := not_mem_empty x
+      exact absurd hx hne
+
+/-- Пустое множество единственно. -/
 theorem SetTheory.Set.empty_unique : ∃! (X : Set), ∀ x, x ∉ X := by
-  -- Существование уникального = существование ∧ уникальность
+  -- `existsUnique_of_exists_of_unique` : (∃ x, p x) → (∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) → ∃! x, p x
+  -- Она сводит доказательство `∃! x, p x` к двум отдельным подцелям:
+  -- 1) существованию элемента с свойством p
+  -- 2) его единственности (совпадению любых двух таких элементов).
+  --
+  -- `apply` расщепляет цель `∃! X, ∀ x, x ∉ X` на эти две подцели через `·`-блоки ниже.
+  --
+  -- Короче: существование уникального = существование ∧ уникальность
   -- Существование: ∃ x, p x
-  --  Уникальность: ∀ (y₁ y₂ : α), p y₁ → p y₂ → y₁ = y₂
+  -- Уникальность: ∀ (y₁ y₂ : α), p y₁ → p y₂ → y₁ = y₂
   apply existsUnique_of_exists_of_unique
   · use ∅
-    exact not_mem_empty -- ∀ x, x ∉ (∅ : Set)
-  · intro X Y hx hy
-    ext x
+    exact not_mem_empty -- Axiom 3.3: ∀ x, x ∉ (∅ : Set)
+  · -- Отсюда сразу видно, что это экстенсиональность.
+    intro X Y hx hy
+    ext x -- (∀ x, x ∈ X ↔ x ∈ Y) ↔ X = Y
+    -- rw [Set.ext_iff]; intro x
     specialize hx x
     specialize hy x
     constructor
     · intro hx'; contradiction
     · intro hy'; contradiction
 
-/-- Lemma 3.1.5 (Single choice) -/
--- Единственный выбор.
+/-- Lemma 3.1.5 (единственный выбор) -/
 -- Если есть непустое мн-во, то можно выбрать хотя бы один его элемент,
 -- т.е. оно состоит хотя бы из одного элемента.
 lemma SetTheory.Set.nonempty_def {X : Set} (h : X ≠ ∅) : ∃ x, x ∈ X := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   -- Докажем от противного, предположим обратное.
   by_contra! h
   have claim (x : Object) : x ∈ X ↔ x ∈ (∅ : Set) := by
@@ -451,9 +534,18 @@ lemma SetTheory.Set.nonempty_def {X : Set} (h : X ≠ ∅) : ∃ x, x ∈ X := b
 -- Вот это самое понятное доказательство, основанное на
 -- введении промежуточной гипотезы, которая доказывается при помощи двух противоречий.
 lemma SetTheory.Set.nonempty_def' {X : Set} (h : X ≠ ∅) : ∃ x, x ∈ X := by
-  -- This proof is written to follow the structure of the original text.
+  -- Докажем от противного, предположим обратное.
   by_contra! h
+  -- Чтобы получить противоречие, достаточно "столкнуть"
+  -- гипотезу X ≠ ∅ с равенством X = ∅. А единственный известный способ
+  -- доказать равенство множеств — это аксиома объёмности:
+  -- X = Y ⟺ ∀ x, x ∈ X ↔ x ∈ Y.
+  -- Отсюда естественно сформулировать промежуточное утверждение claim
+  -- именно в такой форме (для Y = ∅), а не в какой-то другой.
   have claim (x : Object) : x ∈ X ↔ x ∈ (∅ : Set) := by
+    -- Это утверждение доказывается "тривиально": обе стороны импликации по
+    -- отдельности ложны (x ∈ X ложно по h, x ∈ ∅ ложно по not_mem_empty),
+    -- так что каждое направление ⟹ закрывается своим собственным противоречием.
     specialize h x
     constructor
     · intro h'
@@ -482,13 +574,13 @@ theorem SetTheory.Set.nonempty_of_inhabited
 instance SetTheory.Set.instSingleton : Singleton Object Set where
   singleton := singleton
 
--- Now we can use the `{x}` notation for a single element `Set`.
+-- Теперь можно использовать нотацию `{x}` для одноэлементного `Set`.
 example (x : Object) : {x} = SetTheory.singleton x := rfl
 
 /--
-  Axiom 3.3(a) (singleton).
-  Note: in some applications one may have to explicitly cast {lean (type := "Set")}`{a}` to {name}`Set` due to Mathlib's
-  existing set theory notation.
+  Axiom 3.3(a) (синглтон).
+  Замечание: в некоторых случаях может понадобиться явно привести {lean (type := "Set")}`{a}` к {name}`Set`
+  из-за уже существующей в Mathlib нотации теории множеств.
 -/
 @[simp]
 theorem SetTheory.Set.mem_singleton (x a : Object) : x ∈ ({a} : Set) ↔ x = a :=
@@ -497,10 +589,10 @@ theorem SetTheory.Set.mem_singleton (x a : Object) : x ∈ ({a} : Set) ↔ x = a
 instance SetTheory.Set.instUnion : Union Set where
   union := union_pair
 
--- Now we can use the `X ∪ Y` notation for a union of two `Set`s.
+-- Теперь можно использовать нотацию `X ∪ Y` для объединения двух `Set`.
 example (X Y : Set) : X ∪ Y = SetTheory.union_pair X Y := rfl
 
-/-- Axiom 3.4 (Pairwise union). -/
+/-- Axiom 3.4 (попарное объединение). -/
 @[simp]
 theorem SetTheory.Set.mem_union (x : Object) (X Y : Set) :
   x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y) :=
@@ -514,12 +606,12 @@ theorem SetTheory.Set.mem_insert (a b : Object) (X : Set) :
   a ∈ insert b X ↔ a = b ∨ a ∈ X := by
     simp only [insert, Insert.insert, mem_union, mem_singleton]
 
-/-- Axiom 3.3(b) (pair).  Note: in some applications one may have to
-    cast {lean (type := "Set")}`{a,b}` to {name}`Set`. -/
+/-- Axiom 3.3(b) (пара).  Замечание: в некоторых случаях может понадобиться
+    привести {lean (type := "Set")}`{a,b}` к {name}`Set`. -/
 theorem SetTheory.Set.pair_eq (a b : Object) : ({a,b} : Set) = {a} ∪ {b} := by rfl
 
-/-- Axiom 3.3(b) (pair).  Note: in some applications one may have to
-    cast {lean (type := "Set")}`{a,b}` to {name}`Set`. -/
+/-- Axiom 3.3(b) (пара).  Замечание: в некоторых случаях может понадобиться
+    привести {lean (type := "Set")}`{a,b}` к {name}`Set`. -/
 @[simp]
 theorem SetTheory.Set.mem_pair (x a b : Object) : x ∈ ({a,b} : Set) ↔ (x = a ∨ x = b) := by
   simp [pair_eq, mem_union, mem_singleton]
@@ -683,32 +775,32 @@ theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty 
 
 /--
   Remark 3.1.11.
-  (These results can be proven either by a direct rewrite, or by using extensionality.)
+  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность.)
 -/
 theorem SetTheory.Set.union_congr_left (A A' B : Set) (h : A = A') :
   A ∪ B = A' ∪ B := by rw [h]
 
 /--
   Remark 3.1.11.
-  (These results can be proven either by a direct rewrite, or by using extensionality.)
+  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность.)
 -/
 theorem SetTheory.Set.union_congr_right (A B B' : Set) (h : B = B') :
   A ∪ B = A ∪ B' := by rw [h]
 
-/-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.singleton_union_singleton (a b : Object) :
   ({a} : Set) ∪ ({b} : Set) = {a,b} := by
     exact pair_eq a b
 
-/-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_comm (A B : Set) : A ∪ B = B ∪ A := by
   ext x
   rw [mem_union, mem_union]
   tauto
 
-/-- Lemma 3.1.12 (Basic properties of unions) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_assoc (A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
-  -- this proof is written to follow the structure of the original text.
+  -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   ext x
   constructor
   . intro hx
@@ -729,14 +821,14 @@ theorem SetTheory.Set.union_assoc (A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪
       rw [mem_union, mem_union]
       tauto
 
-/-- Proposition 3.1.27(c) (Union idempotent). -/
+/-- Proposition 3.1.27(c) (идемпотентность объединения). -/
 @[simp]
 theorem SetTheory.Set.union_self (A : Set) : A ∪ A = A := by
   ext x
   rw [mem_union]
   tauto
 
-/-- Proposition 3.1.27(a) (Union with empty). -/
+/-- Proposition 3.1.27(a) (объединение с пустым множеством). -/
 @[simp]
 theorem SetTheory.Set.union_empty (A : Set) : A ∪ ∅ = A := by
   ext x
@@ -748,7 +840,7 @@ theorem SetTheory.Set.union_empty (A : Set) : A ∪ ∅ = A := by
       contradiction
   · tauto
 
-/-- Proposition 3.1.27(a) (Empty with union). -/
+/-- Proposition 3.1.27(a) (пустое множество с объединением). -/
 @[simp]
 theorem SetTheory.Set.empty_union (A : Set) : ∅ ∪ A = A := by
   rw [union_comm]
@@ -771,21 +863,21 @@ theorem SetTheory.Set.pair_union_pair' (a b c : Object) : ({a,b} : Set) ∪ {b,c
   -- tauto
   constructor <;> (intro h; tauto)
 
-/-- Definition 3.1.14 (Subset). -/
+/-- Definition 3.1.14 (подмножество). -/
 instance SetTheory.Set.instSubset : HasSubset Set where
   Subset X Y := ∀ x, x ∈ X → x ∈ Y
 
--- Now we can use `⊆` for a subset relationship between two `Set`s.
+-- Теперь можно использовать `⊆` для отношения подмножества между двумя `Set`.
 example (X Y : Set) : X ⊆ Y ↔ ∀ x, x ∈ X → x ∈ Y := by rfl
 
 /--
-  Definition 3.1.14 (Strict subset).
-  Note that the strict subset operation in Mathlib is denoted {kw (of := «term_⊂_»)}`⊂` rather than `⊊`.
+  Definition 3.1.14 (строгое подмножество).
+  Заметьте, что операция строгого подмножества в Mathlib обозначается {kw (of := «term_⊂_»)}`⊂`, а не `⊊`.
 -/
 instance SetTheory.Set.instSSubset : HasSSubset Set where
   SSubset X Y := X ⊆ Y ∧ X ≠ Y
 
-/-- Now we can use {kw (of := «term_⊂_»)}`⊂` for a strict subset relationship between two {name}`Set`s. -/
+/-- Теперь можно использовать {kw (of := «term_⊂_»)}`⊂` для отношения строгого подмножества между двумя {name}`Set`. -/
 example (X Y : Set) : X ⊂ Y ↔ X ⊆ Y ∧ X ≠ Y := by rfl
 
 theorem SetTheory.Set.subset_def (X Y : Set) : X ⊆ Y ↔ ∀ x, x ∈ X → x ∈ Y := by rfl
@@ -814,10 +906,10 @@ theorem SetTheory.Set.empty_subset (A : Set) : ∅ ⊆ A := by
   have h₁ := not_mem_empty x
   contradiction
 
-/-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
+/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
 theorem SetTheory.Set.subset_trans
   {A B C : Set} (hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C := by
-    -- This proof is written to follow the structure of the original text.
+    -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     rw [subset_def]
     intro x hx
     rw [subset_def] at hAB
@@ -825,7 +917,7 @@ theorem SetTheory.Set.subset_trans
     apply hBC x at hx
     assumption
 
-/-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
+/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
 theorem SetTheory.Set.subset_antisymm
   (A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A) : A = B := by
     ext x
@@ -835,7 +927,7 @@ theorem SetTheory.Set.subset_antisymm
     specialize hBA x
     exact ⟨hAB, hBA⟩
 
-/-- Proposition 3.1.17 (Partial ordering by set inclusion) -/
+/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
 theorem SetTheory.Set.ssubset_trans
   (A B C : Set) (hAB : A ⊂ B) (hBC : B ⊂ C) : A ⊂ C := by
     rw [ssubset_def] at *
@@ -878,17 +970,17 @@ theorem SetTheory.Set.ssubset_trans
 -/
 
 /--
-  This defines the subtype {lean}`A.toSubtype` for any {lean}`A:Set`.
-  Note that {lean}`A.toSubtype` gives you a type, similar to
-  how {name}`Object` or {name}`Set` are types.
-  A value {given (type := "A.toSubtype")}`x'` of type {lean}`A.toSubtype` combines
-  some {given}`x: Object` with a proof that {given}`hx: x ∈ A`.
+  Это определяет подтип {lean}`A.toSubtype` для любого {lean}`A:Set`.
+  Заметьте, что {lean}`A.toSubtype` — это тип, точно так же, как {name}`Object` или {name}`Set` —
+  типы.
+  Значение {given (type := "A.toSubtype")}`x'` типа {lean}`A.toSubtype` объединяет
+  некоторый {given}`x: Object` с доказательством того, что {given}`hx: x ∈ A`.
 
-  To produce an element {name}`x'` of this subtype, use
-  {lean (type := "A.toSubtype")}`⟨ x, hx ⟩`, where {lean}`x: Object` and {lean}`hx: x ∈ A`.
-  The object {name}`x` associated to a subtype element {name}`x'` is
-  recovered as {lean}`x'.val`, and the property {name}`hx` that {name}`x` belongs to
-  {name}`A` is recovered as {lean}`x'.property`.
+  Чтобы построить элемент {name}`x'` этого подтипа, используйте
+  {lean (type := "A.toSubtype")}`⟨ x, hx ⟩`, где {lean}`x: Object` и {lean}`hx: x ∈ A`.
+  Объект {name}`x`, связанный с элементом подтипа {name}`x'`, восстанавливается как
+  {lean}`x'.val`, а свойство {name}`hx` того, что {name}`x` принадлежит {name}`A`,
+  восстанавливается как {lean}`x'.property`.
 -/
 abbrev SetTheory.Set.toSubtype (A : Set) := Subtype (fun x ↦ x ∈ A)
 
@@ -920,8 +1012,8 @@ lemma SetTheory.Set.subtype_coe (A : Set) (x : A) : x.val = x := rfl
 lemma SetTheory.Set.coe_inj (A : Set) (x y : A) : x.val = y.val ↔ x = y := Subtype.coe_inj
 
 /--
-  If one has a proof {name}`hx` of {lean}`x ∈ A`, then {lean}`A.subtype_mk hx` will
-  then make the element of {name}`A` (viewed as a subtype) corresponding to {name}`x`.
+  Если есть доказательство {name}`hx` того, что {lean}`x ∈ A`, то {lean}`A.subtype_mk hx`
+  построит элемент {name}`A` (рассматриваемого как подтип), соответствующий {name}`x`.
 -/
 def SetTheory.Set.subtype_mk (A : Set) {x : Object} (hx : x ∈ A) : A := ⟨x, hx⟩
 
@@ -958,7 +1050,7 @@ abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set := SetTheory.speci
 
 -- Направление «→»: принадлежность спецификации влечёт принадлежность исходному множеству.
 -- Используй, когда имеешь `h : x ∈ A.specify P` и нужно получить `x ∈ A`.
-/-- Axiom 3.6 (axiom of specification) -/
+/-- Axiom 3.6 (аксиома спецификации) -/
 theorem SetTheory.Set.specification_axiom {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) :
     x ∈ A :=
   (SetTheory.specification_axiom A P).1 x h
@@ -966,7 +1058,7 @@ theorem SetTheory.Set.specification_axiom {A : Set} {P : A → Prop} {x : Object
 -- Двустороннее ↔, когда x уже является элементом подтипа `x : A`.
 -- Используй, когда уже держишь в руках элемент подтипа и хочешь переключиться
 -- между `x.val ∈ A.specify P` и `P x`.
-/-- Axiom 3.6 (axiom of specification) -/
+/-- Axiom 3.6 (аксиома спецификации) -/
 theorem SetTheory.Set.specification_axiom' {A : Set} (P : A → Prop) (x : A) :
     x.val ∈ A.specify P ↔ P x :=
   (SetTheory.specification_axiom A P).2 x
@@ -978,7 +1070,7 @@ theorem SetTheory.Set.specification_axiom' {A : Set} (P : A → Prop) (x : A) :
 -- Это эквивалентно «x ∈ A ∧ P(x)», но записанное через ∃ — так, чтобы
 -- можно было построить элемент подтипа и передать его в P.
 -- Это основной вариант для работы в доказательствах с `x : Object`.
-/-- Axiom 3.6 (axiom of specification) -/
+/-- Axiom 3.6 (аксиома спецификации) -/
 @[simp]
 theorem SetTheory.Set.specification_axiom'' {A : Set} (P : A → Prop) (x : Object) :
   x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨x, h⟩ := by
@@ -995,7 +1087,7 @@ theorem SetTheory.Set.specify_subset {A : Set} (P : A → Prop) : A.specify P �
   intro x hx
   exact specification_axiom hx -- (h : x ∈ A.specify P) : x ∈ A
 
-/-- This exercise may require some understanding of how subtypes are implemented in Lean. -/
+/-- Это упражнение может потребовать некоторого понимания того, как подтипы реализованы в Lean. -/
 theorem SetTheory.Set.specify_congr {A A' : Set} (hAA' : A = A') {P : A → Prop} {P' : A' → Prop}
   (hPP' : (x : Object) → (h : x ∈ A) → (h' : x ∈ A') → (P ⟨x, h⟩ ↔ P' ⟨x, h'⟩)) :
     A.specify P = A'.specify P' := by
@@ -1048,10 +1140,10 @@ instance SetTheory.Set.instIntersection : Inter Set where
   -- Используем аксиому спецификации (выделения) для выделения такого подмножества из множества X.
   inter X Y := X.specify (fun x ↦ x.val ∈ Y)
 
--- Now we can use the `X ∩ Y` notation for an intersection of two `Set`s.
+-- Теперь можно использовать нотацию `X ∩ Y` для пересечения двух `Set`.
 example (X Y : Set) : X ∩ Y = X.specify (fun x ↦ x.val ∈ Y) := rfl
 
-/-- Definition 3.1.22 (Intersections) -/
+/-- Definition 3.1.22 (пересечения) -/
 @[simp]
 theorem SetTheory.Set.mem_inter (x : Object) (X Y : Set) :
   x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y) := by
@@ -1067,7 +1159,7 @@ theorem SetTheory.Set.mem_inter (x : Object) (X Y : Set) :
       have hiff := specification_axiom' (fun z ↦ z.val ∈ Y) ⟨x, hX⟩
       exact hiff.mpr hY
 
-/-- Definition 3.1.22 (Intersections) -/
+/-- Definition 3.1.22 (пересечения) -/
 @[simp]
 theorem SetTheory.Set.mem_inter' (x : Object) (X Y : Set) :
   x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y) := by
@@ -1082,10 +1174,10 @@ theorem SetTheory.Set.mem_inter' (x : Object) (X Y : Set) :
 instance SetTheory.Set.instSDiff : SDiff Set where
   sdiff X Y := X.specify (fun x ↦ x.val ∉ Y)
 
--- Now we can use the `X \ Y` notation for a difference of two `Set`s.
+-- Теперь можно использовать нотацию `X \ Y` для разности двух `Set`.
 example (X Y : Set) : X \ Y = X.specify (fun x ↦ x.val ∉ Y) := rfl
 
-/-- Definition 3.1.26 (Difference sets) -/
+/-- Definition 3.1.26 (разностные множества) -/
 @[simp]
 theorem SetTheory.Set.mem_sdiff (x : Object) (X Y : Set) :
   x ∈ (X \ Y) ↔ (x ∈ X ∧ x ∉ Y) := by
@@ -1114,7 +1206,7 @@ theorem SetTheory.Set.inter_comm' (A B : Set) : A ∩ B = B ∩ A := by
   simp only [mem_inter]
   rw [And.comm]
 
-/-- Proposition 3.1.27(b) (Subset absorption). -/
+/-- Proposition 3.1.27(b) (поглощение подмножеством). -/
 theorem SetTheory.Set.subset_union {A X : Set} (hAX : A ⊆ X) : A ∪ X = X := by
   ext x
   rw [mem_union]
@@ -1122,12 +1214,12 @@ theorem SetTheory.Set.subset_union {A X : Set} (hAX : A ⊆ X) : A ∪ X = X := 
   rw [or_iff_right_iff_imp] -- (a ∨ b ↔ b) ↔ a → b
   apply hAX
 
-/-- Proposition 3.1.27(b) (Union absorption). -/
+/-- Proposition 3.1.27(b) (поглощение объединением). -/
 theorem SetTheory.Set.union_subset {A X : Set} (hAX : A ⊆ X) : X ∪ A = X := by
   rw [union_comm]
   exact subset_union hAX
 
-/-- Proposition 3.1.27(c) (Intersection idempotent). -/
+/-- Proposition 3.1.27(c) (идемпотентность пересечения). -/
 @[simp]
 theorem SetTheory.Set.inter_self (A : Set) : A ∩ A = A := by
   ext x
@@ -1141,7 +1233,7 @@ theorem SetTheory.Set.inter_assoc (A B C : Set) :
     repeat rw [mem_inter]
     tauto
 
-/-- Proposition 3.1.27(f) (Intersection distributes over union). -/
+/-- Proposition 3.1.27(f) (пересечение дистрибутивно относительно объединения). -/
 theorem  SetTheory.Set.inter_union_distrib_left (A B C : Set) :
   A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by
     ext x
@@ -1158,7 +1250,7 @@ theorem  SetTheory.Set.inter_union_distrib_left (A B C : Set) :
       · exact ⟨ha, Or.inl hb⟩
       · exact ⟨ha, Or.inr hc⟩
 
-/-- Proposition 3.1.27(f) (Union distributes over intersection). -/
+/-- Proposition 3.1.27(f) (объединение дистрибутивно относительно пересечения). -/
 theorem  SetTheory.Set.union_inter_distrib_left (A B C : Set) :
   A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by
     ext x
@@ -1184,7 +1276,7 @@ theorem SetTheory.Set.inter_compl {A X : Set} : A ∩ (X \ A) = ∅ := by
   have hmem := not_mem_empty x -- ∀ x, x ∉ (∅ : Set)
   tauto
 
-/-- Proposition 3.1.27(g) (Complement of a union). -/
+/-- Proposition 3.1.27(g) (дополнение объединения). -/
 theorem SetTheory.Set.compl_union {A B X : Set} : X \ (A ∪ B) = (X \ A) ∩ (X \ B) := by
   ext x
   rw [mem_inter]
@@ -1193,7 +1285,7 @@ theorem SetTheory.Set.compl_union {A B X : Set} : X \ (A ∪ B) = (X \ A) ∩ (X
   rw [not_or] -- ¬(p ∨ q) ↔ ¬p ∧ ¬q
   tauto
 
-/-- Proposition 3.1.27(g) (Complement of an intersection). -/
+/-- Proposition 3.1.27(g) (дополнение пересечения). -/
 theorem SetTheory.Set.compl_inter {A B X : Set} : X \ (A ∩ B) = (X \ A) ∪ (X \ B) := by
   ext x
   rw [mem_union]
@@ -1203,7 +1295,7 @@ theorem SetTheory.Set.compl_inter {A B X : Set} : X \ (A ∩ B) = (X \ A) ∪ (X
   tauto
 
 -- Делаем множествa дистрибутивными решетками.
-/-- Not from textbook: sets form a distributive lattice. -/
+/-- Не из учебника: множества образуют дистрибутивную решётку. -/
 instance SetTheory.Set.instDistribLattice : DistribLattice Set where
   le := (· ⊆ ·)
   le_refl : ∀ (A : Set), A ⊆ A := subset_self
@@ -1246,7 +1338,7 @@ instance SetTheory.Set.instDistribLattice : DistribLattice Set where
     intro X Y Z
     rw [← union_inter_distrib_left] -- A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)
 
-/-- Sets have a minimal element.  -/
+/-- У множеств есть наименьший элемент.  -/
 -- Даём Set структуру решётки через ⊆ как ≤, и ∅ как ⊥.
 instance SetTheory.Set.instOrderBot : OrderBot Set where
   bot := ∅
@@ -1264,13 +1356,13 @@ instance SetTheory.Set.instOrderBot : OrderBot Set where
 -- применимо к нашим множествам и совпадает с привычным A ∩ B = ∅
 -- (это показано ниже в disjoint_iff).
 --
--- Now we've defined `A ≤ B` to mean `A ⊆ B`, and set `⊥` to `∅`.
--- This makes the `Disjoint` definition from Mathlib work with our `Set`.
+-- Теперь мы определили `A ≤ B` как `A ⊆ B`, а `⊥` как `∅`.
+-- Это заставляет определение `Disjoint` из Mathlib работать с нашим `Set`.
 example (A B : Set) : (A ≤ B) ↔ (A ⊆ B) := by rfl
 example : ⊥ = (∅ : Set) := by rfl
 example (A B : Set) : Prop := Disjoint A B
 
-/-- Definition of disjointness (using the previous instances) -/
+/-- Определение непересекаемости (через предыдущие инстансы) -/
 theorem SetTheory.Set.disjoint_iff (A B : Set) : Disjoint A B ↔ A ∩ B = ∅ := by
   convert _root_.disjoint_iff
 
@@ -1279,7 +1371,7 @@ theorem SetTheory.Set.disjoint_iff (A B : Set) : Disjoint A B ↔ A ∩ B = ∅ 
 abbrev SetTheory.Set.replace (A : Set) {P : A → Object → Prop}
   (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set := SetTheory.replace A P hP
 
-/-- Axiom 3.7 (Axiom of replacement) -/
+/-- Axiom 3.7 (аксиома замены) -/
 -- Позволяет задавать отображения типа таких {3,4,5} → {3++,4++,5++}
 @[simp]
 theorem SetTheory.Set.replacement_axiom {A : Set} {P : A → Object → Prop}
@@ -1289,51 +1381,51 @@ theorem SetTheory.Set.replacement_axiom {A : Set} {P : A → Object → Prop}
 
 abbrev Nat := SetTheory.nat
 
--- Going forward, we'll use `Nat` as a type.
--- However, notice we've set `Nat` to `SetTheory.nat` which is a `Set` and not a type.
--- The only reason we can write `x: Nat` is because we've previously defined a `CoeSort`
--- coercion that lets us write `x: A` (when `A` is a `Set`) as a shortcut for `x: A.toSubtype`.
--- This is why, whenever you see `x: Nat`, you're really looking at `x: Nat.toSubtype`.
+-- Далее мы будем использовать `Nat` как тип.
+-- Однако заметьте, что мы определили `Nat` как `SetTheory.nat`, а это `Set`, а не тип.
+-- Единственная причина, по которой можно писать `x: Nat`, — это ранее определённое приведение
+-- `CoeSort`, позволяющее писать `x: A` (когда `A` — это `Set`) как сокращение для `x: A.toSubtype`.
+-- Именно поэтому всякий раз, когда вы видите `x: Nat`, на самом деле это `x: Nat.toSubtype`.
 example (x : Nat) : Nat.toSubtype := x
 example (x : Nat) : Object := x.val
 example (x : Nat) : (x.val ∈ Nat) := x.property
 example (o : Object) (ho : o ∈ Nat) : Nat := ⟨o, ho⟩
 
-/-- Axiom 3.8 (Axiom of infinity) -/
+/-- Axiom 3.8 (аксиома бесконечности) -/
 def SetTheory.Set.nat_equiv : ℕ ≃ Nat := SetTheory.nat_equiv
 
--- Below are some API for handling coercions. This may not be the optimal way to set things up.
+-- Ниже — небольшое API для работы с приведениями типов. Возможно, не самый оптимальный способ это устроить.
 instance SetTheory.Set.instOfNat {n : ℕ} : OfNat Nat n where
   ofNat := nat_equiv n
 
--- Now we can define `Nat` with a natural literal.
+-- Теперь можно задавать `Nat` натуральным литералом.
 example : Nat := 5
 example : (5 : Nat).val ∈ Nat := (5 : Nat).property
 
 instance SetTheory.Set.instNatCast : NatCast Nat where
   natCast n := nat_equiv n
 
--- Now we can turn `ℕ` into `Nat`.
+-- Теперь можно превращать `ℕ` в `Nat`.
 example (n : ℕ) : Nat := n
 example (n : ℕ) : (n : Nat).val ∈ Nat := (n : Nat).property
 
 instance SetTheory.Set.toNat : Coe Nat ℕ where
   coe n := nat_equiv.symm n
 
--- Now we can turn `Nat` into `ℕ`.
+-- Теперь можно превращать `Nat` в `ℕ`.
 example (n : Nat) : ℕ := n
 
 instance SetTheory.Object.instNatCast : NatCast Object where
   natCast n := (n : Nat).val
 
--- Now we can turn `ℕ` into an `Object`.
+-- Теперь можно превращать `ℕ` в `Object`.
 example (n : ℕ) : Object := n
 example (n : ℕ) : Set := {(n : Object)}
 
 instance SetTheory.Object.instOfNat {n : ℕ} : OfNat Object n where
   ofNat := ((n : Nat) : Object)
 
--- Now we can define `Object` with a natural literal.
+-- Теперь можно задавать `Object` натуральным литералом.
 example : Object := 1
 example : Set := {1, 2, 3}
 
@@ -1411,7 +1503,7 @@ lemma SetTheory.Set.nat_coe_eq_iff' {m : Nat} {n : ℕ} :
 example : (2 : ℕ) ≠ (7 : Nat) := by
   simp
 
-/-- Example 3.1.16 (simplified).  -/
+/-- Example 3.1.16 (упрощённая версия).  -/
 example : ({3, 5} : Set) ⊆ {1, 3, 5} := by
   rw [subset_def]
   intro x
@@ -1419,7 +1511,7 @@ example : ({3, 5} : Set) ⊆ {1, 3, 5} := by
   rw [mem_triple]
   tauto
 
-/-- Example 3.1.17 (simplified). -/
+/-- Example 3.1.17 (упрощённая версия). -/
 example : ({3, 5} : Set).specify (fun x ↦ x.val ≠ 3) = ({5} : Set) := by
   ext x
   rw [mem_singleton]
@@ -1467,8 +1559,8 @@ example : ({1, 2, 4} : Set) ∩ {2, 3, 4} = {2, 4} := by
 /-- Example 3.1.24 -/
 example : ({1, 2, 4} : Set) ∩ {2, 3, 4} = {2, 4} := by
   ext x
-  -- Instead of unfolding repetitive branches by hand like earlier,
-  -- you can use the `aesop` tactic which does this automatically.
+  -- Вместо того, чтобы, как раньше, вручную разбирать повторяющиеся случаи,
+  -- можно использовать тактику `aesop`, которая делает это автоматически.
   aesop -- Большой атом очевидности : )
 
 /-- Example 3.1.25 -/
@@ -1505,7 +1597,7 @@ example : Disjoint (∅ : Set) ∅ := by
   have h₁ := not_mem_empty x -- ∀ x, x ∉ (∅ : Set)
   contradiction
 
-/-- Example 3.1.28 (Difference sets). -/
+/-- Example 3.1.28 (разностные множества). -/
 example : ({1, 2, 3, 4} : Set) \ {2, 4, 6} = {1, 3} := by
   apply ext; aesop
 
@@ -1624,9 +1716,9 @@ example : ({3, 5, 9} : Set).replace (P := fun _ y ↦ y = 1) (by aesop) = {1} :=
 -- 3) при необходимости смотри исходную сигнатуру леммы (replacement_axiom),
 --    откуда взялся экзистенциал, а не уже инстанцированную цель.
 
-/-- Exercise 3.1.5.  One can use the {tactic}`tfae_have` and
-    {tactic}`tfae_finish` tactics here.
-    TFAE: The Following (propositions) Are Equivalent. -/
+/-- Exercise 3.1.5.  Здесь можно использовать тактики {tactic}`tfae_have` и
+    {tactic}`tfae_finish`.
+    TFAE: The Following (propositions) Are Equivalent — следующие утверждения равносильны. -/
 theorem SetTheory.Set.subset_tfae (A B : Set) :
   [A ⊆ B, A ∪ B = B, A ∩ B = A].TFAE := by
     tfae_have (h1iff2 : A ⊆ B ↔ A ∪ B = B) : 1 ↔ 2 := by
@@ -1874,7 +1966,7 @@ example (n : ℕ) (h : n ∈ ({0, 1, 4} : Finset ℕ)) :
 
 /--
   Exercise 3.1.10.
-  You may find {name}`Function.onFun_apply` and the {tactic}`fin_cases` tactic useful.
+  Возможно, пригодятся {name}`Function.onFun_apply` и тактика {tactic}`fin_cases`.
 -/
 -- Disjoint X Y означает X ∩ Y = ∅.
 -- Доказать, что три множества A \ B, A ∩ B, B \ A попарно не пересекаются.
@@ -1963,9 +2055,9 @@ theorem SetTheory.Set.union_eq_partition' (A B : Set) :
 
 /--
   Exercise 3.1.11.
-  The challenge is to prove this without using
-  {name}`Set.specify`, {name}`Set.specification_axiom`, {name}`Set.specification_axiom'`, or
-  anything built from them (like differences and intersections).
+  Задача — доказать это, не используя
+  {name}`Set.specify`, {name}`Set.specification_axiom`, {name}`Set.specification_axiom'` и
+  ничего построенного из них (например, разности и пересечения).
 -/
 -- У нас есть произвольное множество A и предикат P на его элементах.
 -- Нужно построить множество B ⊆ A такое, что x.val ∈ B ↔ P x для всех x ∈ A —
@@ -2110,9 +2202,9 @@ theorem SetTheory.Set.subset_diff_subset_counter :
       contradiction
 
 /-
-  Final part of Exercise 3.1.12: state and prove
-  a reasonable substitute positive result for the above theorem
-  that involves set differences.
+  Финальная часть Exercise 3.1.12: сформулируйте и докажите разумный
+  положительный результат, заменяющий приведённую выше теорему,
+  который включает разности множеств.
 -/
 
 /-- Exercise 3.1.13 -/
@@ -2122,20 +2214,20 @@ theorem SetTheory.Set.singleton_iff (A : Set) (hA : A ≠ ∅) :
     sorry
 
 /-
-  Now we introduce connections between this notion of a set, and Mathlib's notion.
-  The exercise below will acquiant you with the API for Mathlib's sets.
+  Теперь мы вводим связь между этим понятием множества и понятием множества из Mathlib.
+  Упражнение ниже познакомит вас с API множеств Mathlib.
 -/
 
 instance SetTheory.Set.inst_coe_set : Coe Set (_root_.Set Object) where
   coe X := { x | x ∈ X }
 
--- Now we can convert our `Set` into a Mathlib `_root_.Set`.
--- Notice that Mathlib sets are parameterized by the element type, in our case `Object`.
+-- Теперь можно превратить наш `Set` в Mathlib-евский `_root_.Set`.
+-- Заметьте, что множества Mathlib параметризованы типом элементов, в нашем случае — `Object`.
 example (X : Set) : _root_.Set Object := X
 
 /--
-  Injectivity of the coercion. Note however that we do NOT assert that the coercion is surjective
-  (and indeed Russell's paradox prevents this)
+  Инъективность приведения типа. Заметьте, однако, что мы НЕ утверждаем, что это приведение
+  сюръективно (и парадокс Рассела действительно этому препятствует)
 -/
 @[simp]
 theorem SetTheory.Set.coe_inj' (X Y : Set) :
@@ -2145,15 +2237,15 @@ theorem SetTheory.Set.coe_inj' (X Y : Set) :
     replace h := congr(x ∈ $h); simpa using h
   rintro rfl; rfl
 
-/-- Compatibility of the membership operation {kw (of := «term_∈_»)}`∈` -/
+/-- Совместимость операции принадлежности {kw (of := «term_∈_»)}`∈` -/
 theorem SetTheory.Set.mem_coe (X : Set) (x : Object) : x ∈ (X : _root_.Set Object) ↔ x ∈ X := by
   simp
 
-/-- Compatibility of the emptyset -/
+/-- Совместимость пустого множества -/
 theorem SetTheory.Set.coe_empty : ((∅ : Set) : _root_.Set Object) = ∅ := by
   simp
 
-/-- Compatibility of subset -/
+/-- Совместимость подмножества -/
 theorem SetTheory.Set.coe_subset (X Y : Set) :
   (X : _root_.Set Object) ⊆ (Y : _root_.Set Object) ↔ X ⊆ Y := by
     simp only [Set.setOf_subset_setOf]
@@ -2162,28 +2254,28 @@ theorem SetTheory.Set.coe_subset (X Y : Set) :
 theorem SetTheory.Set.coe_ssubset (X Y : Set) :
     (X : _root_.Set Object) ⊂ (Y : _root_.Set Object) ↔ X ⊂ Y := by sorry
 
-/-- Compatibility of singleton -/
+/-- Совместимость синглтона -/
 theorem SetTheory.Set.coe_singleton (x : Object) : (({x} : Set) : _root_.Set Object) = {x} := by sorry
 
-/-- Compatibility of union -/
+/-- Совместимость объединения -/
 theorem SetTheory.Set.coe_union (X Y : Set) :
     ((X ∪ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) ∪ (Y : _root_.Set Object) := by sorry
 
-/-- Compatibility of pair -/
+/-- Совместимость пары -/
 theorem SetTheory.Set.coe_pair (x y : Object) : (({x, y} : Set) : _root_.Set Object) = {x, y} := by sorry
 
-/-- Compatibility of subtype -/
+/-- Совместимость подтипа -/
 theorem SetTheory.Set.coe_subtype (X : Set) :  (X : _root_.Set Object) = X.toSubtype := by sorry
 
-/-- Compatibility of intersection -/
+/-- Совместимость пересечения -/
 theorem SetTheory.Set.coe_intersection (X Y : Set) :
     ((X ∩ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) ∩ (Y : _root_.Set Object) := by sorry
 
-/-- Compatibility of set difference -/
+/-- Совместимость разности множеств -/
 theorem SetTheory.Set.coe_diff (X Y : Set) :
     ((X \ Y : Set) : _root_.Set Object) = (X : _root_.Set Object) \ (Y : _root_.Set Object) := by sorry
 
-/-- Compatibility of disjointness -/
+/-- Совместимость непересекаемости -/
 theorem SetTheory.Set.coe_Disjoint (X Y : Set) :
     Disjoint (X : _root_.Set Object) (Y : _root_.Set Object) ↔ Disjoint X Y := by sorry
 

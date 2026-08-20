@@ -2,36 +2,35 @@ import Mathlib.Tactic
 import Analysis.Section_2_3
 
 /-!
-# Analysis I, Chapter 2 epilogue: Isomorphism with the Mathlib natural numbers
+# Analysis I, эпилог главы 2: изоморфизм с натуральными числами Mathlib
 
-In this (technical) epilogue, we show that the "Chapter 2" natural numbers {name}`Chapter2.Nat` are
-isomorphic in various senses to the standard natural numbers {lean}`ℕ`.
+В этом (техническом) эпилоге мы показываем, что натуральные числа «Главы 2» {name}`Chapter2.Nat`
+изоморфны в различных смыслах стандартным натуральным числам {lean}`ℕ`.
 
-After this epilogue, {name}`Chapter2.Nat` will be deprecated, and we will instead use the standard
-natural numbers {lean}`ℕ` throughout.  In particular, one should use the full Mathlib API for {lean}`ℕ` for
-all subsequent chapters, in lieu of the {name}`Chapter2.Nat` API.
+После этого эпилога {name}`Chapter2.Nat` будет вытеснен, и далее мы будем всюду использовать
+стандартные натуральные числа {lean}`ℕ`. В частности, во всех последующих главах следует
+использовать полное API Mathlib для {lean}`ℕ` вместо API {name}`Chapter2.Nat`.
 
-Filling the sorries here requires both the {name}`Chapter2.Nat` API and the Mathlib API for the standard
-natural numbers {lean}`ℕ`.  As such, they are excellent exercises to prepare you for the aforementioned
-transition.
+Заполнение sorry здесь требует как API {name}`Chapter2.Nat`, так и API Mathlib для стандартных
+натуральных чисел {lean}`ℕ`. Поэтому это отличные упражнения, готовящие вас к упомянутому переходу.
 
-In second half of this section we also give a fully axiomatic treatment of the natural numbers
-via the Peano axioms. The treatment in the preceding three sections was only partially axiomatic,
-because we used a specific construction {name}`Chapter2.Nat` of the natural numbers that was an inductive
-type, and used that inductive type to construct a recursor.  Here, we give some exercises to show
-how one can accomplish the same tasks directly from the Peano axioms, without knowing the specific
-implementation of the natural numbers.
+Во второй половине этого раздела мы также даём полностью аксиоматическую трактовку натуральных
+чисел через аксиомы Пеано. Изложение в предыдущих трёх разделах было лишь частично аксиоматическим,
+поскольку мы использовали конкретную конструкцию {name}`Chapter2.Nat` натуральных чисел, являющуюся
+индуктивным типом, и использовали этот индуктивный тип для построения рекурсора. Здесь мы приводим
+несколько упражнений, показывающих, как получить те же результаты напрямую из аксиом Пеано, не зная
+конкретной реализации натуральных чисел.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are
-welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
-/-- Converting a Chapter 2 natural number to a Mathlib natural number. -/
+/-- Преобразование натурального числа Главы 2 в натуральное число Mathlib. -/
 abbrev Chapter2.Nat.toNat (n : Chapter2.Nat) : ℕ := match n with
   | zero => 0
   | succ n' => n'.toNat + 1
@@ -40,8 +39,8 @@ lemma Chapter2.Nat.zero_toNat : (0 : Chapter2.Nat).toNat = 0 := rfl
 
 lemma Chapter2.Nat.succ_toNat (n : Chapter2.Nat) : (n++).toNat = n.toNat + 1 := rfl
 
-/-- The conversion is a bijection. Here we use the existing capability (from Section 2.1) to map
-the Mathlib natural numbers to the Chapter 2 natural numbers. -/
+/-- Это преобразование — биекция. Здесь мы используем уже имеющуюся возможность (из раздела 2.1)
+отображать натуральные числа Mathlib в натуральные числа Главы 2. -/
 abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
   toFun := toNat
   invFun n := (n : Chapter2.Nat)
@@ -53,7 +52,7 @@ abbrev Chapter2.Nat.equivNat : Chapter2.Nat ≃ ℕ where
     induction' n with n hn; rfl
     simp [←succ_eq_add_one, hn]
 
-/-- The conversion preserves addition. -/
+/-- Преобразование сохраняет сложение. -/
 abbrev Chapter2.Nat.map_add : ∀ (n m : Nat), (n + m).toNat = n.toNat + m.toNat := by
   intro n m
   induction' n with n hn
@@ -64,7 +63,7 @@ abbrev Chapter2.Nat.map_add : ∀ (n m : Nat), (n + m).toNat = n.toNat + m.toNat
     rw [_root_.Nat.succ_add]
     rw [← hn]
 
-/-- The conversion preserves multiplication. -/
+/-- Преобразование сохраняет умножение. -/
 abbrev Chapter2.Nat.map_mul : ∀ (n m : Nat), (n * m).toNat = n.toNat * m.toNat := by
   intro n m
   induction' n with n hn
@@ -74,7 +73,7 @@ abbrev Chapter2.Nat.map_mul : ∀ (n m : Nat), (n * m).toNat = n.toNat * m.toNat
     rw [← hn]
     rw [map_add]
 
-/-- The conversion preserves order. -/
+/-- Преобразование сохраняет порядок. -/
 abbrev Chapter2.Nat.map_le_map_iff : ∀ {n m : Nat}, n.toNat ≤ m.toNat ↔ n ≤ m := by
   intro n m
   induction' n with n hn
@@ -101,7 +100,7 @@ abbrev Chapter2.Nat.map_le_map_iff : ∀ {n m : Nat}, n.toNat ≤ m.toNat ↔ n 
       rw [ha, map_add, succ_toNat]
       omega
 
-/-- Более простое доказательство: без индукции, через `Nat.le_iff` и `map_add`. -/
+/-- Более простое доказательство: без индукции, через {name}`Nat.le_iff` и {name}`map_add`. -/
 abbrev Chapter2.Nat.map_le_map_iff' : ∀ {n m : Nat}, n.toNat ≤ m.toNat ↔ n ≤ m := by
   intro n m
   rw [Nat.le_iff, le_iff_exists_add]
@@ -121,8 +120,8 @@ abbrev Chapter2.Nat.equivNat_ordered_ring : Chapter2.Nat ≃+*o ℕ where
   map_mul' := map_mul
   map_le_map_iff' := map_le_map_iff
 
-/-- The conversion preserves exponentiation. -/
-lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) : 
+/-- Преобразование сохраняет возведение в степень. -/
+lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
     n.toNat ^ m.toNat = (n^m).toNat := by
   induction' m with m hm
   · rw [show zero = 0 by rfl]
@@ -133,7 +132,7 @@ lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
     rw [map_mul]
     rw [← hm]
 
-/-- The Peano axioms for an abstract type {name}`Nat` -/
+/-- Аксиомы Пеано для абстрактного типа {name}`Nat` -/
 @[ext]
 structure PeanoAxioms where
   Nat : Type
@@ -146,7 +145,7 @@ structure PeanoAxioms where
 
 namespace PeanoAxioms
 
-/-- The Chapter 2 natural numbers obey the Peano axioms. -/
+/-- Натуральные числа Главы 2 удовлетворяют аксиомам Пеано. -/
 def Chapter2_Nat : PeanoAxioms where
   Nat := Chapter2.Nat
   zero := Chapter2.Nat.zero
@@ -155,7 +154,7 @@ def Chapter2_Nat : PeanoAxioms where
   succ_cancel := Chapter2.Nat.succ_cancel
   induction := Chapter2.Nat.induction
 
-/-- The Mathlib natural numbers obey the Peano axioms. -/
+/-- Натуральные числа Mathlib удовлетворяют аксиомам Пеано. -/
 def Mathlib_Nat : PeanoAxioms where
   Nat := ℕ
   zero := 0
@@ -164,12 +163,12 @@ def Mathlib_Nat : PeanoAxioms where
   succ_cancel := Nat.succ_inj.mp
   induction _ := Nat.rec
 
-/-- One can map the Mathlib natural numbers into any other structure obeying the Peano axioms. -/
+/-- Натуральные числа Mathlib можно отобразить в любую другую структуру, удовлетворяющую аксиомам Пеано. -/
 abbrev natCast (P : PeanoAxioms) : ℕ → P.Nat := fun n ↦ match n with
   | Nat.zero => P.zero
   | Nat.succ n => P.succ (natCast P n)
 
-/-- One can start the proof here with {syntax tactic}`unfold Function.Injective`, although it is not strictly necessary. -/
+/-- Здесь доказательство можно начать с {syntax tactic}`unfold Function.Injective`, хотя это и не обязательно строго необходимо. -/
 theorem natCast_injective (P : PeanoAxioms) : Function.Injective P.natCast := by
   intro a b hab
   induction a generalizing b with
@@ -191,7 +190,7 @@ theorem natCast_injective (P : PeanoAxioms) : Function.Injective P.natCast := by
       have hcancel : P.natCast a' = P.natCast b' := P.succ_cancel hab
       rw [ih hcancel]
 
-/-- One can start the proof here with {syntax tactic}`unfold Function.Surjective`, although it is not strictly necessary. -/
+/-- Здесь доказательство можно начать с {syntax tactic}`unfold Function.Surjective`, хотя это и не обязательно строго необходимо. -/
 theorem natCast_surjective (P : PeanoAxioms) : Function.Surjective P.natCast := by
   -- индукция по целевому элементу: всякий x : P.Nat достижим
   apply P.induction (fun x => ∃ n : ℕ, P.natCast n = x)
@@ -202,16 +201,16 @@ theorem natCast_surjective (P : PeanoAxioms) : Function.Surjective P.natCast := 
       rw [hdef, hn]
     exact ⟨n + 1, hstep⟩
 
-/-- The notion of an equivalence between two structures obeying the Peano axioms.
-    The symbol {kw (of := «term_≃_»)}`≃` is an alias for Mathlib's {name}`Equiv` class; for instance {lean}`P.Nat ≃ Q.Nat` is
-    an alias for {lean}`_root_.Equiv P.Nat Q.Nat`. -/
+/-- Понятие эквивалентности между двумя структурами, удовлетворяющими аксиомам Пеано.
+    Символ {kw (of := «term_≃_»)}`≃` — это псевдоним для класса {name}`Equiv` из Mathlib; например {lean}`P.Nat ≃ Q.Nat` —
+    это псевдоним для {lean}`_root_.Equiv P.Nat Q.Nat`. -/
 class Equiv (P Q : PeanoAxioms) where
   equiv : P.Nat ≃ Q.Nat
   equiv_zero : equiv P.zero = Q.zero
   equiv_succ : ∀ n : P.Nat, equiv (P.succ n) = Q.succ (equiv n)
 
-/-- This exercise will require application of Mathlib's API for the {name}`Equiv` class.
-    Some of this API can be invoked automatically via the {tactic}`simp` tactic. -/
+/-- Это упражнение потребует применения API Mathlib для класса {name}`Equiv`.
+    Часть этого API можно вызвать автоматически с помощью тактики {tactic}`simp`. -/
 abbrev Equiv.symm {P Q : PeanoAxioms} (eqv : Equiv P Q) : Equiv Q P where
   equiv := eqv.equiv.symm
   equiv_zero := by
@@ -220,8 +219,8 @@ abbrev Equiv.symm {P Q : PeanoAxioms} (eqv : Equiv P Q) : Equiv Q P where
   equiv_succ n := by
     rw [_root_.Equiv.symm_apply_eq, eqv.equiv_succ, eqv.equiv.apply_symm_apply]
 
-/-- This exercise will require application of Mathlib's API for the {name}`Equiv` class.
-    Some of this API can be invoked automatically via the {tactic}`simp` tactic. -/
+/-- Это упражнение потребует применения API Mathlib для класса {name}`Equiv`.
+    Часть этого API можно вызвать автоматически с помощью тактики {tactic}`simp`. -/
 abbrev Equiv.trans {P Q R : PeanoAxioms} (equiv1 : Equiv P Q) (equiv2 : Equiv Q R) : Equiv P R where
   equiv := equiv1.equiv.trans equiv2.equiv
   equiv_zero := by
@@ -230,7 +229,7 @@ abbrev Equiv.trans {P Q R : PeanoAxioms} (equiv1 : Equiv P Q) (equiv2 : Equiv Q 
     rw [_root_.Equiv.trans_apply, equiv1.equiv_succ, equiv2.equiv_succ]
     rfl
 
-/-- Useful Mathlib tools for inverting bijections include {name}`Function.surjInv` and {name}`Function.invFun`. -/
+/-- Полезные инструменты Mathlib для обращения биекций: {name}`Function.surjInv` и {name}`Function.invFun`. -/
 noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib_Nat P where
   equiv :=
     -- Mathlib_Nat.Nat = ℕ лишь по определению, поэтому даём Nonempty явно
@@ -244,12 +243,12 @@ noncomputable abbrev Equiv.fromNat (P : PeanoAxioms) : Equiv Mathlib_Nat P where
   equiv_zero := rfl
   equiv_succ _ := rfl
 
-/-- The task here is to establish that any two structures obeying the Peano axioms are equivalent. -/
+/-- Задача здесь — установить, что любые две структуры, удовлетворяющие аксиомам Пеано, эквивалентны. -/
 noncomputable abbrev Equiv.mk' (P Q : PeanoAxioms) : Equiv P Q :=
   (Equiv.fromNat P).symm.trans (Equiv.fromNat Q)
 
-/-- There is only one equivalence between any two structures obeying the Peano axioms. -/
-theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) : 
+/-- Между любыми двумя структурами, удовлетворяющими аксиомам Пеано, существует ровно одна эквивалентность. -/
+theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
     equiv1 = equiv2 := by
   obtain ⟨equiv1, equiv_zero1, equiv_succ1⟩ := equiv1
   obtain ⟨equiv2, equiv_zero2, equiv_succ2⟩ := equiv2
@@ -260,8 +259,8 @@ theorem Equiv.uniq {P Q : PeanoAxioms} (equiv1 equiv2 : PeanoAxioms.Equiv P Q) :
   · intro n ih
     rw [equiv_succ1, equiv_succ2, ih]
 
-/-- A sample result: recursion is well-defined on any structure obeying the Peano axioms -/
-theorem Nat.recurse_uniq {P : PeanoAxioms} (f : P.Nat → P.Nat → P.Nat) (c : P.Nat) : 
+/-- Пример результата: рекурсия корректно определена на любой структуре, удовлетворяющей аксиомам Пеано -/
+theorem Nat.recurse_uniq {P : PeanoAxioms} (f : P.Nat → P.Nat → P.Nat) (c : P.Nat) :
     ∃! (a : P.Nat → P.Nat), a P.zero = c ∧ ∀ n, a (P.succ n) = f n (a n) := by
   -- φ — обратная к natCast, существует благодаря инъективности и сюръективности
   set φ : P.Nat → ℕ := Function.invFun P.natCast with hφ
