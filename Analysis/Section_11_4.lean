@@ -3,16 +3,15 @@ import Analysis.Section_9_6
 import Analysis.Section_11_3
 
 /-!
-# Analysis I, Section 11.4: Basic properties of the Riemann integral
+# Analysis I, раздел 11.4: Базовые свойства интеграла Римана
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Basic properties of the Riemann integral.
+Основные конструкции и результаты этого раздела:
+- Базовые свойства интеграла Римана.
 
 -/
 
@@ -79,18 +78,18 @@ theorem IntegrableOn.join {I J K : BoundedInterval} (hIJK : K.joins I J)
   IntegrableOn f I ∧ IntegrableOn f J ∧ integ f K = integ f I + integ f J := by
   sorry
 
-/-- A variant of Theorem 11.4.1(h) that will be useful in later sections. -/
+/-- Вариант Theorem 11.4.1(h), который пригодится в следующих разделах. -/
 theorem IntegrableOn.mono' {I J : BoundedInterval} (hIJ : J ⊆ I)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : IntegrableOn f J := by
   sorry
 
-/-- A further variant of Theorem 11.4.1(h) that will be useful in later sections. -/
+/-- Ещё один вариант Theorem 11.4.1(h), который пригодится в следующих разделах. -/
 theorem IntegrableOn.eq {I J : BoundedInterval} (hIJ : J ⊆ I)
   (ha : J.a = I.a) (hb : J.b = I.b)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : integ f J = integ f I := by
   sorry
 
-/-- A handy little lemma for "epsilon of room" type arguments -/
+/-- Небольшая удобная лемма для рассуждений вида "запас в эпсилон" -/
 lemma nonneg_of_le_const_mul_eps {x C : ℝ} (h : ∀ ε>0, x ≤ C * ε) : x ≤ 0 := by
   by_cases hC : C > 0
   . by_contra!
@@ -98,10 +97,10 @@ lemma nonneg_of_le_const_mul_eps {x C : ℝ} (h : ∀ ε>0, x ≤ C * ε) : x �
     linarith
   specialize h 1 ?_ <;> grind
 
-/-- Theorem 11.4.3 (Max and min preserve integrability). -/
-theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
+/-- Theorem 11.4.3 (максимум и минимум сохраняют интегрируемость). -/
+theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) :
   IntegrableOn (f ⊔ g) I  := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   unfold IntegrableOn at hf hg
   have hmax_bound : BddOn (f ⊔ g) I := by
     choose M hM using hf.1; choose M' hM' using hg.1
@@ -144,7 +143,7 @@ theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : Integra
 
 
 
-/-- Theorem 11.4.5 / Exercise 11.4.3.  The objective here is to create a shorter proof than the one above. -/
+/-- Theorem 11.4.5 / Exercise 11.4.3. Цель здесь — получить более короткое доказательство, чем приведённое выше. -/
 theorem IntegrableOn.min {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f ⊓ g) I  := by
   sorry
@@ -156,12 +155,12 @@ theorem IntegrableOn.abs {I : BoundedInterval} {f : ℝ → ℝ} (hf : Integrabl
   convert ((hf.max this).sub (hf.min this)).1 using 1
   ext x; obtain h | h := (show f x ≤ 0 ∨ f x ≥ 0 by grind) <;> simp [h]
 
-/-- Theorem 11.4.5 (Products preserve Riemann integrability).
-It is convenient to first establish the non-negative case. -/
+/-- Theorem 11.4.5 (произведение сохраняет интегрируемость по Риману).
+Удобно сначала установить неотрицательный случай. -/
 theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I)
-  (hf_nonneg : MajorizesOn f 0 I) (hg_nonneg : MajorizesOn g 0 I) : 
+  (hf_nonneg : MajorizesOn f 0 I) (hg_nonneg : MajorizesOn g 0 I) :
   IntegrableOn (f * g) I := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_cases hI : (I : Set ℝ).Nonempty
   swap
   . apply (integ_on_subsingleton _).1
@@ -260,9 +259,9 @@ theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : Inte
   exact ⟨ hmul_bound, by linarith [nonneg_of_le_const_mul_eps this] ⟩
 
 
-theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
+theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) :
   IntegrableOn (f * g) I := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set fplus := max f (fun _ ↦ 0)
   set fminus := -min f (fun _ ↦ 0)
   set gplus := max g (fun _ ↦ 0)

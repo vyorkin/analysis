@@ -1,31 +1,30 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 2.1: The Peano Axioms
+# Analysis I, раздел 2.1: Аксиомы Пеано
 
-This file is a translation of Section 2.1 of Analysis I to Lean 4.  All numbering refers to the
-original text.
+Этот файл — перевод раздела 2.1 книги Analysis I на Lean 4. Вся нумерация ссылается на
+оригинальный текст.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided doing
-so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Definition of the "Chapter 2" natural numbers, `Chapter2.Nat`,abbreviated as {name}`Nat` within
-  the Chapter2 namespace. (In the book, the natural numbers are treated in a purely axiomatic
-  fashion, as a type that obeys the Peano axioms; but here we take advantage of Lean's native
-  inductive types to explicitly construct a version of the natural numbers that obey those axioms.
-  One could also proceed more axiomatically, as is done in Section 3 for set theory: see the
-  epilogue to this chapter.)
-- Establishment of the Peano axioms for `Chapter2.Nat`.
-- Recursive definitions for `Chapter2.Nat`.
+- Определение натуральных чисел "Главы 2", `Chapter2.Nat`, сокращённо {name}`Nat` в
+  пространстве имён Chapter2. (В книге натуральные числа рассматриваются чисто аксиоматически,
+  как тип, подчиняющийся аксиомам Пеано; но здесь мы пользуемся встроенными индуктивными типами
+  Lean, чтобы явно построить версию натуральных чисел, удовлетворяющую этим аксиомам. Можно было
+  бы действовать и более аксиоматически, как это сделано в разделе 3 для теории множеств:
+  см. эпилог этой главы.)
+- Установление аксиом Пеано для `Chapter2.Nat`.
+- Рекурсивные определения для `Chapter2.Nat`.
 
-Note: at the end of this chapter, the `Chapter2.Nat` class will be deprecated in favor of the
-standard Mathlib class {name}`_root_.Nat`, or {lean}`ℕ`.  However, we will develop the properties of
-`Chapter2.Nat` "by hand" in the next few sections for pedagogical purposes.
+Замечание: в конце этой главы класс `Chapter2.Nat` будет вытеснен стандартным классом Mathlib
+{name}`_root_.Nat`, или {lean}`ℕ`. Тем не менее, в следующих нескольких разделах мы разработаем
+свойства `Chapter2.Nat` "вручную" в педагогических целях.
 
 -/
 
@@ -47,19 +46,19 @@ namespace Chapter2
 inductive Nat where
 | zero : Nat
 | succ : Nat → Nat
-deriving Repr, DecidableEq  -- this allows `decide` to work on `Nat`
+deriving Repr, DecidableEq  -- это позволяет тактике `decide` работать с `Nat`
 
 -- Постулируем разрешимость равенства натуральных чисел.
 
--- Propositional equality is Decidable for all elements of a type.
--- In other words, an instance of DecidableEq α is a means of
--- deciding the proposition a = b is for all a b : α.
+-- Пропозициональное равенство разрешимо для всех элементов типа.
+-- Другими словами, экземпляр DecidableEq α — это способ
+-- решить утверждение a = b для всех a b : α.
 
-/-- Axiom 2.1 (0 is a natural number) -/
+/-- Axiom 2.1 (0 является натуральным числом) -/
 instance Nat.instZero : Zero Nat := ⟨ zero ⟩
 #check (0 : Nat)
 
-/-- Axiom 2.2 (Successor of a natural number is a natural number) -/
+/-- Axiom 2.2 (последователь натурального числа — тоже натуральное число) -/
 postfix:100 "++" => Nat.succ
 #check (fun n ↦ n++)
 -- #check ((fun n ↦ n++) 0 : Nat)
@@ -80,9 +79,9 @@ postfix:100 "++" => Nat.succ
 -- Вообще, одно из великих открытий 19 века в том, что числа можно понимать абстрактно,
 -- через аксиомы, не нуждаясь в конкретной модели.
 
-/-- Definition 2.1.3 (Definition of the numerals 0, 1, 2, etc.). Note: to avoid ambiguity, one may
-  need to use explicit casts such as {lean}`(0 : Nat)`, {lean}`(1 : Nat)`, etc. to refer to this
-  chapter's version of the natural numbers.  -/
+/-- Definition 2.1.3 (определение числительных 0, 1, 2 и т.д.). Замечание: во избежание
+  неоднозначности иногда может понадобиться явное приведение типов, например {lean}`(0 : Nat)`,
+  {lean}`(1 : Nat)` и т.д., чтобы сослаться именно на версию натуральных чисел из этой главы. -/
 instance Nat.instOfNat {n : _root_.Nat} : OfNat Nat n where
   ofNat := _root_.Nat.rec 0 (fun _ n ↦ n++) n
 
@@ -99,8 +98,8 @@ lemma Nat.two_succ : 2++ = 3 := by rfl
 #check (3 : Nat)
 
 /--
-  Axiom 2.3 (0 is not the successor of any natural number).
-  Compare with Lean's {name}`Nat.succ_ne_zero`.
+  Axiom 2.3 (0 не является последователем никакого натурального числа).
+  Сравните со встроенной {name}`Nat.succ_ne_zero` в Lean.
 -/
 theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
   by_contra h
@@ -108,26 +107,26 @@ theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
   injection h
 
 /-
-  Under the hood, every inductive type in Lean gets a
-  `noConfusion` theorem generated automatically. Auto-generated, roughly:
+  Под капотом для каждого индуктивного типа в Lean автоматически генерируется теорема
+  `noConfusion`. Автоматически сгенерированная, примерно такая:
 
   Nat.noConfusion : n++ = zero → False
 
-  When injection sees h : n++ = zero, it recognizes this as a constructor mismatch.
-  It then:
+  Когда injection видит h : n++ = zero, она распознаёт это как несовпадение конструкторов.
+  После этого она:
 
-  - Looks up the auto-generated no-confusion principle for `Nat`
-  - Applies it to `h`, which directly yields `False`
-  - The goal `False` is closed, completing the proof
+  - Находит автоматически сгенерированный принцип "no-confusion" для `Nat`
+  - Применяет его к `h`, что сразу же даёт `False`
+  - Цель `False` замыкается, доказательство завершено
 -/
 
 -- По определению тоже самое, что и Nat.succ_ne_zero
 
-/-- Proposition 2.1.6 (4 is not equal to zero) -/
+/-- Proposition 2.1.6 (4 не равно нулю) -/
 theorem Nat.four_ne : (4 : Nat) ≠ 0 := by
-  -- By definition, 4 = 3++.
+  -- По определению 4 = 3++.
   change 3++ ≠ 0
-  -- By axiom 2.3, 3++ is not zero.
+  -- По аксиоме 2.3, 3++ не равно нулю.
   exact succ_ne _
 
 /-
@@ -139,8 +138,8 @@ theorem Nat.four_ne : (4 : Nat) ≠ 0 := by
 -/
 
 /--
-  Axiom 2.4 (Different natural numbers have different successors).
-  Compare with Mathlib's {name}`Nat.succ_inj`.
+  Axiom 2.4 (разные натуральные числа имеют разных последователей).
+  Сравните с {name}`Nat.succ_inj` из Mathlib.
 -/
 theorem Nat.succ_cancel {n m : Nat} (hnm : n++ = m++) : n = m := by
   injection hnm
@@ -149,8 +148,8 @@ theorem Nat.succ_cancel {n m : Nat} (hnm : n++ = m++) : n = m := by
 -- https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D0%B8
 
 /--
-  Axiom 2.4 (Different natural numbers have different successors).
-  Compare with Mathlib's {name}`Nat.succ_ne_succ`.
+  Axiom 2.4 (разные натуральные числа имеют разных последователей).
+  Сравните с {name}`Nat.succ_ne_succ` из Mathlib.
 -/
 theorem Nat.succ_ne_succ (n m : Nat) : n ≠ m → n++ ≠ m++ := by
   intro h
@@ -195,9 +194,9 @@ example : 4++ ≠ 1 := by
   have := Nat.succ_ne 3
   contradiction
 
-/-- Proposition 2.1.8 (6 is not equal to 2) -/
+/-- Proposition 2.1.8 (6 не равно 2) -/
 theorem Nat.six_ne_two : (6 : Nat) ≠ 2 := by
--- this proof is written to follow the structure of the original text.
+-- это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra h
   change 5++ = 1++ at h
   apply succ_cancel at h
@@ -206,7 +205,7 @@ theorem Nat.six_ne_two : (6 : Nat) ≠ 2 := by
   have := four_ne
   contradiction
 
-/-- One can also prove this sort of result by the {tactic}`decide` tactic -/
+/-- Такой результат можно доказать и с помощью тактики {tactic}`decide` -/
 theorem Nat.six_ne_two' : (6 : Nat) ≠ 2 := by
   decide
 
@@ -226,8 +225,8 @@ theorem Nat.six_ne_two' : (6 : Nat) ≠ 2 := by
 Это и будет нашей пятой аксиомой.
 -/
 
-/-- Axiom 2.5 (Principle of mathematical induction). The {tactic}`induction` (or
-  {tactic}`induction'`) tactic in Mathlib serves as a substitute for this axiom.  -/
+/-- Axiom 2.5 (принцип математической индукции). Тактика {tactic}`induction` (или
+  {tactic}`induction'`) из Mathlib служит заменой этой аксиоме. -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) : ∀ n, P n := by
   intro n
   induction n with
@@ -287,8 +286,8 @@ f₁ := (+++) - операция "добавления" едницицы
 -- Вот ниже показано как раз как она выглядит для наших натуральных чисел.
 
 /--
-  Recursion. Analogous to the inbuilt Mathlib method {name}`Nat.rec` associated to
-  the Mathlib natural numbers
+  Рекурсия. Аналог встроенного метода Mathlib {name}`Nat.rec`, связанного
+  с натуральными числами Mathlib
 -/
 abbrev Nat.recurse (f : Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
   fun n ↦
@@ -324,28 +323,28 @@ abbrev Nat.recurse (f : Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
    таким образом исключить "лишние числа" (вроде 0.5, 0.333...).
 -/
 
-/-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's {name}`Nat.rec_zero`. -/
+/-- Proposition 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_zero` из Mathlib. -/
 theorem Nat.recurse_zero (f : Nat → Nat → Nat) (c : Nat) : Nat.recurse f c 0 = c := by rfl
 -- ^ c - нулевой эл. числ. посл. или
 --   Nat.recurse натуральному числу 0 сопоставляет число c
 --   По сути это базовый кейс паттер-матчинга определения Nat.recurse.
 -- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
-/-- Proposition 2.1.16 (recursive definitions). Compare with Mathlib's {name}`Nat.rec_add_one`. -/
+/-- Proposition 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_add_one` из Mathlib. -/
 theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) : 
     recurse f c (n++) = f n (recurse f c n) := by rfl
 -- ^ Это второй кейс паттерн-матчинга определения Nat.recurse.
 -- Тоже доказывается одной редукцией Nat.recurse.
 
-/-- Proposition 2.1.16 (recursive definitions). -/
+/-- Proposition 2.1.16 (рекурсивные определения). -/
 theorem Nat.eq_recurse
         (f : Nat → Nat → Nat)
         (c : Nat)
-        (a : Nat → Nat) : 
+        (a : Nat → Nat) :
         (a 0 = c ∧ ∀ n, a (n++) = f n (a n)) ↔ (a = recurse f c) := by
   constructor
   . intro ⟨h0, hsucc⟩
-    -- this proof is written to follow the structure of the original text.
+    -- это доказательство написано так, чтобы следовать структуре оригинального текста.
     apply funext
     apply induction
     . exact h0
@@ -355,16 +354,16 @@ theorem Nat.eq_recurse
       rw [ih]
   · intro h
     rw [h]
-    constructor -- could also use `split_ands` or `and_intros` here
+    constructor -- также можно использовать `split_ands` или `and_intros`
     . exact recurse_zero _ _
     · exact recurse_succ _ _
 
 
-/-- Proposition 2.1.16 (recursive definitions). -/
-theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) : 
+/-- Proposition 2.1.16 (рекурсивные определения). -/
+theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) :
     ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
   apply ExistsUnique.intro (recurse f c)
-  . constructor -- could also use `split_ands` or `and_intros` here
+  . constructor -- также можно использовать `split_ands` или `and_intros`
     . exact recurse_zero _ _
     . exact recurse_succ _ _
   intro a

@@ -2,27 +2,26 @@ import Mathlib.Tactic
 import Analysis.Section_3_1
 
 /-!
-# Analysis I, Section 3.2: Russell's paradox
+# Analysis I, раздел 3.2: Парадокс Рассела
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-This section is mostly optional, though it does make explicit the axiom of foundation which is
-used in a minor role in an exercise in Section 3.5.
+Этот раздел по большей части необязателен, хотя в нём явно формулируется аксиома фундирования,
+которая играет второстепенную роль в одном из упражнений раздела 3.5.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Russell's paradox (ruling out the axiom of universal specification).
-- The axiom of regularity (foundation) - an axiom designed to avoid Russell's paradox.
+- Парадокс Рассела (исключающий аксиому универсальной спецификации).
+- Аксиома регулярности (фундирования) — аксиома, призванная избежать парадокса Рассела.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -32,12 +31,12 @@ export SetTheory (Set Object)
 
 variable [SetTheory]
 
-/-- Axiom 3.8 (Universal specification) -/
+/-- Axiom 3.8 (универсальная спецификация) -/
 abbrev axiom_of_universal_specification : Prop :=
   ∀ P : Object → Prop, ∃ A : Set, ∀ x : Object, x ∈ A ↔ P x
 
 theorem Russells_paradox : ¬ axiom_of_universal_specification := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   intro hus
   unfold axiom_of_universal_specification at hus
   -- P x: "x — это (некоторое) множество, не содержащее самого себя"
@@ -62,7 +61,7 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
     rw [←hΩ] at this  -- получаем Ω ∈ Ω, что противоречит h'
     contradiction
 
-/-- Axiom 3.9 (Regularity) -/
+/-- Axiom 3.9 (регулярность) -/
 theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) : 
     ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A := by
   have hA : ∃ x, x ∈ A := nonempty_def h
@@ -79,48 +78,48 @@ theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
   aesop
 
 /--
-  Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the empty set.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни пустое множество.
 -/
 theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) : 
     ∃ (X : Set), ∀ x, x ∉ X := by
   sorry
 
 /--
-  Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the singleton set.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни синглтон.
 -/
 theorem SetTheory.Set.singleton_exists (h : axiom_of_universal_specification) (x : Object) : 
     ∃ (X : Set), ∀ y, y ∈ X ↔ y = x := by
   sorry
 
 /--
-  Exercise 3.2.1.  The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the pair set.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни пару.
 -/
 theorem SetTheory.Set.pair_exists (h : axiom_of_universal_specification) (x₁ x₂ : Object) : 
     ∃ (X : Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
   sorry
 
 /--
-  Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the union operation.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни операцию объединения.
 -/
 theorem SetTheory.Set.union_exists (h : axiom_of_universal_specification) (A B : Set) : 
     ∃ (Z : Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
   sorry
 
 /--
-  Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the specify operation.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни операцию спецификации.
 -/
 theorem SetTheory.Set.specify_exists (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) : 
     ∃ (Z : Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨ z, h ⟩ := by
   sorry
 
 /--
-  Exercise 3.2.1. The spirit of the exercise is to establish these results without using either
-  Russell's paradox, or the replace operation.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
+  Рассела, ни операцию замены.
 -/
 theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A : Set)
   (P : A → Object → Prop) (hP : ∀ x y y', P x y ∧ P x y' → y = y') : 

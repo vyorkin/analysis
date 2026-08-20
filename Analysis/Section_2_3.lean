@@ -2,37 +2,36 @@ import Mathlib.Tactic
 import Analysis.Section_2_2
 
 /-!
-# Analysis I, Section 2.3: Multiplication
+# Analysis I, раздел 2.3: Умножение
 
-This file is a translation of Section 2.3 of Analysis I to Lean 4. All numbering refers to the
-original text.
+Этот файл — перевод раздела 2.3 книги Analysis I на Lean 4. Вся нумерация ссылается на
+оригинальный текст.
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Definition of multiplication and exponentiation for the "Chapter 2" natural numbers,
+- Определение умножения и возведения в степень для натуральных чисел "Главы 2",
   {name}`Chapter2.Nat`.
 
-Note: at the end of this chapter, the {name}`Chapter2.Nat` class will be deprecated in favor of the
-standard Mathlib class {name}`_root_.Nat`, or {lean}`ℕ`.  However, we will develop the properties of
-{name}`Chapter2.Nat` "by hand" for pedagogical purposes.
+Замечание: в конце этой главы класс {name}`Chapter2.Nat` будет вытеснен стандартным классом
+Mathlib {name}`_root_.Nat`, или {lean}`ℕ`. Тем не менее, мы разработаем свойства
+{name}`Chapter2.Nat` "вручную" в педагогических целях.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
 namespace Chapter2
 
-/-- Definition 2.3.1 (Multiplication of natural numbers) -/
+/-- Definition 2.3.1 (умножение натуральных чисел) -/
 abbrev Nat.mul (n m : Nat) : Nat :=
   Nat.recurse (fun _ prod ↦ prod + m) 0 n
 
@@ -52,32 +51,32 @@ abbrev Nat.mul (n m : Nat) : Nat :=
 --                   = f 2 8
 --                   = 8 + 4 = 12
 
-/-- This instance allows for the {kw (of := «term_*_»)}`*` notation to be used for natural number multiplication. -/
+/-- Этот инстанс позволяет использовать нотацию {kw (of := «term_*_»)}`*` для умножения натуральных чисел. -/
 instance Nat.instMul : Mul Nat where
   mul := mul
 
-/-- Definition 2.3.1 (Multiplication of natural numbers)
-Compare with Mathlib's {name}`Nat.zero_mul` -/
+/-- Definition 2.3.1 (умножение натуральных чисел)
+Сравните с {name}`Nat.zero_mul` из Mathlib -/
 theorem Nat.zero_mul (m : Nat) : 0 * m = 0 :=
   recurse_zero (fun _ prod ↦ prod + m) _
 
-/-- Definition 2.3.1 (Multiplication of natural numbers)
-Compare with Mathlib's {name}`Nat.succ_mul` -/
+/-- Definition 2.3.1 (умножение натуральных чисел)
+Сравните с {name}`Nat.succ_mul` из Mathlib -/
 theorem Nat.succ_mul (n m : Nat) : (n++) * m = n * m + m :=
   recurse_succ (fun _ prod ↦ prod + m) _ _
 
 theorem Nat.one_mul' (m : Nat) : 1 * m = 0 + m := by
   rw [←zero_succ, succ_mul, zero_mul]
 
-/-- Compare with Mathlib's {name}`Nat.one_mul` -/
+/-- Сравните с {name}`Nat.one_mul` из Mathlib -/
 theorem Nat.one_mul (m : Nat) : 1 * m = m := by
   rw [one_mul', zero_add]
 
 theorem Nat.two_mul (m : Nat) : 2 * m = 0 + m + m := by
   rw [←one_succ, succ_mul, one_mul']
 
-/-- This lemma will be useful to prove Lemma 2.3.2.
-Compare with Mathlib's {name}`Nat.mul_zero` -/
+/-- Эта лемма пригодится для доказательства Lemma 2.3.2.
+Сравните с {name}`Nat.mul_zero` из Mathlib -/
 lemma Nat.mul_zero (n : Nat) : n * 0 = 0 := by
   induction n with
   | zero =>
@@ -88,8 +87,8 @@ lemma Nat.mul_zero (n : Nat) : n * 0 = 0 := by
     rw [Nat.add_zero]
     exact ih
 
-/-- This lemma will be useful to prove Lemma 2.3.2.
-Compare with Mathlib's {name}`Nat.mul_succ` -/
+/-- Эта лемма пригодится для доказательства Lemma 2.3.2.
+Сравните с {name}`Nat.mul_succ` из Mathlib -/
 lemma Nat.mul_succ (n m : Nat) : n * m++ = n * m + n := by
   induction n with
   | zero =>
@@ -113,8 +112,8 @@ lemma Nat.mul_succ' (n m : Nat) : n * m++ = n * m + n := by
             rw [Nat.add_succ, Nat.add_succ, Nat.add_assoc, Nat.add_comm n' m, ← Nat.add_assoc]
       _ = n'++ * m + n'++   := by rw [← Nat.succ_mul]
 
-/-- Lemma 2.3.2 (Multiplication is commutative) / Exercise 2.3.1
-Compare with Mathlib's {name}`Nat.mul_comm` -/
+/-- Lemma 2.3.2 (умножение коммутативно) / Exercise 2.3.1
+Сравните с {name}`Nat.mul_comm` из Mathlib -/
 lemma Nat.mul_comm (n m : Nat) : n * m = m * n := by
   induction n with
   | zero =>
@@ -124,12 +123,12 @@ lemma Nat.mul_comm (n m : Nat) : n * m = m * n := by
     rw [Nat.mul_succ, Nat.succ_mul]
     rw [ih]
 
-/-- Compare with Mathlib's {name}`Nat.mul_one` -/
+/-- Сравните с {name}`Nat.mul_one` из Mathlib -/
 theorem Nat.mul_one (m : Nat) : m * 1 = m := by
   rw [mul_comm, one_mul]
 
-/-- This lemma will be useful to prove Lemma 2.3.3.
-Compare with Mathlib's {name}`Nat.mul_pos` -/
+/-- Эта лемма пригодится для доказательства Lemma 2.3.3.
+Сравните с {name}`Nat.mul_pos` из Mathlib -/
 lemma Nat.pos_mul_pos {n m : Nat} (h₁ : n.IsPos) (h₂ : m.IsPos) : (n * m).IsPos := by
   unfold IsPos at *
   intro h
@@ -146,8 +145,8 @@ lemma Nat.pos_mul_pos {n m : Nat} (h₁ : n.IsPos) (h₂ : m.IsPos) : (n * m).Is
       obtain ⟨hnm, hm⟩ := Nat.add_eq_zero (n' * m) m h
       exact hnm
 
-/-- Lemma 2.3.3 (Positive natural numbers have no zero divisors) / Exercise 2.3.2.
-    Compare with Mathlib's {name}`Nat.mul_eq_zero`.  -/
+/-- Lemma 2.3.3 (у положительных натуральных чисел нет делителей нуля) / Exercise 2.3.2.
+    Сравните с {name}`Nat.mul_eq_zero` из Mathlib. -/
 lemma Nat.mul_eq_zero (n m : Nat) : n * m = 0 ↔ n = 0 ∨ m = 0 := by
   constructor
   · intro h
@@ -162,8 +161,8 @@ lemma Nat.mul_eq_zero (n m : Nat) : n * m = 0 ↔ n = 0 ∨ m = 0 := by
     · rw [hm]
       exact Nat.mul_zero n
 
-/-- Proposition 2.3.4 (Distributive law)
-Compare with Mathlib's {name}`Nat.mul_add` -/
+/-- Proposition 2.3.4 (дистрибутивный закон)
+Сравните с {name}`Nat.mul_add` из Mathlib -/
 theorem Nat.mul_add (a b c : Nat) : a * (b + c) = a * b + a * c := by
   -- Зафиксируем a и b и используем индукцию по c.
   revert c; apply induction
@@ -190,15 +189,15 @@ theorem Nat.mul_add (a b c : Nat) : a * (b + c) = a * b + a * c := by
     rw [←ih]
     -- Конец индукции.
 
-/-- Proposition 2.3.4 (Distributive law)
-Compare with Mathlib's {name}`Nat.add_mul`  -/
+/-- Proposition 2.3.4 (дистрибутивный закон)
+Сравните с {name}`Nat.add_mul` из Mathlib -/
 theorem Nat.add_mul (a b c : Nat) : (a + b) * c = a * c + b * c := by
   rw [Nat.mul_comm, Nat.mul_add]
   rw [Nat.mul_comm c a, Nat.mul_comm c b]
   -- simp only [mul_comm, mul_add]
 
-/-- Proposition 2.3.5 (Multiplication is associative) / Exercise 2.3.3
-Compare with Mathlib's {name}`Nat.mul_assoc` -/
+/-- Proposition 2.3.5 (умножение ассоциативно) / Exercise 2.3.3
+Сравните с {name}`Nat.mul_assoc` из Mathlib -/
 theorem Nat.mul_assoc (a b c : Nat) : (a * b) * c = a * (b * c) := by
   -- Зафиксируем c и b и используем индукцию по a.
   revert a; apply induction
@@ -212,8 +211,8 @@ theorem Nat.mul_assoc (a b c : Nat) : (a * b) * c = a * (b * c) := by
     rw [Nat.add_mul]
     rw [ih]
 
-/-- (Not from textbook)  {name}`Nat` is a commutative semiring.
-    This allows tactics such as {tactic}`ring` to apply to the Chapter 2 natural numbers. -/
+/-- (Не из учебника) {name}`Nat` является коммутативным полукольцом.
+    Это позволяет применять такие тактики, как {tactic}`ring`, к натуральным числам Главы 2. -/
 instance Nat.instCommSemiring : CommSemiring Nat where
   left_distrib := mul_add
   right_distrib := add_mul
@@ -224,15 +223,15 @@ instance Nat.instCommSemiring : CommSemiring Nat where
   mul_one := mul_one
   mul_comm := mul_comm
 
-/-- This illustration of the {tactic}`ring` tactic is not from the
-    textbook. -/
+/-- Эта иллюстрация тактики {tactic}`ring` не из
+    учебника. -/
 example (a b c d : ℕ) : (a + b) * 1 * (c + d) = d * b + a * c + c * b + a * d + 0 := by ring
 
-/-- Proposition 2.3.6 (Multiplication preserves order)
-Compare with Mathlib's {name}`Nat.mul_lt_mul_of_pos_right` -/
--- Умножение сокращает порядок.
+/-- Proposition 2.3.6 (умножение сохраняет порядок)
+Сравните с {name}`Nat.mul_lt_mul_of_pos_right` из Mathlib -/
+-- Умножение сохраняет порядок.
 theorem Nat.mul_lt_mul_of_pos_right {a b c : Nat} (h : a < b) (hc : c.IsPos) : a * c < b * c := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   -- Поскольку a < b, мы имеем b = a + d для некоторого положительного d
   rw [lt_iff_add_pos] at h
   obtain ⟨d, hdpos, hd⟩ := h
@@ -249,24 +248,24 @@ theorem Nat.mul_lt_mul_of_pos_right {a b c : Nat} (h : a < b) (hc : c.IsPos) : a
   -- То a * c < b * c.
   use d * c
 
-/-- Proposition 2.3.6 (Multiplication preserves order) -/
+/-- Proposition 2.3.6 (умножение сохраняет порядок) -/
 theorem Nat.mul_gt_mul_of_pos_right {a b c : Nat} (h : a > b) (hc : c.IsPos) : a * c > b * c :=
   mul_lt_mul_of_pos_right h hc
 
-/-- Proposition 2.3.6 (Multiplication preserves order)
-Compare with Mathlib's {name}`Nat.mul_lt_mul_of_pos_left` -/
+/-- Proposition 2.3.6 (умножение сохраняет порядок)
+Сравните с {name}`Nat.mul_lt_mul_of_pos_left` из Mathlib -/
 theorem Nat.mul_lt_mul_of_pos_left {a b c : Nat} (h : a < b) (hc : c.IsPos) : c * a < c * b := by
   simp [mul_comm]
   exact mul_lt_mul_of_pos_right h hc
 
-/-- Proposition 2.3.6 (Multiplication preserves order) -/
+/-- Proposition 2.3.6 (умножение сохраняет порядок) -/
 theorem Nat.mul_gt_mul_of_pos_left {a b c : Nat} (h : a > b) (hc : c.IsPos) : 
     c * a > c * b := mul_lt_mul_of_pos_left h hc
 
-/-- Corollary 2.3.7 (Cancellation law)
-Compare with Mathlib's {name}`Nat.mul_right_cancel` -/
+/-- Corollary 2.3.7 (закон сокращения)
+Сравните с {name}`Nat.mul_right_cancel` из Mathlib -/
 lemma Nat.mul_cancel_right {a b c : Nat} (h : a * c = b * c) (hc : c.IsPos) : a = b := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain hlt | heq /- rfl -/ | hgt := trichotomous a b
   . replace hlt := mul_lt_mul_of_pos_right hlt hc
     apply ne_of_lt at hlt
@@ -276,8 +275,8 @@ lemma Nat.mul_cancel_right {a b c : Nat} (h : a * c = b * c) (hc : c.IsPos) : a 
     apply ne_of_gt at hgt
     contradiction
 
-/-- (Not from textbook) {name}`Nat` is an ordered semiring.
-This allows tactics such as {tactic}`gcongr` to apply to the Chapter 2 natural numbers. -/
+/-- (Не из учебника) {name}`Nat` является упорядоченным полукольцом.
+Это позволяет применять такие тактики, как {tactic}`gcongr`, к натуральным числам Главы 2. -/
 instance Nat.isOrderedRing : IsOrderedRing Nat where
   zero_le_one : (0 : Nat) ≤ 1 := Nat.zero_le 1
   mul_le_mul_of_nonneg_left : 
@@ -297,8 +296,8 @@ instance Nat.isOrderedRing : IsOrderedRing Nat where
     rw [hd, Nat.add_mul, Nat.le_iff]
     use d * c
 
-/-- This illustration of the {tactic}`gcongr` tactic is not from the
-    textbook. -/
+/-- Эта иллюстрация тактики {tactic}`gcongr` не из
+    учебника. -/
 example (a b c d : Nat) (hab : a ≤ b) : c * a * d ≤ c * b * d := by
   -- Тактика gcongr тут использует обобщенные леммы монотонности из IsOrderedRing:
   -- mul_le_mul_of_nonneg_left и mul_le_mul_of_nonneg_right
@@ -317,8 +316,8 @@ example (a b c d : Nat) (hab : a ≤ b) : c * a * d ≤ c * b * d := by
   apply mul_le_mul_of_nonneg_left hab c.zero_le
   exact d.zero_le
 
-/-- Proposition 2.3.9 (Euclid's division lemma) / Exercise 2.3.5
-Compare with Mathlib's {name}`Nat.mod_eq_iff` -/
+/-- Proposition 2.3.9 (лемма Евклида о делении) / Exercise 2.3.5
+Сравните с {name}`Nat.mod_eq_iff` из Mathlib -/
 -- Зафиксируйте q и индуктивно рассмотрите n.
 theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) : 
     ∃ m r : Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
@@ -395,30 +394,30 @@ theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) :
       apply (lt_iff_succ_le r q).mp
       exact h₁
 
-/-- Definition 2.3.11 (Exponentiation for natural numbers) -/
+/-- Definition 2.3.11 (возведение в степень натуральных чисел) -/
 abbrev Nat.pow (m n : Nat) : Nat :=
   Nat.recurse (fun _ prod ↦ prod * m) 1 n
 
 instance Nat.instPow : HomogeneousPow Nat where
   pow := Nat.pow
 
-/-- Definition 2.3.11 (Exponentiation for natural numbers)
-Compare with Mathlib's {name}`Nat.pow_zero` -/
+/-- Definition 2.3.11 (возведение в степень натуральных чисел)
+Сравните с {name}`Nat.pow_zero` из Mathlib -/
 @[simp]
 theorem Nat.pow_zero (m : Nat) : m ^ (0 : Nat) = 1 :=
   recurse_zero (fun _ prod ↦ prod * m) _
 
-/-- Definition 2.3.11 (Exponentiation for natural numbers) -/
+/-- Definition 2.3.11 (возведение в степень натуральных чисел) -/
 @[simp]
 theorem Nat.zero_pow_zero : (0 : Nat) ^ 0 = 1 :=
   recurse_zero (fun _ prod ↦ prod * 0) _
 
-/-- Definition 2.3.11 (Exponentiation for natural numbers)
-Compare with Mathlib's {name}`Nat.pow_succ` -/
+/-- Definition 2.3.11 (возведение в степень натуральных чисел)
+Сравните с {name}`Nat.pow_succ` из Mathlib -/
 theorem Nat.pow_succ (m n : Nat) : (m : Nat) ^ n++ = m ^ n * m :=
   recurse_succ (fun _ prod ↦ prod * m) _ _
 
-/-- Compare with Mathlib's {name}`Nat.pow_one` -/
+/-- Сравните с {name}`Nat.pow_one` из Mathlib -/
 @[simp]
 theorem Nat.pow_one (m : Nat) : m ^ (1 : Nat) = m := by
   rw [←zero_succ, pow_succ]; simp

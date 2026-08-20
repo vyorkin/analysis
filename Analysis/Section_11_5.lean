@@ -3,17 +3,16 @@ import Analysis.Section_9_9
 import Analysis.Section_11_4
 
 /-!
-# Analysis I, Section 11.5: Riemann integrability of continuous functions
+# Analysis I, раздел 11.5: Интегрируемость по Риману непрерывных функций
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Riemann integrability of uniformly continuous functions.
-- Riemann integrability of bounded continuous functions.
+Основные конструкции и результаты этого раздела:
+- Интегрируемость по Риману равномерно непрерывных функций.
+- Интегрируемость по Риману ограниченных непрерывных функций.
 
 -/
 
@@ -24,7 +23,7 @@ open Chapter9
 /-- Theorem 11.5.1 -/
 theorem integ_of_uniform_cts {I : BoundedInterval} {f : ℝ → ℝ} (hf : UniformContinuousOn f I) : 
   IntegrableOn f I := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have hfbound : BddOn f I := by
     rw [BddOn.iff']; exact hf.of_bounded subset_rfl (Bornology.IsBounded.of_boundedInterval I)
   refine ⟨ hfbound, ?_ ⟩
@@ -94,7 +93,7 @@ set_option maxHeartbeats 300000 in
 /-- Proposition 11.5.3 -/
 theorem integ_of_bdd_cts {I : BoundedInterval} {f : ℝ → ℝ} (hbound : BddOn f I)
   (hf : ContinuousOn f I) : IntegrableOn f I := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_cases hsing : |I|ₗ = 0
   . exact (integ_on_subsingleton hsing).1
   have hI : (I : Set ℝ).Nonempty := by by_contra!; rw [←BoundedInterval.length_of_subsingleton] at hsing; simp_all

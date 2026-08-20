@@ -10,25 +10,24 @@ import Analysis.Section_11_8
 
 
 /-!
-# Analysis I, Section 11.9: The two fundamental theorems of calculus
+# Analysis I, раздел 11.9: Две фундаментальные теоремы анализа
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the
-original text. When there is a choice between a more idiomatic Lean solution and a
-more faithful translation, I have generally chosen the latter. In particular, there will
-be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I
-have consciously avoided doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- The fundamental theorems of calculus.
+Основные конструкции и результаты этого раздела:
+- Фундаментальные теоремы анализа.
 -/
 
 namespace Chapter11
 open Chapter9 Chapter10 BoundedInterval
 
-/-- Theorem 11.9.1 (First Fundamental Theorem of Calculus). -/
-theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b)) : 
+/-- Theorem 11.9.1 (первая фундаментальная теорема анализа). -/
+theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b)) :
   ContinuousOn (fun x => integ f (Icc a x)) (.Icc a b) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set F : ℝ → ℝ := fun x => integ f (Icc a x)
   choose M hM using hf.1
   have {x y : ℝ} (hxy : x < y) (hx : x ∈ Set.Icc a b) (hy : y ∈ Set.Icc a b) : |F y - F x| ≤ M * (y - x) := by
@@ -71,7 +70,7 @@ theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b
 theorem deriv_of_integ {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b))
   {x₀ : ℝ} (hx₀ : x₀ ∈ Set.Icc a b) (hcts : ContinuousWithinAt f (Icc a b) x₀) : 
   HasDerivWithinAt (fun x => integ f (Icc a x)) (f x₀) (.Icc a b) x₀ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [HasDerivWithinAt.iff_approx_linear]
   simp [(ContinuousWithinAt.tfae _ f x₀).out 0 2] at hcts
   peel hcts with ε hε δ hδ hconv; intro y hy hyδ
@@ -105,8 +104,8 @@ theorem DifferentiableOn.of_F_11_9_2 {x : ℝ} (hx : ¬ ∃ r : ℚ, x = r) (hx'
 /-- Exercise 11.9.1 -/
 theorem DifferentiableOn.of_F_11_9_2' {q : ℚ} (hq : (q : ℝ) ∈ Set.Ioo 0 1) : ¬ DifferentiableWithinAt ℝ F_11_9_2 (.Icc 0 1) q := by sorry
 
-/-- Definition 11.9.3.  We drop the requirement that x be a limit point as this makes
-    the Lean arguments slightly cleaner -/
+/-- Definition 11.9.3. Мы опускаем требование, чтобы x была предельной точкой — это делает
+    Lean-рассуждения чуть чище -/
 abbrev AntiderivOn (F f : ℝ → ℝ) (I : BoundedInterval) :=
   DifferentiableOn ℝ F I ∧ ∀ x ∈ I, HasDerivWithinAt F (f x) I x
 
@@ -114,15 +113,15 @@ theorem AntiderivOn.mono {F f : ℝ → ℝ} {I J : BoundedInterval}
   (h : AntiderivOn F f I) (hIJ : J ⊆ I) : AntiderivOn F f J :=
   ⟨ h.1.mono hIJ, by intro x hx; rw [subset_iff] at hIJ; exact (h.2 x (hIJ hx)).mono hIJ ⟩
 
-/-- Theorem 11.9.4 (Second Fundamental Theorem of Calculus) -/
+/-- Theorem 11.9.4 (вторая фундаментальная теорема анализа) -/
 theorem integ_eq_antideriv_sub {a b : ℝ} (h : a ≤ b) {f F : ℝ → ℝ}
-  (hf : IntegrableOn f (Icc a b)) (hF : AntiderivOn F f (Icc a b)) : 
+  (hf : IntegrableOn f (Icc a b)) (hF : AntiderivOn F f (Icc a b)) :
   integ f (Icc a b) = F b - F a := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain h | h := lt_or_eq_of_le h
   . have hF_cts : ContinuousOn F (.Icc a b) := by
       intro x hx; exact ContinuousWithinAt.of_differentiableWithinAt (hF.1 x hx)
-    -- for technical reasons we need to extend F by constant outside of Icc a b
+    -- по техническим причинам нам нужно продолжить F константой за пределами Icc a b
     let F' : ℝ → ℝ := fun x ↦ F (max (min x b) a)
 
     have hFF' {x : ℝ} (hx : x ∈ Set.Icc a b) : F' x = F x := by simp_all [F']
@@ -236,7 +235,7 @@ example {a b x₀ : ℝ} (hab : a < b) (hx₀ : x₀ ∈ Ioo a b) {f : ℝ → �
 
 end Chapter11
 
-/-- Exercise 11.6.5, moved to Section 11.9 -/
+/-- Exercise 11.6.5, перенесено в раздел 11.9 -/
 theorem Chapter7.Series.converges_qseries' (p : ℝ) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ p : Series).converges ↔ (p>1) := by
   sorry
 

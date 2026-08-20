@@ -3,16 +3,15 @@ import Mathlib.Topology.Instances.Irrational
 import Analysis.Section_11_4
 
 /-!
-# Analysis I, Section 11.7: A non-Riemann integrable function
+# Analysis I, раздел 11.7: Неинтегрируемая по Риману функция
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- An example of a bounded function on a compact interval that is not Riemann integrable.
+Основные конструкции и результаты этого раздела:
+- Пример ограниченной функции на компактном интервале, не интегрируемой по Риману.
 
 -/
 
@@ -21,7 +20,7 @@ open BoundedInterval Chapter9
 
 /-- Proposition 11.7.1 -/
 theorem not_integrable : BddOn f_9_3_21 (Icc 0 1) ∧ ¬ IntegrableOn f_9_3_21 (Icc 0 1) := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   have hbdd : BddOn f_9_3_21 (Icc 0 1):= by
     use 1; intro x _; by_cases h : ∃ y : ℚ, y = x <;> simp [f_9_3_21, h]
   refine ⟨ hbdd, ?_ ⟩

@@ -3,16 +3,15 @@ import Analysis.Section_9_8
 import Analysis.Section_11_5
 
 /-!
-# Analysis I, Section 11.6: Riemann integrability of monotone functions
+# Analysis I, раздел 11.6: Интегрируемость по Риману монотонных функций
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Riemann integrability of monotone functions.
+Основные конструкции и результаты этого раздела:
+- Интегрируемость по Риману монотонных функций.
 
 -/
 
@@ -23,7 +22,7 @@ set_option maxHeartbeats 300000 in
 /-- Proposition 11.6.1 (i) -/
 theorem integ_of_monotone {a b : ℝ} {f : ℝ → ℝ} (hf : MonotoneOn f (Icc a b)) : 
   IntegrableOn f (Icc a b) := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   by_cases hab : 0 < b-a
   swap
   . apply (integ_on_subsingleton _).1; rw [←BoundedInterval.length_of_subsingleton]; aesop
@@ -145,14 +144,14 @@ theorem integ_of_bdd_antitone {I : BoundedInterval} {f : ℝ → ℝ} (hbound : 
   (hf : AntitoneOn f I) : IntegrableOn f I := by
   sorry
 
-/-- Proposition 11.6.4 (Integral test) -/
+/-- Proposition 11.6.4 (интегральный признак) -/
 theorem summable_iff_integ_of_antitone {f : ℝ → ℝ} (hnon : ∀ x ≥ 0, f x ≥ 0)
   (hf : AntitoneOn f (.Ici 0)) : 
   Summable (fun n : ℕ ↦ f n) ↔ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
   sorry
 
--- Exercise 11.6.2: Formulate a reasonable notion of a piecewise monotone function, and then
--- show that all bounded piecewise monotone functions are Riemann integrable.
+-- Exercise 11.6.2: сформулируйте разумное понятие кусочно-монотонной функции, а затем
+-- покажите, что все ограниченные кусочно-монотонные функции интегрируемы по Риману.
 
 /-- Exercise 11.6.4 (a) -/
 example : ∃ (f : ℝ → ℝ), (∀ x ≥ 0, f x ≥ 0) ∧ Summable (fun n : ℕ ↦ f n) ∧ ¬ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
