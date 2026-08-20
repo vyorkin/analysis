@@ -3,45 +3,45 @@ import Analysis.Section_5_4
 
 
 /-!
-# Analysis I, Section 5.5: The least upper bound property
+# Analysis I, раздел 5.5: Свойство точной верхней грани
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Upper bound and least upper bound on the real line
+- Верхняя грань и точная верхняя грань на вещественной прямой
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
 namespace Chapter5
 
-/-- Definition 5.5.1 (upper bounds). Here we use the {name}`upperBounds` set defined in Mathlib. -/
+/-- Definition 5.5.1 (верхние грани). Здесь мы используем множество {name}`upperBounds`, определённое в Mathlib. -/
 theorem Real.upperBound_def (E : Set Real) (M : Real) : M ∈ upperBounds E ↔ ∀ x ∈ E, x ≤ M :=
   mem_upperBounds
 
 theorem Real.lowerBound_def (E : Set Real) (M : Real) : M ∈ lowerBounds E ↔ ∀ x ∈ E, x ≥ M :=
   mem_lowerBounds
 
-/-- API for Example 5.5.2 -/
+/-- API для Example 5.5.2 -/
 theorem Real.Icc_def (x y : Real) : .Icc x y = { z | x ≤ z ∧ z ≤ y } := rfl
 
-/-- API for Example 5.5.2 -/
+/-- API для Example 5.5.2 -/
 theorem Real.mem_Icc (x y z : Real) : z ∈ Set.Icc x y ↔ x ≤ z ∧ z ≤ y := by simp [Real.Icc_def]
 
 /-- Example 5.5.2 -/
 example (M : Real) : M ∈ upperBounds (.Icc 0 1) ↔ M ≥ 1 := by sorry
 
-/-- API for Example 5.5.3 -/
+/-- API для Example 5.5.3 -/
 theorem Real.Ioi_def (x : Real) : .Ioi x = { z | z > x } := rfl
 
 /-- Example 5.5.3 -/
@@ -53,7 +53,7 @@ example : ∀ M, M ∈ upperBounds (∅ : Set Real) := by sorry
 theorem Real.upperBound_upper {M M' : Real} (h : M ≤ M') {E : Set Real} (hb : M ∈ upperBounds E) : 
     M' ∈ upperBounds E := by sorry
 
-/-- Definition 5.5.5 (least upper bound).  Here we use the {name}`IsLUB` predicate defined in Mathlib. -/
+/-- Definition 5.5.5 (точная верхняя грань). Здесь мы используем предикат {name}`IsLUB`, определённый в Mathlib. -/
 theorem Real.isLUB_def (E : Set Real) (M : Real) : 
     IsLUB E M ↔ M ∈ upperBounds E ∧ ∀ M' ∈ upperBounds E, M' ≥ M := by rfl
 
@@ -66,11 +66,11 @@ example : IsLUB (.Icc 0 1) (1 : Real) := by sorry
 /-- Example 5.5.7 -/
 example : ¬∃ M, IsLUB (∅ : Set Real) M := by sorry
 
-/-- Proposition 5.5.8 (Uniqueness of least upper bound). -/
+/-- Proposition 5.5.8 (единственность точной верхней грани). -/
 theorem Real.LUB_unique {E : Set Real} {M M' : Real} (h1 : IsLUB E M) (h2 : IsLUB E M') : M = M' := by
   grind [Real.isLUB_def]
 
-/-- Definition of "bounded above", using Mathlib notation -/
+/-- Определение "ограничено сверху" с использованием нотации Mathlib -/
 theorem Real.bddAbove_def (E : Set Real) : BddAbove E ↔ ∃ M, M ∈ upperBounds E := Set.nonempty_def
 
 theorem Real.bddBelow_def (E : Set Real) : BddBelow E ↔ ∃ M, M ∈ lowerBounds E := Set.nonempty_def
@@ -91,7 +91,7 @@ theorem Real.upperBound_discrete_unique {E : Set Real} {n : ℕ} {m m' : ℤ}
   (hm'2 : (((m' : ℚ) / (n+1) - 1 / (n+1) : ℚ) : Real) ∉ upperBounds E) : 
     m = m' := by sorry
 
-/-- Lemmas that can be helpful for proving 5.5.4 -/
+/-- Леммы, которые могут быть полезны при доказательстве 5.5.4 -/
 theorem Sequence.IsCauchy.abs {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : 
   ((|a| : ℕ → ℚ) : Sequence).IsCauchy := by sorry
 
@@ -111,8 +111,8 @@ theorem Real.LIM_of_Cauchy {q : ℕ → ℚ} (hq : ∀ M, ∀ n ≥ M, ∀ n' �
     (q : Sequence).IsCauchy ∧ ∀ M, |q M - LIM q| ≤ 1 / (M+1) := by sorry
 
 /--
-The sequence m₁, m₂, … is well-defined.
-This proof uses a different indexing convention than the text
+Последовательность m₁, m₂, … корректно определена.
+Это доказательство использует другое соглашение об индексации, нежели в тексте учебника.
 -/
 lemma Real.LUB_claim1 (n : ℕ) {E : Set Real} (hE : Set.Nonempty E) (hbound : BddAbove E)
  :  ∃! m : ℤ,
@@ -162,9 +162,9 @@ lemma Real.LUB_claim2 {E : Set Real} (N : ℕ) {a b : ℕ → ℚ}
     have bound3 : 1/((n+1) : ℚ) ≤ 1/(N+1) := by gcongr
     linarith
 
-/-- Theorem 5.5.9 (Existence of least upper bound). -/
+/-- Theorem 5.5.9 (существование точной верхней грани). -/
 theorem Real.LUB_exist {E : Set Real} (hE : Set.Nonempty E) (hbound : BddAbove E) : ∃ S, IsLUB E S := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set x₀ := hE.some
   have hx₀ : x₀ ∈ E := hE.some_mem
   set m : ℕ → ℤ := fun n ↦ (LUB_claim1 n hE hbound).exists.choose
@@ -188,17 +188,17 @@ theorem Real.LUB_exist {E : Set Real} (hE : Set.Nonempty E) (hbound : BddAbove E
   have claim5 (n : ℕ) : y ≥ (a-b) n := by contrapose! hm2; use n; apply upperBound_upper _ hy; order
   rw [claim4]; apply LIM_of_le _ claim5; solve_by_elim [Sequence.IsCauchy.sub]
 
-/-- A bare-bones extended real class to define supremum. -/
+/-- Минимально необходимый класс расширенных вещественных чисел для определения супремума. -/
 inductive ExtendedReal where
 | neg_infty : ExtendedReal
 | real (x : Real) : ExtendedReal
 | infty : ExtendedReal
 
-/-- Mathlib prefers {syntax term}`⊤` to denote the +∞ element. -/
+/-- Mathlib предпочитает обозначать элемент +∞ через {syntax term}`⊤`. -/
 instance ExtendedReal.inst_Top : Top ExtendedReal where
   top := infty
 
-/-- Mathlib prefers {syntax term}`⊥` to denote the -∞ element. -/
+/-- Mathlib предпочитает обозначать элемент -∞ через {syntax term}`⊥`. -/
 instance ExtendedReal.inst_Bot : Bot ExtendedReal where
   bot := neg_infty
 
@@ -222,19 +222,19 @@ theorem ExtendedReal.finite_eq_coe {X : ExtendedReal} (hX : X.IsFinite) :
   simp
 
 open Classical in
-/-- Definition 5.5.10 (Supremum). -/
+/-- Definition 5.5.10 (супремум). -/
 noncomputable abbrev ExtendedReal.sup (E : Set Real) : ExtendedReal :=
   if h1 : E.Nonempty then (if h2 : BddAbove E then ((Real.LUB_exist h1 h2).choose : Real) else ⊤) else ⊥
 
-/-- Definition 5.5.10 (Supremum of empty set). -/
+/-- Definition 5.5.10 (супремум пустого множества). -/
 theorem ExtendedReal.sup_of_empty : sup ∅ = ⊥ := by simp [sup]
 
-/-- Definition 5.5.10 (Supremum of unbounded set). -/
+/-- Definition 5.5.10 (супремум неограниченного множества). -/
 theorem ExtendedReal.sup_of_unbounded {E : Set Real} (hb : ¬ BddAbove E) : sup E = ⊤ := by
   have hE : E.Nonempty := by contrapose! hb; simp [hb]
   simp [sup, hE, hb]
 
-/-- Definition 5.5.10 (Supremum of bounded set). -/
+/-- Definition 5.5.10 (супремум ограниченного множества). -/
 theorem ExtendedReal.sup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) : 
     IsLUB E (sup E) := by
   simp [hnon, hb, sup]; exact (Real.LUB_exist hnon hb).choose_spec
@@ -244,7 +244,7 @@ theorem ExtendedReal.sup_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (h
 
 /-- Proposition 5.5.12 -/
 theorem Real.exist_sqrt_two : ∃ x : Real, x^2 = 2 := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set E := { y : Real | y ≥ 0 ∧ y^2 < 2 }
   have claim1 : 2 ∈ upperBounds E := by
     rw [upperBound_def]
@@ -301,7 +301,7 @@ theorem Real.exist_sqrt_two : ∃ x : Real, x^2 = 2 := by
 /-- Remark 5.5.13 -/
 theorem Real.exist_irrational : ∃ x : Real, ¬ ∃ q : ℚ, x = (q : Real) := by sorry
 
-/-- Helper lemma for Exercise 5.5.1. -/
+/-- Вспомогательная лемма для Exercise 5.5.1. -/
 theorem Real.mem_neg (E : Set Real) (x : Real) : x ∈ -E ↔ -x ∈ E := Set.mem_neg
 
 /-- Exercise 5.5.1 -/
@@ -330,11 +330,11 @@ theorem ExtendedReal.inf_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (h
 theorem Real.irrat_between {x y : Real} (hxy : x < y) : 
     ∃ z, x < z ∧ z < y ∧ ¬ ∃ q : ℚ, z = (q : Real) := by sorry
 
-/- Use the notion of supremum in this section to define a Mathlib `sSup` operation -/
+/- Используем понятие супремума из этого раздела, чтобы определить операцию `sSup` из Mathlib -/
 noncomputable instance Real.inst_SupSet : SupSet Real where
   sSup E := ((ExtendedReal.sup E) : Real)
 
-/-- Use the {name}`sSup` operation to build a conditionally complete lattice structure on {name}`Real`. -/
+/-- Используем операцию {name}`sSup`, чтобы построить структуру условно полной решётки на {name}`Real`. -/
 noncomputable instance Real.inst_conditionallyCompleteLattice : 
     ConditionallyCompleteLattice Real :=
   conditionallyCompleteLatticeOfLatticeOfsSup Real

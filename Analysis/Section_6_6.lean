@@ -2,17 +2,16 @@ import Mathlib.Tactic
 import Analysis.Section_6_5
 
 /-!
-# Analysis I, Section 6.6: Subsequences
+# Analysis I, раздел 6.6: Подпоследовательности
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Definition of a subsequence.
+- Определение подпоследовательности.
 -/
 
 namespace Chapter6
@@ -52,10 +51,10 @@ theorem Sequence.limit_point_iff_subseq (a : ℕ → ℝ) (L : ℝ) :
     (a : Sequence).LimitPoint L ↔ ∃ b : ℕ → ℝ, Sequence.subseq a b ∧ (b : Sequence).TendsTo L := by
   sorry
 
-/-- Theorem 6.6.8 (Bolzano-Weierstrass theorem) -/
-theorem Sequence.convergent_of_subseq_of_bounded {a : ℕ→ ℝ} (ha : (a : Sequence).IsBounded) : 
+/-- Theorem 6.6.8 (теорема Больцано-Вейерштрасса) -/
+theorem Sequence.convergent_of_subseq_of_bounded {a : ℕ→ ℝ} (ha : (a : Sequence).IsBounded) :
     ∃ b : ℕ → ℝ, Sequence.subseq a b ∧ (b : Sequence).Convergent := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain ⟨ ⟨ L_plus, hL_plus ⟩, ⟨ _, _ ⟩ ⟩ := finite_limsup_liminf_of_bounded ha
   have := limit_point_of_limsup hL_plus
   rw [limit_point_iff_subseq] at this; peel 2 this; solve_by_elim
@@ -63,12 +62,12 @@ theorem Sequence.convergent_of_subseq_of_bounded {a : ℕ→ ℝ} (ha : (a : Seq
 /-- Exercise 6.6.2 -/
 def Sequence.exist_subseq_of_subseq : 
   Decidable (∃ a b : ℕ → ℝ, a ≠ b ∧ Sequence.subseq a b ∧ Sequence.subseq b a) := by
-    -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+    -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
     sorry
 
 /--
-  Exercise 6.6.3.  You may find the API around Mathlib's {name}`Nat.find` to be useful
-  (and {syntax command}`open Classical` to avoid any decidability issues)
+  Exercise 6.6.3. Вам может пригодиться API вокруг {name}`Nat.find` из Mathlib
+  (а также {syntax command}`open Classical`, чтобы избежать проблем с разрешимостью)
 -/
 theorem Sequence.subseq_of_unbounded {a : ℕ → ℝ} (ha : ¬ (a : Sequence).IsBounded) : 
     ∃ b : ℕ → ℝ, Sequence.subseq a b ∧ (b : Sequence)⁻¹.TendsTo 0 := by

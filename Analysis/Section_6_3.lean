@@ -4,17 +4,16 @@ import Analysis.Section_6_2
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
-# Analysis I, Section 6.3: Suprema and infima of sequences
+# Analysis I, раздел 6.3: Супремумы и инфимумы последовательностей
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Suprema and infima of sequences.
+- Супремумы и инфимумы последовательностей.
 
 -/
 
@@ -58,13 +57,13 @@ theorem Sequence.sup_of_bounded {a : Sequence} (h : a.IsBounded) : a.sup.IsFinit
 
 theorem Sequence.inf_of_bounded {a : Sequence} (h : a.IsBounded) : a.inf.IsFinite := by sorry
 
-/-- Proposition 6.3.6 (a) (Least upper bound property) / Exercise 6.3.2 -/
+/-- Proposition 6.3.6 (a) (свойство точной верхней грани) / Exercise 6.3.2 -/
 theorem Sequence.le_sup {a : Sequence} {n : ℤ} (hn : n ≥ a.m) : a n ≤ a.sup := by sorry
 
-/-- Proposition 6.3.6 (b) (Least upper bound property) / Exercise 6.3.2 -/
+/-- Proposition 6.3.6 (b) (свойство точной верхней грани) / Exercise 6.3.2 -/
 theorem Sequence.sup_le_upper {a : Sequence} {M : EReal} (h : ∀ n ≥ a.m, a n ≤ M) : a.sup ≤ M := by sorry
 
-/-- Proposition 6.3.6 (c) (Least upper bound property) / Exercise 6.3.2 -/
+/-- Proposition 6.3.6 (c) (свойство точной верхней грани) / Exercise 6.3.2 -/
 theorem Sequence.exists_between_lt_sup {a : Sequence} {y : EReal} (h : y < a.sup ) : 
     ∃ n ≥ a.m, y < a n ∧ a n ≤ a.sup := by sorry
 
@@ -120,7 +119,7 @@ example : lim (Example_6_3_9 : Sequence) ≤ 4 := by sorry
 /-- Proposition 6.3.1 -/
 theorem lim_of_exp {x : ℝ} (hpos : 0 < x) (hbound : x < 1) : 
     ((fun (n : ℕ) ↦ x^n) : Sequence).Convergent ∧ lim ((fun (n : ℕ) ↦ x^n) : Sequence) = 0 := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set a := ((fun (n : ℕ) ↦ x^n) : Sequence)
   have why : a.IsAntitone := sorry
   have hbound : a.BddBelowBy 0 := by intro n _; positivity

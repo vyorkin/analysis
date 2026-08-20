@@ -3,32 +3,32 @@ import Analysis.Section_5_5
 
 
 /-!
-# Analysis I, Section 5.6: Real exponentiation, part I
+# Analysis I, раздел 5.6: Возведение вещественных чисел в степень, часть I
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Exponentiating reals to natural numbers and integers.
-- nth roots.
-- Raising a real to a rational number.
+- Возведение вещественных чисел в натуральную и целую степень.
+- Корни n-й степени.
+- Возведение вещественного числа в рациональную степень.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
 namespace Chapter5
 
-/-- Definition 5.6.1 (Exponentiating a real by a natural number). Here we use the
-    Mathlib definition coming from {name}`Monoid`. -/
+/-- Definition 5.6.1 (возведение вещественного числа в натуральную степень). Здесь мы используем
+    определение из Mathlib, происходящее от {name}`Monoid`. -/
 
 lemma Real.pow_zero (x : Real) : x ^ 0 = 1 := rfl
 
@@ -36,38 +36,38 @@ lemma Real.pow_succ (x : Real) (n : ℕ) : x ^ (n+1) = (x ^ n) * x := rfl
 
 lemma Real.pow_of_coe (q : ℚ) (n : ℕ) : (q : Real) ^ n = (q ^ n : ℚ) := by induction' n with n hn <;> simp
 
-/- The claims below can be handled easily by existing Mathlib API (as `Real` already is known
-to be a `Field`), but the spirit of the exercises is to adapt the proofs of
-Proposition 4.3.10 that you previously established. -/
+/- Утверждения ниже легко доказываются с помощью существующего API Mathlib (так как `Real` уже
+известно как `Field`), но дух этих упражнений — адаптировать доказательства Proposition 4.3.10,
+которые вы установили ранее. -/
 
-/-- Analogue of Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) -/
 theorem Real.pow_add (x : Real) (m n : ℕ) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Analogue of Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) -/
 theorem Real.pow_mul (x : Real) (m n : ℕ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Analogue of Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) -/
 theorem Real.mul_pow (x y : Real) (n : ℕ) : (x*y)^n = x^n * y^n := by sorry
 
-/-- Analogue of Proposition 4.3.10(b) -/
+/-- Аналог Proposition 4.3.10(b) -/
 theorem Real.pow_eq_zero (x : Real) (n : ℕ) (hn : 0 < n) : x^n = 0 ↔ x = 0 := by sorry
 
-/-- Analogue of Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) -/
 theorem Real.pow_nonneg {x : Real} (n : ℕ) (hx : x ≥ 0) : x^n ≥ 0 := by sorry
 
-/-- Analogue of Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) -/
 theorem Real.pow_pos {x : Real} (n : ℕ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Analogue of Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) -/
 theorem Real.pow_ge_pow (x y : Real) (n : ℕ) (hxy : x ≥ y) (hy : y ≥ 0) : x^n ≥ y^n := by sorry
 
-/-- Analogue of Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) -/
 theorem Real.pow_gt_pow (x y : Real) (n : ℕ) (hxy : x > y) (hy : y ≥ 0) (hn : n > 0) : x^n > y^n := by sorry
 
-/-- Analogue of Proposition 4.3.10(d) -/
+/-- Аналог Proposition 4.3.10(d) -/
 theorem Real.pow_abs (x : Real) (n : ℕ) : |x|^n = |x^n| := by sorry
 
-/-- Definition 5.6.2 (Exponentiating a real by an integer). Here we use the Mathlib definition coming from {name}`DivInvMonoid`. -/
+/-- Definition 5.6.2 (возведение вещественного числа в целую степень). Здесь мы используем определение из Mathlib, происходящее от {name}`DivInvMonoid`. -/
 lemma Real.pow_eq_pow (x : Real) (n : ℕ) : x ^ (n : ℤ) = x ^ n := by rfl
 
 @[simp]
@@ -75,43 +75,43 @@ lemma Real.zpow_zero (x : Real) : x ^ (0 : ℤ) = 1 := by rfl
 
 lemma Real.zpow_neg {x : Real} (n : ℕ) : x^(-n : ℤ) = 1 / (x^n) := by simp
 
-/-- Analogue of Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) -/
 theorem Real.zpow_add (x : Real) (n m : ℤ) (hx : x ≠ 0) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Analogue of Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) -/
 theorem Real.zpow_mul (x : Real) (n m : ℤ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Analogue of Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) -/
 theorem Real.mul_zpow (x y : Real) (n : ℤ) : (x*y)^n = x^n * y^n := by sorry
 
-/-- Analogue of Proposition 4.3.12(b) -/
+/-- Аналог Proposition 4.3.12(b) -/
 theorem Real.zpow_pos {x : Real} (n : ℤ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Analogue of Proposition 4.3.12(b) -/
+/-- Аналог Proposition 4.3.12(b) -/
 theorem Real.zpow_ge_zpow {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n > 0) : x^n ≥ y^n := by sorry
 
 theorem Real.zpow_ge_zpow_ofneg {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n < 0) : x^n ≤ y^n := by
   sorry
 
-/-- Analogue of Proposition 4.3.12(c) -/
+/-- Аналог Proposition 4.3.12(c) -/
 theorem Real.zpow_inj {x y : Real} {n : ℤ} (hx : x > 0) (hy : y > 0) (hn : n ≠ 0) (hxy : x^n = y^n) : x = y := by
   sorry
 
-/-- Analogue of Proposition 4.3.12(d) -/
+/-- Аналог Proposition 4.3.12(d) -/
 theorem Real.zpow_abs (x : Real) (n : ℤ) : |x|^n = |x^n| := by sorry
 
-/-- Definition 5.6.2. We permit "junk values" when {lean}`x` is negative or {lean}`n` vanishes. -/
+/-- Definition 5.6.2. Мы допускаем "мусорные значения", когда {lean}`x` отрицательно или {lean}`n` равно нулю. -/
 noncomputable abbrev Real.root (x : Real) (n : ℕ) : Real := sSup { y : Real | y ≥ 0 ∧ y^n ≤ x }
 
 noncomputable abbrev Real.sqrt (x : Real) := x.root 2
 
-/-- Lemma 5.6.5 (Existence of n^th roots) -/
+/-- Lemma 5.6.5 (существование корней n-й степени) -/
 theorem Real.rootset_nonempty {x : Real} (hx : x ≥ 0) (n : ℕ) (hn : n ≥ 1) : { y : Real | y ≥ 0 ∧ y^n ≤ x }.Nonempty := by
   use 0
   sorry
 
 theorem Real.rootset_bddAbove {x : Real} (n : ℕ) (hn : n ≥ 1) : BddAbove { y : Real | y ≥ 0 ∧ y^n ≤ x } := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [_root_.bddAbove_def]
   obtain h | h := le_or_gt x 1
   . use 1; intro y hy; simp at hy
@@ -181,7 +181,7 @@ theorem Rat.eq_quot (q : ℚ) : ∃ a : ℤ, ∃ b : ℕ, b > 0 ∧ q = a / b :=
 theorem Real.pow_root_eq_pow_root {a a' : ℤ} {b b' : ℕ} (hb : b > 0) (hb' : b' > 0)
   (hq : (a/b : ℚ) = (a'/b' : ℚ)) {x : Real} (hx : x > 0) : 
     (x.root b')^(a') = (x.root b)^(a) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   wlog ha : a > 0 generalizing a b a' b'
   . simp at ha
     obtain ha | ha := le_iff_lt_or_eq.mp ha
@@ -258,6 +258,6 @@ theorem Real.min_ratPow {x y : Real} (hx : x > 0) (hy : y > 0) {q : ℚ} (hq : q
   min (x^q) (y^q) = (min x y)^q := by
   sorry
 
--- Final part of Exercise 5.6.5: state and prove versions of the above lemmas covering the case of negative q.
+-- Заключительная часть Exercise 5.6.5: сформулируйте и докажите варианты приведённых выше лемм, покрывающие случай отрицательного q.
 
 end Chapter5

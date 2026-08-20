@@ -2,18 +2,18 @@ import Mathlib.Tactic
 import Analysis.Section_6_7
 
 /-!
-# Analysis I, Chapter 6 epilogue: Connections with Mathlib limits
+# Analysis I, эпилог главы 6: связь с пределами Mathlib
 
-In this (technical) epilogue, we show that various operations and properties we have defined for
-"Chapter 6" sequences {name}`Chapter6.Sequence` are equivalent to Mathlib operations.  Note however
-that Mathlib's operations are defined in far greater generality than the setting of real-valued
-sequences, in particular using the language of filters.
+В этом (техническом) эпилоге мы показываем, что различные операции и свойства, определённые нами
+для последовательностей "Главы 6" {name}`Chapter6.Sequence`, эквивалентны операциям Mathlib.
+Заметим, однако, что операции Mathlib определены в гораздо большей общности, чем в рамках
+вещественнозначных последовательностей, в частности с использованием языка фильтров.
 
 -/
 
 open Filter
 
-/-- Identification with the Cauchy sequence support in Mathlib/Algebra/Order/CauSeq/Basic -/
+/-- Отождествление с поддержкой последовательностей Коши в Mathlib/Algebra/Order/CauSeq/Basic -/
 theorem Chapter6.Sequence.isCauchy_iff_isCauSeq (a : ℕ → ℝ) : 
     (a : Sequence).IsCauchy ↔ IsCauSeq _root_.abs a := by
   simp_rw [IsCauchy.coe, Real.dist_eq, IsCauSeq]
@@ -25,13 +25,13 @@ theorem Chapter6.Sequence.isCauchy_iff_isCauSeq (a : ℕ → ℝ) :
     _ ≤ ε/2 + ε/2 := by grind
     _ = _ := by linarith
 
-/-- Identification with the Cauchy sequence support in Mathlib/Topology/UniformSpace/Cauchy -/
+/-- Отождествление с поддержкой последовательностей Коши в Mathlib/Topology/UniformSpace/Cauchy -/
 theorem Chapter6.Sequence.Cauchy_iff_CauchySeq (a : ℕ → ℝ) : 
     (a : Sequence).IsCauchy ↔ CauchySeq a := by
   rw [isCauchy_iff_isCauSeq]
   convert isCauSeq_iff_cauchySeq
 
-/-- Identification with {name}`Filter.Tendsto` -/
+/-- Отождествление с {name}`Filter.Tendsto` -/
 theorem Chapter6.Sequence.tendsto_iff_Tendsto (a : ℕ → ℝ) (L : ℝ) : 
     (a : Sequence).TendsTo L ↔ atTop.Tendsto a (nhds L) := by
   rw [Metric.tendsto_atTop, tendsTo_iff]
@@ -56,10 +56,10 @@ theorem Chapter6.Sequence.converges_iff_Tendsto (a : ℕ → ℝ) :
 theorem Chapter6.Sequence.converges_iff_Tendsto' (a : Sequence) : 
     a.Convergent ↔ ∃ L, atTop.Tendsto a.seq (nhds L) := by simp_rw [←tendsto_iff_Tendsto']
 
-/-- A technicality: {name}`CauSeq.IsComplete` {lean}`ℝ` was established for {name}`_root_.abs` but not for {name}`norm`. -/
+/-- Техническая деталь: {name}`CauSeq.IsComplete` для {lean}`ℝ` было установлено для {name}`_root_.abs`, но не для {name}`norm`. -/
 instance inst_real_complete : CauSeq.IsComplete ℝ norm := by convert Real.instIsCompleteAbs
 
-/-- Identification with {name}`CauSeq.lim` -/
+/-- Отождествление с {name}`CauSeq.lim` -/
 theorem Chapter6.Sequence.lim_eq_CauSeq_lim (a : ℕ → ℝ) (ha : (a : Sequence).IsCauchy) : 
     Chapter6.lim (a : Sequence) = CauSeq.lim  ⟨ a, (isCauchy_iff_isCauSeq a).mp ha⟩ := by
   have h1 := CauSeq.tendsto_limit ⟨ a, (isCauchy_iff_isCauSeq a).mp ha⟩
@@ -67,12 +67,12 @@ theorem Chapter6.Sequence.lim_eq_CauSeq_lim (a : ℕ → ℝ) (ha : (a : Sequenc
   rw [←tendsto_iff_Tendsto] at h1
   by_contra! h; apply (a : Sequence).tendsTo_unique at h; tauto
 
-/-- Identification with {name}`limUnder` -/
+/-- Отождествление с {name}`limUnder` -/
 theorem Chapter6.Sequence.lim_eq_limUnder (a : ℕ → ℝ) (ha : (a : Sequence).Convergent) : 
     Chapter6.lim (a : Sequence) = limUnder Filter.atTop a := by
     sorry
 
-/-- Identification with {name}`Bornology.IsBounded` -/
+/-- Отождествление с {name}`Bornology.IsBounded` -/
 theorem Chapter6.Sequence.isBounded_iff_isBounded_range (a : ℕ → ℝ) : 
     (a : Sequence).IsBounded ↔ Bornology.IsBounded (Set.range a) := by
   simp [isBounded_def, boundedBy_def, Metric.isBounded_iff]
@@ -108,7 +108,7 @@ theorem Chapter6.Sequence.Monotone_iff (a : ℕ → ℝ) : (a : Sequence).IsMono
 
 theorem Chapter6.Sequence.Antitone_iff (a : ℕ → ℝ) : (a : Sequence).IsAntitone ↔ Antitone a := by sorry
 
-/-- Identification with {name}`MapClusterPt` -/
+/-- Отождествление с {name}`MapClusterPt` -/
 theorem Chapter6.Sequence.limit_point_iff (a : ℕ → ℝ) (L : ℝ) : 
     (a : Sequence).LimitPoint L ↔ MapClusterPt L .atTop a := by
   simp_rw [limit_point_def, mapClusterPt_iff_frequently, frequently_atTop, Metric.mem_nhds_iff]
@@ -124,18 +124,18 @@ theorem Chapter6.Sequence.limit_point_iff (a : ℕ → ℝ) (L : ℝ) :
   refine ⟨ n, by rwa [ge_iff_le, ←Int.toNat_le], ?_ ⟩
   simp [Real.dist_eq, hn] at *; linarith
 
-/-- Identification with {name}`Filter.limsup` -/
+/-- Отождествление с {name}`Filter.limsup` -/
 theorem Chapter6.Sequence.limsup_eq (a : ℕ → ℝ) : 
     (a : Sequence).limsup = atTop.limsup (fun n ↦ (a n : EReal)) := by
   simp_rw [Filter.limsup_eq, eventually_atTop]
   sorry
 
-/-- Identification with {name}`Filter.liminf` -/
+/-- Отождествление с {name}`Filter.liminf` -/
 theorem Chapter6.Sequence.liminf_eq (a : ℕ → ℝ) : 
     (a : Sequence).liminf = atTop.liminf (fun n ↦ (a n : EReal)) := by
   simp_rw [Filter.liminf_eq, eventually_atTop]
   sorry
 
-/-- Identification of {name}`Chapter6.Real.rpow` and Mathlib exponentiation -/
+/-- Отождествление {name}`Chapter6.Real.rpow` с возведением в степень из Mathlib -/
 theorem Chapter6.Real.rpow_eq_rpow {x : ℝ} (hx : x > 0) (α : ℝ) : rpow x α = x^α := by
   sorry

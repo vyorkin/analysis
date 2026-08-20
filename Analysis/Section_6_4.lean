@@ -2,20 +2,19 @@ import Mathlib.Tactic
 import Analysis.Section_6_3
 
 /-!
-# Analysis I, Section 6.4: Limsup, liminf, and limit points
+# Analysis I, раздел 6.4: Верхний и нижний пределы, предельные точки
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Lim sup and lim inf of sequences
-- Limit points of sequences
-- Comparison and squeeze tests
-- Completeness of the reals
+- Верхний предел (limsup) и нижний предел (liminf) последовательностей
+- Предельные точки последовательностей
+- Признаки сравнения и "сжатия" (squeeze test)
+- Полнота вещественных чисел
 
 -/
 
@@ -77,9 +76,9 @@ theorem Sequence.limit_point_of_limit_unique {a : Sequence} {x y : ℝ} (h : a.T
   sorry
 
 /--
-  A technical issue uncovered by the formalization: the upper and lower sequences of a real
-  sequence take values in the extended reals rather than the reals, so the definitions need to be
-  adjusted accordingly.
+  Техническая тонкость, вскрытая формализацией: верхняя и нижняя последовательности
+  вещественной последовательности принимают значения в расширенных вещественных числах, а не в
+  обычных вещественных, поэтому определения нужно соответствующим образом скорректировать.
 -/
 noncomputable abbrev Sequence.upperseq (a : Sequence) : ℤ → EReal := fun N ↦ (a.from N).sup
 
@@ -144,7 +143,7 @@ example : Example_6_4_10.liminf = ⊤ := by sorry
 /-- Proposition 6.4.12(a) -/
 theorem Sequence.gt_limsup_bounds {a : Sequence} {x : EReal} (h : x > a.limsup) : 
     ∃ N ≥ a.m, ∀ n ≥ N, a n < x := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   simp only [limsup, sInf_lt_iff] at h
   obtain ⟨y, hy, ha⟩ := h
   obtain ⟨N, hN, hNy⟩ := hy
@@ -162,7 +161,7 @@ theorem Sequence.lt_liminf_bounds {a : Sequence} {y : EReal} (h : y < a.liminf) 
 /-- Proposition 6.4.12(b) -/
 theorem Sequence.lt_limsup_bounds {a : Sequence} {x : EReal} (h : x < a.limsup) {N : ℤ} (hN : N ≥ a.m) : 
     ∃ n ≥ N, a n > x := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have hx : x < a.upperseq N := by apply lt_of_lt_of_le h (sInf_le _); simp; use N
   choose n hn hxn _ using exists_between_lt_sup hx
   grind
@@ -201,23 +200,23 @@ theorem Sequence.tendsTo_iff_eq_limsup_liminf {a : Sequence} (c : ℝ) :
   a.TendsTo c ↔ a.liminf = c ∧ a.limsup = c := by
   sorry
 
-/-- Lemma 6.4.13 (Comparison principle) / Exercise 6.4.4 -/
+/-- Lemma 6.4.13 (принцип сравнения) / Exercise 6.4.4 -/
 theorem Sequence.sup_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) : 
     a.sup ≤ b.sup := by sorry
 
-/-- Lemma 6.4.13 (Comparison principle) / Exercise 6.4.4 -/
+/-- Lemma 6.4.13 (принцип сравнения) / Exercise 6.4.4 -/
 theorem Sequence.inf_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) : 
     a.inf ≤ b.inf := by sorry
 
-/-- Lemma 6.4.13 (Comparison principle) / Exercise 6.4.4 -/
+/-- Lemma 6.4.13 (принцип сравнения) / Exercise 6.4.4 -/
 theorem Sequence.limsup_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) : 
     a.limsup ≤ b.limsup := by sorry
 
-/-- Lemma 6.4.13 (Comparison principle) / Exercise 6.4.4 -/
+/-- Lemma 6.4.13 (принцип сравнения) / Exercise 6.4.4 -/
 theorem Sequence.liminf_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) : 
     a.liminf ≤ b.liminf := by sorry
 
-/-- Corollary 6.4.14 (Squeeze test) / Exercise 6.4.5 -/
+/-- Corollary 6.4.14 (признак сжатия) / Exercise 6.4.5 -/
 theorem Sequence.lim_of_between {a b c : Sequence} {L : ℝ} (hm : b.m = a.m ∧ c.m = a.m)
   (hab : ∀ n ≥ a.m, a n ≤ b n ∧ b n ≤ c n) (ha : a.TendsTo L) (hb : c.TendsTo L) : 
     b.TendsTo L := by sorry
@@ -244,14 +243,14 @@ abbrev Sequence.abs (a : Sequence) : Sequence where
   vanish n hn := by simp [a.vanish n hn]
 
 
-/-- Corollary 6.4.17 (Zero test for sequences) / Exercise 6.4.7 -/
+/-- Corollary 6.4.17 (признак нуля для последовательностей) / Exercise 6.4.7 -/
 theorem Sequence.tendsTo_zero_iff (a : Sequence) : 
   a.TendsTo (0 : ℝ) ↔ a.abs.TendsTo (0 : ℝ) := by
   sorry
 
 /--
-  This helper lemma, implicit in the textbook proofs of Theorem 6.4.18 and Theorem 6.6.8, is made
-  explicit here.
+  Эта вспомогательная лемма, неявно присутствующая в доказательствах Theorem 6.4.18 и
+  Theorem 6.6.8 из учебника, здесь сделана явной.
 -/
 theorem Sequence.finite_limsup_liminf_of_bounded {a : Sequence} (hbound : a.IsBounded) : 
     (∃ L_plus : ℝ, a.limsup = L_plus) ∧ (∃ L_minus : ℝ, a.liminf = L_minus) := by
@@ -275,10 +274,10 @@ theorem Sequence.finite_limsup_liminf_of_bounded {a : Sequence} (hbound : a.IsBo
     contrapose! hlimsup_bound; simp [hlimsup_bound]
   contrapose! hliminf_bound; simp [hliminf_bound, ←coe_neg]
 
-/-- Theorem 6.4.18 (Completeness of the reals) -/
+/-- Theorem 6.4.18 (полнота вещественных чисел) -/
 theorem Sequence.Cauchy_iff_convergent (a : Sequence) : 
   a.IsCauchy ↔ a.Convergent := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   refine ⟨ ?_, IsCauchy.convergent ⟩; intro h
   have ⟨ ⟨ L_plus, hL_plus ⟩, ⟨ L_minus, hL_minus ⟩ ⟩ :=
     finite_limsup_liminf_of_bounded (bounded_of_cauchy h)
@@ -311,10 +310,10 @@ theorem Sequence.sup_not_strict_mono : ∃ (a b : ℕ → ℝ), (∀ n, a n < b 
 /-- Exercise 6.4.7 -/
 def Sequence.tendsTo_real_iff : 
   Decidable (∀ (a : Sequence) (x : ℝ), a.TendsTo x ↔ a.abs.TendsTo x) := by
-  -- The first line of this construction should be `apply isTrue` or `apply isFalse`.
+  -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- This definition is needed for Exercises 6.4.8 and 6.4.9. -/
+/-- Это определение нужно для Exercises 6.4.8 и 6.4.9. -/
 abbrev Sequence.ExtendedLimitPoint (a : Sequence) (x : EReal) : Prop := if x = ⊤ then ¬ a.BddAbove else if x = ⊥ then ¬ a.BddBelow else a.LimitPoint x.toReal
 
 /-- Exercise 6.4.8 (i) -/

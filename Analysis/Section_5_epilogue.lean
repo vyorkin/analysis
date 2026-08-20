@@ -2,25 +2,26 @@ import Mathlib.Tactic
 import Analysis.Section_5_6
 
 /-!
-# Analysis I, Chapter 5 epilogue: Isomorphism with the Mathlib real numbers
+# Analysis I, эпилог главы 5: изоморфизм с вещественными числами Mathlib
 
-In this (technical) epilogue, we show that the "Chapter 5" real numbers {name}`Chapter5.Real` are
-isomorphic in various standard senses to the standard real numbers {lean}`ℝ`.  This we do by matching
-both structures with Dedekind cuts of the (Mathlib) rational numbers {lean}`ℚ`.
+В этом (техническом) эпилоге мы показываем, что вещественные числа "Главы 5" {name}`Chapter5.Real`
+изоморфны в различных стандартных смыслах стандартным вещественным числам {lean}`ℝ`. Мы делаем это,
+сопоставляя обе структуры сечениям Дедекинда рациональных чисел (Mathlib) {lean}`ℚ`.
 
-From this point onwards, {name}`Chapter5.Real` will be deprecated, and we will use the standard real
-numbers {lean}`ℝ` instead.  In particular, one should use the full Mathlib API for {lean}`ℝ` for all
-subsequent chapters, in lieu of the {name}`Chapter5.Real` API.
+Начиная с этого момента {name}`Chapter5.Real` будет вытеснено, и далее мы будем использовать
+стандартные вещественные числа {lean}`ℝ`. В частности, во всех последующих главах следует
+использовать полное API Mathlib для {lean}`ℝ` вместо API {name}`Chapter5.Real`.
 
-Filling the {syntax term}`sorry`s here requires both the {name}`Chapter5.Real` API and the Mathlib API for the standard
-real numbers {lean}`ℝ`.  As such, they are excellent exercises to prepare you for the aforementioned
-transition.
+Заполнение {syntax term}`sorry` здесь требует как API {name}`Chapter5.Real`, так и API Mathlib для
+стандартных вещественных чисел {lean}`ℝ`. Поэтому это отличные упражнения, готовящие вас к
+упомянутому переходу.
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
@@ -78,7 +79,7 @@ noncomputable abbrev Real.equivCut : Real ≃ DedekindCut where
 
 end Chapter5
 
-/-- Now to develop analogous results for the Mathlib reals. -/
+/-- Теперь развернём аналогичные результаты для вещественных чисел Mathlib. -/
 
 abbrev Real.toSet_Rat (x : ℝ) : Set ℚ := { q | (q : ℝ) < x }
 
@@ -124,17 +125,17 @@ noncomputable abbrev Real.equivCut : ℝ ≃ Chapter5.DedekindCut where
 
 namespace Chapter5
 
-/-- The isomorphism between the {name}`Chapter5.Real` numbers and the Mathlib reals. -/
+/-- Изоморфизм между числами {name}`Chapter5.Real` и вещественными числами Mathlib. -/
 noncomputable abbrev Real.equivR : Real ≃ ℝ := Real.equivCut.trans _root_.Real.equivCut.symm
 
 lemma Real.equivR_iff (x : Real) (y : ℝ) : y = Real.equivR x ↔ y.toCut = x.toCut := by
   simp only [equivR, Equiv.trans_apply, ←Equiv.apply_eq_iff_eq_symm_apply]
   rfl
 
--- In order to use this definition, we need some machinery
+-- Чтобы воспользоваться этим определением, нам понадобится некоторый инструментарий
 -----
 
--- We start by showing it works for ratCasts
+-- Начнём с того, что покажем, что это работает для ratCast-ов
 theorem Real.equivR_ratCast {q : ℚ} : equivR q = (q : ℝ) := by
   sorry
 
@@ -143,75 +144,75 @@ lemma Real.equivR_int {n : ℤ} : equivR n = (n : ℝ) := equivR_ratCast
 
 ----
 
--- We then want to set up a way to convert from the Real `LIM` to the ℝ `Real.mk`
--- To do this we need a few things:
+-- Далее мы хотим построить способ перехода от `LIM` для Real к `Real.mk` для ℝ.
+-- Для этого нам понадобится несколько вещей:
 
--- Convertion between the notions of Cauchy Sequences
+-- Переход между понятиями последовательности Коши
 theorem Sequence.IsCauchy.to_IsCauSeq {a : ℕ → ℚ} (ha : IsCauchy a) : IsCauSeq _root_.abs a := by
   sorry
 
--- Convertion of an `IsCauchy` to a `CauSeq`
+-- Переход от `IsCauchy` к `CauSeq`
 abbrev Sequence.IsCauchy.CauSeq {a : ℕ → ℚ} : (ha : IsCauchy a) → CauSeq ℚ _root_.abs :=
   (⟨a, ·.to_IsCauSeq⟩)
 
--- We then set up the conversion from Sequence.Equiv to CauSeq.LimZero because
--- it is the equivalence relation
+-- Далее мы строим переход от Sequence.Equiv к CauSeq.LimZero, так как
+-- это и есть отношение эквивалентности
 example {a b : CauSeq ℚ abs} : a ≈ b ↔ CauSeq.LimZero (a - b) := by rfl
 
 theorem Sequence.Equiv.LimZero {a b : ℕ → ℚ} (ha : IsCauchy a) (hb : IsCauchy b) (h : Equiv a b)
   : CauSeq.LimZero (ha.CauSeq - hb.CauSeq) := by
     sorry
 
--- We can now use it to convert between different functions in Real.mk
+-- Теперь мы можем использовать это для перехода между разными функциями в Real.mk
 theorem Real.mk_eq_mk {a b : ℕ → ℚ} (ha : Sequence.IsCauchy a) (hb : Sequence.IsCauchy b) (hab : Sequence.Equiv a b)
   : Real.mk ha.CauSeq = Real.mk hb.CauSeq := Real.mk_eq.mpr (hab.LimZero ha hb)
 
--- Both directions of the equivalence
+-- Оба направления эквивалентности
 theorem Sequence.Equiv_iff_LimZero {a b : ℕ → ℚ} (ha : IsCauchy a) (hb : IsCauchy b)
   : Equiv a b ↔ CauSeq.LimZero (ha.CauSeq - hb.CauSeq) := by
     refine ⟨(·.LimZero ha hb), ?_⟩
     sorry
 
 ----
--- We create some cauchy sequences with useful properties
+-- Построим несколько последовательностей Коши с полезными свойствами
 
--- We show that for any sequence, it will eventually be arbitrarily close to its LIM
+-- Покажем, что для любой последовательности она в конце концов окажется сколь угодно близко к своему LIM
 open Real in
 theorem Sequence.difference_approaches_zero {a : ℕ → ℚ} (ha : Sequence.IsCauchy a) : 
   ∀ε > 0, ∃N, ∀n ≥ N, |LIM a - a n| ≤ (ε : ℚ) := by
     sorry
 
--- There exists a Cauchy sequence entirely above the LIM
+-- Существует последовательность Коши, целиком лежащая выше LIM
 theorem Real.exists_equiv_above {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
   : ∃(b : ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, LIM a ≤ b n := by
     sorry
 
--- There exists a Cauchy sequence entirely below the LIM
+-- Существует последовательность Коши, целиком лежащая ниже LIM
 theorem Real.exists_equiv_below {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
   : ∃(b : ℕ → ℚ), Sequence.IsCauchy b ∧ Sequence.Equiv a b ∧ ∀n, b n ≤ LIM a := by
     sorry
 
 ----
 
--- useful theorems for the following proof
+-- полезные теоремы для следующего доказательства
 #check Real.mk_le
 #check Real.mk_le_of_forall_le
 #check Real.mk_const
 
--- Transform a `Real` to an `ℝ` by going through Cauchy Sequences
--- we can use the conversion of Real.mk_eq to use different sequences to show different parts
+-- Переводим `Real` в `ℝ`, проходя через последовательности Коши;
+-- переход Real.mk_eq позволяет использовать разные последовательности для доказательства разных частей
 theorem Real.equivR_eq' {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
   : (LIM a).equivR = Real.mk ha.CauSeq := by
     by_cases hq : ∃(q : ℚ), q = LIM a
     · sorry
     show sSup (Rat.cast '' (LIM a).toSet_Rat) = _
     refine IsLUB.csSup_eq ⟨?_, ?_⟩ (Set.Nonempty.image _ <| Real.toSet_Rat_nonempty _)
-    · -- show that `Real.mk ha.CauSeq` is an upper bound
+    · -- покажем, что `Real.mk ha.CauSeq` — верхняя грань
       intro _ hy
       obtain ⟨y, hy, h⟩ := Set.mem_image _ _ _ |>.mp hy
       rw [← h, show (y : ℝ) = Real.mk (CauSeq.const _ y) from rfl]
       sorry
-    -- show that for any other upper bound, `Real.mk ha.CauSeq` is smaller
+    -- покажем, что для любой другой верхней грани `Real.mk ha.CauSeq` меньше
     intro M hM
     sorry
 
@@ -220,14 +221,14 @@ lemma Real.equivR_eq (x : Real) : ∃(a : ℕ → ℚ) (ha : Sequence.IsCauchy a
     obtain ⟨a, ha, rfl⟩ := x.eq_lim
     exact ⟨a, ha, rfl, equivR_eq' ha⟩
 
-/-- The isomorphism preserves order and ring operations. -/
+/-- Изоморфизм сохраняет порядок и операции кольца. -/
 noncomputable abbrev Real.equivR_ordered_ring : Real ≃+*o ℝ where
   toEquiv := equivR
   map_add' := by sorry
   map_mul' := by sorry
   map_le_map_iff' := by sorry
 
--- helpers for converting properties between Real and ℝ
+-- вспомогательные средства для переноса свойств между Real и ℝ
 lemma Real.equivR_map_mul {x y : Real} : equivR (x * y) = equivR x * equivR y :=
   equivR_ordered_ring.map_mul _ _
 
@@ -239,7 +240,7 @@ theorem Real.equivR_map_pos {x : Real} : 0 < x ↔ 0 < equivR x := by sorry
 theorem Real.equivR_map_nonneg {x : Real} : 0 ≤ x ↔ 0 ≤ equivR x := by sorry
 
 
--- Showing equivalence of the different pows
+-- Показываем эквивалентность разных видов возведения в степень
 theorem Real.pow_of_equivR (x : Real) (n : ℕ) : equivR (x^n) = (equivR x)^n := by
   sorry
 

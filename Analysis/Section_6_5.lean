@@ -2,17 +2,16 @@ import Mathlib.Tactic
 import Analysis.Section_6_4
 
 /-!
-# Analysis I, Section 6.5: Some standard limits
+# Analysis I, раздел 6.5: Некоторые стандартные пределы
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Some standard limits, including limits of sequences of the form 1/n^α, x^n, and x^(1/n).
+- Некоторые стандартные пределы, включая пределы последовательностей вида 1/n^α, x^n и x^(1/n).
 
 -/
 
@@ -49,7 +48,7 @@ lemma Sequence.pow_succ (a : Sequence) (k : ℕ) : a^(k+1) = a^k * a := by
 /-- Corollary 6.5.1 -/
 theorem Sequence.lim_of_power_decay {k : ℕ} : 
     ((fun (n : ℕ) ↦ 1/((n : ℝ)+1)^(1/(k+1 : ℝ))) : Sequence).TendsTo 0 := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set a := ((fun (n : ℕ) ↦ 1/((n : ℝ)+1)^(1/(k+1 : ℝ))) : Sequence)
   have ha : a.BddBelow := by use 0; intro n _; simp [a]; positivity
   have ha' : a.IsAntitone := by

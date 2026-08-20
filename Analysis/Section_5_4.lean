@@ -3,44 +3,44 @@ import Analysis.Section_5_3
 
 
 /-!
-# Analysis I, Section 5.4: Ordering the reals
+# Analysis I, раздел 5.4: Упорядочивание вещественных чисел
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Ordering on the real line
+- Упорядочивание на вещественной прямой
 
-## Tips from past users
+## Советы от прошлых пользователей
 
-Users of the companion who have completed the exercises in this section are welcome to send their tips for future users in this section as PRs.
+Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
+пользователей в виде PR.
 
-- (Add tip here)
+- (Добавьте совет сюда)
 
 -/
 
 namespace Chapter5
 
 /--
-  Definition 5.4.1 (sequences bounded away from zero with sign). Sequences are indexed to start
-  from zero as this is more convenient for Mathlib purposes.
+  Definition 5.4.1 (последовательности, отделённые от нуля с учётом знака). Последовательности
+  индексируются начиная с нуля, так как это удобнее для целей Mathlib.
 -/
 abbrev BoundedAwayPos (a : ℕ → ℚ) : Prop :=
   ∃ (c : ℚ), c > 0 ∧ ∀ n, a n ≥ c
 
-/-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
+/-- Definition 5.4.1 (последовательности, отделённые от нуля с учётом знака). -/
 abbrev BoundedAwayNeg (a : ℕ → ℚ) : Prop :=
   ∃ (c : ℚ), c > 0 ∧ ∀ n, a n ≤ -c
 
-/-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
+/-- Definition 5.4.1 (последовательности, отделённые от нуля с учётом знака). -/
 theorem boundedAwayPos_def (a : ℕ → ℚ) : BoundedAwayPos a ↔ ∃ (c : ℚ), c > 0 ∧ ∀ n, a n ≥ c := by
   rfl
 
-/-- Definition 5.4.1 (sequences bounded away from zero with sign). -/
+/-- Definition 5.4.1 (последовательности, отделённые от нуля с учётом знака). -/
 theorem boundedAwayNeg_def (a : ℕ → ℚ) : BoundedAwayNeg a ↔ ∃ (c : ℚ), c > 0 ∧ ∀ n, a n ≤ -c := by
   rfl
 
@@ -82,34 +82,34 @@ theorem Real.isPos_def (x : Real) :
 theorem Real.isNeg_def (x : Real) : 
     IsNeg x ↔ ∃ a : ℕ → ℚ, BoundedAwayNeg a ∧ (a : Sequence).IsCauchy ∧ x = LIM a := by rfl
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.trichotomous (x : Real) : x = 0 ∨ x.IsPos ∨ x.IsNeg := by sorry
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.not_zero_pos (x : Real) : ¬(x = 0 ∧ x.IsPos) := by sorry
 
 theorem Real.nonzero_of_pos {x : Real} (hx : x.IsPos) : x ≠ 0 := by
   have := not_zero_pos x
   simpa [hx] using this
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.not_zero_neg (x : Real) : ¬(x = 0 ∧ x.IsNeg) := by sorry
 
 theorem Real.nonzero_of_neg {x : Real} (hx : x.IsNeg) : x ≠ 0 := by
   have := not_zero_neg x
   simpa [hx] using this
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.not_pos_neg (x : Real) : ¬(x.IsPos ∧ x.IsNeg) := by sorry
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 @[simp]
 theorem Real.neg_iff_pos_of_neg (x : Real) : x.IsNeg ↔ (-x).IsPos := by sorry
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.pos_add {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (x+y).IsPos := by sorry
 
-/-- Proposition 5.4.4 (basic properties of positive reals) / Exercise 5.4.1 -/
+/-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.pos_mul {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (x*y).IsPos := by sorry
 
 theorem Real.pos_of_coe (q : ℚ) : (q : Real).IsPos ↔ q > 0 := by sorry
@@ -117,32 +117,32 @@ theorem Real.pos_of_coe (q : ℚ) : (q : Real).IsPos ↔ q > 0 := by sorry
 theorem Real.neg_of_coe (q : ℚ) : (q : Real).IsNeg ↔ q < 0 := by sorry
 
 open Classical in
-/-- Need to use classical logic here because {name}`IsPos` and {name}`IsNeg` are not decidable -/
+/-- Здесь нужна классическая логика, так как {name}`IsPos` и {name}`IsNeg` неразрешимы. -/
 noncomputable abbrev Real.abs (x : Real) : Real := if x.IsPos then x else (if x.IsNeg then -x else 0)
 
-/-- Definition 5.4.5 (absolute value) -/
+/-- Definition 5.4.5 (абсолютная величина) -/
 @[simp]
 theorem Real.abs_of_pos (x : Real) (hx : x.IsPos) : abs x = x := by
   simp [abs, hx]
 
-/-- Definition 5.4.5 (absolute value) -/
+/-- Definition 5.4.5 (абсолютная величина) -/
 @[simp]
 theorem Real.abs_of_neg (x : Real) (hx : x.IsNeg) : abs x = -x := by
   have : ¬x.IsPos := by have := not_pos_neg x; simpa [hx] using this
   simp [abs, hx, this]
 
-/-- Definition 5.4.5 (absolute value) -/
+/-- Definition 5.4.5 (абсолютная величина) -/
 @[simp]
 theorem Real.abs_of_zero : abs 0 = 0 := by
   have hpos : ¬(0 : Real).IsPos := by have := not_zero_pos 0; simpa using this
   have hneg : ¬(0 : Real).IsNeg := by have := not_zero_neg 0; simpa using this
   simp [abs, hpos, hneg]
 
-/-- Definition 5.4.6 (Ordering of the reals) -/
+/-- Definition 5.4.6 (упорядочивание вещественных чисел) -/
 instance Real.instLT : LT Real where
   lt x y := (x-y).IsNeg
 
-/-- Definition 5.4.6 (Ordering of the reals) -/
+/-- Definition 5.4.6 (упорядочивание вещественных чисел) -/
 instance Real.instLE : LE Real where
   le x y := (x < y) ∨ (x = y)
 
@@ -159,32 +159,32 @@ theorem Real.gt_of_coe (q q' : ℚ) : q > q' ↔ (q : Real) > (q' : Real) := Rea
 theorem Real.isPos_iff (x : Real) : x.IsPos ↔ x > 0 := by sorry
 theorem Real.isNeg_iff (x : Real) : x.IsNeg ↔ x < 0 := by sorry
 
-/-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(a) (трихотомия порядка) / Exercise 5.4.2 -/
 theorem Real.trichotomous' (x y : Real) : x > y ∨ x < y ∨ x = y := by sorry
 
-/-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(a) (трихотомия порядка) / Exercise 5.4.2 -/
 theorem Real.not_gt_and_lt (x y : Real) : ¬ (x > y ∧ x < y):= by sorry
 
-/-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(a) (трихотомия порядка) / Exercise 5.4.2 -/
 theorem Real.not_gt_and_eq (x y : Real) : ¬ (x > y ∧ x = y):= by sorry
 
-/-- Proposition 5.4.7(a) (order trichotomy) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(a) (трихотомия порядка) / Exercise 5.4.2 -/
 theorem Real.not_lt_and_eq (x y : Real) : ¬ (x < y ∧ x = y):= by sorry
 
-/-- Proposition 5.4.7(b) (order is anti-symmetric) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(b) (антисимметричность порядка) / Exercise 5.4.2 -/
 theorem Real.antisymm (x y : Real) : x < y ↔ y > x := by sorry
 
-/-- Proposition 5.4.7(c) (order is transitive) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(c) (транзитивность порядка) / Exercise 5.4.2 -/
 theorem Real.lt_trans {x y z : Real} (hxy : x < y) (hyz : y < z) : x < z := by sorry
 
-/-- Proposition 5.4.7(d) (addition preserves order) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(d) (сложение сохраняет порядок) / Exercise 5.4.2 -/
 theorem Real.add_lt_add_right {x y : Real} (z : Real) (hxy : x < y) : x + z < y + z := by sorry
 
-/-- Proposition 5.4.7(e) (positive multiplication preserves order) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(e) (умножение на положительное число сохраняет порядок) / Exercise 5.4.2 -/
 theorem Real.mul_lt_mul_right {x y z : Real} (hxy : x < y) (hz : z.IsPos) : x * z < y * z := by
   rw [antisymm, gt_iff] at hxy ⊢; convert pos_mul hxy hz using 1; ring
 
-/-- Proposition 5.4.7(e) (positive multiplication preserves order) / Exercise 5.4.2 -/
+/-- Proposition 5.4.7(e) (умножение на положительное число сохраняет порядок) / Exercise 5.4.2 -/
 theorem Real.mul_le_mul_left {x y z : Real} (hxy : x ≤ y) (hz : z.IsPos) : z * x ≤ z * y := by sorry
 
 theorem Real.mul_pos_neg {x y : Real} (hx : x.IsPos) (hy : y.IsNeg) : (x * y).IsNeg := by
@@ -192,8 +192,8 @@ theorem Real.mul_pos_neg {x y : Real} (hx : x.IsPos) (hy : y.IsNeg) : (x * y).Is
 
 open Classical in
 /--
-  (Not from textbook) {name}`Real` has the structure of a linear ordering. The order is not computable,
-  and so classical logic is required to impose decidability.
+  (Не из учебника) {name}`Real` обладает структурой линейного порядка. Этот порядок не является
+  вычислимым, поэтому для обеспечения разрешимости требуется классическая логика.
 -/
 noncomputable instance Real.instLinearOrder : LinearOrder Real where
   le_refl := sorry
@@ -204,8 +204,9 @@ noncomputable instance Real.instLinearOrder : LinearOrder Real where
   toDecidableLE := Classical.decRel _
 
 /--
-  (Not from textbook) {name}`LinearOrder`s come with a definition of absolute value {lean (type := "Real → Real")}`(|·|)`.
-  Show that it agrees with our earlier definition.
+  (Не из учебника) {name}`LinearOrder` несёт с собой определение абсолютной величины
+  {lean (type := "Real → Real")}`(|·|)`. Покажите, что оно согласуется с нашим более ранним
+  определением.
 -/
 theorem Real.abs_eq_abs (x : Real) : |x| = abs x := by sorry
 
@@ -237,7 +238,7 @@ theorem Real.inv_of_gt {x y : Real} (hx : x.IsPos) (hy : y.IsPos) (hxy : x > y) 
     _ = _ := self_mul_inv hynon
   simp at this
 
-/-- (Not from textbook) {name}`Real` has the structure of a strict ordered ring. -/
+/-- (Не из учебника) {name}`Real` обладает структурой строго упорядоченного кольца. -/
 instance Real.instIsStrictOrderedRing : IsStrictOrderedRing Real where
   add_le_add_left := by sorry
   add_le_add_right := by sorry
@@ -246,10 +247,10 @@ instance Real.instIsStrictOrderedRing : IsStrictOrderedRing Real where
   le_of_add_le_add_left := by sorry
   zero_le_one := by sorry
 
-/-- Proposition 5.4.9 (The non-negative reals are closed) -/
+/-- Proposition 5.4.9 (неотрицательные вещественные числа замкнуты) -/
 theorem Real.LIM_of_nonneg {a : ℕ → ℚ} (ha : ∀ n, a n ≥ 0) (hcauchy : (a : Sequence).IsCauchy) : 
     LIM a ≥ 0 := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra! hlim
   set x := LIM a
   rw [←isNeg_iff, isNeg_def] at hlim; choose b hb hb_cauchy hlim using hlim
@@ -271,7 +272,7 @@ theorem Real.LIM_of_nonneg {a : ℕ → ℚ} (ha : ∀ n, a n ≥ 0) (hcauchy : 
 theorem Real.LIM_mono {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy)
   (hmono : ∀ n, a n ≤ b n) : 
     LIM a ≤ LIM b := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have := LIM_of_nonneg (a := b - a) (by intro n; simp [hmono n]) (Sequence.IsCauchy.sub hb ha)
   rw [←Real.LIM_sub hb ha] at this; linarith
 
@@ -285,10 +286,10 @@ theorem Real.LIM_mono_fail :
   use (fun n ↦ 1 - 1/((n : ℚ) + 1))
   sorry
 
-/-- Proposition 5.4.12 (Bounding reals by rationals) -/
+/-- Proposition 5.4.12 (ограничение вещественных чисел рациональными) -/
 theorem Real.exists_rat_le_and_nat_gt {x : Real} (hx : x.IsPos) : 
     (∃ q : ℚ, q > 0 ∧ (q : Real) ≤ x) ∧ ∃ N : ℕ, x < (N : Real) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [isPos_def] at hx; choose a hbound hcauchy heq using hx
   rw [boundedAwayPos_def] at hbound; choose q hq hbound using hbound
   have := Sequence.isBounded_of_isCauchy hcauchy
@@ -307,9 +308,9 @@ theorem Real.exists_rat_le_and_nat_gt {x : Real} (hx : x.IsPos) :
     _ < ((N : ℚ) : Real) := by simp [hN]
     _ = N := rfl
 
-/-- Corollary 5.4.13 (Archimedean property ) -/
+/-- Corollary 5.4.13 (архимедово свойство) -/
 theorem Real.le_mul {ε : Real} (hε : ε.IsPos) (x : Real) : ∃ M : ℕ, M > 0 ∧ M * ε > x := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain rfl | hx | hx := trichotomous x
   . use 1; simpa [isPos_iff] using hε
   . choose N hN using (exists_rat_le_and_nat_gt (div_of_pos hx hε)).2
@@ -371,7 +372,7 @@ theorem Real.max_add (x y z : Real) : max (x + z) (y + z) = max x y + z := by so
 /-- Exercise 5.4.9 (f) -/
 theorem Real.max_mul (x y : Real) {z : Real} (hz : z.IsPos) : max (x * z) (y * z) = max x y * z := by
   sorry
-/- Additional exercise (after 5.4.9 (f)): What happens if z is negative? -/
+/- Дополнительное упражнение (после 5.4.9 (f)): что произойдёт, если z отрицательно? -/
 
 /-- Exercise 5.4.9 (g) -/
 theorem Real.min_comm (x y : Real) : min x y = min y x := by sorry
@@ -392,7 +393,7 @@ theorem Real.inv_max {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (max x y)⁻¹
 /-- Exercise 5.4.9 (l) -/
 theorem Real.inv_min {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (min x y)⁻¹ = max x⁻¹ y⁻¹ := by sorry
 
-/-- Not from textbook: the rationals map as an ordered ring homomorphism into the reals. -/
+/-- Не из учебника: рациональные числа отображаются в вещественные как гомоморфизм упорядоченных колец. -/
 abbrev Real.ratCast_ordered_hom : ℚ →+*o Real where
   toRingHom := ratCast_hom
   monotone' := by sorry

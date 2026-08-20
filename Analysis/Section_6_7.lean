@@ -3,34 +3,34 @@ import Analysis.Section_5_epilogue
 import Analysis.Section_6_6
 
 /-!
-# Analysis I, Section 6.7: Real exponentiation, part II
+# Analysis I, раздел 6.7: Возведение вещественных чисел в степень, часть II
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Real exponentiation.
+- Возведение вещественных чисел в вещественную степень.
 
-Because the Chapter 5 reals have been deprecated in favor of the Mathlib reals, and Mathlib real
-exponentiation is defined without first going through rational exponentiation, we will adopt a
-somewhat awkward compromise, in that we will initially accept the Mathlib exponentiation operation
-(with all its API) when the exponent is a rational, and use this to define a notion of real
-exponentiation which in the epilogue to this chapter we will show is identical to the Mathlib operation.
+Поскольку вещественные числа Главы 5 были вытеснены в пользу вещественных чисел Mathlib, а
+возведение в вещественную степень в Mathlib определяется без предварительного прохождения через
+возведение в рациональную степень, мы примем несколько неуклюжий компромисс: сначала мы примем
+операцию возведения в степень из Mathlib (со всем её API) для случая, когда показатель степени
+рационален, и используем это, чтобы определить понятие возведения в вещественную степень, которое
+в эпилоге этой главы мы покажем идентичным операции из Mathlib.
 -/
 
 namespace Chapter6
 
 open Sequence Real
 
-/-- Lemma 6.7.1 (Continuity of exponentiation) -/
+/-- Lemma 6.7.1 (непрерывность возведения в степень) -/
 lemma ratPow_continuous {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) : 
  ((fun n ↦ x^(q n : ℝ)) : Sequence).Convergent := by
-  -- This proof is rearranged slightly from the original text.
+  -- Это доказательство немного переставлено по сравнению с оригинальным текстом.
   choose M hM hbound using bounded_of_convergent ⟨ α, hq ⟩
   obtain h | rfl | h := lt_trichotomy x 1
   . sorry
@@ -81,7 +81,7 @@ lemma ratPow_lim_uniq {x α : ℝ} (hx : x > 0) {q q' : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α)
  (hq' : ((fun n ↦ (q' n : ℝ)) : Sequence).TendsTo α) : 
  lim ((fun n ↦ x^(q n : ℝ)) : Sequence) = lim ((fun n ↦ x^(q' n : ℝ)) : Sequence) := by
- -- This proof is written to follow the structure of the original text.
+ -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set r := q - q'
   suffices : (fun n ↦ x^(r n : ℝ) : Sequence).TendsTo 1
   . rw [←mul_one (lim ((fun n ↦ x^(q' n : ℝ)) : Sequence))]
@@ -126,7 +126,7 @@ theorem Real.eq_lim_of_rat (α : ℝ) : ∃ q : ℕ → ℚ, ((fun n ↦ (q n : 
   simp only [←hLIM, Equiv.apply_symm_apply] at hcauchy
   convert hcauchy; aesop
 
-/-- Definition 6.7.2 (Exponentiation to a real exponent) -/
+/-- Definition 6.7.2 (возведение в вещественную степень) -/
 noncomputable abbrev Real.rpow (x : ℝ) (α : ℝ) : ℝ := lim ((fun n ↦ x^((eq_lim_of_rat α).choose n : ℝ)) : Sequence)
 
 lemma Real.rpow_eq_lim_ratPow {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
