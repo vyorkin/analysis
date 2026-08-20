@@ -1,16 +1,17 @@
 import Mathlib.Tactic
 
 /-!
-# Introduction to Measure Theory, Chapter 0: Notation
+# Introduction to Measure Theory, Chapter 0: Обозначения
 
-A companion to Chapter 0 of the book "An introduction to Measure Theory".
+Дополнение к главе 0 книги "An introduction to Measure Theory".
 
-We use existing Mathlib constructions, such as {name}`Set.indicator`, {name}`EuclideanSpace`, {name}`ENNReal`,
-and {name}`tsum` to describe the concepts defined in Chapter 0.
+Мы используем уже существующие конструкции Mathlib, такие как {name}`Set.indicator`,
+{name}`EuclideanSpace`, {name}`ENNReal` и {name}`tsum`, чтобы описать понятия, определённые
+в главе 0.
 
 -/
 
-/-- A version of {name}`Set.indicator` suitable for this text. -/
+/-- Версия {name}`Set.indicator`, подходящая для этого текста. -/
 noncomputable abbrev Set.indicator' {X : Type*} (E : Set X) := indicator E (fun _ ↦ (1 : ℝ))
 
 theorem Set.indicator'_apply {X : Type*} (E : Set X) (x : X) [Decidable (x ∈ E)] : indicator' E x = if x ∈ E then 1 else 0 := indicator_apply _ _ _
@@ -21,7 +22,7 @@ theorem Set.indicator'_of_mem {X : Type*} {E : Set X} {x : X} (h : x ∈ E) : in
 theorem Set.indicator'_of_notMem {X : Type*} {E : Set X} {x : X} (h : x ∉ E) : indicator' E x = 0 :=
   indicator_of_notMem h _
 
-/-- A version of {name}`EuclideanSpace` suitable for this text. -/
+/-- Версия {name}`EuclideanSpace`, подходящая для этого текста. -/
 noncomputable abbrev EuclideanSpace' (n : ℕ) := EuclideanSpace ℝ (Fin n)
 
 abbrev EuclideanSpace'.equiv_Real : EuclideanSpace' 1 ≃ ℝ where
@@ -43,7 +44,7 @@ theorem EuclideanSpace'.norm_eq {n : ℕ} (x : EuclideanSpace' n) : ‖x‖ = �
   convert EuclideanSpace.norm_eq x using 3 with i
   simp
 
-/-- Each coordinate of a Euclidean vector is bounded by its norm. -/
+/-- Каждая координата евклидова вектора ограничена его нормой. -/
 lemma EuclideanSpace'.coord_le_norm {d : ℕ} (x : EuclideanSpace' d) (i : Fin d) : 
     |x i| ≤ ‖x‖ := by
   have h1 : (x i)^2 ≤ ∑ j, (x j)^2 :=
@@ -90,7 +91,7 @@ theorem ENNReal.upward_continuous {x y : ℕ → ENNReal} (hx : Monotone x) (hy 
  {x₀ y₀ : ENNReal} (hx_lim : atTop.Tendsto x (nhds x₀))
  (hy_lim : atTop.Tendsto y (nhds y₀)) : 
   atTop.Tendsto (fun n ↦ x n * y n) (nhds (x₀ * y₀)) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have hx_lt : ∀ n, x n ≤ x₀ := hx.ge_of_tendsto hx_lim
   have hy_lt : ∀ n, y n ≤ y₀ := hy.ge_of_tendsto hy_lim
   have zero_conv : atTop.Tendsto (fun n : ℕ ↦ (0 : ENNReal)) (nhds 0) := tendsto_const_nhds
@@ -195,7 +196,7 @@ example {A : Type} {x : A → ENNReal} (hx : ∑' α, x α < ⊤) :
 
 /-- Theorem 0.0.2 (Tonelli's theorem for series)  -/
 theorem ENNReal.tsum_of_tsum (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := by
-  -- This proof is written to largely follow the structure of the original text.
+  -- Это доказательство написано так, чтобы в основном следовать структуре оригинального текста.
   refine' le_antisymm _ _
   . rw [ENNReal.tsum_eq_iSup_sum]; apply iSup_le; intro F
     have : ∃ N, F ⊆ .range N ×ˢ .range N := by
@@ -247,10 +248,10 @@ noncomputable instance EReal.inst_posPart : PosPart EReal where
 noncomputable instance EReal.inst_negPart : NegPart EReal where
   negPart := fun x ↦ if x ≤ 0 then -x else 0
 
-/-- Axiom 0.0.4 (Axiom of choice). -/
+/-- Axiom 0.0.4 (аксиома выбора). -/
 noncomputable def Set.choose {A : Type*} {E : A → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := fun n ↦ (hE n).some
 
-/-- Corollary 0.0.5 (Axiom of countable choice) -/
+/-- Corollary 0.0.5 (аксиома счётного выбора) -/
 noncomputable def Countable.choose {E : ℕ → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := Set.choose hE

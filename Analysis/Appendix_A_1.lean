@@ -1,21 +1,21 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.1: Mathematical Statements
+# Analysis I, Appendix A.1: Математические утверждения
 
-An introduction to mathematical statements.
-Showcases some basic tactics and Lean syntax.
+Введение в математические утверждения.
+Демонстрирует некоторые базовые тактики и синтаксис Lean.
 -/
 
--- Example A.1.1. What the textbook calls "statements" are objects of
--- type `Prop` in Lean. Also, in Lean we tend to assign "junk" values to
--- expressions that might normally be considered undefined,
--- so discussions regarding undefined terms in the textbook should be adjusted accordingly.
+-- Example A.1.1. То, что учебник называет "утверждениями" — это объекты
+-- типа `Prop` в Lean. Кроме того, в Lean принято присваивать "мусорные" значения
+-- выражениям, которые в обычной математике считались бы неопределёнными,
+-- так что рассуждения об неопределённых термах в учебнике нужно корректировать соответственно.
 
-/- Example A.1.1. What the textbook calls "statements" are objects of type `Prop` in Lean.  Also,
-   in Lean we tend to assign "junk" values to expressions that might normally be considered
-   undefined, so discussions regarding undefined terms in the textbook should be adjusted
-   accordingly. -/
+/- Example A.1.1. То, что учебник называет "утверждениями" — это объекты типа `Prop` в Lean.
+   Кроме того, в Lean принято присваивать "мусорные" значения выражениям, которые в обычной
+   математике считались бы неопределёнными, так что рассуждения об неопределённых термах
+   в учебнике нужно корректировать соответственно. -/
 #check 2+2=4
 #check 2+2=5
 
@@ -50,41 +50,41 @@ Showcases some basic tactics and Lean syntax.
 -- (поэтому её и называют finishing tactic: либо всё, либо ничего).
 
 
-/-- Every well-formed statement is either true or false... -/
+/-- Всякое корректно построенное утверждение либо истинно, либо ложно... -/
 example (P : Prop) : (P = true) ∨ (P = false) := by
   simp
   tauto
 
--- Note: `P = true` and `P = false` simplify to `P` and `¬P` respectively.
+-- Замечание: `P = true` и `P = false` упрощаются до `P` и `¬P` соответственно.
 
-/-- .. but not both. -/
+/-- .. но не оба сразу. -/
 example (P : Prop) : ¬((P = true) ∧ (P = false)) := by simp
 
-/-- To prove that a statement is true,
-    it suffices to show that it is not false, -/
+/-- Чтобы доказать, что утверждение истинно,
+    достаточно показать, что оно не ложно, -/
 example {P : Prop} (h : P ≠ false) : P = true := by simp; tauto
 
-/-- while to show that a statement is false,
-    it suffices to show that it is not true. -/
+/-- а чтобы показать, что утверждение ложно,
+    достаточно показать, что оно не истинно. -/
 example {P : Prop} (h : P ≠ true) : P = false := by simp; tauto
 
-/-- This statement is true, but unlikely to be very useful. -/
+/-- Это утверждение истинно, но вряд ли особо полезно. -/
 example : 2 = 2 := rfl
 
-/-- This statement is also true, but not very efficient. -/
+/-- Это утверждение тоже истинно, но не очень эффективно. -/
 example : 4 ≤ 4 := by norm_num
 
-/- This is an expression, not a statement. -/
+/- Это выражение, а не утверждение. -/
 #check 2 + 3 * 5 -- : ℕ
 
-/- This is a statement, not an expression. -/
+/- Это утверждение, а не выражение. -/
 #check 2 + 3 * 5 = 17 -- : Prop
 
 #check Prime (30 + 5)
 
 #check 30 + 5 ≤ 42 - 7
 
-/-- Conjunction -/
+/-- Конъюнкция -/
 example {X Y : Prop} (hX : X) (hY : Y) : X ∧ Y := by
   constructor
   . exact hX
@@ -96,7 +96,7 @@ example {X Y : Prop} (hXY : X ∧ Y) : X := by
 example {X Y : Prop} (hXY : X ∧ Y) : Y := by
   exact hXY.2
 
--- See: https://en.wikipedia.org/wiki/Contraposition
+-- См.: https://en.wikipedia.org/wiki/Contraposition
 example {X Y : Prop} (hX : ¬X) : ¬(X ∧ Y) := by
   contrapose! hX
   exact hX.1
@@ -110,7 +110,7 @@ example : (2 + 2 = 4) ∧ (3 + 3 = 6) := by
   . norm_num
   · norm_num
 
-/-- Disjunction -/
+/-- Дизъюнкция -/
 example {X Y : Prop} (hX : X) : X ∨ Y := by
   left
   exact hX
@@ -147,7 +147,7 @@ example : (2 + 2 = 4) ∨ (2353 + 5931 = 7284) := by
 
 #check Xor'
 
-/-- Negation -/
+/-- Отрицание -/
 example {X : Prop} : (¬X = true) ↔ (X = false) := by simp
 
 example {X : Prop} : (¬X = false) ↔ (X = true) := by simp
@@ -185,7 +185,7 @@ example (x : ℤ) : ¬(Even x ∨ Odd x) ↔ (¬Even x ∧ ¬Odd x) := by
 example (X : Prop) : ¬ (¬ X) ↔ X := by
   simp
 
-/-- If and only if (iff) -/
+/-- Тогда и только тогда (iff) -/
 example {X Y : Prop} (hXY : X ↔ Y) (hX : X) : Y := by
   rw [hXY] at hX
   exact hX
@@ -224,38 +224,38 @@ example : (2+2=5) ↔ (4+4=10) := by
   simp
 
 example {X Y Z : Prop} (hXY : X ↔ Y) (hXZ : X ↔ Z) : [X,Y,Z].TFAE := by
-  tfae_have 1 ↔ 2 := by exact hXY  -- This line is optional
-  tfae_have 1 ↔ 3 := by exact hXZ  -- This line is optional
+  tfae_have 1 ↔ 2 := by exact hXY  -- Эта строка необязательна
+  tfae_have 1 ↔ 3 := by exact hXZ  -- Эта строка необязательна
   tfae_finish
 
-/-- Note for the {name (full := List.TFAE.out)}`out` method that
-    one indexes starting from 0, in contrast to the {tactic}`tfae_have` tactic. -/
+/-- Замечание: у метода {name (full := List.TFAE.out)}`out` индексация начинается с 0,
+    в отличие от тактики {tactic}`tfae_have`. -/
 example {X Y Z : Prop} (h : [X,Y,Z].TFAE) : X ↔ Y := by
   exact h.out 0 1
 
-/-- Exercise A.1.1.  Fill in the first {syntax term}`sorry` with something reasonable. -/
+/-- Exercise A.1.1.  Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
 example {X Y : Prop} : ¬ ((X ∨ Y) ∧ ¬ (X ∧ Y)) ↔ sorry := by sorry
 
-/-- Exercise A.1.2.  Fill in the first {syntax term}`sorry` with something reasonable. -/
+/-- Exercise A.1.2.  Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
 example {X Y : Prop} : ¬ (X ↔ Y) ↔ sorry := by sorry
 
 /-- Exercise A.1.3. -/
 def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬ Y) → (X ↔ Y)) := by
-  --the first line of this construction should be either `apply isTrue` or `apply isFalse`,
-  --depending on whether you believe the given statement to be true or false.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`,
+  -- в зависимости от того, считаете ли вы данное утверждение истинным или ложным.
   sorry
 
 /-- Exercise A.1.4. -/
 def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬ X) → (X ↔ Y)) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 /-- Exercise A.1.5. -/
 def Exercise_A_1_5 : Decidable (∀ (X Y Z : Prop), (X ↔ Y) → (Y ↔ Z) → [X,Y,Z].TFAE) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 /-- Exercise A.1.6. -/
 def Exercise_A_1_6 : Decidable (∀ (X Y Z : Prop), (X → Y) → (Y → Z) → (Z → X) → [X,Y,Z].TFAE) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry

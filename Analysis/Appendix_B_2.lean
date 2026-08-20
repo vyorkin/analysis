@@ -2,12 +2,13 @@ import Mathlib.Tactic
 import Analysis.Appendix_B_1
 
 /-!
-# Analysis I, Appendix B.2: The decimal representation of real numbers
+# Analysis I, Appendix B.2: Десятичное представление действительных чисел
 
-An implementation of the decimal representation of Mathlib's real numbers {lean}`ℝ`.
+Реализация десятичного представления действительных чисел {lean}`ℝ` из Mathlib.
 
-This is separate from the way decimal numerals are already represented in Mathlib.  We also represent the integer part of the natural numbers just by {lean}`ℕ`, avoiding using the decimal representation from the
-previous section, although we still retain the {name}`AppendixB.Digit` class.
+Это отдельно от того, как десятичные числительные уже представлены в Mathlib. Мы также
+представляем целую часть просто через {lean}`ℕ`, избегая использования десятичного представления
+из предыдущего раздела, хотя всё же сохраняем класс {name}`AppendixB.Digit`.
 -/
 
 namespace AppendixB
@@ -33,7 +34,7 @@ theorem NNRealDecimal.toNNReal_conv (d : NNRealDecimal) :
   sorry
 
 theorem NNRealDecimal.surj (x : NNReal) : ∃ d : NNRealDecimal, x = d := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_cases h : x = 0
   . use mk 0 fun _ ↦ 0; simp [h, toNNReal]
   let s : ℕ → ℕ := fun n ↦ ⌊ x * 10^n ⌋₊
@@ -86,7 +87,7 @@ theorem NNRealDecimal.surj (x : NNReal) : ∃ d : NNRealDecimal, x = d := by
 
 /-- Proposition B.2.2 -/
 theorem NNRealDecimal.not_inj : (1 : NNReal) = (mk 1 fun _ ↦ 0) ∧ (1 : NNReal) = (mk 0 fun _ ↦ 9) := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   simp [toNNReal]
   have := (mk 0 fun _ ↦ 9).toNNReal_conv.tendsto_sum_tsum_nat
   simp at this
@@ -133,7 +134,8 @@ theorem RealDecimal.not_inj_terminating {x : ℝ} (hx : TerminatingDecimal x) : 
 
 theorem RealDecimal.inj_nonterminating {x : ℝ} (hx : ¬TerminatingDecimal x) : ∃! d : RealDecimal, d = x := by sorry
 
-/-- Exercise B.2.4.  This is Corollary 8.3.4, but the intent is to rewrite the proof using the decimal system. -/
+/-- Exercise B.2.4.  Это Corollary 8.3.4, но задача — переписать доказательство с использованием
+    десятичной системы. -/
 example : Uncountable ℝ := by sorry
 
 

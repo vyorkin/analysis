@@ -1,9 +1,9 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.4: Variables and quantifiers
+# Analysis I, Appendix A.4: Переменные и кванторы
 
-Some examples of how variables and quantifiers are used in Lean
+Несколько примеров использования переменных и кванторов в Lean
 
 -/
 
@@ -14,7 +14,7 @@ variable (X : Type) (x y : X)
 #check x = x
 #check x = y
 
--- #check x+y = y+x   -- this will not typecheck
+-- #check x+y = y+x   -- это не пройдёт проверку типов
 
 end VariableExample1
 
@@ -51,7 +51,7 @@ example : ∀ (x : ℝ), (x+1)^2 = x^2 + 2*x + 1 := by
 
 end VariableExample2
 
-/-- A dummy statement is in place here for this example. -/
+/-- Здесь в качестве примера используется фиктивное утверждение. -/
 example : 0 = 0 := by
   set x := 342
   have : x + 155 = 497 := by
@@ -69,7 +69,7 @@ example : ¬ ∀ x > (0 : ℝ), x^2 > x := by
   use 0.5
   norm_num
 
-/- The code below will not typecheck.
+/- Код ниже не пройдёт проверку типов.
 
 example : ∀ (x:ℝ), x + 3 = 5 := by
   use 2
@@ -80,7 +80,7 @@ example : ∀ (x:ℝ), x + 3 = 5 := by
 example : ∀ x, (3 < x ∧ x < 2) → (6 < 2*x ∧ 2*x < 4) := by
   intro x h
   obtain ⟨ h1, h2 ⟩ := h
-  -- the previous three lines can be golfed to `intro x ⟨ h1, h2 ⟩`
+  -- предыдущие три строки можно сократить до `intro x ⟨ h1, h2 ⟩`
   constructor
   . linarith
   linarith

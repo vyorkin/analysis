@@ -1,16 +1,17 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix B.1: The decimal representation of natural numbers
+# Analysis I, Appendix B.1: Десятичное представление натуральных чисел
 
-Am implementation of the decimal representation of Mathlib's natural numbers {lean}`ℕ`.
+Реализация десятичного представления натуральных чисел {lean}`ℕ` из Mathlib.
 
-This is separate from the way decimal numerals are already represenated in Mathlib via the {name}`OfNat` typeclass.
+Это отдельно от того, как десятичные числительные уже представлены в Mathlib через
+тайп-класс {name}`OfNat`.
 -/
 
 namespace AppendixB
 
-/- The ten digits, together with the base 10 -/
+/- Десять цифр вместе с основанием 10 -/
 example : 0 = Nat.zero := rfl
 example : 1 = (0 : Nat).succ := rfl
 example : 2 = (1 : Nat).succ := rfl
@@ -102,23 +103,24 @@ theorem PosintDecimal.head_ne_zero' (p : PosintDecimal) : (p.head : ℕ) ≠ 0 :
 theorem PosintDecimal.length_pos (p : PosintDecimal) : 0 < p.digits.length := by
   simp [List.length_pos_iff, p.nonempty]
 
-/-- A slightly clunky way of creating decimals. -/
+/-- Слегка неуклюжий способ создания десятичных чисел. -/
 def PosintDecimal.mk' (head : Digit) (tail : List Digit) (h : head ≠ 0) : PosintDecimal := {
   digits := head :: tail
   nonempty := by aesop
   nonzero := h
 }
 
--- the positive integer decimal 314
+-- десятичное представление положительного целого числа 314
 #check PosintDecimal.mk' 3 [1, 4] (by decide)
 
--- the positive integer decimal 3
+-- десятичное представление положительного целого числа 3
 #check PosintDecimal.mk' 3 [] (by decide)
 
--- the positive integer decimal 10
+-- десятичное представление положительного целого числа 10
 #check PosintDecimal.mk' 1 [0] (by decide)
 
-/-- We are indexing digits in a decimal from left to right rather than from right to left, thus necessitating a reversal here. -/
+/-- Мы индексируем цифры в десятичном числе слева направо, а не справа налево,
+    поэтому здесь требуется разворот (reversal). -/
 @[coe]
 def PosintDecimal.toNat (p : PosintDecimal) : Nat :=
   ∑ i : Fin p.digits.length, p.digits[p.digits.length - 1 - ↑i].toNat * 10 ^ (i : ℕ)
@@ -150,11 +152,11 @@ theorem PosintDecimal.pos (p : PosintDecimal) : 0 < (p : ℕ) := by
       . infer_instance
       grind
 
-/-- An operation implicit in the proof of Theorem B.1.4: -/
+/-- Операция, неявно используемая в доказательстве Theorem B.1.4: -/
 abbrev PosintDecimal.append (p : PosintDecimal) (d : Digit) : PosintDecimal :=
   mk' p.head (p.digits.tail ++ [d]) p.head_ne_zero
 
-/-- {name}`toNat` equals Horner (left-fold) evaluation of the digit list. -/
+/-- {name}`toNat` равно вычислению списка цифр по схеме Горнера (левой свёрткой). -/
 theorem PosintDecimal.toNat_eq_foldl (q : PosintDecimal) : 
     q.toNat = q.digits.foldl (fun acc (d : Digit) => acc * 10 + d.toNat) 0 := by
   suffices h : ∀ (L : List Digit) (acc : ℕ),
@@ -165,7 +167,8 @@ theorem PosintDecimal.toNat_eq_foldl (q : PosintDecimal) :
   | nil => simp
   | cons a t ih =>
     intro acc; simp only [List.foldl_cons, List.length_cons]
-    -- Decompose the Fin (t.length+1) sum: last term is a*10^|t|, rest matches the Fin t.length sum
+    -- Раскладываем сумму по Fin (t.length+1): последнее слагаемое — a*10^|t|,
+    -- остальное совпадает с суммой по Fin t.length
     have : ∑ x : Fin (t.length + 1), ((a :: t)[t.length - ↑x] : ℕ) * 10 ^ (↑x : ℕ) =
         (∑ x : Fin t.length, (t[t.length - 1 - ↑x] : ℕ) * 10 ^ (↑x : ℕ)) + a * 10 ^ t.length := by
       refine (Fin.sum_univ_castSucc _).trans ?_
@@ -190,12 +193,12 @@ theorem PosintDecimal.eq_append {p : PosintDecimal} (h : 2 ≤ p.digits.length) 
   convert (List.dropLast_append_getLast _).symm using 2; grind
   simp [←List.length_pos_iff]; omega
 
-/-- Theorem B.1.4 (Uniqueness and existence of decimal representations) -/
+/-- Theorem B.1.4 (единственность и существование десятичных представлений) -/
 theorem PosintDecimal.exists_unique (n : ℕ) : n > 0 → ∃! p : PosintDecimal, (p : ℕ) = n := by
-  -- this proof is written to follow the structure of the original text.
+  -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   apply n.case_strong_induction_on
   . simp
-  -- note: the variable `m` in the text is referred to as `m+1` here.
+  -- замечание: переменная `m` из текста здесь называется `m+1`.
   clear n; intro m hind _
   obtain hm | hm := lt_or_ge m 9
   . apply ExistsUnique.intro (mk' (.mk (show m+1 < 10 by omega)) [] (by simp [Digit.mk]))
@@ -317,10 +320,10 @@ abbrev PosintDecimal.sum_digit (p q : PosintDecimal) (i : ℕ) : ℕ :=
     p.digit i + q.digit i + (p.carry q) i - 10
 
 /-- Exercise B.1.1 -/
-theorem PosintDecimal.sum_digit_lt (p q : PosintDecimal) (i : ℕ) : 
+theorem PosintDecimal.sum_digit_lt (p q : PosintDecimal) (i : ℕ) :
   p.sum_digit q i < 10 := by sorry
 
-/-- Define this number such that it satisfies the two following theorems. -/
+/-- Определите это число так, чтобы оно удовлетворяло двум следующим теоремам. -/
 def PosintDecimal.sum_digit_top (p q : PosintDecimal) : ℕ := by sorry
 
 theorem PosintDecimal.leading_nonzero (p q : PosintDecimal) : 

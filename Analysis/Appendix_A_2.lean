@@ -1,9 +1,9 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.2: Implication
+# Analysis I, Appendix A.2: Импликация
 
-An introduction to implications.  Showcases some basic tactics and Lean syntax.
+Введение в импликации. Демонстрирует некоторые базовые тактики и синтаксис Lean.
 
 -/
 
@@ -72,7 +72,7 @@ example : ((2+2 : ℤ)=5) → (4=(10-4 : ℤ)) := by
 /-- Theorem A.2.4 -/
 theorem theorem_A_2_4 (n : ℤ) : Even (n * (n+1)) := by
   have : Even n ∨ Odd n := Int.even_or_odd n
-  obtain heven | hodd := this  -- can also use `rcases this with heven | hodd`
+  obtain heven | hodd := this  -- можно также использовать `rcases this with heven | hodd`
   . exact Even.mul_right heven _
   have : Even (n+1) := Odd.add_one hodd
   exact Even.mul_left this _
@@ -134,7 +134,7 @@ example {x : ℝ} (h : x>0) (hsin : Real.sin x = 1) : x ≥ Real.pi / 2 := by
       linarith
     linarith
   have h2 : Real.sin x < Real.sin (Real.pi / 2) := by
-  -- the <;> tactic applies the next tactic to all currently visible goals.
+  -- тактика <;> применяет следующую тактику ко всем текущим видимым целям.
     apply Real.sin_lt_sin_of_lt_of_le_pi_div_two _ _ h' <;> linarith
   simp at h1 h2
   linarith

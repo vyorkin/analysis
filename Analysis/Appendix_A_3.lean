@@ -1,9 +1,9 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.3: The structure of proofs
+# Analysis I, Appendix A.3: Структура доказательств
 
-Some examples of proofs
+Несколько примеров доказательств
 
 -/
 
@@ -18,7 +18,9 @@ example {A B C D : Prop} (hAC : A → C) (hCD : C → D) (hDB : D → B) : A →
 /-- Proposition A.3.2 -/
 example {x : ℝ} : x = Real.pi → Real.sin (x/2) + 1 = 2 := by
   intro h
-  -- congr() produces an equality (or similar relation) from one or more existing relations, such as `h`, by substituting that relation in every location marked with a `$` sign followed by that relation, for instance `h` would be substituted at every location of `$h`.
+  -- congr() строит равенство (или похожее отношение) из одного или нескольких уже существующих
+  -- отношений, таких как `h`, подставляя это отношение в каждое место, помеченное знаком `$`,
+  -- за которым следует это отношение; например, `h` будет подставлено в каждое место `$h`.
   replace h := congr($h/2)
   replace h := congr(Real.sin $h)
   simp at h

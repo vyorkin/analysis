@@ -1,9 +1,9 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.5: Nested quantifiers
+# Analysis I, Appendix A.5: Вложенные кванторы
 
-Some examples of nested quantifiers in Lean
+Несколько примеров вложенных кванторов в Lean
 
 -/
 
@@ -41,7 +41,7 @@ theorem square_expand : ∀ (x : ℝ), (x + 1)^2 = x^2 + 2 * x + 1 := by
   ring
 
 example : (Real.pi+1)^2 = Real.pi^2 + 2 * Real.pi + 1 := by
-  apply square_expand  -- one can also use `exact square_expand _`
+  apply square_expand  -- можно также использовать `exact square_expand _`
 
 example : ∀ (y : ℝ), (Real.cos y + 1)^2 = Real.cos y^2 + 2 * Real.cos y + 1 := by
   intro y
@@ -51,7 +51,7 @@ theorem solve_quadratic : ∃ (x : ℝ), x^2 + 2 * x - 8 = 0 := by
   use 2
   norm_num
 
-/- The following proof will not typecheck.
+/- Следующее доказательство не пройдёт проверку типов.
 
 example : Real.pi^2 + 2 * Real.pi - 8 = 0 := by
   apply solve_quadratic
@@ -67,7 +67,7 @@ example
   (premise : ∀ m : Man, Mortal m)
   (Socrates : Man) : 
   Mortal Socrates := by
-    apply premise  -- `exact premise Socrates` would also work
+    apply premise  -- сработало бы и `exact premise Socrates`
 
 end Remark_A_5_1
 
@@ -90,27 +90,27 @@ example : ∀ n : ℤ, ∃ m : ℤ, m > n := by
 
 example : ¬ ∃ m : ℤ, ∀ n : ℤ, m > n := by
   by_contra h
-  choose m hm using h -- `obtain ⟨m, hm⟩ := h` would also work here
+  choose m hm using h -- здесь сработало бы и `obtain ⟨m, hm⟩ := h`
   specialize hm (m+1)
   linarith
 
 /-- Exercise A.5.1 -/
 def Exercise_A_5_1a : Decidable (∀ x > (0 : ℝ), ∀ y > (0 : ℝ), y^2 = x ) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Exercise_A_5_1b : Decidable (∃ x > (0 : ℝ), ∀ y > (0 : ℝ), y^2 = x ) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Exercise_A_5_1c : Decidable (∃ x > (0 : ℝ), ∃ y > (0 : ℝ), y^2 = x ) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Exercise_A_5_1d : Decidable (∀ y > (0 : ℝ), ∃ x > (0 : ℝ), y^2 = x ) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
 def Exercise_A_5_1e : Decidable (∃ y > (0 : ℝ), ∀ x > (0 : ℝ), y^2 = x ) := by
-  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`.
+  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry

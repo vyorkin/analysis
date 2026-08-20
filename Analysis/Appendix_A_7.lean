@@ -1,9 +1,9 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Appendix A.7: Equality
+# Analysis I, Appendix A.7: Равенство
 
-Introduction to equality in Lean
+Введение в равенство в Lean
 
 -/
 
@@ -22,25 +22,25 @@ example : 12 = (2 : Fin 10)  := by
   decide
 
 
-/-- Reflexive axiom -/
+/-- Аксиома рефлексивности -/
 example {X : Type} (x : X) : x = x := by
   rfl
 
 #check Eq.refl
 
-/-- Symmetry axiom -/
+/-- Аксиома симметричности -/
 example {X : Type} (x y : X) (h : x = y) : y = x := by
   rw [h]
 
 #check Eq.symm
 
-/-- Transitivity axiom -/
+/-- Аксиома транзитивности -/
 example {X : Type} (x y z : X) (h1 : x = y) (h2 : y = z) : x = z := by
   rw [h1, h2]
 
 #check Eq.trans
 
-/-- Substitution axiom -/
+/-- Аксиома подстановки -/
 example {X Y : Type} (f : X → Y) (x y : X) (h : x = y) : f x = f y := by
   rw [h]
 
@@ -81,10 +81,10 @@ example {x y z : ℝ} (hxy : x = sin y) (hyz : y = z^2) : x = sin (z^2) := by
 
 abbrev make_twelve_equal_two : ℤ → ℤ → Prop := fun a b ↦ a = 12 ∧ b = 2
 
-/-- A version of the integers where 12 has been forced to equal 2. -/
+/-- Версия целых чисел, в которой 12 принудительно равно 2. -/
 abbrev NewInt := Quot make_twelve_equal_two
 
-/-- A coercion from integers to new integers -/
+/-- Приведение типа из целых чисел в новые целые числа -/
 instance : Coe ℤ NewInt where
   coe n := Quot.mk make_twelve_equal_two n
 
