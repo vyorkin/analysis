@@ -566,7 +566,12 @@ lemma SetTheory.Set.nonempty_def'' {X : Set} (h : X ≠ ∅) : ∃ x, x ∈ X :=
 theorem SetTheory.Set.nonempty_of_inhabited
   {X : Set} {x : Object} (h : x ∈ X) : X ≠ ∅ := by
     -- Предположим обратноe: что множество X пустое.
-    contrapose! h -- Применим закон логической контрапозиции.
+    -- contrapose! это закон логической контрапозиции:
+    -- (P → Q) ⟺ (¬Q → ¬P).
+    -- Тактика `contrapose!` заменяет цель `X ≠ ∅` (т.е. `X = ∅ → False`) и
+    -- гипотезу `h : x ∈ X` на цель `x ∉ X` и гипотезу `h : X = ∅`,
+    -- попутно проталкивая отрицания внутрь (¬(a ≠ b) ⤳ a = b).
+    contrapose! h
     rw [eq_empty_iff_forall_notMem] at h --  X = ∅ ↔ ∀ (x : Object), x ∉ X
     specialize h x
     exact h
