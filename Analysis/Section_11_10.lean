@@ -5,16 +5,15 @@ import Analysis.Section_11_9
 
 
 /-!
-# Analysis I, Section 11.10: Consequences of the fundamental theorems
+# Analysis I, раздел 11.10: Следствия из фундаментальных теорем
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the
-original text. When there is a choice between a more idiomatic Lean solution and a
-more faithful translation, I have generally chosen the latter. In particular, there will
-be places where the Lean code could be "golfed" to be more elegant and idiomatic, but I
-have consciously avoided doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Integration by parts
+Основные конструкции и результаты этого раздела:
+- Интегрирование по частям
 
 -/
 
@@ -22,7 +21,7 @@ namespace Chapter11
 
 open BoundedInterval Chapter9 Chapter10
 
-/-- Proposition 11.10.1 (Integration by parts formula) / Exercise 11.10.1 -/
+/-- Proposition 11.10.1 (формула интегрирования по частям) / Exercise 11.10.1 -/
 theorem integ_of_mul_deriv {a b : ℝ} (hab : a ≤ b) {F G : ℝ → ℝ}
   (hF : DifferentiableOn ℝ F (Icc a b)) (hG : DifferentiableOn ℝ G (Icc a b))
   (hF' : IntegrableOn (derivWithin F (Icc a b)) (Icc a b))
@@ -31,7 +30,7 @@ theorem integ_of_mul_deriv {a b : ℝ} (hab : a ≤ b) {F G : ℝ → ℝ}
     integ (G * derivWithin F (Icc a b)) (Icc a b) := by
     sorry
 
-/-- Theorem 11.10.2.  Need to add continuity of α due to our conventions on {name}`α_length` -/
+/-- Theorem 11.10.2. Нужно добавить непрерывность α из-за наших соглашений относительно {name}`α_length` -/
 theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
   {a b : ℝ} {α f : ℝ → ℝ}
   (hα_diff : DifferentiableOn ℝ α (Icc a b)) (hαcont : Continuous α)
@@ -39,7 +38,7 @@ theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
   (hf : PiecewiseConstantOn f (Icc a b)) : 
   IntegrableOn (f * derivWithin α (Icc a b)) (Icc a b) ∧
   Chapter11.integ (f * derivWithin α (Icc a b)) (Icc a b) = RS_integ f (Icc a b) α := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   set α' := derivWithin α (Icc a b)
   have hf_integ : IntegrableOn f (Icc a b) := (integ_of_piecewise_const hf).1
   observe hfα'_integ : IntegrableOn (f * α') (Icc a b)
@@ -83,7 +82,7 @@ theorem RS_integ_eq_integ_of_mul_deriv
   (hf : RS_IntegrableOn f (Icc a b) α) : 
   IntegrableOn (f * derivWithin α (Icc a b)) (Icc a b) ∧
   integ (f * derivWithin α (Icc a b)) (Icc a b) = RS_integ f (Icc a b) α := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   set α' := derivWithin α (Icc a b)
   have hfα'_bound : BddOn (f * α') (Icc a b) := by
     have ⟨ M, hM ⟩ := hf.1; have ⟨ N, hN ⟩ := hα'.1
@@ -130,7 +129,7 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : �
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : PiecewiseConstantOn f (Icc (φ a) (φ b))) : 
   PiecewiseConstantOn (f ∘ φ) (Icc a b) ∧ RS_integ (f ∘ φ) (Icc a b) φ =
     integ f (Icc (φ a) (φ b)) := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   choose P' hf using hf
   set P := P'.remove_empty
   replace hf : PiecewiseConstantWith f P := by
@@ -175,12 +174,12 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : �
     exact this h1.2
   ext; apply (P.exists_unique _ h3).unique <;> simp [J.property, K.property, mem_iff, h1, h2]
 
-/-- Proposition 11.10.6 (Change of variables formula II). -/
+/-- Proposition 11.10.6 (формула замены переменной II). -/
 theorem RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : IntegrableOn f (Icc (φ a) (φ b))) : 
   RS_IntegrableOn (f ∘ φ) (Icc a b) φ ∧
   RS_integ (f ∘ φ) (Icc a b) φ = integ f (Icc (φ a) (φ b)) := by
-  -- This proof is adapted from the structure of the original text.
+  -- Это доказательство адаптировано из структуры оригинального текста.
   have hf_bdd := hf.1
   have hfφ_bdd : BddOn (f ∘ φ) (Icc a b) := by
     sorry
@@ -205,7 +204,7 @@ theorem RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
     lower_RS_integral_le_upper hfφ_bdd hφ_mono
   refine ⟨ ⟨ hfφ_bdd, ?_ ⟩, ?_ ⟩ <;> linarith
 
-/-- Proposition 11.10.7 (Change of variables formula III). -/
+/-- Proposition 11.10.7 (формула замены переменной III). -/
 theorem integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
   (hφ_diff : DifferentiableOn ℝ φ (Icc a b))
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ)
@@ -224,6 +223,7 @@ example {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a 
   integ (fun x ↦ f (-x)) (Icc (-b) (-a)) = integ f (Icc a b) := by
   sorry
 
-/- Exercise 11.10.4: state and prove a version of `integ_of_comp` in which `φ` is `Antitone` rather than `Monotone`. -/
+/- Exercise 11.10.4: сформулируйте и докажите вариант `integ_of_comp`, в котором `φ` является
+`Antitone`, а не `Monotone`. -/
 
 end Chapter11

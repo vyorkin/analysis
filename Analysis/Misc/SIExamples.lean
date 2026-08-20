@@ -5,7 +5,7 @@ import Analysis.Misc.SI
 namespace SI
 open UnitsSystem
 
-/- This is needed to keep dimensions such as `Length` and `Speed * Time` defeq to each other -/
+/- Это нужно, чтобы размерности вроде `Length` и `Speed * Time` были определённо равны друг другу -/
 unseal Rat.add Rat.mul Rat.sub Rat.inv
 
 variable (m : Mass) (v : Speed) (F : Force) (p : Momentum) (E : Energy) (h : Length) (t : Time) (a : Acceleration)
@@ -15,8 +15,8 @@ variable (m : Mass) (v : Speed) (F : Force) (p : Momentum) (E : Energy) (h : Len
 #check h = v * t - g * t**2 / 2
 #check E = m * c**2
 #check E = m * v**2 / 2 + m * g * h
--- #check E = m * c**3  -- fails to typecheck
--- #check m + v -- fails to typecheck
+-- #check E = m * c**3  -- не проходит проверку типов
+-- #check m + v -- не проходит проверку типов
 
 example (hv : v = 60 • kilo meter / hour) : (StandardUnit _).in v = 50/(3 : ℝ) := by
   simp [hour, minute, kilo, meter, second, hv]
@@ -34,7 +34,7 @@ example (ht : t = 3 • hour) : minute.in t = 180 := by
   simp [hour, minute, ht]
   norm_num
 
--- An example of how to use fractional units
+-- Пример использования дробных единиц
 
 abbrev half_frequency_unit := (1/2 : ℚ) • frequency_unit
 abbrev SqrtFrequency := Scalar half_frequency_unit
@@ -47,7 +47,7 @@ example {w : SqrtFrequency} (hw : w = 2 • sqrt_hertz) : hertz.in (w**2) = 4 :=
   simp [half_frequency_unit, frequency_unit, hw]
   norm_num
 
-/-- An example of a non-negative scalar type -/
+/-- Пример неотрицательного скалярного типа -/
 abbrev NNTemperature := { T : Temperature // T ≥ 0 }
 
 end SI

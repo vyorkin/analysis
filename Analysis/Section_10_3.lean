@@ -1,16 +1,15 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 10.3: Monotone functions and derivatives
+# Analysis I, раздел 10.3: Монотонные функции и производные
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Relations between monotonicity and differentiability.
+Основные конструкции и результаты этого раздела:
+- Связь между монотонностью и дифференцируемостью.
 
 -/
 

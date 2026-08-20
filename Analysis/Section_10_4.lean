@@ -4,16 +4,15 @@ import Analysis.Section_9_4
 import Analysis.Section_10_1
 
 /-!
-# Analysis I, Section 10.4: Inverse functions and derivatives
+# Analysis I, раздел 10.4: Обратные функции и производные
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- The inverse function theorem.
+Основные конструкции и результаты этого раздела:
+- Теорема об обратной функции.
 
 -/
 
@@ -27,7 +26,7 @@ theorem _root_.HasDerivWithinAt.of_inverse {X Y : Set ℝ} {f : ℝ → ℝ} {g 
   (hcluster : ClusterPt x₀ (.principal (X \ {x₀})))
   (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : HasDerivWithinAt g g'y₀ Y y₀) : 
   g'y₀ * f'x₀ = 1 := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have h1 : HasDerivWithinAt id (g'y₀ * f'x₀) X x₀ := by
     apply (hf.of_comp hfx₀ hfXY _).congr _ (hgf _ hx₀).symm <;> grind
   observe h2 : HasDerivWithinAt id 1 X x₀
@@ -52,14 +51,14 @@ theorem _root_.HasDerivWithinAt.of_inverse_of_zero_deriv {X Y : Set ℝ} {f : �
 
 example : ¬ DifferentiableWithinAt ℝ (fun x : ℝ ↦ x^(1/3 : ℝ)) (.Ici 0) 0 := by sorry
 
-/-- Theorem 10.4.2 (Inverse function theorem) -/
+/-- Theorem 10.4.2 (теорема об обратной функции) -/
 theorem inverse_function_theorem {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → ℝ}
   (hfXY : ∀ x ∈ X, f x ∈ Y) (hgYX : ∀ y ∈ Y, g y ∈ X)
   (hgf : ∀ x ∈ X, g (f x) = x) (hfg : ∀ y ∈ Y, f (g y) = y)
   {x₀ y₀ f'x₀ : ℝ} (hx₀ : x₀ ∈ X) (hfx₀ : f x₀ = y₀) (hne : f'x₀ ≠ 0)
   (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : ContinuousWithinAt g Y y₀) : 
     HasDerivWithinAt g (1/f'x₀) Y y₀ := by
-    -- This proof is written to follow the structure of the original text.
+    -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     rw [HasDerivWithinAt.iff, ←Convergesto.iff, Convergesto.iff_conv _ _]
     intro y hy hconv
     set x : ℕ → ℝ := fun n ↦ g (y n)

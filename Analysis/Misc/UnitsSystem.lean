@@ -5,22 +5,24 @@ import Mathlib.Algebra.Order.Module.Defs
 
 set_option doc.verso.suggestions false
 
-/-! A framework to formalize units (such as length, time, mass, velocity, etc.) in Lean.
+/-! Каркас для формализации единиц измерения (таких как длина, время, масса, скорость и т. д.) в Lean.
 -/
 
-/- Dimensions of units are measured by an additive group `Dimensions`, which will typically be a
-free module inan group on a finite number of generators, representing fundamental units such as length,
-mass, and time.  We bundle this together in a class `UnitsSystem`.  To use this system, we create
-an instance of it, allowing in particular the additive group `Dimensions` to be accessed freely
-within the `UnitsSystem` namespace.
+/- Размерности единиц измерения задаются аддитивной группой `Dimensions`, которая обычно является
+свободным модулем (группой) на конечном числе образующих, представляющих фундаментальные единицы,
+такие как длина, масса и время. Мы объединяем это в классе `UnitsSystem`. Чтобы использовать эту
+систему, мы создаём её инстанс, что, в частности, позволяет свободно обращаться к аддитивной группе
+`Dimensions` в пространстве имён `UnitsSystem`.
 
-I am no longer actively maintaining this code, and others are welcome to incorporate it into their own units implementations.  Existing units implications in Lean include
+Я больше не занимаюсь активной поддержкой этого кода, и всем желающим предлагается включать его в
+свои собственные реализации единиц измерения. Существующие реализации единиц измерения в Lean
+включают
 
 - https://github.com/ATOMSLab/LeanDimensionalAnalysis/tree/main
 - https://github.com/ecyrbe/lean-units
 - https://github.com/HEPLean/PhysLean/tree/master/PhysLean/Units
 
-and a general discussion of how to implement units can be found at
+а общее обсуждение того, как реализовать единицы измерения, можно найти здесь:
 
 https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/topic/physical.20units
 -/
@@ -29,27 +31,27 @@ class UnitsSystem where
   Dimensions : Type*
   addCommGroup : AddCommGroup Dimensions
 
-/- The additive group structure of `Dimensions` needs to be explicitly registered as an instance. -/
+/- Структуру аддитивной группы `Dimensions` нужно явно зарегистрировать как инстанс. -/
 attribute [implicit_reducible, instance] UnitsSystem.addCommGroup
 
 namespace UnitsSystem
 
 variable [UnitsSystem]
 
-/-- The two key types here are {name}`Formal` and `Scalar d`.  `Scalar d` is the space of scalar
-quantities whose units are given by `d : Dimensions`.  Collectively, they generate a graded commutative
- ring {name}`Formal`, which can be conveniently described using the existing Mathlib structure
- {name}`AddMonoidAlgebra`.  Algebraic manipulations of scalar quantities will be most conveniently
- handled by casting these quantities into the commutative ring {name}`Formal`, where one can use
- standard Mathlib tactics such as {name (full := Mathlib.Tactic.RingNF.ring)}`ring`.
+/-- Два ключевых типа здесь — это {name}`Formal` и `Scalar d`. `Scalar d` — это пространство
+скалярных величин, единицы измерения которых заданы `d : Dimensions`. В совокупности они порождают
+градуированное коммутативное кольцо {name}`Formal`, которое удобно описывается уже имеющейся
+структурой Mathlib {name}`AddMonoidAlgebra`. Алгебраические преобразования скалярных величин удобнее
+всего проводить, приводя эти величины к коммутативному кольцу {name}`Formal`, где можно
+пользоваться стандартными тактиками Mathlib вроде {name (full := Mathlib.Tactic.RingNF.ring)}`ring`.
 
-In principle one could also develop vector-valued quantities with dimension, but for now we
-restrict attention to scalar quantities only.
+В принципе можно было бы также разработать векторные величины с размерностью, но пока мы
+ограничиваемся только скалярными величинами.
 -/
 abbrev Formal := AddMonoidAlgebra ℝ Dimensions
 
-/-- The data {name}`Scalar.val` of a {name}`Scalar` quantity can be interpreted as the numerical value of that
-quantity with respect to some standard set of units (e.g., SI units). -/
+/-- Данные {name}`Scalar.val` величины {name}`Scalar` можно интерпретировать как числовое значение
+этой величины относительно некоторого стандартного набора единиц измерения (например, единиц СИ). -/
 @[ext]
 structure Scalar (d : Dimensions) where
   val : ℝ
@@ -57,25 +59,27 @@ structure Scalar (d : Dimensions) where
 theorem Scalar.val_injective (d : Dimensions) : Function.Injective (Scalar.val (d := d)) :=
   fun x y h => by aesop
 
-/- One has the option to `work in coordinates` in a given calculation by using `simp [←val_inj]` (or `simp [←cast_eq]` below, if casting is required).  Or one can adopt
-a `coordinate-free` approach in which any tool directly accessing `val` is avoided.
-This library allows for both approaches to be employed. -/
+/- В данном вычислении можно «работать в координатах», используя `simp [←val_inj]` (или, если
+требуется приведение, `simp [←cast_eq]` ниже). Либо можно придерживаться «бескоординатного»
+подхода, при котором избегается любой инструмент, напрямую обращающийся к `val`.
+Эта библиотека допускает оба подхода. -/
 theorem Scalar.val_inj {d : Dimensions} (q₁ q₂ : Scalar d) : 
   q₁.val = q₂.val ↔ q₁ = q₂ := Scalar.val_injective _ |>.eq_iff
 
 
-/-- {given -show}`d, d', d₁, d₂` We will encounter a technical issue with Lean's type system, namely that the type {lean}`Scalar d`
-and {lean}`Scalar d'` are not identical if {name}`d'` and {name}`d` are merely propositionally equal (as opposed
-to definitionally equal); for instance, {lean}`Scalar (d₁+d₂)` and {lean}`Scalar (d₂+d₁)` are distinct types.
-Technically, this renders multiplication on scalar types noncommutative. To get around this, we
-create a casting operator, where the propositional equality is attempted to be resolved by the Lean
-tactic {tactic}`module` whenever possible.  Unfortunately, the casting operator from {lean}`Scalar d` to {lean}`Scalar d'`
-cannot be captured by standard Lean coercion classes such as {name}`Coe` or {name}`CoeOut` as each of the types
-here contain parameters not present in the other. -/
+/-- {given -show}`d, d', d₁, d₂` Мы столкнёмся с технической проблемой системы типов Lean, а именно
+с тем, что типы {lean}`Scalar d` и {lean}`Scalar d'` не совпадают, если {name}`d'` и {name}`d`
+всего лишь пропозиционально равны (а не определённо равны); например, {lean}`Scalar (d₁+d₂)` и
+{lean}`Scalar (d₂+d₁)` — разные типы. Технически это делает умножение на скалярных типах
+некоммутативным. Чтобы обойти это, мы создаём оператор приведения, в котором пропозициональное
+равенство по возможности пытается разрешить тактика Lean {tactic}`module`. К сожалению, оператор
+приведения из {lean}`Scalar d` в {lean}`Scalar d'` нельзя выразить стандартными классами приведения
+Lean вроде {name}`Coe` или {name}`CoeOut`, поскольку каждый из этих типов содержит параметры,
+отсутствующие в другом. -/
 def Scalar.cast {d d' : Dimensions}  (q : Scalar d) (_ : d' = d := by module) : Scalar d' :=
   ⟨q.val⟩
 
-/-- This is a variant of {name}`Scalar.val_inj` that handles casts. -/
+/-- Это вариант {name}`Scalar.val_inj`, учитывающий приведения. -/
 theorem Scalar.cast_eq {d d' : Dimensions} (q : Scalar d) (q' : Scalar d') (h : d = d' := by module)
   : q.val = q'.val ↔ q = q'.cast h := by aesop
 
@@ -86,8 +90,8 @@ theorem Scalar.cast_eq_symm {d d' : Dimensions} (q : Scalar d) (q' : Scalar d') 
 theorem Scalar.cast_val {d d' : Dimensions} (q : Scalar d) (h : d' = d := by module)
   : (q.cast h).val = q.val := by aesop
 
-/-- The existing Mathlib method {name}`AddMonoidAlgebra.single` is perfect for embedding each type of
-{name}`Scalar` into the formal graded ring {name}`Formal`. -/
+/-- Уже имеющийся в Mathlib метод {name}`AddMonoidAlgebra.single` идеально подходит для вложения
+каждого типа {name}`Scalar` в формальное градуированное кольцо {name}`Formal`. -/
 @[coe]
 noncomputable def Scalar.toFormal {d : Dimensions} (q : Scalar d) : Formal :=
   AddMonoidAlgebra.single d q.val
@@ -95,11 +99,11 @@ noncomputable def Scalar.toFormal {d : Dimensions} (q : Scalar d) : Formal :=
 noncomputable instance Scalar.instCoeFormal (d : Dimensions) : CoeOut (Scalar d) Formal where
   coe := toFormal
 
-/-- Many identities involving several types of {name}`Scalar`s can be dealt with by applying
-{syntax tactic}`simp [←toFormal_inj]` to move everything to {name}`Formal`.  A large number of further {tactic}`simp` lemmas
-in this file are then designed to simplify such {name}`Formal` expressions, often by pushing casting
-operators inward back to the {name}`Scalar` types.  As such, there will be significant overlap between
-the {tactic}`simp` and {tactic}`norm_cast` tags. -/
+/-- Многие тождества, включающие несколько типов {name}`Scalar`, можно разобрать, применив
+{syntax tactic}`simp [←toFormal_inj]`, чтобы перенести всё в {name}`Formal`. Большое число дальнейших
+{tactic}`simp`-лемм в этом файле затем предназначены для упрощения таких выражений {name}`Formal`,
+часто проталкивая операторы приведения обратно внутрь, к типам {name}`Scalar`. Из-за этого будет
+значительное пересечение между тегами {tactic}`simp` и {tactic}`norm_cast`. -/
 @[simp]
 theorem Scalar.toFormal_inj {d : Dimensions} (q₁ q₂ : Scalar d) : 
   (q₁ : Formal) = (q₂ : Formal) ↔ q₁ = q₂ := by
@@ -109,8 +113,8 @@ theorem Scalar.toFormal_inj {d : Dimensions} (q₁ q₂ : Scalar d) :
     simpa using h
   intro h; simp [h]
 
-/-- Conveniently, casts from one scalar to another will automatically disappear when moving to
-{name}`Formal`. -/
+/-- Удобно, что приведения от одного скаляра к другому автоматически исчезают при переходе
+к {name}`Formal`. -/
 @[simp]
 theorem Scalar.toFormal_cast {d d' : Dimensions} (q : Scalar d) (h : d' = d := by module) : 
   ((q.cast h) : Formal) = (q : Formal) := by
@@ -123,9 +127,9 @@ instance Scalar.instZero {d : Dimensions} : Zero (Scalar d) where
 @[simp]
 theorem Scalar.val_zero {d : Dimensions} : (0 : Scalar d).val = 0 := rfl
 
-/-- We will use the {name}`NeZero` class to tag some scalars as non-zero; this becomes relevant when
-using such scalars as units.  One could also introduce API to tag some scalars as positive, but
-we currently are not implementing this. -/
+/-- Мы будем использовать класс {name}`NeZero`, чтобы помечать некоторые скаляры как ненулевые; это
+становится актуальным при использовании таких скаляров в качестве единиц измерения. Можно было бы
+также ввести API для пометки некоторых скаляров как положительных, но пока мы этого не реализуем. -/
 theorem Scalar.neZero_iff {d : Dimensions} (q : Scalar d) : NeZero q ↔ q.val ≠ 0 := by simp [_root_.neZero_iff, ←val_inj]
 
 @[simp, norm_cast]
@@ -133,15 +137,16 @@ theorem Scalar.toFormal_zero {d : Dimensions} : ((0 : Scalar d) : Formal) = 0 :=
   simp only [toFormal, AddMonoidAlgebra.single, val_zero, Finsupp.single_zero]
   rfl
 
-/-- In the next few lines of code we give {lean}`Scalar d` the structure of a real vector space,
-which is of course compatible with the real vector space structure on {name}`Formal`.  -/
+/-- В следующих нескольких строках кода мы наделяем {lean}`Scalar d` структурой вещественного
+векторного пространства, которая, разумеется, согласована со структурой вещественного векторного
+пространства на {name}`Formal`. -/
 instance Scalar.instAdd {d : Dimensions} : Add (Scalar d) where
   add q₁ q₂ := ⟨q₁.val + q₂.val⟩
 
 @[simp]
 theorem Scalar.val_add {d : Dimensions} (q₁ q₂ : Scalar d) : (q₁ + q₂).val = q₁.val + q₂.val := rfl
 
-/-- Note how the {tactic}`simp` lemma is in the direction of pushing coercions inward. -/
+/-- Обратите внимание, что {tactic}`simp`-лемма направлена в сторону проталкивания приведений внутрь. -/
 @[simp,norm_cast]
 theorem Scalar.toFormal_add {d : Dimensions} (q₁ q₂ : Scalar d) : ((q₁ + q₂ : Scalar d) : Formal) = (q₁ : Formal) + (q₂ : Formal) := by
   simp only [toFormal, val_add, Finsupp.single_add]
@@ -183,7 +188,7 @@ instance Scalar.instAddGroup {d : Dimensions} : AddGroup (Scalar d) :=
 instance Scalar.instAddCommGroup {d : Dimensions} : AddCommGroup (Scalar d) :=
   val_injective _ |>.addCommGroup _ val_zero val_add val_neg val_sub (Function.swap val_smul) (Function.swap val_smul)
 
-/-- The dimensionless scalars {lean}`Scalar 0` can be identified with real numbers.  -/
+/-- Безразмерные скаляры {lean}`Scalar 0` можно отождествить с вещественными числами. -/
 @[coe]
 def Scalar.ofReal (r : ℝ) : Scalar 0 := ⟨ r ⟩
 
@@ -213,8 +218,8 @@ theorem Scalar.coe_neg (r : ℝ) : ((-r : ℝ) : Scalar 0) = -(r : Scalar 0) := 
 theorem Scalar.coe_sub (r s : ℝ) : ((r-s : ℝ) : Scalar 0) = (r : Scalar 0) - (s : Scalar 0) := by
   simp [ofReal]; rfl
 
-/-- It is convenient to view the real numbers as a subring of the {name}`Formal` ring, thus identifying
-{name}`Scalar` multiplication with ordinary multiplication. -/
+/-- Удобно рассматривать вещественные числа как подкольцо кольца {name}`Formal`, тем самым
+отождествляя умножение {name}`Scalar` с обычным умножением. -/
 noncomputable instance Formal.instCoeReal : Coe ℝ Formal where
   coe r := ((r : Scalar 0) : Formal)
 
@@ -257,7 +262,8 @@ theorem Formal.smul_eq_mul'' (c : ℤ) (x : Formal) : c • x = (c : Formal) * x
 theorem Scalar.coe_mul (r s : ℝ) : ((r*s : ℝ) : Scalar 0) = r • (s : Scalar 0) := by
   ext; simp [ofReal]
 
-/-- We are finally able to view {lean}`Scalar d` as a vector space over {lean}`ℝ` as promised. -/
+/-- Как и было обещано, мы наконец можем рассматривать {lean}`Scalar d` как векторное пространство
+над {lean}`ℝ`. -/
 instance Scalar.instModule {d : Dimensions} : Module ℝ (Scalar d) where
   smul_add c q₁ q₂ := by simp [←toFormal_inj]; ring
   add_smul c1 c2 q := by simp [←toFormal_inj]; ring
@@ -282,8 +288,8 @@ theorem Scalar.toFormal_smul'' {d : Dimensions} (c : ℤ) (q : Scalar d)
   : ((c • q : Scalar d) : Formal) = (c : Formal) * (q : Formal) := by
   simp [←Int.cast_smul_eq_zsmul ℝ]
 
-/-- One can multiply a {lean}`Scalar d₁` and {lean}`Scalar d₂` quantities to obtain a {lean}`Scalar (d₁+d₂)` quantity,
-in a manner compatible with multiplication in {name}`Formal`. -/
+/-- Величины {lean}`Scalar d₁` и {lean}`Scalar d₂` можно перемножить и получить величину
+{lean}`Scalar (d₁+d₂)`, причём согласованно с умножением в {name}`Formal`. -/
 instance Scalar.instHMul {d₁ d₂ : Dimensions} : HMul (Scalar d₁) (Scalar d₂) (Scalar (d₁ + d₂)) where
   hMul q₁ q₂ := ⟨q₁.val * q₂.val⟩
 
@@ -296,11 +302,14 @@ theorem Scalar.toFormal_hMul {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂
   ((q₁ * q₂ : Scalar _) : Formal) = (q₁ : Formal) * (q₂ : Formal) := by
   simp [toFormal, AddMonoidAlgebra.single_mul_single]
 
-/-- Similarly, one can raise a {lean}`Scalar d` quantity to a natural number power {name}`n` to obtain a {lean}`Scalar (n • d)` quantity.  One could also implement exponentiation to an integer, but I have elected
-not to do this, implementing an inversion relation instead. -/
+/-- Аналогично величину {lean}`Scalar d` можно возвести в натуральную степень {name}`n`, получив
+величину {lean}`Scalar (n • d)`. Можно было бы также реализовать возведение в целую степень, но я
+решил этого не делать, реализовав вместо этого отношение инвертирования. -/
 noncomputable def Scalar.pow {d : Dimensions} (q : Scalar d) (n : ℕ) : Scalar (n • d) := ⟨ q.val^n ⟩
 
-/-- {given -show}`n : ℕ, d` One cannot use the Mathlib classes {name}`Pow` or {name}`HPow` here because the output type {lean}`Scalar (n • d)` depends on the input {name}`n`.  As the symbol {kw (of := «term_^_»)}`^` is reserved for such classes, we use the symbol `**` instead. -/
+/-- {given -show}`n : ℕ, d` Здесь нельзя использовать классы Mathlib {name}`Pow` или {name}`HPow`,
+поскольку тип результата {lean}`Scalar (n • d)` зависит от входного {name}`n`. Так как символ
+{kw (of := «term_^_»)}`^` зарезервирован для таких классов, мы вместо этого используем символ `**`. -/
 infix:80 "**" => Scalar.pow
 
 @[simp]
@@ -312,7 +321,9 @@ theorem Scalar.toFormal_pow {d : Dimensions} (q : Scalar d) (n : ℕ) :
   ((q ** n) : Formal) = (q : Formal) ^ n := by
   simp [toFormal, AddMonoidAlgebra.single_pow]
 
-/-- We cannot use Mathlib's {name}`Inv` class here or the associated {kw (of := «term_⁻¹»)}`⁻¹` notation because {name}`Inv` requires the output to be of the same type as the input. -/
+/-- Здесь мы не можем использовать класс {name}`Inv` из Mathlib или соответствующую нотацию
+{kw (of := «term_⁻¹»)}`⁻¹`, поскольку {name}`Inv` требует, чтобы результат имел тот же тип, что и
+вход. -/
 noncomputable def Scalar.inv {d : Dimensions} (q : Scalar d) : Scalar (-d) := ⟨ q.val⁻¹ ⟩
 
 @[simp]
@@ -346,7 +357,7 @@ theorem Scalar.mul_inv {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Sca
 theorem Scalar.pow_inv {d : Dimensions} (q : Scalar d) (n : ℕ) : (q ** n).inv = (q.inv ** n).cast := by
   simp [←toFormal_inj, toFormal]
 
-/-- Multiplication and inversion combine to give division in the usual fashion. -/
+/-- Умножение и инвертирование вместе, как обычно, дают деление. -/
 noncomputable instance Scalar.instHDiv {d₁ d₂ : Dimensions} : HDiv (Scalar d₁) (Scalar d₂) (Scalar (d₁ - d₂)) where
   hDiv q₁ q₂ := ⟨q₁.val / q₂.val⟩
 
@@ -424,9 +435,10 @@ noncomputable instance Scalar.instSMulPosStrictMono (d : Dimensions) : SMulPosSt
 
 noncomputable instance Scalar.instIsStrictOrderedModule (d : Dimensions) : IsStrictOrderedModule ℝ (Scalar d) where
 
--- TODO: add in some `gcongr` lemmas for this order
+-- TODO: добавить сюда несколько `gcongr`-лемм для этого порядка
 
-/-- The standard unit of {lean}`Scalar d` is the quantity whose data {name}`Scalar.val` is equal to {lean (type := "ℝ")}`1`. -/
+/-- Стандартная единица измерения {lean}`Scalar d` — это величина, чьи данные {name}`Scalar.val`
+равны {lean (type := "ℝ")}`1`. -/
 def StandardUnit (d : Dimensions) : Scalar d := ⟨ 1 ⟩
 
 @[simp]
@@ -459,7 +471,7 @@ theorem StandardUnit.inv (d : Dimensions) : (StandardUnit d).inv = StandardUnit 
 theorem StandardUnit.div (d₁ d₂ : Dimensions) : StandardUnit d₁ / StandardUnit d₂ = StandardUnit (d₁-d₂) := by
   simp [←Scalar.val_inj]
 
-/-- {lean}`unit.in q` is {lean}`q : Scalar d` measured in terms of {lean}`unit : Scalar d`. -/
+/-- {lean}`unit.in q` — это {lean}`q : Scalar d`, измеренное в единицах {lean}`unit : Scalar d`. -/
 noncomputable def Scalar.in {d : Dimensions} (unit q : Scalar d) : ℝ := q.val / unit.val
 
 @[simp]

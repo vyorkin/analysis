@@ -3,7 +3,9 @@ import Analysis.Misc.UnitsSystem
 import Mathlib.Algebra.Group.MinimalAxioms
 
 
-/-- The SI unit system.  In order to permit fractional dimensions, we allow dimensions to be rational; but then to maintain definitional equality of various explicit dimensions, we need to unseal the arithmetic operations on the rationals. -/
+/-- Система единиц СИ. Чтобы допустить дробные размерности, мы разрешаем размерностям быть
+  рациональными числами; но тогда для сохранения определённого равенства различных явных
+  размерностей нам нужно распечатать (unseal) арифметические операции над рациональными числами. -/
 @[ext]
 structure SI_dimensions where
   units_length : ℚ
@@ -20,10 +22,10 @@ instance SI_dimensions.instZero : Zero SI_dimensions where
 
 theorem SI_dimensions.zero_eq : (0 : SI_dimensions) = ⟨ 0,0,0,0,0,0,0⟩ := rfl
 
-/-- {given -show (type := "SI_dimensions")}`d₁, d₂`The addition structure here is simple enough that
-  one gets a lot of definitional equalities, e.g., between {lean}`d₁+d₂` and {lean}`d₂+d₁` for
-  explicit choices of {name}`d₁` and {name}`d₂`, which is convenient as it means we do not need to
-  utilize the {name (full := UnitsSystem.Scalar.cast)}`Scalar.cast` operator much. -/
+/-- {given -show (type := "SI_dimensions")}`d₁, d₂`Структура сложения здесь достаточно проста, чтобы
+  получалось много определённых равенств, например между {lean}`d₁+d₂` и {lean}`d₂+d₁` для
+  конкретных выборов {name}`d₁` и {name}`d₂`, что удобно, поскольку означает, что нам не нужно
+  часто пользоваться оператором {name (full := UnitsSystem.Scalar.cast)}`Scalar.cast`. -/
 instance SI_dimensions.instAdd : Add SI_dimensions where
   add d₁ d₂ := ⟨d₁.units_length + d₂.units_length,
                 d₁.units_mass + d₂.units_mass,
@@ -76,8 +78,9 @@ abbrev SI : UnitsSystem := {
   addCommGroup := SI_dimensions.instAddCommGroup
 }
 
-/-- The SI system will be automatically installed as a global instance by any Lean file that imports this one.  This makes it difficult to use any competing {name}`UnitsSystem`
-simultaneously, but that should be a rare use case. -/
+/-- Система СИ будет автоматически установлена как глобальный инстанс в любом Lean-файле,
+импортирующем этот файл. Из-за этого сложно одновременно использовать какую-либо конкурирующую
+{name}`UnitsSystem`, но это должно быть редким случаем использования. -/
 instance instSI : UnitsSystem := SI
 instance instSI_module : Module ℚ SI.Dimensions := SI_dimensions.instModule
 
@@ -121,7 +124,7 @@ abbrev minute : Time := 60 • second
 abbrev hour : Time := 60 • minute
 abbrev day : Time := 24 • hour
 abbrev week : Time := 7 • day
-abbrev year : Time := (365.25 : ℝ) • day -- average year length, accounting for leap years
+abbrev year : Time := (365.25 : ℝ) • day -- средняя длина года с учётом високосных лет
 
 abbrev current_unit : Dimensions := ⟨0, 0, 0, 1, 0, 0, 0⟩
 abbrev Current := Scalar current_unit
@@ -197,14 +200,14 @@ abbrev MagneticFluxDensity := Scalar magnetic_flux_density_unit
 abbrev tesla : MagneticFluxDensity := StandardUnit _
 
 
-abbrev c : Speed := 299792458 • StandardUnit _ -- speed of light in vacuum
-noncomputable abbrev h : Scalar (energy_unit + time_unit) := (6.62607015 * (10 : ℝ)^(-34 : ℤ)) • StandardUnit _ -- Planck's constant
-noncomputable abbrev e : Charge := (1.602176634 * (10 : ℝ)^(-19 : ℤ)) • StandardUnit _ -- elementary charge
-noncomputable abbrev ε₀ : Capacitance := (8.854187817 * (10 : ℝ)^(-12 : ℤ)) • StandardUnit _ -- vacuum permittivity
-noncomputable abbrev μ₀ : Inductance := (4 * Real.pi * (10 : ℝ)^(-7 : ℤ)) • StandardUnit _ -- vacuum permeability
-noncomputable abbrev g : Acceleration := (9.80665 : ℝ) • StandardUnit _ -- standard acceleration of gravity
-noncomputable abbrev k : Scalar (energy_unit + temperature_unit) := (1.380649 * (10 : ℝ)^(-23 : ℤ)) • StandardUnit _ -- Boltzmann constant
-noncomputable abbrev N_A : Amount := (6.02214076 * (10 : ℝ)^(23 : ℤ)) • StandardUnit _ -- Avogadro's number
+abbrev c : Speed := 299792458 • StandardUnit _ -- скорость света в вакууме
+noncomputable abbrev h : Scalar (energy_unit + time_unit) := (6.62607015 * (10 : ℝ)^(-34 : ℤ)) • StandardUnit _ -- постоянная Планка
+noncomputable abbrev e : Charge := (1.602176634 * (10 : ℝ)^(-19 : ℤ)) • StandardUnit _ -- элементарный заряд
+noncomputable abbrev ε₀ : Capacitance := (8.854187817 * (10 : ℝ)^(-12 : ℤ)) • StandardUnit _ -- электрическая постоянная (диэлектрическая проницаемость вакуума)
+noncomputable abbrev μ₀ : Inductance := (4 * Real.pi * (10 : ℝ)^(-7 : ℤ)) • StandardUnit _ -- магнитная постоянная (магнитная проницаемость вакуума)
+noncomputable abbrev g : Acceleration := (9.80665 : ℝ) • StandardUnit _ -- стандартное ускорение свободного падения
+noncomputable abbrev k : Scalar (energy_unit + temperature_unit) := (1.380649 * (10 : ℝ)^(-23 : ℤ)) • StandardUnit _ -- постоянная Больцмана
+noncomputable abbrev N_A : Amount := (6.02214076 * (10 : ℝ)^(23 : ℤ)) • StandardUnit _ -- число Авогадро
 
 
 

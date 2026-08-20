@@ -1,25 +1,25 @@
 import Mathlib.Tactic
 import Analysis.Section_9_6
 /-!
-# Analysis I, Section 10.2: Local maxima, local minima, and derivatives
+# Analysis I, раздел 10.2: Локальные максимумы, локальные минимумы и производные
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text.  When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter.  In particular, there will be places where
-the Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
-- Relation between local extrema and derivatives.
-- Rolle's theorem.
-- mean value theorem.
+Основные конструкции и результаты этого раздела:
+- Связь между локальными экстремумами и производными.
+- Теорема Ролля.
+- Теорема о среднем значении.
 
 -/
 
 open Chapter9
 namespace Chapter10
 
-/-- Definition 10.2.1 (Local maxima and minima).  Here we use Mathlib's {name}`IsLocalMaxOn` type. -/
+/-- Definition 10.2.1 (локальные максимумы и минимумы). Здесь мы используем тип {name}`IsLocalMaxOn`
+из Mathlib. -/
 theorem IsLocalMaxOn.iff (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : 
   IsLocalMaxOn f X x₀ ↔
   ∃ δ > 0, IsMaxOn f (X ∩ .Ioo (x₀ - δ) (x₀ + δ)) x₀ := by
@@ -61,13 +61,13 @@ theorem IsLocalMinOn.of_restrict {X Y : Set ℝ} (hXY : Y ⊆ X) (f : ℝ → �
   (h : IsLocalMinOn f X x₀) : IsLocalMinOn f Y x₀ := by
   sorry
 
-/-- Proposition 10.2.6 (i) (Local extrema are stationary) / Exercise 10.2.1 -/
+/-- Proposition 10.2.6 (i) (локальные экстремумы стационарны) / Exercise 10.2.1 -/
 theorem IsLocalMaxOn.deriv_eq_zero {a b : ℝ} {f : ℝ → ℝ} {x₀ : ℝ}
   (hx₀ : x₀ ∈ Set.Ioo a b) (h : IsLocalMaxOn f (.Ioo a b) x₀) {L : ℝ}
   (hderiv : HasDerivWithinAt f L (.Ioo a b) x₀) : L = 0 := by
   sorry
 
-/-- Proposition 10.2.6 (ii) (Local extrema are stationary) / Exercise 10.2.1 -/
+/-- Proposition 10.2.6 (ii) (локальные экстремумы стационарны) / Exercise 10.2.1 -/
 theorem IsLocalMinOn.deriv_eq_zero {a b : ℝ} {f : ℝ → ℝ} {x₀ : ℝ}
   (hx₀ : x₀ ∈ Set.Ioo a b) (h : IsLocalMinOn f (.Ioo a b) x₀) {L : ℝ}
   (hderiv : HasDerivWithinAt f L (.Ioo a b) x₀) : L = 0 := by
@@ -78,13 +78,13 @@ theorem IsMaxOn.deriv_eq_zero_counter : ∃ (a b : ℝ) (f : ℝ → ℝ)
   (hderiv : HasDerivWithinAt f L (.Icc a b) x₀), L ≠ 0 := by
   sorry
 
-/-- Theorem 10.2.7 (Rolle's theorem) / Exercise 10.2.4 -/
+/-- Theorem 10.2.7 (теорема Ролля) / Exercise 10.2.4 -/
 theorem _root_.HasDerivWithinAt.exist_zero {a b : ℝ} (hab : a < b) {g : ℝ → ℝ}
   (hcont : ContinuousOn g (.Icc a b)) (hderiv : DifferentiableOn ℝ g (.Ioo a b))
   (hgab : g a = g b) : ∃ x ∈ Set.Ioo a b, HasDerivWithinAt g 0 (.Ioo a b) x := by
   sorry
 
-/-- Corollary 10.2.9 (Mean value theorem) / Exercise 10.2.5 -/
+/-- Corollary 10.2.9 (теорема о среднем значении) / Exercise 10.2.5 -/
 theorem _root_.HasDerivWithinAt.mean_value {a b : ℝ} (hab : a < b) {f : ℝ → ℝ}
   (hcont : ContinuousOn f (.Icc a b)) (hderiv : DifferentiableOn ℝ f (.Ioo a b)) : 
   ∃ x ∈ Set.Ioo a b, HasDerivWithinAt f ((f b - f a) / (b - a)) (.Ioo a b) x := by

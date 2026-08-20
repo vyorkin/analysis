@@ -1,18 +1,17 @@
 import Mathlib.Tactic
 
 /-!
-# Analysis I, Section 11.1: Partitions
+# Analysis I, раздел 11.1: Разбиения
 
-I have attempted to make the translation as faithful a paraphrasing as possible of the original
-text. When there is a choice between a more idiomatic Lean solution and a more faithful
-translation, I have generally chosen the latter. In particular, there will be places where the
-Lean code could be "golfed" to be more elegant and idiomatic, but I have consciously avoided
-doing so.
+Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
+приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
+правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
+элегантным и идиоматичным, но я сознательно этого избегал.
 
-Main constructions and results of this section:
+Основные конструкции и результаты этого раздела:
 
-- Bounded intervals and partitions.
-- Length of an interval; the lengths of a partition sum to the length of the interval.
+- Ограниченные интервалы и разбиения.
+- Длина интервала; длины разбиения в сумме дают длину интервала.
 
 -/
 
@@ -26,7 +25,9 @@ inductive BoundedInterval where
 
 open BoundedInterval
 
-/-- There is a technical issue in that this coercion is not injective: the empty set is represented by multiple bounded intervals.  This causes some of the statements in this section to be a little uglier than necessary. -/
+/-- Здесь есть техническая проблема: это приведение не инъективно — пустое множество представлено
+несколькими различными ограниченными интервалами. Из-за этого некоторые утверждения этого раздела
+выглядят немного менее изящно, чем могли бы. -/
 @[coe]
 def BoundedInterval.toSet (I : BoundedInterval) : Set ℝ := match I with
   | Ioo a b => .Ioo a b
@@ -45,7 +46,7 @@ theorem BoundedInterval.coe_empty : ((∅ : BoundedInterval) : Set ℝ) = ∅ :=
   simp [toSet]
 
 open Classical in
-/-- This is to make {name}`Finset`s of {name}`BoundedInterval`s work properly -/
+/-- Это нужно, чтобы {name}`Finset`-ы из {name}`BoundedInterval` работали корректно -/
 noncomputable instance BoundedInterval.decidableEq : DecidableEq BoundedInterval := instDecidableEqOfLawfulBEq
 
 @[simp]
@@ -141,7 +142,7 @@ theorem BoundedInterval.mem_inter (I J : BoundedInterval) (x : ℝ) :
 
 abbrev BoundedInterval.length (I : BoundedInterval) : ℝ := max (I.b - I.a) 0
 
-/-- Using ||ₗ subscript here to not override || -/
+/-- Используем здесь подстрочный индекс ||ₗ, чтобы не переопределять || -/
 macro:max atomic("|" noWs) a:term noWs "|ₗ" : term => `(BoundedInterval.length $a)
 
 example : |Icc 3 5|ₗ = 2 := by
@@ -299,23 +300,24 @@ example : ¬∃ P : Partition (Ioo 1 5), P.intervals = {Ioo 0 3, Ico 3 5} := by
   sorry
 
 
-/-- Exercise 11.1.3.  The exercise only claims c ≤ b, but the stronger claim c < b is true and useful. -/
+/-- Exercise 11.1.3. В упражнении утверждается лишь c ≤ b, но более сильное утверждение c < b тоже
+верно и полезно. -/
 theorem Partition.exist_right {I : BoundedInterval} (hI : I.a < I.b) (hI' : I.b ∉ I)
   {P : Partition I}
   : ∃ c ∈ Set.Ico I.a I.b, Ioo c I.b ∈ P ∨ Ico c I.b ∈ P := by
   sorry
 
-/-- Theorem 11.1.13 (Length is finitely additive). -/
+/-- Theorem 11.1.13 (длина конечно-аддитивна). -/
 theorem Partition.sum_of_length  (I : BoundedInterval) (P : Partition I) : 
   ∑ J ∈ P.intervals, |J|ₗ = |I|ₗ := by
-  -- This proof is written to follow the structure of the original text.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   generalize hcard : P.intervals.card = n
   revert I; induction' n with n hn <;> intro I P hcard
   . rw [Finset.card_eq_zero] at hcard
     have : (I : Set ℝ) = ∅ := by
       sorry
     grind [length_of_empty]
-  -- the proof in the book treats the n=1 case separately, but this is unnecessary
+  -- в книге случай n=1 рассматривается отдельно, но здесь это не нужно
   by_cases h : Subsingleton (I : Set ℝ)
   . have (J : BoundedInterval) (hJ : J ∈ P) : Subsingleton (J : Set ℝ) := by
       sorry
@@ -389,7 +391,7 @@ theorem Partition.sum_of_length  (I : BoundedInterval) (P : Partition I) :
   rw [h3, ←Finset.add_sum_erase _ _ hK, ←hP', add_comm]; congr
   apply hn; simp [hP', Finset.card_erase_of_mem hK, hcard]
 
-/-- Definition 11.1.14 (Finer and coarser partitions) -/
+/-- Definition 11.1.14 (более мелкие и более грубые разбиения) -/
 instance Partition.instLE (I : BoundedInterval) : LE (Partition I) where
   le P P' := ∀ J ∈ P'.intervals, ∃ K ∈ P, J ⊆ K
 
@@ -411,7 +413,7 @@ example : ∃ P P' : Partition (Icc 1 4),
   P' ≤ P := by
   sorry
 
-/-- Definition 11.1.16 (Common refinement). -/
+/-- Definition 11.1.16 (общее измельчение). -/
 noncomputable instance Partition.instMax (I : BoundedInterval) : Max (Partition I) where
   max P P' := {
     intervals := Finset.image₂ (fun J K ↦ J ∩ K) P.intervals P'.intervals
@@ -442,7 +444,7 @@ theorem BoundedInterval.le_max {I : BoundedInterval} (P P' : Partition I) :
   P ≤ P ⊔ P' ∧ P' ≤ P ⊔ P' := by
   sorry
 
-/-- Not from textbook: the reverse inclusion -/
+/-- Не из учебника: обратное включение -/
 theorem BoundedInterval.max_le_iff (I : BoundedInterval) {P P' P'' : Partition I}
   {hP : P ≤ P''} {hP' : P' ≤ P''} : P ⊔ P' ≤ P''  := by
   sorry

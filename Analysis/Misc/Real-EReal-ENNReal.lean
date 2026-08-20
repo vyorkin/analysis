@@ -1,26 +1,26 @@
 import Mathlib.Tactic
 
 /-!
-# General utilities for Real, EReal, and ENNReal
+# Вспомогательные утверждения для Real, EReal и ENNReal
 
-This file contains general-purpose lemmas about {name}`Real`, {name}`EReal`, and {name}`ENNReal`
-that are not specific to measure theory but are used throughout the formalization.
+Этот файл содержит общие леммы о {name}`Real`, {name}`EReal` и {name}`ENNReal`,
+не привязанные конкретно к теории меры, но используемые всюду в формализации.
 -/
 
 -- =============================================================================
--- Real number utilities
+-- Вспомогательные утверждения о вещественных числах
 -- =============================================================================
 
-/-- max distributes over division by 2 -/
+/-- max распределяется относительно деления на 2 -/
 lemma max_div_two (x : ℝ) : max x 0 / 2 = max (x / 2) 0 := by
   by_cases hx : 0 ≤ x
   · simp [max_eq_left hx, max_eq_left (div_nonneg hx (by norm_num : (0 : ℝ) < 2).le)]
   · push_neg at hx
     simp [max_eq_right (le_of_lt hx), max_eq_right (by linarith : x / 2 ≤ 0)]
 
-/-- The square root function is subadditive: {lean}`√(x + y) ≤ √x + √y` for non-negative reals.
-    This follows from the fact that `(√x + √y)² = x + y + 2√(xy) ≥ x + y`. -/
-lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) : 
+/-- Функция квадратного корня субаддитивна: {lean}`√(x + y) ≤ √x + √y` для неотрицательных
+    вещественных чисел. Это следует из того, что `(√x + √y)² = x + y + 2√(xy) ≥ x + y`. -/
+lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     √(x + y) ≤ √x + √y := by
   by_cases hxy : x + y = 0
   · simp [hxy]
@@ -39,12 +39,12 @@ lemma Real.sqrt_add_le_add_sqrt {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
         _ = (√x + √y) ^ 2 := by ring
     exact this
 
-/-- The square root function is subadditive over finite sums: `√(∑ᵢ xᵢ) ≤ ∑ᵢ √xᵢ`
-    for non-negative terms. This is a consequence of the concavity of sqrt. -/
+/-- Функция квадратного корня субаддитивна для конечных сумм: `√(∑ᵢ xᵢ) ≤ ∑ᵢ √xᵢ`
+    для неотрицательных слагаемых. Это следствие вогнутости sqrt. -/
 lemma Real.sqrt_sum_le_sum_sqrt {ι : Type*} [Fintype ι] [DecidableEq ι] (f : ι → ℝ)
-    (hf : ∀ i, 0 ≤ f i) : 
+    (hf : ∀ i, 0 ≤ f i) :
     √(∑ i, f i) ≤ ∑ i, √(f i) := by
-  -- Proof by induction on the Finset
+  -- Доказательство индукцией по Finset
   let s := (Finset.univ : Finset ι)
   show √(∑ i ∈ s, f i) ≤ ∑ i ∈ s, √(f i)
   induction s using Finset.induction with
@@ -60,29 +60,30 @@ lemma Real.sqrt_sum_le_sum_sqrt {ι : Type*} [Fintype ι] [DecidableEq ι] (f : 
               exact add_le_add_right ih _
 
 -- =============================================================================
--- EReal utilities
+-- Вспомогательные утверждения о EReal
 -- =============================================================================
 
-/-- For {name}`EReal`, adding a positive real value to a value that is neither {lean (type := "EReal")}`⊥` nor {lean (type := "EReal")}`⊤` gives a strictly greater result. -/
-lemma EReal.lt_add_of_pos_coe {x : EReal} {ε : ℝ} (hε : 0 < ε) (h_ne_bot : x ≠ ⊥) (h_ne_top : x ≠ ⊤) : 
+/-- Для {name}`EReal`: прибавление положительного вещественного числа к значению, не равному
+    ни {lean (type := "EReal")}`⊥`, ни {lean (type := "EReal")}`⊤`, строго увеличивает результат. -/
+lemma EReal.lt_add_of_pos_coe {x : EReal} {ε : ℝ} (hε : 0 < ε) (h_ne_bot : x ≠ ⊥) (h_ne_top : x ≠ ⊤) :
     x < x + ↑ε := by
   have h_eps : (0 : EReal) < (ε : EReal) := EReal.coe_pos.mpr hε
   have : 0 + x < ↑ε + x := EReal.add_lt_add_of_lt_of_le h_eps (le_refl x) h_ne_bot h_ne_top
   simpa [add_comm] using this
 
-/-- {name}`EReal` epsilon argument: if for all positive ε, a ≤ b + ε, then a ≤ b.
-    This holds when b ≠ ⊤ (if b = ⊤, the implication is trivially true). -/
+/-- Эпсилон-аргумент для {name}`EReal`: если для всех положительных ε выполнено a ≤ b + ε,
+    то a ≤ b. Это верно, когда b ≠ ⊤ (если b = ⊤, импликация тривиально истинна). -/
 lemma EReal.le_of_forall_pos_le_add' {a b : EReal}
     (h : ∀ ε : ℝ, 0 < ε → a ≤ b + ε) : a ≤ b := by
   by_cases hb : b = ⊤
   · subst hb; exact le_top
   · by_contra ha_gt
     push_neg at ha_gt
-    -- a > b and b ≠ ⊤
+    -- a > b и b ≠ ⊤
     induction a using EReal.rec with
     | bot => simp at ha_gt
     | top =>
-      -- a = ⊤, b ≠ ⊤ means ⊤ ≤ b + 1 must hold by h, but b + 1 < ⊤
+      -- a = ⊤, b ≠ ⊤ означает, что по h должно выполняться ⊤ ≤ b + 1, но b + 1 < ⊤
       specialize h 1 (by norm_num : (0 : ℝ) < 1)
       have hb1 : b + (1 : ℝ) < ⊤ := by
         cases b with
@@ -95,21 +96,21 @@ lemma EReal.le_of_forall_pos_le_add' {a b : EReal}
     | coe a' =>
       induction b using EReal.rec with
       | bot =>
-        -- b = ⊥, so a' > ⊥ always. But ⊥ + ε = ⊥, so h gives a' ≤ ⊥, contradiction
+        -- b = ⊥, значит a' > ⊥ всегда. Но ⊥ + ε = ⊥, поэтому h даёт a' ≤ ⊥ — противоречие
         specialize h 1 (by norm_num : (0 : ℝ) < 1)
         simp at h
       | top => exact hb rfl
       | coe b' =>
-        -- Both finite: a' > b', pick ε = (a' - b') / 2
+        -- Оба конечны: a' > b', берём ε = (a' - b') / 2
         have hab : b' < a' := EReal.coe_lt_coe_iff.mp ha_gt
         specialize h ((a' - b') / 2) (by linarith)
         rw [show (b' : EReal) + ((a' - b') / 2 : ℝ) = ((b' + (a' - b') / 2) : ℝ) by norm_cast] at h
         have h_ineq : b' + (a' - b') / 2 < a' := by linarith
         exact not_le.mpr (EReal.coe_lt_coe_iff.mpr h_ineq) h
 
-/-- Multiplication distributes over finite sums for EReal when all summands are non-negative.
-    This is needed because EReal lacks a general {name}`LeftDistribClass` instance. -/
-lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal) (hf : ∀ i, 0 ≤ f i) : 
+/-- Умножение распределяется относительно конечных сумм для EReal, когда все слагаемые
+    неотрицательны. Это нужно, поскольку у EReal нет общего инстанса {name}`LeftDistribClass`. -/
+lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal) (hf : ∀ i, 0 ≤ f i) :
     c * (∑ i, f i) = ∑ i, c * f i := by
   induction n with
   | zero => simp
@@ -121,10 +122,10 @@ lemma EReal.mul_finset_sum_of_nonneg (n : ℕ) (c : EReal) (f : Fin n → EReal)
     congr 1
     exact ih (fun i => f i.castSucc) (fun i => hf _)
 
-/-- For non-negative reals, {name}`Real.toEReal` commutes with finite sums.
-    Uses induction on the finset with {name}`EReal.coe_add`. -/
+/-- Для неотрицательных вещественных чисел {name}`Real.toEReal` коммутирует с конечными суммами.
+    Используется индукция по finset с {name}`EReal.coe_add`. -/
 lemma EReal.coe_finset_sum {α : Type*} {s : Finset α} {f : α → ℝ}
-    (hf : ∀ a ∈ s, 0 ≤ f a) : 
+    (hf : ∀ a ∈ s, 0 ≤ f a) :
     (∑ a ∈ s, f a).toEReal = ∑ a ∈ s, (f a).toEReal := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -134,50 +135,50 @@ lemma EReal.coe_finset_sum {α : Type*} {s : Finset α} {f : α → ℝ}
     rw [EReal.coe_add, ih hf_s']
 
 -- =============================================================================
--- ENNReal/EReal tsum utilities
+-- Вспомогательные утверждения о tsum для ENNReal/EReal
 -- =============================================================================
 
-/-- Helper: Coercion from ENNReal to EReal preserves summability.
-    All ENNReal sequences are summable, and their coercions to EReal are also summable. -/
-lemma Summable.coe_ennreal {α : Type*} {f : α → ENNReal} : 
+/-- Вспомогательная лемма: приведение из ENNReal в EReal сохраняет суммируемость.
+    Все последовательности ENNReal суммируемы, и их приведения в EReal тоже суммируемы. -/
+lemma Summable.coe_ennreal {α : Type*} {f : α → ENNReal} :
     Summable (fun x => ↑(f x) : α → EReal) := by
-  -- All ENNReal sequences are summable
+  -- Все последовательности ENNReal суммируемы
   have h_sum : Summable f := ENNReal.summable
-  -- Get the HasSum for the original sequence
+  -- Получаем HasSum для исходной последовательности
   have h_has_sum : HasSum f (∑' x, f x) := h_sum.hasSum
-  -- The coercion preserves addition: ↑(x + y) = ↑x + ↑y
+  -- Приведение сохраняет сложение: ↑(x + y) = ↑x + ↑y
   have h_add : ∀ x y : ENNReal, (↑(x + y) : EReal) = (↑x : EReal) + (↑y : EReal) := EReal.coe_ennreal_add
-  -- Construct an AddMonoidHom from the coercion
-  -- Note: We need to show the coercion is an additive monoid homomorphism
+  -- Строим AddMonoidHom из приведения
+  -- Замечание: нужно показать, что приведение — гомоморфизм аддитивных моноидов
   let φ : ENNReal →+ EReal := {
     toFun := fun x => (↑x : EReal)
     map_zero' := by simp
     map_add' := h_add
   }
-  -- Coercion is continuous
+  -- Приведение непрерывно
   have h_cont : Continuous φ := continuous_coe_ennreal_ereal
-  -- Apply HasSum.map to show the coerced sequence has a sum
+  -- Применяем HasSum.map, чтобы показать, что у приведённой последовательности есть сумма
   have h_has_sum_coe : HasSum (fun x => ↑(f x) : α → EReal) ↑(∑' x, f x) :=
     h_has_sum.map φ h_cont
-  -- Summable follows from HasSum
+  -- Суммируемость следует из HasSum
   exact h_has_sum_coe.summable
 
-/-- Helper: Addition of tsums of {name}`ENNReal` values coerced to {name}`EReal`.
+/-- Вспомогательная лемма: сложение tsum-ов значений {name}`ENNReal`, приведённых к {name}`EReal`.
     {lean}`(∑' n, ↑(a n) : EReal) + (∑' n, ↑(b n) : EReal) = (∑' n, ↑(a n + b n) : EReal)`
 
-    This follows from {name}`ENNReal.tsum_add` and the fact that coercion commutes with addition. -/
-lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} : 
+    Это следует из {name}`ENNReal.tsum_add` и того, что приведение коммутирует со сложением. -/
+lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} :
     (∑' n, ↑(a n) : EReal) + (∑' n, ↑(b n) : EReal) = (∑' n, ↑(a n + b n) : EReal) := by
-  -- Use ENNReal.tsum_add: ∑' n, (a n + b n) = ∑' n, a n + ∑' n, b n
+  -- Используем ENNReal.tsum_add: ∑' n, (a n + b n) = ∑' n, a n + ∑' n, b n
   have h_tsum_add : (∑' n, (a n + b n) : ENNReal) = (∑' n, a n : ENNReal) + (∑' n, b n : ENNReal) := by
     rw [ENNReal.tsum_add]
-  -- Coerce both sides: ↑(∑' n, a n + b n) = ↑(∑' n, a n) + ↑(∑' n, b n)
-  -- Use Summable.map_tsum: continuous additive maps commute with tsum
-  -- All ENNReal sequences are summable
+  -- Приводим обе стороны: ↑(∑' n, a n + b n) = ↑(∑' n, a n) + ↑(∑' n, b n)
+  -- Используем Summable.map_tsum: непрерывные аддитивные отображения коммутируют с tsum
+  -- Все последовательности ENNReal суммируемы
   have h_sum_a : Summable a := ENNReal.summable
   have h_sum_b : Summable b := ENNReal.summable
   have h_sum_ab : Summable (fun n => a n + b n) := ENNReal.summable
-  -- Construct the AddMonoidHom from ENNReal to EReal (same as in Summable.coe_ennreal)
+  -- Строим AddMonoidHom из ENNReal в EReal (как в Summable.coe_ennreal)
   have h_add : ∀ x y : ENNReal, (↑(x + y) : EReal) = (↑x : EReal) + (↑y : EReal) := EReal.coe_ennreal_add
   let φ : ENNReal →+ EReal := {
     toFun := fun x => (↑x : EReal)
@@ -185,7 +186,7 @@ lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} :
     map_add' := h_add
   }
   have h_cont : Continuous φ := continuous_coe_ennreal_ereal
-  -- Apply Summable.map_tsum to show coercion commutes with tsum
+  -- Применяем Summable.map_tsum, чтобы показать, что приведение коммутирует с tsum
   have h_coe_tsum_a : (∑' n, ↑(a n) : EReal) = ↑(∑' n, a n : ENNReal) := by
     exact (Summable.map_tsum h_sum_a φ h_cont).symm
   have h_coe_tsum_b : (∑' n, ↑(b n) : EReal) = ↑(∑' n, b n : ENNReal) := by
@@ -197,36 +198,36 @@ lemma EReal.tsum_add_coe_ennreal {α : Type*} {a b : α → ENNReal} :
   congr 1
   exact h_tsum_add.symm
 
-/-- ENNReal coercion to EReal commutes with finite sums -/
-lemma EReal.coe_ennreal_finset_sum {α : Type*} {s : Finset α} {f : α → ENNReal} : 
+/-- Приведение ENNReal в EReal коммутирует с конечными суммами -/
+lemma EReal.coe_ennreal_finset_sum {α : Type*} {s : Finset α} {f : α → ENNReal} :
     (∑ a ∈ s, f a : ENNReal).toEReal = ∑ a ∈ s, (f a).toEReal := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a t ha ih => simp only [Finset.sum_cons ha, EReal.coe_ennreal_add, ih]
 
-/-- Finite sum embedded in EReal is bounded by tsum.
-    For nonnegative reals, finite partial sums are always ≤ the infinite sum.
-    Strategy: Convert to ENNReal where sum_le_tsum holds, then transfer via coercion. -/
-lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Finset ℕ) : 
+/-- Конечная сумма, вложенная в EReal, ограничена tsum-ом.
+    Для неотрицательных вещественных чисел конечные частичные суммы всегда ≤ бесконечной суммы.
+    Стратегия: перейти к ENNReal, где выполняется sum_le_tsum, а затем перенести через приведение. -/
+lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Finset ℕ) :
     (∑ n ∈ t, f n : EReal) ≤ ∑' n, (f n).toEReal := by
-  -- Convert LHS to EReal via coe_finset_sum
+  -- Преобразуем левую часть в EReal через coe_finset_sum
   have hf_t : ∀ a ∈ t, 0 ≤ f a := fun a _ => hf a
   rw [← EReal.coe_finset_sum hf_t]
-  -- Define the ENNReal version of f
+  -- Определяем версию f в ENNReal
   let g : ℕ → ENNReal := fun n => ENNReal.ofReal (f n)
-  -- Key fact: ENNReal.sum_le_tsum always holds
+  -- Ключевой факт: ENNReal.sum_le_tsum выполняется всегда
   have h_enn : ∑ n ∈ t, g n ≤ ∑' n, g n := ENNReal.sum_le_tsum t
-  -- Show each term equality: (f n).toEReal = (g n).toEReal for nonneg f n
+  -- Показываем равенство слагаемых: (f n).toEReal = (g n).toEReal при неотрицательном f n
   have h_term : ∀ n, (f n).toEReal = (g n).toEReal := fun n => by
     simp only [g, EReal.coe_ennreal_ofReal, max_eq_left (hf n)]
-  -- Show finite sum equality
+  -- Показываем равенство конечных сумм
   have h_fin : (∑ n ∈ t, f n : ℝ).toEReal = (∑ n ∈ t, g n : ENNReal).toEReal := by
     rw [EReal.coe_finset_sum hf_t, EReal.coe_ennreal_finset_sum]
     exact Finset.sum_congr rfl (fun n _ => h_term n)
-  -- Show tsum equality
+  -- Показываем равенство tsum
   have h_inf : ∑' n, (f n).toEReal = (∑' n, g n : ENNReal).toEReal := by
     have h_sum : Summable g := ENNReal.summable
-    -- Use that continuous additive maps commute with tsum
+    -- Используем, что непрерывные аддитивные отображения коммутируют с tsum
     have h_coe_tsum : (∑' n, g n : ENNReal).toEReal = ∑' n, (g n).toEReal := by
       let φ : ENNReal →+ EReal := {
         toFun := (↑·)
@@ -236,18 +237,19 @@ lemma EReal.finset_sum_le_tsum {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) (t : Fi
       exact Summable.map_tsum h_sum φ continuous_coe_ennreal_ereal
     rw [h_coe_tsum]
     exact tsum_congr (fun n => h_term n)
-  -- Transfer inequality via monotone coercion
+  -- Переносим неравенство через монотонное приведение
   rw [h_fin, h_inf]
   exact EReal.coe_ennreal_le_coe_ennreal_iff.mpr h_enn
 
-/-- Helper: For non-negative real sequences, tsum addition inequality in EReal.
-    If f n + g n ≤ h n pointwise, then ∑' f.toEReal + ∑' g.toEReal ≤ ∑' h.toEReal. -/
+/-- Вспомогательная лемма: для неотрицательных вещественных последовательностей — неравенство
+    для суммы tsum-ов в EReal. Если f n + g n ≤ h n поточечно, то
+    ∑' f.toEReal + ∑' g.toEReal ≤ ∑' h.toEReal. -/
 lemma EReal.tsum_add_le_of_nonneg_pointwise {f g h : ℕ → ℝ}
     (hf_nn : ∀ n, 0 ≤ f n) (hg_nn : ∀ n, 0 ≤ g n)
-    (h_pw : ∀ n, f n + g n ≤ h n) : 
+    (h_pw : ∀ n, f n + g n ≤ h n) :
     (∑' n, (f n).toEReal) + (∑' n, (g n).toEReal) ≤ ∑' n, (h n).toEReal := by
-  -- Convert to ENNReal where we have better tsum properties
-  -- For non-negative reals, x.toEReal = (ENNReal.ofReal x : EReal)
+  -- Переходим к ENNReal, где свойства tsum лучше
+  -- Для неотрицательных вещественных чисел x.toEReal = (ENNReal.ofReal x : EReal)
   have hf_eq : ∀ n, (f n).toEReal = (ENNReal.ofReal (f n) : EReal) := by
     intro n; simp [EReal.coe_ennreal_ofReal, max_eq_left (hf_nn n)]
   have hg_eq : ∀ n, (g n).toEReal = (ENNReal.ofReal (g n) : EReal) := by
@@ -255,66 +257,66 @@ lemma EReal.tsum_add_le_of_nonneg_pointwise {f g h : ℕ → ℝ}
   have hh_eq : ∀ n, (h n).toEReal = (ENNReal.ofReal (h n) : EReal) := by
     intro n; simp [EReal.coe_ennreal_ofReal, max_eq_left (le_trans (add_nonneg (hf_nn n) (hg_nn n)) (h_pw n))]
 
-  -- Rewrite using these equalities
+  -- Переписываем, используя эти равенства
   simp_rw [hf_eq, hg_eq, hh_eq]
 
-  -- Need to show: (∑' n, ↑(ENNReal.ofReal (f n)) : EReal) + (∑' n, ↑(ENNReal.ofReal (g n)) : EReal)
+  -- Нужно показать: (∑' n, ↑(ENNReal.ofReal (f n)) : EReal) + (∑' n, ↑(ENNReal.ofReal (g n)) : EReal)
   --            ≤ (∑' n, ↑(ENNReal.ofReal (h n)) : EReal)
-  -- Use helper lemma to combine sums
+  -- Используем вспомогательную лемму, чтобы объединить суммы
   let a : ℕ → ENNReal := fun n => ENNReal.ofReal (f n)
   let b : ℕ → ENNReal := fun n => ENNReal.ofReal (g n)
   let c : ℕ → ENNReal := fun n => ENNReal.ofReal (h n)
 
-  -- Combine the sums on LHS using helper lemma
+  -- Объединяем суммы в левой части с помощью вспомогательной леммы
   have h_combine : (∑' n, ↑(a n) : EReal) + (∑' n, ↑(b n) : EReal) = (∑' n, ↑(a n + b n) : EReal) := by
     exact EReal.tsum_add_coe_ennreal
-  -- Expand a and b in the goal to match h_combine
+  -- Раскрываем a и b в цели, чтобы она соответствовала h_combine
   simp only [a, b] at *
-  -- Rewrite LHS to combined form
+  -- Переписываем левую часть в объединённом виде
   rw [h_combine]
 
-  -- Now need: (∑' n, ↑(ENNReal.ofReal (f n) + ENNReal.ofReal (g n)) : EReal)
+  -- Теперь нужно: (∑' n, ↑(ENNReal.ofReal (f n) + ENNReal.ofReal (g n)) : EReal)
   --         ≤ (∑' n, ↑(ENNReal.ofReal (h n)) : EReal)
   have h_sum_lhs : Summable (fun n => ↑(ENNReal.ofReal (f n) + ENNReal.ofReal (g n)) : ℕ → EReal) :=
     Summable.coe_ennreal
   have h_sum_rhs : Summable (fun n => ↑(ENNReal.ofReal (h n)) : ℕ → EReal) :=
     Summable.coe_ennreal
   refine Summable.tsum_le_tsum (fun n => ?_) h_sum_lhs h_sum_rhs
-  -- Pointwise inequality: ↑(ofReal (f n) + ofReal (g n)) ≤ ↑(ofReal (h n))
+  -- Поточечное неравенство: ↑(ofReal (f n) + ofReal (g n)) ≤ ↑(ofReal (h n))
   rw [EReal.coe_ennreal_le_coe_ennreal_iff]
   have h_add_eq : ENNReal.ofReal (f n) + ENNReal.ofReal (g n) = ENNReal.ofReal (f n + g n) := by
     rw [ENNReal.ofReal_add (hf_nn n) (hg_nn n)]
   rw [h_add_eq]
   exact ENNReal.ofReal_le_ofReal (h_pw n)
 
-/-- Pointwise EReal ≤ nonneg Real implies tsum inequality.
-    If 0 ≤ f n ≤ ↑(g n) for all n, where g n ≥ 0 and g summable, then ∑' f ≤ ↑(∑' g).
-    Routes through ENNReal where tsum comparison is unconditional. -/
+/-- Поточечное неравенство EReal ≤ неотрицательному Real влечёт неравенство для tsum.
+    Если 0 ≤ f n ≤ ↑(g n) для всех n, где g n ≥ 0 и g суммируема, то ∑' f ≤ ↑(∑' g).
+    Доказательство идёт через ENNReal, где сравнение tsum безусловно. -/
 lemma EReal.tsum_le_coe_tsum_of_forall_le {f : ℕ → EReal} {g : ℕ → ℝ}
     (hf_nn : ∀ n, 0 ≤ f n) (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g)
-    (h_le : ∀ n, f n ≤ (g n : EReal)) : 
+    (h_le : ∀ n, f n ≤ (g n : EReal)) :
     ∑' n, f n ≤ (∑' n, g n : EReal) := by
-  -- Define ENNReal version of g
+  -- Определяем версию g в ENNReal
   let g' : ℕ → ENNReal := fun n => ENNReal.ofReal (g n)
-  -- Key: (g n : EReal) = (g' n : EReal) for nonneg g
+  -- Ключевой факт: (g n : EReal) = (g' n : EReal) при неотрицательном g
   have hg_eq : ∀ n, (g n : EReal) = (g' n : EReal) := fun n => by
     simp only [g', EReal.coe_ennreal_ofReal, max_eq_left (hg_nn n)]
-  -- Define f truncated to ENNReal: since 0 ≤ f n, use EReal.toENNReal
+  -- Определяем f, усечённую до ENNReal: поскольку 0 ≤ f n, используем EReal.toENNReal
   let f' : ℕ → ENNReal := fun n => (f n).toENNReal
-  -- For 0 ≤ f n, we have (f' n : EReal) = f n
+  -- При 0 ≤ f n имеем (f' n : EReal) = f n
   have hf_eq : ∀ n, f n = (f' n : EReal) := fun n => by
     simp only [f']
     exact (EReal.coe_toENNReal (hf_nn n)).symm
-  -- f' n ≤ g' n follows from h_le and the equality
+  -- f' n ≤ g' n следует из h_le и равенства
   have hf'_le : ∀ n, f' n ≤ g' n := by
     intro n
     simp only [f', g']
     rw [← EReal.coe_ennreal_le_coe_ennreal_iff, EReal.coe_toENNReal (hf_nn n)]
     calc f n ≤ (g n : EReal) := h_le n
       _ = ↑(ENNReal.ofReal (g n)) := hg_eq n
-  -- Use ENNReal.tsum_le_tsum
+  -- Используем ENNReal.tsum_le_tsum
   have h_enn : ∑' n, f' n ≤ ∑' n, g' n := ENNReal.tsum_le_tsum hf'_le
-  -- Coercion commutes with tsum for ENNReal sequences
+  -- Приведение коммутирует с tsum для последовательностей ENNReal
   let φ : ENNReal →+ EReal := {
     toFun := (↑·)
     map_zero' := by simp
@@ -325,25 +327,25 @@ lemma EReal.tsum_le_coe_tsum_of_forall_le {f : ℕ → EReal} {g : ℕ → ℝ}
     (Summable.map_tsum (f := f') ENNReal.summable φ h_cont).symm
   have h_comm_g : ∑' n, (g' n : EReal) = (∑' n, g' n : ENNReal).toEReal :=
     (Summable.map_tsum (f := g') ENNReal.summable φ h_cont).symm
-  -- Rewrite RHS using hg_eq and h_comm_g
+  -- Переписываем правую часть, используя hg_eq и h_comm_g
   have h_rhs : (∑' n, g n : EReal) = (∑' n, g' n : ENNReal).toEReal := by
     calc (∑' n, g n : EReal) = ∑' n, (g' n : EReal) := tsum_congr (fun n => hg_eq n)
       _ = (∑' n, g' n : ENNReal).toEReal := h_comm_g
-  -- Chain the equalities and inequality
+  -- Собираем равенства и неравенство в цепочку
   rw [h_rhs]
   simp_rw [hf_eq, h_comm_f]
   exact EReal.coe_ennreal_le_coe_ennreal_iff.mpr h_enn
 
-/-- Coercion from ℝ to EReal commutes with tsum for nonneg summable sequences.
-    For nonneg g with Summable g: ↑(∑' n, g n : ℝ) = ∑' n, ↑(g n) : EReal -/
-lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g) : 
+/-- Приведение из ℝ в EReal коммутирует с tsum для неотрицательных суммируемых последовательностей.
+    Для неотрицательной g с Summable g: ↑(∑' n, g n : ℝ) = ∑' n, ↑(g n) : EReal -/
+lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_sum : Summable g) :
     (↑(∑' n, g n) : EReal) = ∑' n, (g n : EReal) := by
-  -- Route through ENNReal using ofReal_tsum_of_nonneg
+  -- Идём через ENNReal, используя ofReal_tsum_of_nonneg
   let g' : ℕ → ENNReal := fun n => ENNReal.ofReal (g n)
-  -- Key: (g n : EReal) = (g' n : EReal) for nonneg g
+  -- Ключевой факт: (g n : EReal) = (g' n : EReal) при неотрицательном g
   have hg_eq : ∀ n, (g n : EReal) = (g' n : EReal) := fun n => by
     simp only [g', EReal.coe_ennreal_ofReal, max_eq_left (hg_nn n)]
-  -- ENNReal.ofReal (∑' g) = ∑' g' by mathlib's ofReal_tsum_of_nonneg
+  -- ENNReal.ofReal (∑' g) = ∑' g' по лемме ofReal_tsum_of_nonneg из mathlib
   have h_ennreal : ENNReal.ofReal (∑' n, g n) = ∑' n, g' n :=
     ENNReal.ofReal_tsum_of_nonneg hg_nn hg_sum
   -- ↑(∑' g n : ℝ) = ↑(ENNReal.ofReal (∑' g n)) = ↑(∑' g' n)
@@ -362,18 +364,18 @@ lemma EReal.coe_tsum_of_nonneg {g : ℕ → ℝ} (hg_nn : ∀ n, 0 ≤ g n) (hg_
         exact (Summable.map_tsum (f := g') ENNReal.summable φ continuous_coe_ennreal_ereal).symm
   rw [h_lhs, h_rhs]
 
-/-- If all partial sums of a nonnegative EReal sequence are bounded by M, then the tsum is bounded by M.
-    This is a generalization of {name}`ENNReal.tsum_le_of_sum_range_le` to EReal. -/
+/-- Если все частичные суммы неотрицательной последовательности EReal ограничены M, то и tsum
+    ограничен M. Это обобщение {name}`ENNReal.tsum_le_of_sum_range_le` на EReal. -/
 lemma EReal.tsum_le_of_sum_range_le_of_nonneg {f : ℕ → EReal} {M : EReal}
-    (h_nn : ∀ n, 0 ≤ f n) (h : ∀ N : ℕ, ∑ n ∈ Finset.range N, f n ≤ M) : 
+    (h_nn : ∀ n, 0 ≤ f n) (h : ∀ N : ℕ, ∑ n ∈ Finset.range N, f n ≤ M) :
     ∑' n, f n ≤ M := by
-  -- Convert to ENNReal where tsum_le_of_sum_range_le is available
+  -- Переходим к ENNReal, где доступна tsum_le_of_sum_range_le
   let g : ℕ → ENNReal := fun n => (f n).toENNReal
-  -- Show f n = (g n : EReal) for nonneg f n
+  -- Показываем f n = (g n : EReal) при неотрицательном f n
   have hf_eq : ∀ n, f n = (g n : EReal) := fun n => by
     simp only [g]
     exact (EReal.coe_toENNReal (h_nn n)).symm
-  -- Rewrite tsum using term equality
+  -- Переписываем tsum, используя равенство слагаемых
   have h_tsum_eq : ∑' n, f n = (∑' n, g n : ENNReal).toEReal := by
     have h1 : ∑' n, f n = ∑' n, (g n : EReal) := tsum_congr hf_eq
     have h2 : ∑' n, (g n : EReal) = (∑' n, g n : ENNReal).toEReal := by
@@ -387,14 +389,14 @@ lemma EReal.tsum_le_of_sum_range_le_of_nonneg {f : ℕ → EReal} {M : EReal}
       exact h_map.symm
     exact h1.trans h2
   rw [h_tsum_eq]
-  -- If M = ⊤, trivially true
+  -- Если M = ⊤, утверждение тривиально
   by_cases hM : M = ⊤
   · rw [hM]; exact le_top
-  -- M ≥ 0 since it bounds nonneg partial sums
+  -- M ≥ 0, поскольку M ограничивает неотрицательные частичные суммы
   have hM_nn : 0 ≤ M := by
     have h0 : (∑ i ∈ Finset.range 0, f i) ≤ M := h 0
     simp at h0; exact h0
-  -- Get partial sum bounds in ENNReal
+  -- Получаем оценки частичных сумм в ENNReal
   have h_enn : ∀ N, ∑ i ∈ Finset.range N, g i ≤ M.toENNReal := by
     intro N
     have h_sum_eq : (∑ i ∈ Finset.range N, g i : ENNReal).toEReal = (∑ i ∈ Finset.range N, f i) := by
@@ -404,14 +406,14 @@ lemma EReal.tsum_le_of_sum_range_le_of_nonneg {f : ℕ → EReal} {M : EReal}
     rw [← EReal.coe_toENNReal hM_nn] at h_le
     exact EReal.coe_ennreal_le_coe_ennreal_iff.mp h_le
   have h_tsum_enn : ∑' n, g n ≤ M.toENNReal := ENNReal.tsum_le_of_sum_range_le h_enn
-  -- Convert back: ↑(∑' g) ≤ ↑(M.toENNReal) and M.toENNReal.toEReal = M (when 0 ≤ M)
+  -- Переходим обратно: ↑(∑' g) ≤ ↑(M.toENNReal), причём M.toENNReal.toEReal = M (при 0 ≤ M)
   have h_coe_le : (∑' n, g n : ENNReal).toEReal ≤ (M.toENNReal).toEReal :=
     EReal.coe_ennreal_le_coe_ennreal_iff.mpr h_tsum_enn
   calc (∑' n, g n : ENNReal).toEReal ≤ (M.toENNReal).toEReal := h_coe_le
     _ = M := EReal.coe_toENNReal hM_nn
 
-/-- If tsum in ENNReal equals ⊤, then tsum of coerced values in EReal equals ⊤.
-    Uses that ENNReal → EReal coercion is continuous and additive. -/
+/-- Если tsum в ENNReal равен ⊤, то и tsum приведённых значений в EReal равен ⊤.
+    Используется, что приведение ENNReal → EReal непрерывно и аддитивно. -/
 lemma EReal.tsum_coe_ennreal_eq_top_of_tsum_eq_top {α : Type*} {f : α → ENNReal}
     (h : ∑' i, f i = ⊤) : ∑' i, (f i : EReal) = ⊤ := by
   let φ : ENNReal →+ EReal := {
@@ -424,15 +426,15 @@ lemma EReal.tsum_coe_ennreal_eq_top_of_tsum_eq_top {α : Type*} {f : α → ENNR
   simp only [h] at h_map
   exact h_map.symm
 
-/-- Tsum of a positive constant over an infinite type is {lean (type := "EReal")}`⊤` in {name}`EReal` -/
-lemma EReal.tsum_const_eq_top_of_pos {α : Type*} [Infinite α] {c : EReal} (hc : 0 < c) : 
+/-- Tsum положительной константы по бесконечному типу равен {lean (type := "EReal")}`⊤` в {name}`EReal` -/
+lemma EReal.tsum_const_eq_top_of_pos {α : Type*} [Infinite α] {c : EReal} (hc : 0 < c) :
     ∑' (_ : α), c = ⊤ := by
   by_cases h_top : c = ⊤
-  · -- c = ⊤ : convert through ENNReal
+  · -- c = ⊤: переходим через ENNReal
     rw [h_top, ← EReal.coe_ennreal_top]
     apply EReal.tsum_coe_ennreal_eq_top_of_tsum_eq_top
     exact ENNReal.tsum_const_eq_top_of_ne_zero (by simp : (⊤ : ENNReal) ≠ 0)
-  · -- c is finite and positive
+  · -- c конечно и положительно
     have hc_nn : 0 ≤ c := le_of_lt hc
     have c_eq : c = ↑(c.toENNReal) := (EReal.coe_toENNReal hc_nn).symm
     rw [c_eq]
