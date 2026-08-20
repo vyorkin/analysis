@@ -1,15 +1,18 @@
 import Analysis.MeasureTheory.Section_1_4_2
 
 /-!
-# Introduction to Measure Theory, Section 1.4.3: Countably additive measures and measure spaces
+# Введение в теорию меры, раздел 1.4.3: Счётно-аддитивные меры и пространства с мерой
 
-A companion to (the introduction to) Section 1.4.3 of the book "An introduction to Measure Theory".
+Сопроводительный материал к (введению в) разделу 1.4.3 книги «An introduction to Measure Theory».
 
-Note: initially this section will use custom-notions of concrete sigma algebras and countably additive measures, but will transition to the Mathlib notions of {name}`Measurable` and {name}`MeasureTheory.Measure`, which will be in use going forward. In particular, exercises past this point will be easier
-to solve using the Mathlib library for measure theory than the custom results defined here.
+Примечание: изначально в этом разделе используются собственные понятия конкретных сигма-алгебр и
+счётно-аддитивных мер, но затем мы перейдём к понятиям {name}`Measurable` и
+{name}`MeasureTheory.Measure` из Mathlib, которыми и будем пользоваться в дальнейшем. В частности,
+упражнения после этого момента будет проще решать с помощью библиотеки Mathlib для теории меры, чем
+с помощью определённых здесь собственных результатов.
 -/
 
-/-- Definition 1.4.19 (Finitely additive measure) -/
+/-- Definition 1.4.19 (конечно-аддитивная мера) -/
 class FinitelyAdditiveMeasure {X : Type*} (B : ConcreteBooleanAlgebra X) where
   measure : Set X → EReal
   measure_pos : ∀ A : Set X, B.measurable A → 0 ≤ measure A
@@ -48,7 +51,7 @@ noncomputable def FinitelyAdditiveMeasure.elem (d : ℕ) : FinitelyAdditiveMeasu
 (FinitelyAdditiveMeasure.lebesgue d).restrict_alg (by sorry)
 
 open Classical in
-/-- Example 1.4.22 (Dirac measure) -/
+/-- Example 1.4.22 (мера Дирака) -/
 noncomputable def FinitelyAdditiveMeasure.dirac {X : Type*} (x₀ : X) (B : ConcreteBooleanAlgebra X) : FinitelyAdditiveMeasure B :=
   {
     measure := fun A => if x₀ ∈ A then 1 else 0
@@ -57,7 +60,7 @@ noncomputable def FinitelyAdditiveMeasure.dirac {X : Type*} (x₀ : X) (B : Conc
     measure_finite_additive := by sorry
   }
 
-/-- Example 1.4.23 (Zero measure) -/
+/-- Example 1.4.23 (нулевая мера) -/
 noncomputable instance FinitelyAdditiveMeasure.instZero {X : Type*} (B : ConcreteBooleanAlgebra X) : Zero (FinitelyAdditiveMeasure B) :=
   {
     zero := {
@@ -68,7 +71,7 @@ noncomputable instance FinitelyAdditiveMeasure.instZero {X : Type*} (B : Concret
     }
   }
 
-/-- Example 1.4.24 (linear combinations of measures) -/
+/-- Example 1.4.24 (линейные комбинации мер) -/
 noncomputable instance FinitelyAdditiveMeasure.instAdd {X : Type*} {B : ConcreteBooleanAlgebra X} : Add (FinitelyAdditiveMeasure B) :=
   {
     add := fun μ ν =>
@@ -108,7 +111,7 @@ noncomputable instance FinitelyAdditiveMeasure.instDistribMulAction {X : Type*} 
   mul_smul := by sorry
 }
 
-/-- Example 1.4.25 (Restriction of a measure) -/
+/-- Example 1.4.25 (сужение меры) -/
 def FinitelyAdditiveMeasure.restrict {X : Type*} {B : ConcreteBooleanAlgebra X} (μ : FinitelyAdditiveMeasure B) (A : Set X) (hA : B.measurable A) : FinitelyAdditiveMeasure (B.restrict A) :=
   {
     measure := fun E => μ.measure E
@@ -117,7 +120,7 @@ def FinitelyAdditiveMeasure.restrict {X : Type*} {B : ConcreteBooleanAlgebra X} 
     measure_finite_additive := by sorry
   }
 
-/-- Example 1.4.26 (Counting a measure) -/
+/-- Example 1.4.26 (считающая мера) -/
 noncomputable def FinitelyAdditiveMeasure.counting (X : Type*) : FinitelyAdditiveMeasure (⊤  : ConcreteBooleanAlgebra X) :=
   {
     measure := fun E => ENat.card E
@@ -147,7 +150,7 @@ open Classical in
 /-- Exercise 1.4.21 -/
 theorem FinitelyAdditiveMeasure.finite_atomic_eq {I X : Type*} [Fintype I] {atoms : I → Set X} (h_part : IsPartition atoms) (μ : FinitelyAdditiveMeasure h_part.to_ConcreteBooleanAlgebra) : ∃! c : I → ENNReal, ∀ E, h_part.to_ConcreteBooleanAlgebra.measurable E → μ.measure E = ∑ i ∈ Finset.univ.filter (fun i => atoms i ⊆ E), c i := by sorry
 
-/-- Definition 1.4.27 (Countably additive measure) -/
+/-- Definition 1.4.27 (счётно-аддитивная мера) -/
 class CountablyAdditiveMeasure {X : Type*} (B : ConcreteSigmaAlgebra X) extends FinitelyAdditiveMeasure B.toConcreteBooleanAlgebra where
   measure_countable_additive : ∀ (E : ℕ → Set X), (∀ n, B.measurable (E n)) → Set.univ.PairwiseDisjoint E →
     measure (⋃ n, E n) = ∑' n, (measure (E n))
@@ -178,11 +181,11 @@ def CountablyAdditiveMeasure.restrict_alg {X : Type*} {B B' : ConcreteSigmaAlgeb
     measure_countable_additive := by sorry
   }
 
-/-- Example 1.4.29 (Dirac measure) -/
+/-- Example 1.4.29 (мера Дирака) -/
 theorem FinitelyAdditiveMeasure.dirac_isCountablyAdditive {X : Type*} (x₀ : X) (B : ConcreteBooleanAlgebra X) (hB : B.isSigmaAlgebra) : (FinitelyAdditiveMeasure.dirac x₀ B).isCountablyAdditive :=
   by sorry
 
-/-- Example 1.4.29 (Counting measure) -/
+/-- Example 1.4.29 (считающая мера) -/
 theorem FinitelyAdditiveMeasure.counting_isCountablyAdditive {X : Type*} : (FinitelyAdditiveMeasure.counting X).isCountablyAdditive :=
   by sorry
 
@@ -292,16 +295,16 @@ theorem Measure.downwards_mono {X : Type*} [MeasurableSpace X] (μ : Measure X) 
 theorem Measure.downwards_mono_counter : ∃ (X : Type) (M : MeasurableSpace X) (μ : Measure X) (E : ℕ → Set X) (hE : ∀ n, Measurable (E n))
   (hmono : Antitone E), μ (⋂ n, E n) ≠ ⨅ n, μ.measureOf (E n) := by sorry
 
-/-- Exercise 1.4.24 (i) (Dominated convergence for sets) -/
+/-- Exercise 1.4.24 (i) (мажорированная сходимость для множеств) -/
 theorem Measure.measurable_of_lim {X : Type*} [MeasurableSpace X] (μ : Measure X) {E : ℕ → Set X} (hE : ∀ n, Measurable (E n))
   {E' : Set X} (hlim : PointwiseConvergesTo E E') : Measurable E' := by sorry
 
-/-- Exercise 1.4.24 (ii) (Dominated convergence for sets) -/
+/-- Exercise 1.4.24 (ii) (мажорированная сходимость для множеств) -/
 theorem Measure.measure_of_lim {X : Type*} [MeasurableSpace X] (μ : Measure X) {E : ℕ → Set X} (hE : ∀ n, Measurable (E n))
   {E' F : Set X} (hlim : PointwiseConvergesTo E E') (hF : Measurable F) (hfin : μ F < ⊤) (hcon : ∀ n, E n ⊆ F) : 
   Filter.atTop.Tendsto (fun n ↦ μ (E n)) (nhds (μ E')) := by sorry
 
-/-- Exercise 1.4.24 (iii) (Dominated convergence for sets) -/
+/-- Exercise 1.4.24 (iii) (мажорированная сходимость для множеств) -/
 theorem Measure.measure_of_lim_counter : ∃ (X : Type) (M : MeasurableSpace X) (μ : Measure X) (E : ℕ → Set X) (hE : ∀ n, Measurable (E n))
   (E' F : Set X) (hlim : PointwiseConvergesTo E E') (hF : Measurable F) (hcon : ∀ n, E n ⊆ F),
   ¬ Filter.atTop.Tendsto (fun n ↦ μ (E n)) (nhds (μ E')) := by sorry
@@ -317,7 +320,7 @@ theorem Measure.on_countable {X : Type*} [Countable X] [M : MeasurableSpace X] (
 
 #check Measure.completion
 
-/-- Exercise 1.4.26 (Completion) -/
+/-- Exercise 1.4.26 (пополнение) -/
 theorem Measure.completion_lt {X : Type*} [M : MeasurableSpace X] (μ : Measure X) (M' : MeasurableSpace X) (μ' : @Measure X M')
   (hcomplete : μ'.IsComplete) (hMM' : M ≤ M') (hμ : ∀ E, M.MeasurableSet' E → μ E = μ' E) : ∀ E : Set X, @NullMeasurableSet X M E μ → (M'.MeasurableSet' E ∧ μ' E = μ.completion E)
    := by sorry
@@ -332,10 +335,10 @@ def Measure.equiv {X : Type*} {M M' : MeasurableSpace X} (μ : @Measure X M) (μ
 theorem EuclideanSpace'.borel_completion_eq_lebesgue {d : ℕ} : 
   Measure.equiv (EuclideanSpace'.borelMeasure d).completion (EuclideanSpace'.lebesgueMeasure d) := by sorry
 
-/-- Exercise 1.4.28(i) (Approximation by an algebra) -/
+/-- Exercise 1.4.28(i) (приближение алгеброй) -/
 theorem BooleanAlgebra.approx_finite {X : Type*} {B : ConcreteBooleanAlgebra X} (μ : @Measure X (ConcreteSigmaAlgebra.generated_by B.measurableSets).measurableSpace) (hfin : μ Set.univ < ⊤) : ∀ (ε : ℝ) (hε : ε>0) (E : Set X) (hE : (ConcreteSigmaAlgebra.generated_by B.measurableSets).measurable E),
   ∃ F : Set X, B.measurable F ∧ μ (symmDiff E F) < ENNReal.ofReal ε := by sorry
 
-/-- Exercise 1.4.28(ii) (Approximation by an algebra) -/
+/-- Exercise 1.4.28(ii) (приближение алгеброй) -/
 theorem BooleanAlgebra.approx_sigma_finite {X : Type*} {B : ConcreteBooleanAlgebra X} (μ : @Measure X (ConcreteSigmaAlgebra.generated_by B.measurableSets).measurableSpace) (hσfin : ∃ A : ℕ → Set X, (∀ n, B.measurable (A n) ∧ μ (A n) < ⊤) ∧ ⋃ n, A n = ⊤) : ∀ (ε : ℝ) (hε : ε>0) (E : Set X) (hE : (ConcreteSigmaAlgebra.generated_by B.measurableSets).measurable E) (hEfin : μ E < ⊤),
   ∃ F : Set X, B.measurable F ∧ μ (symmDiff E F) < ENNReal.ofReal ε := by sorry

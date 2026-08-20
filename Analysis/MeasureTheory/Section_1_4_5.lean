@@ -1,8 +1,8 @@
 import Analysis.MeasureTheory.Section_1_4_4
 
 /-!
-# Introduction to Measure Theory, Section 1.4.5: The convergence theorems
+# Введение в теорию меры, раздел 1.4.5: Теоремы о сходимости
 
-A companion to (the introduction to) Section 1.4.5 of the book "An introduction to Measure Theory".
+Сопроводительный материал к (введению в) разделу 1.4.5 книги «An introduction to Measure Theory».
 
 -/

@@ -1,29 +1,42 @@
 import Mathlib.Tactic
 
 /-
-A informal proof of the theorem `singleton_law` is provided below, courtesy of Bruno Le Floch https://leanprover.zulipchat.com/#narrow/channel/458659-Equational/topic/Alternative.20proofs.20of.20E1689.E2.8A.A2E2/near/517189582.  Claude Code was used to formalize this proof using the following steps:
+Ниже приведено неформальное доказательство теоремы `singleton_law`, любезно предоставленное Bruno
+Le Floch: https://leanprover.zulipchat.com/#narrow/channel/458659-Equational/topic/Alternative.20proofs.20of.20E1689.E2.8A.A2E2/near/517189582.
+Для формализации этого доказательства использовался Claude Code, работавший по следующим шагам:
 
-Step 0: Formalize the `S` and `f` notation.
+Шаг 0: Формализовать нотацию `S` и `f`.
 
-Step 1: First make Lean formalizations of the *statements* of Lemma 1, Lemma 2 and Lemma 3, but leave the proofs as sorries.  Restructure the existing informal proof so that the statement and proof of each lemma is moved to be near the formal statement of that lemma, expressed as a comment.  Use the `S` and `f` notation as needed to align the formal statements with the informal statements.
+Шаг 1: Сначала сформулировать в Lean *утверждения* Леммы 1, Леммы 2 и Леммы 3, оставив
+доказательства в виде sorry. Реструктурировать имеющееся неформальное доказательство так, чтобы
+формулировка и доказательство каждой леммы были перенесены ближе к формальной формулировке этой
+леммы, выраженной в виде комментария. Использовать нотацию `S` и `f` там, где это нужно, чтобы
+формальные формулировки как можно ближе соответствовали неформальным.
 
-Step 2a: Create a high-level skeleton for the proof of Lemma 1 by expressing each step of the informal proof as an appropriate Lean statement with justifications given as a sorry (e.g., a step might become a `have` statement that is given by a sorry).  At this stage of the process, do *not* try to justify the entire proof, and accept each step of the informal proof is valid (other than fixing any minor typos or inaccuracies).  If there is a step which is confusing, replace it with an appropriate sorry and let me know what the issue is, rather than spend a lot of time trying to understand it.  Again, take advantage of the `S` and `f` notation as needed to make the formalization match the informal proof as closely as possible.
+Шаг 2a: Создать высокоуровневый скелет доказательства Леммы 1, выразив каждый шаг неформального
+доказательства как соответствующее утверждение Lean с обоснованием в виде sorry (например, шаг
+может стать утверждением `have`, обоснованным через sorry). На этом этапе *не* пытаться обосновать
+всё доказательство целиком — считать каждый шаг неформального доказательства верным (за исключением
+исправления мелких опечаток и неточностей). Если какой-то шаг непонятен, заменить его подходящим
+sorry и сообщить о возникшей проблеме, вместо того чтобы тратить много времени на его понимание.
+И снова использовать нотацию `S` и `f` там, где это нужно, чтобы формализация как можно ближе
+соответствовала неформальному доказательству.
 
-Step 2b: Assuming no major issues were encountered in Step 2a, fill in all the sorries in the proof of Lemma 1.
+Шаг 2b: Если на шаге 2a не возникло серьёзных проблем, заполнить все sorry в доказательстве Леммы 1.
 
-Step 3a: Repeat Step 2a for the proof of Lemma 2.
+Шаг 3a: Повторить шаг 2a для доказательства Леммы 2.
 
-Step 3b: Repeat Step 2b for the proof of Lemma 2.
+Шаг 3b: Повторить шаг 2b для доказательства Леммы 2.
 
-Step 4a: Repeat Step 2a for the proof of Lemma 3.
+Шаг 4a: Повторить шаг 2a для доказательства Леммы 3.
 
-Step 4b: Repeat Step 2b for the proof of Lemma 3.
+Шаг 4b: Повторить шаг 2b для доказательства Леммы 3.
 
-Step 5a: Repeat Step 2a for the final part of the proof of `singleton_law` after Lemma 3.
+Шаг 5a: Повторить шаг 2a для заключительной части доказательства `singleton_law` после Леммы 3.
 
-Step 5b: Repeat Step 2b for the final part of the proof of `singleton_law` after Lemma 3.
+Шаг 5b: Повторить шаг 2b для заключительной части доказательства `singleton_law` после Леммы 3.
 
-Some manual golfing was performed afterwards.
+После этого была проведена небольшая ручная доработка (golfing).
 -/
 
 
@@ -38,57 +51,57 @@ abbrev Equation2 (M : Type _) [Magma M] := ∀ x y : M, x = y
 
 variable {M : Type _} [Magma M]
 
--- Step 0: S and f notation
--- S z x = (x ◇ z) ◇ z  (written S_z(x) in the informal proof)
+-- Шаг 0: нотация S и f
+-- S z x = (x ◇ z) ◇ z  (в неформальном доказательстве обозначено как S_z(x))
 abbrev S (z x : M) : M := (x ◇ z) ◇ z
 
--- f x y = x ◇ S y x = x ◇ ((x ◇ y) ◇ y)  (written f(x,y) in the informal proof)
+-- f x y = x ◇ S y x = x ◇ ((x ◇ y) ◇ y)  (в неформальном доказательстве обозначено как f(x,y))
 abbrev f (x y : M) : M := x ◇ S y x
 
 /-
-The main equation (Equation1689) is: x = (y ◇ x) ◇ S z x, i.e., x = (y ◇ x) ◇ S z x.
-We denote S_z(x) = S z x = (x ◇ z) ◇ z and f(x,y) = f x y = x ◇ S y x = x ◇ ((x ◇ y) ◇ y).
+Основное уравнение (Equation1689): x = (y ◇ x) ◇ S z x, то есть x = (y ◇ x) ◇ S z x.
+Обозначаем S_z(x) = S z x = (x ◇ z) ◇ z и f(x,y) = f x y = x ◇ S y x = x ◇ ((x ◇ y) ◇ y).
 -/
 
--- Auxiliary lemma used in Lemma 1 and Lemma 2:
--- S b a lies in the left ideal of a, i.e., S b a = a ◇ S z (S b a) for any z.
+-- Вспомогательная лемма, используемая в Лемме 1 и Лемме 2:
+-- S b a лежит в левом идеале a, то есть S b a = a ◇ S z (S b a) для любого z.
 lemma S_left_ideal (h : Equation1689 M) (a b z : M) : S b a = a ◇ S z (S b a) := by
   have step := h ((a ◇ b) ◇ b) (a ◇ a) z
   grind
 
 /-
-**Lemma 1:** For any a, b, c, one has S_b(a) = a ◇ f(b,c),  i.e., S b a = a ◇ f b c.
+**Лемма 1:** Для любых a, b, c верно S_b(a) = a ◇ f(b,c), то есть S b a = a ◇ f b c.
 
-*Proof:* For x = S b a and y ∈ Ma we have y ◇ x = a.  Then apply the main equation to these
-values of x, y to get
+*Доказательство:* Для x = S b a и y ∈ Ma имеем y ◇ x = a. Применяя основное уравнение к этим
+значениям x, y, получаем
   S b a = a ◇ S z (S b a).
-Then set z = S c b and note that (S b a) ◇ z = ((a ◇ b) ◇ b) ◇ ((b ◇ c) ◇ c) = b to simplify
-the right-hand side above and get, as announced,
+Затем полагаем z = S c b и замечаем, что (S b a) ◇ z = ((a ◇ b) ◇ b) ◇ ((b ◇ c) ◇ c) = b, чтобы
+упростить правую часть выше и получить, как и было анонсировано,
   S b a = a ◇ ((S b a ◇ z) ◇ z) = a ◇ (b ◇ z) = a ◇ f b c.
 -/
 lemma lemma1 (h : Equation1689 M) (a b c : M) : S b a = a ◇ f b c := by
   have h1 : ∀ z : M, S b a = a ◇ S z (S b a) := S_left_ideal h a b
-  -- The main equation with x = b, y = a ◇ b, z = c gives b = ((a◇b)◇b) ◇ ((b◇c)◇c) = S b a ◇ S c b.
+  -- Основное уравнение при x = b, y = a ◇ b, z = c даёт b = ((a◇b)◇b) ◇ ((b◇c)◇c) = S b a ◇ S c b.
   have h2 : S b a ◇ S c b = b := (h b (a ◇ b) c).symm
-  -- Therefore S (S c b) (S b a) = (S b a ◇ S c b) ◇ S c b = b ◇ S c b = f b c.
+  -- Следовательно, S (S c b) (S b a) = (S b a ◇ S c b) ◇ S c b = b ◇ S c b = f b c.
   have h3 : S (S c b) (S b a) = f b c := by grind
-  -- Combine: S b a = a ◇ S (S c b) (S b a) = a ◇ f b c.
+  -- Объединяя: S b a = a ◇ S (S c b) (S b a) = a ◇ f b c.
   calc S b a = a ◇ S (S c b) (S b a) := h1 (S c b)
     _ = a ◇ f b c := by rw [h3]
 
 /-
-**Lemma 2:** For all a there exist b, c, d such that f(b,c) = S_d(a),  i.e., f b c = S d a.
+**Лемма 2:** Для любого a существуют b, c, d, такие что f(b,c) = S_d(a), то есть f b c = S d a.
 
-*Proof:* By definition of f one has f b c = b ◇ S c b.  Taking b = S x a for some x, and
-rewriting b = a ◇ S c b using the first equation in the proof of Lemma 1, we find
+*Доказательство:* По определению f имеем f b c = b ◇ S c b. Взяв b = S x a для некоторого x
+и переписав b = a ◇ S c b с помощью первого уравнения из доказательства Леммы 1, находим
   f b c = (a ◇ S c b) ◇ S c b,
-which has the desired form for d = S c b.  (Thus, the statement actually holds for all a, c.)
+что имеет нужный вид при d = S c b.  (Таким образом, утверждение на самом деле верно для всех a, c.)
 -/
 lemma lemma2 (h : Equation1689 M) (a : M) : ∃ b c d : M, f b c = S d a := by
-  -- Take b := S a a (= S_a(a)), c := a, d := S a (S a a) (= S c b).
-  -- The proof works for all a, c; any x works for b = S x a.
+  -- Берём b := S a a (= S_a(a)), c := a, d := S a (S a a) (= S c b).
+  -- Доказательство работает для всех a, c; для b = S x a подходит любой x.
   use S a a, a, S a (S a a)
-  -- From the same argument as the first equation in the proof of Lemma 1 (with b := a, z := a):
+  -- По тому же рассуждению, что и первое уравнение в доказательстве Леммы 1 (с b := a, z := a):
   --   b = S a a = a ◇ S a (S a a) = a ◇ S c b.
   have hb : S a a = a ◇ S a (S a a) := S_left_ideal h a a a
   -- f b c = b ◇ S c b = (a ◇ S c b) ◇ S c b = S (S c b) a = S d a.
@@ -98,32 +111,32 @@ lemma lemma2 (h : Equation1689 M) (a : M) : ∃ b c d : M, f b c = S d a := by
     _ = S (S a (S a a)) a                := rfl
 
 /-
-**Lemma 3:** For all a there exists e such that S_e(a) = a,  i.e., S e a = a.
+**Лемма 3:** Для любого a существует e, такое что S_e(a) = a, то есть S e a = a.
 
-*Proof:* Left-multiply the equation in Lemma 1 by a³ = (a ◇ a) ◇ a to get (the first equality
-below comes from the main equation)
+*Доказательство:* Домножим уравнение из Леммы 1 слева на a³ = (a ◇ a) ◇ a, чтобы получить
+(первое равенство ниже следует из основного уравнения)
   a = ((a ◇ a) ◇ a) ◇ S b a = a³ ◇ (a ◇ f b c).
-Take b, c, d as in Lemma 2 to rewrite a ◇ f b c = a ◇ S d a = f a d.  On the other hand,
-Lemma 1 with a = b and c replaced by d implies a³ = a ◇ f a d, so overall we get
+Возьмём b, c, d, как в Лемме 2, чтобы переписать a ◇ f b c = a ◇ S d a = f a d. С другой стороны,
+Лемма 1 при a = b и c, заменённом на d, даёт a³ = a ◇ f a d, так что в итоге получаем
   a = (a ◇ f a d) ◇ f a d,
-which is as desired for e = f a d.
+что и требовалось при e = f a d.
 -/
 lemma lemma3 (h : Equation1689 M) (a : M) : ∃ e : M, S e a = a := by
-  -- Get b, c, d from Lemma 2, so that f b c = S d a.
+  -- Берём b, c, d из Леммы 2, так что f b c = S d a.
   obtain ⟨b, c, d, hd⟩ := lemma2 h a
-  -- Take e := f a d.
+  -- Берём e := f a d.
   use f a d
-  -- The main equation with x = a, y = a ◇ a, z = b gives a = ((a ◇ a) ◇ a) ◇ S b a.
+  -- Основное уравнение при x = a, y = a ◇ a, z = b даёт a = ((a ◇ a) ◇ a) ◇ S b a.
   have h_main : a = ((a ◇ a) ◇ a) ◇ S b a := by grind
-  -- Lemma 1 gives S b a = a ◇ f b c, so a = ((a ◇ a) ◇ a) ◇ (a ◇ f b c).
+  -- Лемма 1 даёт S b a = a ◇ f b c, так что a = ((a ◇ a) ◇ a) ◇ (a ◇ f b c).
   have h_step2 : a = ((a ◇ a) ◇ a) ◇ (a ◇ f b c) :=
     h_main.trans (by rw [lemma1 h a b c])
-  -- Since f b c = S d a by hd, a ◇ f b c = a ◇ S d a = f a d.
+  -- Поскольку f b c = S d a по hd, то a ◇ f b c = a ◇ S d a = f a d.
   have h_step3 : a ◇ f b c = f a d := by grind
-  -- Lemma 1 with b←a, c←d gives S a a = a ◇ f a d, i.e., (a ◇ a) ◇ a = a ◇ f a d.
+  -- Лемма 1 при b←a, c←d даёт S a a = a ◇ f a d, то есть (a ◇ a) ◇ a = a ◇ f a d.
   have h_step4 : (a ◇ a) ◇ a = a ◇ f a d := by
     simpa using lemma1 h a a d
-  -- Combine: S(f a d) a = (a ◇ f a d) ◇ f a d = ((a ◇ a) ◇ a) ◇ f a d
+  -- Объединяя: S(f a d) a = (a ◇ f a d) ◇ f a d = ((a ◇ a) ◇ a) ◇ f a d
   --        = ((a ◇ a) ◇ a) ◇ (a ◇ f b c) = ((a ◇ a) ◇ a) ◇ S b a = a.
   calc S (f a d) a
       = (a ◇ f a d) ◇ f a d          := rfl
@@ -133,31 +146,31 @@ lemma lemma3 (h : Equation1689 M) (a : M) : ∃ e : M, S e a = a := by
     _ = a                            := h_main.symm
 
 /-
-*End of the proof:* For any a, y, using e from Lemma 3, the main equation gives
+*Завершение доказательства:* Для любых a, y, используя e из Леммы 3, основное уравнение даёт
   a = (y ◇ a) ◇ S e a = (y ◇ a) ◇ a = S a y.
-Inserting this back into the main equation gives (z ◇ y) ◇ a = y for any a, y, z.
-Thus a ◇ b = ((d ◇ a) ◇ c) ◇ b = c for any a, b, c, d, thus a = b ◇ c = d for any a, b, c, d.
+Подставляя это обратно в основное уравнение, получаем (z ◇ y) ◇ a = y для любых a, y, z.
+Значит, a ◇ b = ((d ◇ a) ◇ c) ◇ b = c для любых a, b, c, d, а тогда a = b ◇ c = d для любых a, b, c, d.
 -/
 theorem singleton_law (h : Equation1689 M) : Equation2 M := by
-  -- Step 1: S a b = a for all a, b.
-  -- Lemma 3 gives e with S e a = a; main eq (x=a, z=e) gives a = (y ◇ a) ◇ S e a = (y ◇ a) ◇ a = S a y.
+  -- Шаг 1: S a b = a для всех a, b.
+  -- Лемма 3 даёт e с S e a = a; основное уравнение (x=a, z=e) даёт a = (y ◇ a) ◇ S e a = (y ◇ a) ◇ a = S a y.
   have hS : ∀ a b : M, S a b = a := by
     intro a b
     obtain ⟨e, he⟩ := lemma3 h a
     grind
-  -- Step 2: (a ◇ b) ◇ c = b for all a, b, c.
-  -- Main eq (x=b, y=a, z=c) gives b = (a ◇ b) ◇ S c b = (a ◇ b) ◇ c by hS.
+  -- Шаг 2: (a ◇ b) ◇ c = b для всех a, b, c.
+  -- Основное уравнение (x=b, y=a, z=c) даёт b = (a ◇ b) ◇ S c b = (a ◇ b) ◇ c по hS.
   have hrel : ∀ a b c : M, (a ◇ b) ◇ c = b := by
     intro a b c
     have step := h b a c
     grind
-  -- Step 3: a ◇ b = c for all a, b, c.
-  -- From hrel: (d ◇ a) ◇ c = a, so a ◇ b = ((d ◇ a) ◇ c) ◇ b = c by hrel.
+  -- Шаг 3: a ◇ b = c для всех a, b, c.
+  -- Из hrel: (d ◇ a) ◇ c = a, поэтому a ◇ b = ((d ◇ a) ◇ c) ◇ b = c по hrel.
   have hconst : ∀ a b c : M, a ◇ b = c := by
     intro a b c
     have h1 : (a ◇ a) ◇ c = a := hrel a a c
     have h2 : ((a ◇ a) ◇ c) ◇ b = c := hrel (a ◇ a) c b
     grind
-  -- Conclude: x = x ◇ x = y.
+  -- Заключаем: x = x ◇ x = y.
   intro x y
   exact (hconst x x x).symm.trans (hconst x x y)

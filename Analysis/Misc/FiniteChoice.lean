@@ -1,6 +1,6 @@
 import Mathlib.Tactic
 
-/-! An implementation of finite choice, see https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Theorem.20for.20.22finite.20choice.22.3F/with/529925010 -/
+/-! Реализация конечного выбора, см. https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Theorem.20for.20.22finite.20choice.22.3F/with/529925010 -/
 
 theorem finite_choice {X : Type*} {f : X → ℕ} {N : ℕ} (h : ∀ n < N, ∃ x, f x = n) : 
   ∃ g : Fin N → X, ∀ n, f (g n) = n := by
@@ -32,7 +32,7 @@ lemma sec_ex {α β : Type*} [Fintype β] [DecidableEq β] (f : α → β) (h : 
   ext b; specialize hg (e b)
   simpa only [Function.comp_apply, id_eq, Fin.val_inj, EmbeddingLike.apply_eq_iff_eq, F] using hg
 
-/-- Variants of the above that use {name}`Trunc` in place of {kw (of := Lean.«term∃__,_»)}`∃`.  Roughly speaking, this means that if the hypotheses are constructive, we can guarantee that the conclusion is constructive. -/
+/-- Варианты приведённого выше, использующие {name}`Trunc` вместо {kw (of := Lean.«term∃__,_»)}`∃`.  Грубо говоря, это означает, что если гипотезы конструктивны, то можно гарантировать конструктивность заключения. -/
 
 def finite_choice_trunc {X : Type*} {f : X → ℕ} {N : ℕ} (h : ∀ n < N, Trunc {x // f x = n}) : 
   Trunc {g : Fin N → X // ∀ n, f (g n) = n} := by

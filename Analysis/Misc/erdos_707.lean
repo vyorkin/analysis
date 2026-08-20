@@ -1,8 +1,11 @@
 import Mathlib
 
-/-! Formalizing a proof (the prime case of) Erdos problem \#707 recently proven by Alexeev, ChatGPT, Lean, and Mixon at https://borisalexeev.com/papers/erdos707.html, following Theorem 8 proven on page 5 -/
+/-! Формализация доказательства (случая простого числа) проблемы Эрдёша \#707, недавно доказанной
+Alexeev, ChatGPT, Lean и Mixon по адресу https://borisalexeev.com/papers/erdos707.html, следуя
+Теореме 8, доказанной на странице 5 -/
 
-/-- A perfect difference set is a set where every nonzero element is uniquely representable as a difference of two elements of the set. -/
+/-- Совершенное разностное множество — это множество, в котором каждый ненулевой элемент однозначно
+представим как разность двух элементов этого множества. -/
 def IsPerfectDifferenceSet {N : ℕ} (B : Finset (ZMod N)) := ∀ d : ZMod N, d ≠ 0 → ∃! b : B × B, b.1.val - b.2.val = d
 
 def IsPerfectDifferenceSet.map {N : ℕ} (B : Finset (ZMod N)) (p : (B × B) ⊕ Unit) : ZMod N ⊕ B := match p with
@@ -36,7 +39,8 @@ lemma IsPerfectDifferenceSet.card {N : ℕ} [NeZero N] {B : Finset (ZMod N)} (hd
 
 namespace Mainstep
 
-/-- We will show that the following hypotheses are inconsistent; this is the bulk of the proof of Theorem 8. -/
+/-- Мы покажем, что следующие гипотезы противоречивы; это и составляет основную часть доказательства
+Теоремы 8. -/
 class Hypotheses where
   p : ℕ
   hp : Nat.Prime p
@@ -131,16 +135,17 @@ lemma diff_uniq {a b c d : B} (ha : a ≠ b) (hsub : a.val-b.val = c.val-d.val) 
 
 /--
 {given -show}`b, c, d`
-Given a perfect difference set {name}`B` and an element {name}`a` not in {name}`B`, the function
-{lean}`f (a := a)` maps each {lean}`b ∈ B` to the unique {lean}`c ∈ B` such that {lean}`a - b = c -
-d` for some {lean}`d ∈ B`.
+Для совершенного разностного множества {name}`B` и элемента {name}`a`, не входящего в {name}`B`,
+функция {lean}`f (a := a)` отображает каждый {lean}`b ∈ B` в единственный {lean}`c ∈ B`, такой что
+{lean}`a - b = c - d` для некоторого {lean}`d ∈ B`.
 -/
 noncomputable def f {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
     (hdiff (a-b.val) (by grind)).choose.1
 
 /--
 {given -show}`d`
-Though not defined in Theorem 8, it is convenient to also introduce the companion function {lean}`g (a := a)`, defined to be the {name}`d` element such that {lean}`a - b = f (a := a) ha b - d`.
+Хотя в Теореме 8 она и не определена, удобно также ввести сопутствующую функцию {lean}`g (a := a)`,
+определённую как элемент {name}`d`, такой что {lean}`a - b = f (a := a) ha b - d`.
 -/
 noncomputable def g {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
     (hdiff (a-b.val) (by grind)).choose.2
@@ -158,7 +163,7 @@ lemma f_def' {a : ZMod N} (ha : a ∉ B) (b c d : B) : a - b = c - d ↔ c = f h
   rintro ⟨ rfl, rfl ⟩
   exact f_def ha b
 
-/-- {lean}`f (a := a)` is an involution. -/
+/-- {lean}`f (a := a)` — это инволюция. -/
 lemma f_inv {a : ZMod N} (ha : a ∉ B) : Function.Involutive (f ha) := by
   intro b
   have h1 := f_def ha b
@@ -166,7 +171,7 @@ lemma f_inv {a : ZMod N} (ha : a ∉ B) : Function.Involutive (f ha) := by
   rw [f_def' ha] at h1
   rw [←h1.1]
 
-/-- Fixed points of {lean}`f (a := a)` satisfy {lean}`2 * f ha b = a + g ha b`. -/
+/-- Неподвижные точки {lean}`f (a := a)` удовлетворяют {lean}`2 * f ha b = a + g ha b`. -/
 lemma f_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : 2 * b.val = a + (g ha b).val := by
   have := f_def ha b
   grind
@@ -183,7 +188,7 @@ lemma f_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : 2 * b.val 
     fin_cases i <;> fin_cases j <;> dsimp only <;> first | rfl | exact (f_inv ha b).symm
 }
 
-/-- If there is one fixed point, there is another. -/
+/-- Если есть одна неподвижная точка, то есть и другая. -/
 lemma f_second_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : ∃ c : B, c ≠ b ∧ f ha c = c := by
   let action := z2_vact ha
   classical

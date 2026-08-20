@@ -2,26 +2,27 @@ import Mathlib.Data.Nat.BitIndices
 import Mathlib.Combinatorics.Colex
 
 /-!
-# Additional lemmas for natural number bit operations
+# Дополнительные леммы для битовых операций над натуральными числами
 
-This file contains general-purpose lemmas about {name}`Nat.testBit`, {name}`Nat.bitIndices`,
-and sums of powers of 2 that are used throughout the formalization.
+Этот файл содержит общие леммы про {name}`Nat.testBit`, {name}`Nat.bitIndices` и суммы степеней
+двойки, используемые на протяжении всей формализации.
 
-## Main results
+## Основные результаты
 
 * {given -show}`n : ℕ, i : ℕ` `Nat.testBit_iff_mem_bitIndices`: {lean}`n.testBit i = true ↔ i ∈ n.bitIndices`
-* {given -show}`j` `Nat.testBit_finset_sum_pow_two`: For a finset {given}`s` of natural numbers,
+* {given -show}`j` `Nat.testBit_finset_sum_pow_two`: для finset {given}`s` натуральных чисел
   {lean}`(∑ i ∈ s, 2^i).testBit j ↔ j ∈ s`
-* {given -show}`k` `Nat.testBit_sum_pow_two_fin`: Same for {lean}`Finset (Fin k)`
+* {given -show}`k` `Nat.testBit_sum_pow_two_fin`: то же самое для {lean}`Finset (Fin k)`
 
-These lemmas connect the bit representation of natural numbers with finset membership,
-which is fundamental for binary encoding arguments.
+Эти леммы связывают битовое представление натуральных чисел с принадлежностью finset, что
+является фундаментальным для аргументов, использующих двоичное кодирование.
 -/
 
 namespace Nat
 
-/-- {lean}`n.testBit i = true` if and only if {name}`i` appears in {lean}`n.bitIndices`.
-    This connects the pointwise bit test with the list of set bit positions. -/
+/-- {lean}`n.testBit i = true` тогда и только тогда, когда {name}`i` встречается в
+    {lean}`n.bitIndices`. Это связывает поразрядную проверку бита со списком позиций
+    установленных битов. -/
 lemma testBit_iff_mem_bitIndices (n i : ℕ) : 
     n.testBit i = true ↔ i ∈ n.bitIndices := by
   constructor
@@ -58,8 +59,8 @@ lemma testBit_iff_mem_bitIndices (n i : ℕ) :
         · rw [Nat.testBit_bit_succ]
           exact ih _ hj
 
-/-- {name}`Nat.testBit` of a sum of distinct powers of 2 equals membership in the index set.
-    For a finset {name}`s` of natural numbers,
+/-- {name}`Nat.testBit` суммы различных степеней двойки равносильна принадлежности множеству
+    индексов. Для finset {name}`s` натуральных чисел
     {given -show}`j` {lean}`(∑ i ∈ s, 2^i).testBit j = true ↔ j ∈ s`. -/
 lemma testBit_finset_sum_pow_two {s : Finset ℕ} {i : ℕ} : 
     (s.sum (2^·)).testBit i = true ↔ i ∈ s := by
@@ -75,8 +76,9 @@ lemma testBit_finset_sum_pow_two {s : Finset ℕ} {i : ℕ} :
       exact h
     exact List.mem_toFinset.mp this
 
-/-- {name}`Nat.testBit` of a sum of {lean (type := "ℕ")}`2^j.val` over {lean}`Finset (Fin k)` equals membership.
-    This is the {name}`Fin`-indexed version of {name}`Nat.testBit_finset_sum_pow_two`. -/
+/-- {name}`Nat.testBit` суммы {lean (type := "ℕ")}`2^j.val` по {lean}`Finset (Fin k)` равносильна
+    принадлежности множеству. Это версия {name}`Nat.testBit_finset_sum_pow_two`, индексированная
+    типом {name}`Fin`. -/
 lemma testBit_sum_pow_two_fin {k : ℕ} {s : Finset (Fin k)} (j : Fin k) : 
     (s.sum fun i => (2 : ℕ)^i.val).testBit j.val ↔ j ∈ s := by
   have h : s.sum (fun i => (2 : ℕ)^i.val) = (s.image (·.val)).sum (2^·) := by

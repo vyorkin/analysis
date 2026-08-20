@@ -4,12 +4,12 @@ open Classical
 open scoped BigOperators
 
 
--- 1. Define the main claim
+-- 1. Формулировка основного утверждения
 
-/-- “Color-{name}`col` monochromatic star of size {name}`k`”: there is a center {given}`x` and a set
-    {given (type := "Finset V")}`S` of {name}`k` distinct neighbors of {name}`x` such that every
-    edge {given -show}`y` {lean}`s(x, y)` with {lean}`y ∈ S` is present in {lean}`G` and colored
-    {name}`col`.  (No restriction on edges inside {name}`S`.) -/
+/-- «Монохроматическая звезда цвета {name}`col` размера {name}`k`»: существует центр {given}`x` и
+    множество {given (type := "Finset V")}`S` из {name}`k` различных соседей {given}`x`, таких что
+    каждое ребро {given -show}`y` {lean}`s(x, y)` с {lean}`y ∈ S` присутствует в {lean}`G` и
+    покрашено в цвет {name}`col`.  (Никаких ограничений на рёбра внутри {name}`S` не накладывается.) -/
 def hasMonoStar {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
     (col : Fin 2) (k : ℕ) : Prop :=
   ∃ (x : V) (S : Finset V),
@@ -19,8 +19,9 @@ def hasMonoStar {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
 
 /--
 {given -show}`a, b, c : V`
-“Color-{name}`col` monochromatic triangle”: there exist {name}`a`, {name}`b`, {name}`c` with all three edges
-present in {lean}`G` and colored {name}`col`.  (Adjacency already forces distinctness.)
+«Монохроматический треугольник цвета {name}`col`»: существуют {name}`a`, {name}`b`, {name}`c`, такие
+что все три ребра присутствуют в {lean}`G` и покрашены в цвет {name}`col`.  (Отношение смежности уже
+гарантирует их попарную различность.)
 -/
 def hasMonoTriangle {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
     (col : Fin 2) : Prop :=
@@ -30,13 +31,13 @@ def hasMonoTriangle {V : Type*} (G : SimpleGraph V) (color : Sym2 V → Fin 2)
     color (s(b, c)) = col ∧
     color (s(a, c)) = col
 
-/-- **Statement (n = 5 case of Pikhurko’s counterexample).**
-There exists a simple graph on {lean}`16` vertices with exactly {lean}`44` edges such that
-for *every* 2‑coloring of unordered pairs, either color {lean (type := "Fin 2")}`0` contains a $`K_{1,5}`
-(a 5‑edge star) or color {lean (type := "Fin 2")}`1` contains a $`K₃` (a triangle).
+/-- **Утверждение (случай n = 5 контрпримера Пихурко).**
+Существует простой граф на {lean}`16` вершинах ровно с {lean}`44` рёбрами, такой что для *любой*
+2-раскраски неупорядоченных пар либо цвет {lean (type := "Fin 2")}`0` содержит $`K_{1,5}`
+(звезду с 5 рёбрами), либо цвет {lean (type := "Fin 2")}`1` содержит $`K₃` (треугольник).
 
-This only *states* the claim (as a {lean}`Prop`).  You can later prove it from the
-explicit construction, or assume it as an axiom while you develop the rest. -/
+Здесь утверждение только *формулируется* (как {lean}`Prop`). Доказать его можно позже из явной
+конструкции, либо пока принять как аксиому, продолжая разработку остального. -/
 def Pikhurko_n5_statement : Prop :=
   ∃ (V : Type) (G : SimpleGraph V),
     G.edgeSet.ncard = 44 ∧
@@ -44,28 +45,28 @@ def Pikhurko_n5_statement : Prop :=
       hasMonoStar G color 0 5 ∨ hasMonoTriangle G color 1
 
 
--- 2. Construct the graph
+-- 2. Построение графа
 
 namespace PikhurkoN5
 
-/-- Vertex type with 2 + 5 + 3 + 5 + 1 = 16 vertices. -/
+/-- Тип вершин с 2 + 5 + 3 + 5 + 1 = 16 вершинами. -/
 inductive V
-| A1 (i : Fin 2)  -- the K₂ part of P_{2,5}
-| B1 (j : Fin 5)  -- the independent part of P_{2,5}
-| A2 (i : Fin 3)  -- the K₃ part of P_{3,5}
-| B2 (j : Fin 5)  -- the independent part of P_{3,5}
-| apex            -- the universal vertex
+| A1 (i : Fin 2)  -- часть K₂ графа P_{2,5}
+| B1 (j : Fin 5)  -- независимая часть P_{2,5}
+| A2 (i : Fin 3)  -- часть K₃ графа P_{3,5}
+| B2 (j : Fin 5)  -- независимая часть P_{3,5}
+| apex            -- универсальная вершина
 deriving DecidableEq, Repr
 
 open V
 
-/-- Adjacency relation for the Pikhurko n=5 counterexample.
+/-- Отношение смежности для контрпримера Пихурко при n=5.
 
-* Inside {name}`A1` and inside {name}`A2`: cliques.
-* Between {name}`A1`–{name}`B1` and {name}`A2`–{name}`B2`: complete bipartite.
-* Inside {name}`B1` and {name}`B2`: no edges.
-* No edges between the two blocks {name}`A1`/{name}`B1` and {name}`A2`/{name}`B2`.
-* {name}`apex` is connected to every non-{name}`apex` vertex. -/
+* Внутри {name}`A1` и внутри {name}`A2`: клики.
+* Между {name}`A1`–{name}`B1` и {name}`A2`–{name}`B2`: полный двудольный граф.
+* Внутри {name}`B1` и {name}`B2`: рёбер нет.
+* Между двумя блоками {name}`A1`/{name}`B1` и {name}`A2`/{name}`B2` рёбер нет.
+* {name}`apex` соединена рёбрами со всеми вершинами, кроме {name}`apex`. -/
 def GAdj : V → V → Prop
 | apex, apex => False
 | apex, _    => True
@@ -78,7 +79,7 @@ def GAdj : V → V → Prop
 | B2 _, A2 _ => True
 | _,    _    => False
 
-/-- The graph {name}`G` on 16 vertices used for the n=5 counterexample. -/
+/-- Граф {name}`G` на 16 вершинах, используемый для контрпримера при n=5. -/
 def G : SimpleGraph V where
   Adj := GAdj
   symm := by
@@ -87,8 +88,8 @@ def G : SimpleGraph V where
   loopless := ⟨by intro v; cases v <;> simp [GAdj]⟩
 
 /-!
-Convenience simp lemmas. These are optional but help when you start proving
-properties about colorings later on.
+Вспомогательные simp-леммы. Они не обязательны, но пригодятся позже при доказательстве
+свойств раскрасок.
 -/
 @[simp] lemma adj_apex_left {v : V} : G.Adj V.apex v ↔ v ≠ V.apex := by
   cases v <;> simp [G, GAdj]
@@ -138,16 +139,16 @@ properties about colorings later on.
 end PikhurkoN5
 
 
--- 3.  Count edges
+-- 3. Подсчёт рёбер
 
 namespace PikhurkoN5
 
 open V
 
-/- We’ll need `Fintype` on `V` for `univ`, sums, etc. -/
+/- Нам понадобится `Fintype` на `V` для `univ`, сумм и т.д. -/
 deriving instance Fintype for V
 
-/-- An explicit equivalence showing {name}`V` has 2+5+3+5+1 = 16 elements. -/
+/-- Явная эквивалентность, показывающая, что {name}`V` состоит из 2+5+3+5+1 = 16 элементов. -/
 def VEquiv : 
     V ≃ ((((Fin 2 ⊕ Fin 5) ⊕ Fin 3) ⊕ Fin 5) ⊕ Unit) where
   toFun
@@ -165,27 +166,27 @@ def VEquiv :
   left_inv v := by cases v <;> grind
   right_inv w := by cases w <;> grind
 
-/-- $`|V| = 16`. Useful for quick cardinality arithmetic. -/
+/-- $`|V| = 16`. Полезно для быстрой арифметики с мощностями. -/
 lemma card_V : Fintype.card V = 16 := by
-  -- Reduce to the nested-sum cardinality and compute arithmetically.
+  -- Сводим к мощности вложенной суммы и вычисляем арифметически.
   simpa using
     (Fintype.card_congr VEquiv).trans <|
       by
-        -- `simp` turns cardinals of sums into sums of cardinals; `norm_num` does the rest.
+        -- `simp` превращает мощности сумм в суммы мощностей; остальное делает `norm_num`.
         simp [Fintype.card_sum, Fintype.card_fin]
 
-/-! # Degree computations
+/-! # Вычисление степеней
 
-We compute the degree of each vertex *kind*. We’ll use your {attr}`@[simp]` adjacency
-lemmas from Approach A:
+Вычисляем степень каждого *вида* вершины. Используем {attr}`@[simp]`-леммы о смежности
+из подхода A:
 - {name}`adj_apex_left`, {name}`adj_A1A1`, {name}`adj_A2A2`, {name}`adj_A1B1`, {name}`adj_A2B2`,
-  and the corresponding “no edge” lemmas across blocks.
+  а также соответствующие леммы «нет ребра» между блоками.
 -/
 
 /-- `deg(apex) = 15`. -/
 lemma degree_apex : G.degree apex = 15 := by
   classical
-  -- Neighbors of `apex` are exactly all vertices ≠ `apex`.
+  -- Соседи `apex` — это в точности все вершины ≠ `apex`.
   have hN : 
       G.neighborFinset apex = (Finset.univ.erase apex) := by
     ext v; constructor
@@ -197,18 +198,18 @@ lemma degree_apex : G.degree apex = 15 := by
       have hvne : v ≠ apex := (Finset.mem_erase.mp hv).1
       have : G.Adj apex v := by simpa [adj_apex_left] using hvne
       simpa using this
-  -- Count `univ.erase apex`.
+  -- Считаем `univ.erase apex`.
   have : (G.neighborFinset apex).card = 15 := by
     -- `card (erase univ apex) = |V| - 1 = 16 - 1 = 15`
     have : (Finset.univ.erase apex).card = Fintype.card V - 1 := by
       have : apex ∈ (Finset.univ : Finset V) := by simp
       simp [Finset.card_erase_of_mem, this]
     simp [hN, card_V]
-  -- `degree` is the cardinal of the neighbor finset.
+  -- `degree` — это мощность множества соседей.
   simp at this
   assumption
 
-/-- `deg(A1 i) = 7` for each {name}`i`. -/
+/-- `deg(A1 i) = 7` для каждого {name}`i`. -/
 lemma degree_A1 (i : Fin 2) : G.degree (A1 i) = 7 := by
   rw [←G.card_neighborFinset_eq_degree, ←Finset.card_image_of_injective _ VEquiv.injective]
   simp_rw [←Finset.card_toLeft_add_card_toRight]
@@ -252,7 +253,7 @@ lemma degree_A1 (i : Fin 2) : G.degree (A1 i) = 7 := by
         _ = 1 := by simp
     _ = _ := by norm_num
 
-/-- $`deg(B1 j) = 3` for each $`j`. (Two {name}`A1`s + apex.) -/
+/-- $`deg(B1 j) = 3` для каждого $`j`. (Два соседа в {name}`A1` + apex.) -/
 lemma degree_B1 (j : Fin 5) : G.degree (B1 j) = 3 := by
   rw [←G.card_neighborFinset_eq_degree, ←Finset.card_image_of_injective _ VEquiv.injective]
   simp_rw [←Finset.card_toLeft_add_card_toRight]
@@ -293,7 +294,7 @@ lemma degree_B1 (j : Fin 5) : G.degree (B1 j) = 3 := by
 
 
 
-/-- $`deg(A2 i) = 8` for each $`i`. (Two inside {name}`A2` + five in {name}`B2` + apex.) -/
+/-- $`deg(A2 i) = 8` для каждого $`i`. (Два внутри {name}`A2` + пять в {name}`B2` + apex.) -/
 lemma degree_A2 (i : Fin 3) : G.degree (A2 i) = 8 := by
   rw [←G.card_neighborFinset_eq_degree, ←Finset.card_image_of_injective _ VEquiv.injective]
   simp_rw [←Finset.card_toLeft_add_card_toRight]
@@ -336,7 +337,7 @@ lemma degree_A2 (i : Fin 3) : G.degree (A2 i) = 8 := by
     _ = _ := by norm_num
 
 
-/-- $`deg(B2 j) = 4` for each $`j`. (Three {name}`A2`s + apex.) -/
+/-- $`deg(B2 j) = 4` для каждого $`j`. (Три соседа в {name}`A2` + apex.) -/
 lemma degree_B2 (j : Fin 5) : G.degree (B2 j) = 4 := by
   rw [←G.card_neighborFinset_eq_degree, ←Finset.card_image_of_injective _ VEquiv.injective]
   simp_rw [←Finset.card_toLeft_add_card_toRight]
@@ -376,13 +377,13 @@ lemma degree_B2 (j : Fin 5) : G.degree (B2 j) = 4 := by
     _ = _ := by norm_num
 
 /-!
-# Edge count via the handshaking lemma
-We now sum the degrees and divide by 2.
+# Подсчёт рёбер через лемму о рукопожатиях
+Теперь суммируем степени и делим на 2.
 -/
 theorem edge_count_44 : G.edgeSet.ncard = 44 := by
   classical
-  -- Handshaking lemma on edge *set* cardinality.
-  -- In current mathlib this comes as:
+  -- Лемма о рукопожатиях для мощности *множества* рёбер.
+  -- В текущей версии mathlib она формулируется так:
   --   `G.sum_degrees_eq_twice_card_edgeSet : (∑ v, G.degree v) = 2 * G.edgeSet.ncard`.
   have hand := G.sum_degrees_eq_twice_card_edges
   rw [←SimpleGraph.coe_edgeFinset, Set.ncard_coe_finset]
@@ -398,14 +399,14 @@ theorem edge_count_44 : G.edgeSet.ncard = 44 := by
 end PikhurkoN5
 
 
--- 4. Show red neighbors of apex are ≥ 11 if no blue K_{1,5}
+-- 4. Показываем, что красных соседей apex ≥ 11, если нет синей K_{1,5}
 
 namespace PikhurkoN5
 open V
 
-/-! # Small utilities -/
+/-! # Небольшие вспомогательные утверждения -/
 
-/- Pick a `k`-subset of a finset `s` when `k ≤ s.card`. -/
+/- Выбираем `k`-элементное подмножество finset `s`, когда `k ≤ s.card`. -/
 namespace Finset
 variable {α : Type*}
 
@@ -415,48 +416,48 @@ lemma exists_subset_card_eq (s : Finset α) {k : ℕ} (hk : k ≤ s.card) :
 
 end Finset
 
-/-- In {lean}`Fin 2`, saying “equals {lean (type := "Fin 2")}`1`” is the same as “not equal to {lean (type := "Fin 2")}`0`”. -/
+/-- В {lean}`Fin 2` условие «равно {lean (type := "Fin 2")}`1`» равносильно условию «не равно {lean (type := "Fin 2")}`0`». -/
 lemma fin2_eq_one_iff_ne_zero (a : Fin 2) : (a = 1) ↔ a ≠ 0 := by
   fin_cases a <;> simp
 
-/-! # Red neighbors of the apex are ≥ 11 if there is no blue star `K_{1,5}` -/
+/-! # Красных соседей apex ≥ 11, если нет синей звезды `K_{1,5}` -/
 
-/-- The set of blue neighbors of {name}`apex` in color class {lean (type := "Fin 2")}`0`. -/
+/-- Множество синих соседей {name}`apex` в цветовом классе {lean (type := "Fin 2")}`0`. -/
 noncomputable def blueNeighbors (color : Sym2 V → Fin 2) : Finset V :=
   (G.neighborFinset apex).filter (fun v => color (s(apex, v)) = 0)
 
-/-- The set of red neighbors of {name}`apex` in color class {lean (type := "Fin 2")}`1`. -/
+/-- Множество красных соседей {name}`apex` в цветовом классе {lean (type := "Fin 2")}`1`. -/
 noncomputable def redNeighbors (color : Sym2 V → Fin 2) : Finset V :=
   (G.neighborFinset apex).filter (fun v => color (s(apex, v)) = 1)
 
-/-- If there is no blue `K_{1,5}`, then the apex has at most 4 blue neighbors. -/
+/-- Если нет синей `K_{1,5}`, то у apex не более 4 синих соседей. -/
 lemma blueNeighbors_card_le_4
     (color : Sym2 V → Fin 2)
     (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (blueNeighbors color).card ≤ 4 := by
   classical
-  -- Suppose ≥5 blue neighbors; extract a 5-subset and get a blue star.
+  -- Предположим, что синих соседей ≥5; извлекаем 5-элементное подмножество и получаем синюю звезду.
   by_contra hle
   have hge : 5 ≤ (blueNeighbors color).card :=
     Nat.succ_le_of_lt (lt_of_not_ge hle)
   obtain ⟨S, hSsubset, hScard⟩ :=
     Finset.exists_subset_card_eq (blueNeighbors color) hge
 
-  -- `apex ∉ S` since `apex` is not its own neighbor.
+  -- `apex ∉ S`, так как `apex` не является соседом самого себя.
   have hapex_notin : apex ∉ S := by
     have : apex ∉ G.neighborFinset apex := by
-      -- No loops ⇒ apex not adjacent to itself ⇒ not in neighbor set.
+      -- Отсутствие петель ⇒ apex не смежна сама с собой ⇒ не входит в множество соседей.
       simp [SimpleGraph.neighborFinset]
     exact fun hx => this <| (by
       have hx' : apex ∈ blueNeighbors color := hSsubset hx
-      -- Blue neighbors are a subset of neighbors.
+      -- Синие соседи — подмножество всех соседей.
       have : blueNeighbors color ⊆ G.neighborFinset apex :=
         by
           intro v hv
           exact Finset.mem_of_mem_filter _ hv
       exact this hx')
 
-  -- All edges from `apex` to `S` are present and blue, so we have a blue K_{1,5}.
+  -- Все рёбра от `apex` до `S` присутствуют и синие, значит, у нас есть синяя K_{1,5}.
   have hstar : hasMonoStar G color 0 5 := by
     refine ⟨apex, S, hScard, hapex_notin, ?_⟩
     intro y hy
@@ -467,13 +468,13 @@ lemma blueNeighbors_card_le_4
 
   exact hNoBlueStar hstar
 
-/-- If there is no blue `K_{1,5}`, then at least {lean}`11` neighbors of {name}`apex` are red. -/
+/-- Если нет синей `K_{1,5}`, то как минимум {lean}`11` соседей {name}`apex` красные. -/
 lemma red_from_apex_at_least_11
     (color : Sym2 V → Fin 2)
     (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (redNeighbors color).card ≥ 11 := by
   classical
-  -- Split neighbors of apex into blue vs. non-blue; identify non-blue with red.
+  -- Разбиваем соседей apex на синих и несиних; отождествляем несиних с красными.
   have hsplit : 
       (blueNeighbors color).card
       + ((G.neighborFinset apex).filter (fun v => ¬ (color (s(apex, v)) = 0))).card
@@ -488,11 +489,11 @@ lemma red_from_apex_at_least_11
       =
       redNeighbors color := by
     ext v; by_cases hv : v ∈ G.neighborFinset apex
-    · -- On neighbors, “not blue” is “red”.
+    · -- Среди соседей «не синий» означает «красный».
       simp [redNeighbors, hv, fin2_eq_one_iff_ne_zero]
     · simp [redNeighbors, hv]
 
-  -- So blue + red = all neighbors = 15 (by `degree_apex`).
+  -- Итак, синих + красных = всех соседей = 15 (по `degree_apex`).
   have hsum : (blueNeighbors color).card + (redNeighbors color).card
               = (G.neighborFinset apex).card := by
     convert Finset.card_sdiff_add_card_eq_card _
@@ -507,7 +508,7 @@ lemma red_from_apex_at_least_11
 
   have hblue_le_4 := blueNeighbors_card_le_4 color hNoBlueStar
 
-  -- Turn `blue + red = 15` into `red = 15 - blue`.
+  -- Преобразуем `blue + red = 15` в `red = 15 - blue`.
   have hred_eq : (redNeighbors color).card
       = 15 - (blueNeighbors color).card := by
     have hsum' : (redNeighbors color).card + (blueNeighbors color).card = 15 := by
@@ -516,21 +517,21 @@ lemma red_from_apex_at_least_11
     -- `(red + blue) - blue = 15 - blue` ⇒ `red = 15 - blue`.
     simpa [Nat.add_sub_cancel] using this
 
-  -- Finally: `blue ≤ 4` ⇒ `15 - blue ≥ 11`.
+  -- Наконец: `blue ≤ 4` ⇒ `15 - blue ≥ 11`.
   have : 11 ≤ 15 - (blueNeighbors color).card :=
     by grind
 
-  -- Combine with `red = 15 - blue`.
+  -- Объединяем с `red = 15 - blue`.
   simpa [hred_eq] using this
 
 end PikhurkoN5
 
 
--- 5. Pigeonhole: one block gets ≥ 6 red edges from apex
+-- 5. Принцип Дирихле: один из блоков получает ≥ 6 красных рёбер от apex
 namespace PikhurkoN5
 open V
 
-/-- Membership in the first block {name}`A1`/{name}`B1`. -/
+/-- Принадлежность первому блоку {name}`A1`/{name}`B1`. -/
 def inBlock1 : V → Prop
 | A1 _ => True
 | B1 _ => True
@@ -539,39 +540,39 @@ def inBlock1 : V → Prop
 noncomputable instance : DecidablePred inBlock1 := by
   intro v; cases v <;> infer_instance
 
-/-- Red neighbors of {name}`apex` that lie in the first block {name}`A1`/{name}`B1`. -/
+/-- Красные соседи {name}`apex`, лежащие в первом блоке {name}`A1`/{name}`B1`. -/
 noncomputable def redBlock1 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => inBlock1 v)
 
-/-- Red neighbors of {name}`apex` that lie in the second block {name}`A2`/{name}`B2`.
+/-- Красные соседи {name}`apex`, лежащие во втором блоке {name}`A2`/{name}`B2`.
 
-We implement this as the *complement* of {name}`inBlock1` inside {name}`redNeighbors`.
-Since {name}`apex` is not in {name}`redNeighbors`, this is exactly the {name}`A2`/{name}`B2` part. -/
+Реализуем это как *дополнение* {name}`inBlock1` внутри {name}`redNeighbors`.
+Поскольку {name}`apex` не входит в {name}`redNeighbors`, это в точности часть {name}`A2`/{name}`B2`. -/
 noncomputable def redBlock2 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => ¬ inBlock1 v)
 
-/-- Partition of the red neighbors of {name}`apex` into the two blocks. -/
+/-- Разбиение красных соседей {name}`apex` на два блока. -/
 lemma redBlocks_partition_card (color : Sym2 V → Fin 2) : 
   (redBlock1 color).card + (redBlock2 color).card = (redNeighbors color).card := by
   classical
-  -- Standard `filter` + `filter (¬p)` partition identity.
+  -- Стандартное тождество разбиения `filter` + `filter (¬p)`.
   simpa [redBlock1, redBlock2] using
     (Finset.card_filter_add_card_filter_not
       (s := redNeighbors color) (p := fun v => inBlock1 v))
 
-/-- **Pigeonhole step.** If there is no blue `K_{1,5}`, then
-one of the two blocks receives at least six red edges from {name}`apex`. -/
+/-- **Шаг с принципом Дирихле.** Если нет синей `K_{1,5}`, то
+один из двух блоков получает от {name}`apex` не менее шести красных рёбер. -/
 lemma exists_block_receives_at_least_6_red
     (color : Sym2 V → Fin 2)
     (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (redBlock1 color).card ≥ 6 ∨ (redBlock2 color).card ≥ 6 := by
   classical
-  -- Total red edges from `apex` is at least 11 (done earlier).
+  -- Всего красных рёбер от `apex` не менее 11 (доказано ранее).
   have h11 : 11 ≤ (redNeighbors color).card :=
     red_from_apex_at_least_11 color hNoBlueStar
-  -- Split red neighbors across the two blocks.
+  -- Разбиваем красных соседей по двум блокам.
   have hsum := redBlocks_partition_card color
-  -- If both blocks had ≤ 5, then the total would be ≤ 10 — contradiction.
+  -- Если бы в обоих блоках было ≤ 5, то суммарно было бы ≤ 10 — противоречие.
   by_contra h
   push_neg at h   -- h : (redBlock1 color).card ≤ 5 ∧ (redBlock2 color).card ≤ 5
   have hle10 : (redNeighbors color).card ≤ 10 := by
@@ -583,30 +584,30 @@ lemma exists_block_receives_at_least_6_red
 end PikhurkoN5
 
 
--- 6. demonstrate a red neighbor in the clique side
+-- 6. Демонстрируем красного соседа на стороне клики
 
 namespace PikhurkoN5
 open V
 
-/-! # Part / block predicates -/
+/-! # Предикаты частей / блоков -/
 
-/-- Recognizes the clique side {name}`A1`. -/
+/-- Распознаёт сторону клики {name}`A1`. -/
 def isA1 : V → Prop
 | A1 _ => True | _ => False
 
-/-- Recognizes the independent side {name}`B1`. -/
+/-- Распознаёт независимую сторону {name}`B1`. -/
 def isB1 : V → Prop
 | B1 _ => True | _ => False
 
-/-- Recognizes the clique side {name}`A2`. -/
+/-- Распознаёт сторону клики {name}`A2`. -/
 def isA2 : V → Prop
 | A2 _ => True | _ => False
 
-/-- Recognizes the independent side {name}`B2`. -/
+/-- Распознаёт независимую сторону {name}`B2`. -/
 def isB2 : V → Prop
 | B2 _ => True | _ => False
 
-/-- Second block {name}`A2`/{name}`B2`. -/
+/-- Второй блок {name}`A2`/{name}`B2`. -/
 def inBlock2 : V → Prop
 | A2 _ => True | B2 _ => True | _ => False
 
@@ -629,27 +630,27 @@ noncomputable instance : DecidablePred inBlock2 := by intro v; cases v <;> infer
 @[simp] lemma not_isA2_and_isB2 (v : V) : ¬ (isA2 v ∧ isB2 v) := by
   cases v <;> simp [isA2, isB2]
 
-/-! # Splitting the {name}`apex` red neighbors by parts -/
+/-! # Разбиение красных соседей {name}`apex` по частям -/
 
--- These came from the previous step you have:
+-- Это было получено на предыдущем шаге:
 -- def redNeighbors (color : Sym2 V → Fin 2) : Finset V := ...
 
 
-/-- Further refine {name}`redBlock1` into its {name}`A1` and {name}`B1` parts. -/
+/-- Уточняем {name}`redBlock1`, разбивая его на части {name}`A1` и {name}`B1`. -/
 noncomputable def redBlock1A1 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => isA1 v)
 
 noncomputable def redBlock1B1 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => isB1 v)
 
-/-- Further refine {name}`redBlock2` into its {name}`A2` and {name}`B2` parts. -/
+/-- Уточняем {name}`redBlock2`, разбивая его на части {name}`A2` и {name}`B2`. -/
 noncomputable def redBlock2A2 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => isA2 v)
 
 noncomputable def redBlock2B2 (color : Sym2 V → Fin 2) : Finset V :=
   (redNeighbors color).filter (fun v => isB2 v)
 
-/-- {name}`redBlock1` is exactly the disjoint union of its {name}`A1` and {name}`B1` parts. -/
+/-- {name}`redBlock1` — это в точности непересекающееся объединение его частей {name}`A1` и {name}`B1`. -/
 lemma redBlock1_eq_union (color : Sym2 V → Fin 2) : 
   redBlock1 color =
     redBlock1A1 color ∪ redBlock1B1 color := by
@@ -667,7 +668,7 @@ lemma redBlock1_eq_union (color : Sym2 V → Fin 2) :
     · rcases Finset.mem_filter.1 hB1 with ⟨hRN, hB1⟩
       exact Finset.mem_filter.2 ⟨hRN, (inBlock1_iff v).2 (Or.inr hB1)⟩
 
-/-- {name}`redBlock2` is exactly the disjoint union of its {name}`A2` and {name}`B2` parts. -/
+/-- {name}`redBlock2` — это в точности непересекающееся объединение его частей {name}`A2` и {name}`B2`. -/
 lemma redBlock2_eq_union (color : Sym2 V → Fin 2) : 
   redBlock2 color =
     redBlock2A2 color ∪ redBlock2B2 color := by
@@ -691,7 +692,7 @@ lemma redBlock2_eq_union (color : Sym2 V → Fin 2) :
       exact Finset.mem_filter.2 ⟨hRN, by
         cases v <;> simp_all [inBlock1, isB2]⟩
 
-/-- The two parts of {name}`redBlock1` are disjoint. -/
+/-- Две части {name}`redBlock1` не пересекаются. -/
 lemma redA1_redB1_disjoint (color : Sym2 V → Fin 2) : 
   Disjoint (redBlock1A1 color) (redBlock1B1 color) := by
   classical
@@ -701,7 +702,7 @@ lemma redA1_redB1_disjoint (color : Sym2 V → Fin 2) :
   rcases Finset.mem_filter.1 hvB with ⟨_, hB1⟩
   exact (not_isA1_and_isB1 v) ⟨hA1, hB1⟩
 
-/-- The two parts of {name}`redBlock2` are disjoint. -/
+/-- Две части {name}`redBlock2` не пересекаются. -/
 lemma redA2_redB2_disjoint (color : Sym2 V → Fin 2) : 
   Disjoint (redBlock2A2 color) (redBlock2B2 color) := by
   classical
@@ -711,24 +712,24 @@ lemma redA2_redB2_disjoint (color : Sym2 V → Fin 2) :
   rcases Finset.mem_filter.1 hvB with ⟨_, hB2⟩
   exact (not_isA2_and_isB2 v) ⟨hA2, hB2⟩
 
-/-- Cardinal decompositions of the blocks. -/
+/-- Разложения мощностей блоков. -/
 lemma redBlock1_card_eq_sum (color : Sym2 V → Fin 2) : 
   (redBlock1 color).card
     = (redBlock1A1 color).card + (redBlock1B1 color).card := by
   classical
   have := Finset.card_union_add_card_inter
             (s := redBlock1A1 color) (t := redBlock1B1 color)
-  -- rewrite the union as `redBlock1` and show the intersection is empty
+  -- переписываем объединение как `redBlock1` и показываем, что пересечение пусто
   have hU : redBlock1A1 color ∪ redBlock1B1 color = redBlock1 color := by
     rw [redBlock1_eq_union]
   have hI : (redBlock1A1 color ∩ redBlock1B1 color).card = 0 := by
     have hdis := redA1_redB1_disjoint color
-    -- `disjoint` implies the intersection is empty
+    -- `disjoint` означает, что пересечение пусто
     have : redBlock1A1 color ∩ redBlock1B1 color = (∅ : Finset V) := by
       simp [Disjoint] at hdis
       aesop
     aesop
-  -- put it together
+  -- собираем всё вместе
   have := by simpa [hU, hI, add_comm] using this
   exact this
 
@@ -749,12 +750,12 @@ lemma redBlock2_card_eq_sum (color : Sym2 V → Fin 2) :
   have := by simpa [hU, hI, add_comm] using this
   exact this
 
-/-! # Bounding the {lit}`B`-parts by {lean}`5` -/
+/-! # Оценка частей {lit}`B` сверху числом {lean}`5` -/
 
-/-- All {name}`B1`-vertices as a finset (image of {lean}`Fin 5`). -/
+/-- Все вершины {name}`B1` как finset (образ {lean}`Fin 5`). -/
 def B1Set : Finset V := (Finset.univ.image fun j : Fin 5 => B1 j)
 
-/-- All {name}`B2`-vertices as a finset (image of {lean}`Fin 5`). -/
+/-- Все вершины {name}`B2` как finset (образ {lean}`Fin 5`). -/
 def B2Set : Finset V := (Finset.univ.image fun j : Fin 5 => B2 j)
 
 lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) : 
@@ -762,10 +763,10 @@ lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) :
   classical
   intro v hv
   rcases Finset.mem_filter.1 hv with ⟨_, hB1⟩
-  -- From `isB1 v`, `v = B1 j` for some `j`, hence in the image.
+  -- Из `isB1 v` следует `v = B1 j` для некоторого `j`, значит, `v` входит в образ.
   cases v with
   | B1 j =>
-      simp [B1Set]    -- `v` is exactly `B1 j`, hence in the image of `j`.
+      simp [B1Set]    -- `v` в точности равно `B1 j`, значит, входит в образ `j`.
   | A1 _ => cases hB1
   | A2 _ => cases hB1
   | B2 _ => cases hB1
@@ -786,7 +787,7 @@ lemma redBlock2B2_subset_B2Set (color : Sym2 V → Fin 2) :
 
 lemma card_B1Set_le_5 : (B1Set).card ≤ 5 := by
   classical
-  -- image has card ≤ card of the domain
+  -- мощность образа ≤ мощности области определения
   simpa [B1Set, Fintype.card_fin] using
     (Finset.card_image_le : (Finset.univ.image (fun j : Fin 5 => B1 j)).card ≤ (Finset.univ : Finset (Fin 5)).card)
 
@@ -803,32 +804,32 @@ lemma redBlock2B2_card_le_5 (color : Sym2 V → Fin 2) :
   (redBlock2B2 color).card ≤ 5 :=
   (Finset.card_le_card (redBlock2B2_subset_B2Set color)).trans card_B2Set_le_5
 
-/-! # Existence of a red neighbor in the clique parts {name}`A1` / {name}`A2` -/
+/-! # Существование красного соседа в частях клики {name}`A1` / {name}`A2` -/
 
-/-- If block 1 receives at least 6 red neighbors from {name}`apex`, then one of them lies in {name}`A1`. -/
+/-- Если блок 1 получает от {name}`apex` не менее 6 красных соседей, то один из них лежит в {name}`A1`. -/
 lemma exists_red_A1_of_block1_ge6
     (color : Sym2 V → Fin 2)
     (h6 : 6 ≤ (redBlock1 color).card) : 
     ∃ i : Fin 2, G.Adj apex (A1 i) ∧ color (s(apex, A1 i)) = 1 := by
   classical
-  -- From the decomposition `|redBlock1| = |A1-part| + |B1-part|`
-  -- and `|B1-part| ≤ 5`, we get `|A1-part| ≥ 1`.
+  -- Из разложения `|redBlock1| = |A1-part| + |B1-part|`
+  -- и `|B1-part| ≤ 5` получаем `|A1-part| ≥ 1`.
   have hdecomp := redBlock1_card_eq_sum color
   have hB1le := redBlock1B1_card_le_5 color
   have hposA1 : 0 < (redBlock1A1 color).card := by
-    -- If `A1-part` were empty, then `|redBlock1| = |B1-part| ≤ 5`, contradicting `≥ 6`.
+    -- Если бы `A1-part` была пуста, то `|redBlock1| = |B1-part| ≤ 5`, что противоречит `≥ 6`.
     by_contra hzero
     have hz : (redBlock1A1 color).card = 0 := Nat.eq_zero_of_not_pos hzero
     have : (redBlock1 color).card = (redBlock1B1 color).card := by
       simp [hdecomp, hz, zero_add]
     have : (redBlock1 color).card ≤ 5 := by simpa [this] using hB1le
     grind
-  -- Choose a vertex `v` in the `A1` part.
+  -- Выбираем вершину `v` в части `A1`.
   rcases Finset.card_pos.1 hposA1 with ⟨v, hv⟩
-  -- From membership we extract adjacency and redness.
+  -- Из принадлежности извлекаем смежность и красноту.
   rcases Finset.mem_filter.1 hv with ⟨hRN, hA1⟩
   rcases Finset.mem_filter.1 hRN with ⟨hNei, hRed⟩
-  -- Now `v` must be of the form `A1 i`.
+  -- Теперь `v` обязана иметь вид `A1 i`.
   cases v with
   | A1 i =>
       exact ⟨i, by aesop, by simpa using hRed⟩
@@ -837,7 +838,7 @@ lemma exists_red_A1_of_block1_ge6
   | B2 _ => cases hA1
   | apex  => cases hA1
 
-/-- If block 2 receives at least 6 red neighbors from {name}`apex`, then one of them lies in {name}`A2`. -/
+/-- Если блок 2 получает от {name}`apex` не менее 6 красных соседей, то один из них лежит в {name}`A2`. -/
 lemma exists_red_A2_of_block2_ge6
     (color : Sym2 V → Fin 2)
     (h6 : 6 ≤ (redBlock2 color).card) : 
@@ -863,15 +864,15 @@ lemma exists_red_A2_of_block2_ge6
   | B2 _ => cases hA2
   | apex  => cases hA2
 
-/-- Corollary: under the “no blue star” hypothesis, there is a red neighbor of {name}`apex`
-in the appropriate clique {name}`A1` or {name}`A2`. -/
+/-- Следствие: при гипотезе «нет синей звезды» найдётся красный сосед {name}`apex`
+в соответствующей клике {name}`A1` или {name}`A2`. -/
 lemma exists_red_clique_neighbor
     (color : Sym2 V → Fin 2)
     (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     (∃ i : Fin 2, G.Adj apex (A1 i) ∧ color (s(apex, A1 i)) = 1) ∨
     (∃ i : Fin 3, G.Adj apex (A2 i) ∧ color (s(apex, A2 i)) = 1) := by
   classical
-  -- Your previous lemma:
+  -- Ранее доказанная лемма:
   have h := exists_block_receives_at_least_6_red color hNoBlueStar
   rcases h with h1 | h2
   · exact Or.inl (exists_red_A1_of_block1_ge6 color h1)
@@ -880,12 +881,12 @@ lemma exists_red_clique_neighbor
 end PikhurkoN5
 
 
--- 7. triangle-or-star from the clique vertex
+-- 7. Треугольник или звезда от вершины клики
 
 namespace PikhurkoN5
 open V
 
-/-! # Helpers: the chosen clique vertex lies in the corresponding red block -/
+/-! # Вспомогательные утверждения: выбранная вершина клики лежит в соответствующем красном блоке -/
 
 lemma A1_mem_redBlock1_of_red
     (color : Sym2 V → Fin 2) (i : Fin 2)
@@ -893,14 +894,14 @@ lemma A1_mem_redBlock1_of_red
     (hRed : color (s(apex, A1 i)) = 1) : 
     A1 i ∈ redBlock1 color := by
   classical
-  -- First: `A1 i` is a red neighbor of `apex`.
+  -- Во-первых: `A1 i` — красный сосед `apex`.
   have hRN : A1 i ∈ redNeighbors color := by
-    -- `neighborFinset` membership + color=1
+    -- принадлежность `neighborFinset` + color=1
     have : A1 i ∈ G.neighborFinset apex := by simp
     exact Finset.mem_filter.mpr ⟨this, by simpa⟩
-  -- Second: it's in block 1.
+  -- Во-вторых: она лежит в блоке 1.
   have hB : inBlock1 (A1 i) := by simp [inBlock1]
-  -- Filter once more.
+  -- Ещё раз фильтруем.
   simpa [redBlock1] using Finset.mem_filter.mpr ⟨hRN, hB⟩
 
 lemma A2_mem_redBlock2_of_red
@@ -915,10 +916,10 @@ lemma A2_mem_redBlock2_of_red
   have hB : inBlock2 (A2 i) := by simp [inBlock2]
   simp [redBlock2, hRN, isA1, isB1]
 
-/-! # Triangle-or-star from Block 1 -/
+/-! # Треугольник или звезда из блока 1 -/
 
-/-- If Block 1 has at least 6 red apex-neighbors, and one of them is {lean}`A1 i` with a red edge
-from {name}`apex`, then either we have a red triangle, or a blue `K_{1,5}` centered at {lean}`A1 i`. -/
+/-- Если у блока 1 не менее 6 красных соседей apex, и один из них {lean}`A1 i` с красным ребром
+от {name}`apex`, то либо у нас есть красный треугольник, либо синяя `K_{1,5}` с центром в {lean}`A1 i`. -/
 lemma triangle_or_blueStar_from_block1
     (color : Sym2 V → Fin 2)
     (h6 : 6 ≤ (redBlock1 color).card)
@@ -927,48 +928,48 @@ lemma triangle_or_blueStar_from_block1
     (hRedApexA1 : color (s(apex, A1 i)) = 1) : 
     hasMonoTriangle G color 1 ∨ hasMonoStar G color 0 5 := by
   classical
-  -- Put `y0 := A1 i` into `redBlock1`.
+  -- Помещаем `y0 := A1 i` в `redBlock1`.
   have hy0_in : A1 i ∈ redBlock1 color := A1_mem_redBlock1_of_red color i hAdj hRedApexA1
-  -- We want 5 vertices in `redBlock1 \ {A1 i}`.
+  -- Нам нужно 5 вершин в `redBlock1 \ {A1 i}`.
   have h5 : 
     5 ≤ ((redBlock1 color).erase (A1 i)).card := by
-    -- `card (erase y0) + 1 = card`  ⇒  `card (erase y0) ≥ 5` from `card ≥ 6`
+    -- `card (erase y0) + 1 = card`  ⇒  `card (erase y0) ≥ 5` из `card ≥ 6`
     have hcard : 
         ((redBlock1 color).erase (A1 i)).card + 1 = (redBlock1 color).card :=
       Finset.card_erase_add_one hy0_in
-    -- turn `6 ≤ RHS` into `5 ≤ LHS`
+    -- преобразуем `6 ≤ RHS` в `5 ≤ LHS`
     have : 6 ≤ ((redBlock1 color).erase (A1 i)).card + 1 := by simpa [hcard] using h6
     exact (Nat.succ_le_succ_iff.mp this)
-  -- Pick any 5-element subset `T` of those.
+  -- Берём любое 5-элементное подмножество `T` среди них.
   obtain ⟨T, hTsub, hTcard⟩ :=
     Finset.exists_subset_card_eq ((redBlock1 color).erase (A1 i)) h5
 
-  -- Either some `y ∈ T` makes the edge `(A1 i,y)` red (→ triangle), or all are blue (→ star).
+  -- Либо какой-то `y ∈ T` делает ребро `(A1 i,y)` красным (→ треугольник), либо все синие (→ звезда).
   classical
   by_cases hTri : ∃ y ∈ T, color (s(A1 i, y)) = 1
   · rcases hTri with ⟨y, hyT, hyRedA1y⟩
-    -- Facts from membership: `y ≠ A1 i`, `y ∈ redBlock1`.
+    -- Факты из принадлежности: `y ≠ A1 i`, `y ∈ redBlock1`.
     have hy_erase : y ∈ (redBlock1 color).erase (A1 i) := hTsub hyT
     have hy_ne : y ≠ A1 i := (Finset.mem_erase.mp hy_erase).1
     have hy_in : y ∈ redBlock1 color := (Finset.mem_erase.mp hy_erase).2
-    -- Unpack `redBlock1` membership to get that `y` is a red neighbor of `apex` in block 1.
+    -- Раскрываем принадлежность `redBlock1`, чтобы получить, что `y` — красный сосед `apex` в блоке 1.
     rcases Finset.mem_filter.1 hy_in with ⟨hy_RN, hy_block1⟩
     rcases Finset.mem_filter.1 hy_RN with ⟨hyAdjApex, hyRedApexY⟩
-    -- `A1 i` is adjacent to every other vertex in Block 1 (clique-to-A1, clique-to-B1).
+    -- `A1 i` смежна со всеми остальными вершинами блока 1 (клика-к-A1, клика-к-B1).
     have hyAdjA1Y : G.Adj (A1 i) y := by
       cases y with
       | A1 j =>
-          -- `j ≠ i` because `y ≠ A1 i`
+          -- `j ≠ i`, потому что `y ≠ A1 i`
           have hij : j ≠ i := by
             intro h; exact hy_ne (by simp [h])
-          -- use `adj_A1A1 : Adj (A1 i) (A1 j) ↔ i ≠ j`
+          -- используем `adj_A1A1 : Adj (A1 i) (A1 j) ↔ i ≠ j`
           have : i ≠ j := by simpa [ne_comm] using hij
           simp [adj_A1A1, this]
       | B1 _  => simp [adj_A1B1]
-      | A2 _  => cases hy_block1       -- impossible
-      | B2 _  => cases hy_block1       -- impossible
-      | apex  => cases hy_block1       -- impossible
-    -- Build the red triangle: apex — A1 i — y — apex.
+      | A2 _  => cases hy_block1       -- невозможно
+      | B2 _  => cases hy_block1       -- невозможно
+      | apex  => cases hy_block1       -- невозможно
+    -- Строим красный треугольник: apex — A1 i — y — apex.
     refine Or.inl ?triangle
     refine ⟨apex, A1 i, y, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · simp [hAdj]
@@ -977,29 +978,29 @@ lemma triangle_or_blueStar_from_block1
     · simpa using hRedApexA1
     · exact hyRedA1y
     · simpa using hyRedApexY
-  · -- No red `(A1 i,y)` with `y ∈ T` ⇒ all `(A1 i,y)` are blue.
+  · -- Нет красного `(A1 i,y)` с `y ∈ T` ⇒ все `(A1 i,y)` синие.
     have hAllBlue : ∀ {y}, y ∈ T → color (s(A1 i, y)) = 0 := by
       intro y hy
       have h1 : color (s(A1 i, y)) ≠ 1 := by
         intro contra; exact hTri ⟨y, hy, contra⟩
-      -- In `Fin 2`, being not `1` is being `0`.
-      -- (If you prefer, keep and reuse your earlier lemma `fin2_eq_one_iff_ne_zero`.)
+      -- В `Fin 2` «не равно `1`» означает «равно `0`».
+      -- (При желании можно переиспользовать ранее доказанную лемму `fin2_eq_one_iff_ne_zero`.)
       have : color (s(A1 i, y)) = 0 ∨ color (s(A1 i, y)) = 1 := by
         grind
       exact this.resolve_right h1
-    -- Show `A1 i ∉ T`.
+    -- Показываем `A1 i ∉ T`.
     have hnotin : A1 i ∉ T := by
       intro hx
       have : A1 i ∈ (redBlock1 color).erase (A1 i) := hTsub hx
       simp at this
-    -- Adjacency `(A1 i,y)` for `y ∈ T`:
+    -- Смежность `(A1 i,y)` для `y ∈ T`:
     have hAdjAll : ∀ {y}, y ∈ T → G.Adj (A1 i) y := by
       intro y hy
       have hy_erase : y ∈ (redBlock1 color).erase (A1 i) := hTsub hy
       have hy_ne : y ≠ A1 i := (Finset.mem_erase.mp hy_erase).1
       have hy_in : y ∈ redBlock1 color := (Finset.mem_erase.mp hy_erase).2
       rcases Finset.mem_filter.1 hy_in with ⟨_, hy_block1⟩
-      -- same case split as above
+      -- тот же разбор случаев, что и выше
       cases y with
       | A1 j =>
           have hij : j ≠ i := by intro h; exact hy_ne (by simp [h])
@@ -1009,13 +1010,13 @@ lemma triangle_or_blueStar_from_block1
       | A2 _  => simp [isA1, isB1] at hy_block1
       | B2 _  => simp [isA1, isB1] at hy_block1
       | apex  => simp [G, GAdj]
-    -- We have a blue star of size 5 centered at `A1 i` with leaf-set `T`.
+    -- У нас есть синяя звезда размера 5 с центром в `A1 i` и множеством листьев `T`.
     refine Or.inr ?star
     refine ⟨A1 i, T, by simp [hTcard], hnotin, ?_⟩
     intro y hy
     exact ⟨hAdjAll hy, hAllBlue hy⟩
 
-/-! # Triangle-or-star from Block 2 (same proof pattern) -/
+/-! # Треугольник или звезда из блока 2 (тот же шаблон доказательства) -/
 
 lemma triangle_or_blueStar_from_block2
     (color : Sym2 V → Fin 2)
@@ -1092,25 +1093,25 @@ lemma triangle_or_blueStar_from_block2
     intro y hy
     exact ⟨hAdjAll hy, hAllBlue hy⟩
 
-/-! # Final step: no blue `K_{1,5}` ⇒ a red triangle -/
+/-! # Финальный шаг: нет синей `K_{1,5}` ⇒ есть красный треугольник -/
 
-/-- **Main step (n=5):** If there is no blue `K_{1,5}`, then the red color class contains a triangle. -/
+/-- **Основной шаг (n=5):** Если нет синей `K_{1,5}`, то красный цветовой класс содержит треугольник. -/
 theorem red_triangle_of_no_blue_star
     (color : Sym2 V → Fin 2)
     (hNoBlueStar : ¬ hasMonoStar G color 0 5) : 
     hasMonoTriangle G color 1 := by
   classical
-  -- One of the two blocks has ≥6 red neighbors from `apex`.
+  -- Один из двух блоков имеет ≥6 красных соседей от `apex`.
   have h6 := exists_block_receives_at_least_6_red color hNoBlueStar
-  -- From that block, extract a clique vertex with a red edge from `apex`.
+  -- Из этого блока извлекаем вершину клики с красным ребром от `apex`.
   rcases h6 with hB1 | hB2
-  · -- Block 1 case
+  · -- Случай блока 1
     rcases exists_red_A1_of_block1_ge6 color hB1 with ⟨i, hAdj, hRed⟩
-    -- Either get triangle or (if star) contradict `hNoBlueStar`.
+    -- Либо получаем треугольник, либо (если звезда) противоречие с `hNoBlueStar`.
     rcases triangle_or_blueStar_from_block1 color hB1 i hAdj hRed with hTri | hStar
     · exact hTri
     · exact (hNoBlueStar hStar).elim
-  · -- Block 2 case
+  · -- Случай блока 2
     rcases exists_red_A2_of_block2_ge6 color hB2 with ⟨i, hAdj, hRed⟩
     rcases triangle_or_blueStar_from_block2 color hB2 i hAdj hRed with hTri | hStar
     · exact hTri
@@ -1118,7 +1119,7 @@ theorem red_triangle_of_no_blue_star
 
 end PikhurkoN5
 
--- Final statement
+-- Финальное утверждение
 
 namespace PikhurkoN5
 

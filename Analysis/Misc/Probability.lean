@@ -1,6 +1,6 @@
 import Mathlib.Tactic
 
-/-! Some finite probability theory -/
+/-! Немного конечной теории вероятностей -/
 
 namespace ProbabilityTheory
 
@@ -62,14 +62,14 @@ theorem sup_le_add (E F : A) : ℙ (E ⊔ F) ≤ ℙ E + ℙ F := by
 
 
 
--- Some API for extending a finitely additive probability space
+-- Часть API для расширения конечно-аддитивного вероятностного пространства
 
 def _root_.BoundedLatticeHom.preserves (f : BoundedLatticeHom A A') : Prop := ∀ E : A, ℙ' (f E) = ℙ E
 
 @[simp]
 theorem _root_.BoundedLatticeHom.preserves.map {f : BoundedLatticeHom A A'} (hf : f.preserves ℙ ℙ') (E : A) : ℙ' (f E) = ℙ E := hf E
 
--- an example of how a probability space can be extended while preserving various properties
+-- пример того, как вероятностное пространство можно расширить, сохранив различные свойства
 
 class ExampleProb {A : Type*} [BooleanAlgebra A] (ℙ : FinitelyAdditive A) where
   E : A
