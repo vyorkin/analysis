@@ -1,22 +1,22 @@
 import Analysis.MeasureTheory.Section_1_2_2
 
 /-!
-# Introduction to Measure Theory, Section 1.2.3: Non-measurable sets
+# Введение в теорию меры, раздел 1.2.3: неизмеримые множества
 
-A companion to (the introduction to) Section 1.2.3 of the book "An introduction to Measure Theory".
+Сопровождение (введения) к разделу 1.2.3 книги "An introduction to Measure Theory".
 
 -/
 
 open scoped Pointwise
 
-/-! ## Vitali Set Construction
+/-! ## Построение множества Витали
 
-We construct a Vitali set by choosing representatives from each coset of ℝ/ℚ
-that intersects \[0,1\]. The key is that ℚ acts on ℝ by translation, and this
-partitions ℝ into countably many disjoint translates of any transversal.
+Мы строим множество Витали, выбирая по одному представителю из каждого класса смежности ℝ/ℚ,
+пересекающегося с \[0,1\]. Ключевой момент в том, что ℚ действует на ℝ сдвигами, и это
+разбивает ℝ на счётное число непересекающихся сдвигов любой трансверсали.
 -/
 
-/-- The additive subgroup of ℚ in ℝ -/
+/-- Аддитивная подгруппа ℚ в ℝ -/
 def Rat.addSubgroup : AddSubgroup ℝ where
   carrier := Set.range ((↑) : ℚ → ℝ)
   add_mem' := by
@@ -27,17 +27,17 @@ def Rat.addSubgroup : AddSubgroup ℝ where
     intro a ⟨q, hq⟩
     exact ⟨-q, by simp [hq]⟩
 
-/-- The quotient group ℝ/ℚ (reals modulo rationals) -/
+/-- Факторгруппа ℝ/ℚ (вещественные числа по модулю рациональных) -/
 abbrev RealModRat := ℝ ⧸ Rat.addSubgroup
 
-/-- ℚ is dense in ℝ, so every coset of ℝ/ℚ intersects \[0,1\] -/
-lemma coset_intersects_unit_interval (c : RealModRat) : 
+/-- ℚ плотно в ℝ, поэтому каждый класс смежности ℝ/ℚ пересекается с \[0,1\] -/
+lemma coset_intersects_unit_interval (c : RealModRat) :
     ∃ x : ℝ, x ∈ Set.Icc 0 1 ∧ QuotientAddGroup.mk (s := Rat.addSubgroup) x = c := by
   obtain ⟨r⟩ := c
-  -- r is a representative of the coset c
-  -- By density of ℚ, find q ∈ ℚ such that r - q ∈ [0,1]
+  -- r — представитель класса смежности c
+  -- По плотности ℚ найдём q ∈ ℚ такое, что r - q ∈ [0,1]
   have hdense : Dense (Set.range ((↑) : ℚ → ℝ)) := Rat.isDenseEmbedding_coe_real.dense
-  -- The set {r - t : t ∈ (0,1)} is open and nonempty, so contains a rational
+  -- Множество {r - t : t ∈ (0,1)} открыто и непусто, значит содержит рациональное число
   have h_open : IsOpen (Set.Ioo (r - 1) r) := isOpen_Ioo
   have h_nonempty : Set.Nonempty (Set.Ioo (r - 1) r) := by
     use r - 1/2; constructor <;> linarith
@@ -48,49 +48,49 @@ lemma coset_intersects_unit_interval (c : RealModRat) :
   · constructor
     · linarith [hq_in.2]
     · linarith [hq_in.1]
-  · -- r - q is in the same coset as r
+  · -- r - q лежит в том же классе смежности, что и r
     show QuotientAddGroup.mk (s := Rat.addSubgroup) (r - (q : ℝ)) =
          Quot.mk (QuotientAddGroup.leftRel Rat.addSubgroup) r
     have heq : (QuotientAddGroup.mk (s := Rat.addSubgroup) (r - (q : ℝ))) =
            (QuotientAddGroup.mk (s := Rat.addSubgroup) r) := by
       rw [QuotientAddGroup.eq]
-      -- Need to show: -(r - q) + r ∈ Rat.addSubgroup
-      -- That is: q ∈ Rat.addSubgroup
+      -- Нужно показать: -(r - q) + r ∈ Rat.addSubgroup
+      -- То есть: q ∈ Rat.addSubgroup
       show -(r - ↑q) + r ∈ Rat.addSubgroup
       simp only [neg_sub, sub_add_cancel]
       exact ⟨q, rfl⟩
     rw [heq]
     rfl
 
-/-- The Vitali set: choose one representative from each coset that lies in \[0,1\] -/
+/-- Множество Витали: выбираем по одному представителю из каждого класса смежности, лежащему в \[0,1\] -/
 noncomputable def VitaliSet : Set ℝ :=
   Set.range (fun c : RealModRat => (coset_intersects_unit_interval c).choose)
 
-/-- Each element of the Vitali set is in \[0,1\] -/
+/-- Каждый элемент множества Витали лежит в \[0,1\] -/
 lemma VitaliSet_subset_unit_interval : VitaliSet ⊆ Set.Icc 0 1 := by
   intro x hx
   obtain ⟨c, rfl⟩ := hx
   exact (coset_intersects_unit_interval c).choose_spec.1
 
-/-- Key lemma: \[0,1\] is covered by translates of E by rationals in \[-1,1\] -/
-lemma unit_interval_covered_by_translates : 
+/-- Ключевая лемма: \[0,1\] покрывается сдвигами E на рациональные числа из \[-1,1\] -/
+lemma unit_interval_covered_by_translates :
     Set.Icc (0 : ℝ) 1 ⊆ ⋃ (q : ℚ) (_ : q ∈ Set.Icc (-1 : ℚ) 1), (VitaliSet + {(q : ℝ)}) := by
   intro y hy
-  -- y is in some coset c of ℝ/ℚ
+  -- y лежит в некотором классе смежности c группы ℝ/ℚ
   let c : RealModRat := QuotientAddGroup.mk (s := Rat.addSubgroup) y
-  -- The Vitali set contains an element x representing coset c
+  -- Множество Витали содержит элемент x, представляющий класс смежности c
   let x := (coset_intersects_unit_interval c).choose
   have hx_in : x ∈ Set.Icc 0 1 := (coset_intersects_unit_interval c).choose_spec.1
   have hx_coset : QuotientAddGroup.mk (s := Rat.addSubgroup) x = c :=
     (coset_intersects_unit_interval c).choose_spec.2
-  -- x and y are in the same coset, so y - x ∈ ℚ
+  -- x и y лежат в одном классе смежности, значит y - x ∈ ℚ
   have h_same_coset : QuotientAddGroup.mk (s := Rat.addSubgroup) x =
       QuotientAddGroup.mk (s := Rat.addSubgroup) y := hx_coset
   rw [QuotientAddGroup.eq] at h_same_coset
   obtain ⟨q, hq⟩ := h_same_coset
-  -- So y = x + q for some rational q
+  -- Значит y = x + q для некоторого рационального q
   have hy_eq : y = x + q := by linarith [hq]
-  -- Since x, y ∈ [0,1], we have q = y - x ∈ [-1,1]
+  -- Поскольку x, y ∈ [0,1], имеем q = y - x ∈ [-1,1]
   have hq_bound : (q : ℝ) ∈ Set.Icc (-1) 1 := by
     constructor
     · have h1 : (q : ℝ) = y - x := by linarith [hy_eq]
@@ -103,7 +103,7 @@ lemma unit_interval_covered_by_translates :
       exact_mod_cast this
     · have : (q : ℝ) ≤ 1 := hq_bound.2
       exact_mod_cast this
-  -- Therefore y ∈ E + {q}
+  -- Следовательно y ∈ E + {q}
   rw [Set.mem_iUnion]
   use q
   rw [Set.mem_iUnion]
@@ -117,51 +117,51 @@ lemma unit_interval_covered_by_translates :
   · rfl
   · linarith [hy_eq]
 
-/-- The rationals in \[-1,1\] are countable -/
+/-- Рациональные числа из \[-1,1\] образуют счётное множество -/
 lemma rat_Icc_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := by
   exact Set.countable_univ.mono (Set.subset_univ _)
 
-/-- The Lebesgue measure of a closed interval \[a,b\] in ℝ (embedded in {lean}`EuclideanSpace' 1`) equals b - a -/
+/-- Мера Лебега замкнутого отрезка \[a,b\] в ℝ (вложенного в {lean}`EuclideanSpace' 1`) равна b - a -/
 lemma Lebesgue_measure.Icc_eq (a b : ℝ) (hab : a ≤ b) : 
     Lebesgue_measure (Real.equiv_EuclideanSpace' '' Set.Icc a b) = (b - a : ℝ) := by
-  -- Use the fact that Set.Icc a b = (BoundedInterval.Icc a b).toSet
+  -- Используем, что Set.Icc a b = (BoundedInterval.Icc a b).toSet
   have h_interval : Set.Icc a b = (BoundedInterval.Icc a b).toSet := by rfl
-  -- And (I:Box 1).toSet = Real.equiv_EuclideanSpace' '' I.toSet
+  -- И (I:Box 1).toSet = Real.equiv_EuclideanSpace' '' I.toSet
   have h_box : Real.equiv_EuclideanSpace' '' Set.Icc a b = (BoundedInterval.Icc a b : Box 1).toSet := by
     rw [h_interval, ← BoundedInterval.coe_of_box]
   rw [h_box]
-  -- Now use Lebesgue_outer_measure.elementary (Lebesgue_measure = Lebesgue_outer_measure)
+  -- Теперь используем Lebesgue_outer_measure.elementary (Lebesgue_measure = Lebesgue_outer_measure)
   have hE : IsElementary (BoundedInterval.Icc a b : Box 1).toSet := IsElementary.box _
   unfold Lebesgue_measure
   rw [Lebesgue_outer_measure.elementary _ hE, IsElementary.measure_of_box]
-  -- Box volume = product of side lengths = b - a for 1D
+  -- Объём Box = произведение длин сторон = b - a в одномерном случае
   simp only [Box.volume, Finset.univ_unique, Fin.default_eq_zero, Finset.prod_singleton]
   simp only [BoundedInterval.length, BoundedInterval.b, BoundedInterval.a]
-  -- max (b - a) 0 = b - a since a ≤ b
+  -- max (b - a) 0 = b - a, так как a ≤ b
   rw [max_eq_left (sub_nonneg.mpr hab)]
 
-/-- The Vitali set (lifted to {lean}`EuclideanSpace' 1`) is not Lebesgue measurable.
-    This is the core of Proposition 1.2.18. -/
+/-- Множество Витали (поднятое в {lean}`EuclideanSpace' 1`) не измеримо по Лебегу.
+    Это и есть суть Proposition 1.2.18. -/
 theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpace' '' VitaliSet) := by
   let E := Real.equiv_EuclideanSpace' '' VitaliSet
   intro hE_meas
-  -- The rationals in [-1,1] form a denumerable set
+  -- Рациональные числа из [-1,1] образуют счётно бесконечное множество
   have hQ_countable : Set.Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := rat_Icc_countable
   have hQ_inf : Set.Infinite {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} :=
     Set.Icc_infinite (by norm_num : (-1 : ℚ) < 1)
-  -- Get bijection from ℕ to the subtype using Denumerable structure
+  -- Получаем биекцию ℕ с этим подтипом через структуру Denumerable
   haveI : Infinite {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := hQ_inf.to_subtype
   haveI : Countable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := hQ_countable.to_subtype
   haveI denumQ : Denumerable {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} := (nonempty_denumerable _).some
-  -- The equivalence ℕ ≃ {q : ℚ | q ∈ [-1,1]}
+  -- Эквивалентность ℕ ≃ {q : ℚ | q ∈ [-1,1]}
   let eqvQ : {q : ℚ | q ∈ Set.Icc (-1 : ℚ) 1} ≃ ℕ := Denumerable.eqv _
-  -- f : ℕ → ℚ is the injective enumeration of rationals in [-1,1]
+  -- f : ℕ → ℚ — инъективная нумерация рациональных чисел из [-1,1]
   let f : ℕ → ℚ := fun n => (eqvQ.symm n : ℚ)
-  -- f is injective
+  -- f инъективна
   have hf_inj : Function.Injective f := Subtype.val_injective.comp eqvQ.symm.injective
-  -- f n is in [-1,1] for all n
+  -- f n лежит в [-1,1] для всех n
   have hf_mem : ∀ n, f n ∈ Set.Icc (-1 : ℚ) 1 := fun n => (eqvQ.symm n).2
-  -- f has range = {q | q ∈ [-1,1]}
+  -- Образ f совпадает с {q | q ∈ [-1,1]}
   have hf_range : {q | q ∈ Set.Icc (-1 : ℚ) 1} = Set.range f := by
     ext q
     simp only [Set.mem_setOf_eq, Set.mem_range, f]
@@ -174,18 +174,18 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
     · intro ⟨n, hn⟩
       rw [← hn]
       exact (eqvQ.symm n).2
-  -- Define the family of translates
+  -- Определяем семейство сдвигов
   let qSeq : ℕ → ℚ := f
   let translateE : ℕ → Set (EuclideanSpace' 1) := fun n => E + {Real.equiv_EuclideanSpace' (qSeq n)}
-  -- Each translate is measurable by translation invariance
+  -- Каждый сдвиг измерим в силу инвариантности меры относительно сдвигов
   have hmes : ∀ n, LebesgueMeasurable (translateE n) := fun n =>
     (LebesgueMeasurable.translate E _).mp hE_meas
-  -- Translates are pairwise disjoint
+  -- Сдвиги попарно не пересекаются
   have hdisj : Set.univ.PairwiseDisjoint translateE := by
     intro i _ j _ hij
     simp only [Function.onFun, Set.disjoint_iff]
     intro z ⟨hz1, hz2⟩
-    -- z ∈ E + {q_i} and z ∈ E + {q_j}
+    -- z ∈ E + {q_i} и z ∈ E + {q_j}
     rw [Set.mem_add] at hz1 hz2
     obtain ⟨x1, hx1, r1, hr1, hz1_eq⟩ := hz1
     obtain ⟨x2, hx2, r2, hr2, hz2_eq⟩ := hz2
@@ -196,7 +196,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
     obtain ⟨v2, hv2, hx2_eq⟩ := hx2
     -- z = x1 + Real.equiv_EuclideanSpace' (qSeq i)
     -- z = x2 + Real.equiv_EuclideanSpace' (qSeq j)
-    -- Extract the 0-th coordinate to get v1 + qSeq i = v2 + qSeq j
+    -- Извлекаем нулевую координату, чтобы получить v1 + qSeq i = v2 + qSeq j
     have heq : v1 + (qSeq i : ℝ) = v2 + (qSeq j : ℝ) := by
       have h1 : z 0 = v1 + (qSeq i : ℝ) := by
         rw [← hz1_eq, ← hx1_eq]
@@ -205,61 +205,61 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
         rw [← hz2_eq, ← hx2_eq]
         rfl
       linarith
-    -- This means v1 and v2 are in the same coset (differ by a rational)
+    -- Это означает, что v1 и v2 лежат в одном классе смежности (отличаются на рациональное число)
     have h_same_coset : QuotientAddGroup.mk (s := Rat.addSubgroup) v1 =
         QuotientAddGroup.mk (s := Rat.addSubgroup) v2 := by
       rw [QuotientAddGroup.eq]
       use qSeq i - qSeq j
       simp only [Rat.cast_sub]
       linarith
-    -- But VitaliSet has exactly one element from each coset
+    -- Но множество Витали содержит ровно один элемент из каждого класса смежности
     obtain ⟨c1, hc1⟩ := hv1
     obtain ⟨c2, hc2⟩ := hv2
     have hc1_spec := (coset_intersects_unit_interval c1).choose_spec.2
     have hc2_spec := (coset_intersects_unit_interval c2).choose_spec.2
-    -- c1 = c2 since v1, v2 represent the same coset
+    -- c1 = c2, так как v1, v2 представляют один и тот же класс смежности
     have hc_eq : c1 = c2 := by
       rw [← hc1, ← hc2] at h_same_coset
       rw [← hc1_spec, ← hc2_spec]
       exact h_same_coset
     subst hc_eq
-    -- So v1 = v2
+    -- Значит v1 = v2
     have hv_eq : v1 = v2 := hc1.symm.trans hc2
-    -- Therefore qSeq i = qSeq j
+    -- Следовательно qSeq i = qSeq j
     have hq_eq : (qSeq i : ℝ) = qSeq j := by linarith [heq, hv_eq]
-    -- So i = j (since f is injective)
+    -- Значит i = j (так как f инъективна)
     have hqi_eq : qSeq i = qSeq j := Rat.cast_injective hq_eq
     exact hij (hf_inj hqi_eq)
-  -- By countable additivity
+  -- В силу счётной аддитивности
   have h_union_measure : Lebesgue_measure (⋃ n, translateE n) = ∑' n, Lebesgue_measure (translateE n) :=
     Lebesgue_measure.countable_union hmes hdisj
-  -- By translation invariance, all translates have the same measure
+  -- В силу инвариантности меры относительно сдвигов у всех сдвигов одна и та же мера
   have h_translate_measure : ∀ n, Lebesgue_measure (translateE n) = Lebesgue_measure E := fun n =>
     Lebesgue_measure.translate _ hE_meas
-  -- We proceed by cases on whether m(E) = 0
+  -- Рассмотрим два случая: m(E) = 0 или m(E) > 0
   by_cases hE_zero : Lebesgue_measure E = 0
-  · -- Case m(E) = 0 : Then m(⋃) = 0, but ⋃ covers [0,1], so m(⋃) ≥ 1
+  · -- Случай m(E) = 0 : тогда m(⋃) = 0, но ⋃ покрывает [0,1], поэтому m(⋃) ≥ 1
     have h_sum_zero : ∑' n, Lebesgue_measure (translateE n) = 0 := by
       simp only [h_translate_measure, hE_zero]
       exact tsum_zero
     rw [h_sum_zero] at h_union_measure
-    -- The union covers [0,1] (after conversion)
+    -- Объединение покрывает [0,1] (после преобразования)
     have h_cover : Real.equiv_EuclideanSpace' '' Set.Icc 0 1 ⊆ ⋃ n, translateE n := by
       intro z hz
       obtain ⟨y, hy, rfl⟩ := hz
-      -- y ∈ [0,1], so by unit_interval_covered_by_translates, y ∈ ⋃_q (VitaliSet + {q})
+      -- y ∈ [0,1], значит по unit_interval_covered_by_translates, y ∈ ⋃_q (VitaliSet + {q})
       have hy_covered := unit_interval_covered_by_translates hy
       rw [Set.mem_iUnion] at hy_covered
       obtain ⟨q, hq⟩ := hy_covered
       rw [Set.mem_iUnion] at hq
       obtain ⟨hq_bound, hy_mem⟩ := hq
-      -- q ∈ [-1,1], so q = f n for some n
+      -- q ∈ [-1,1], значит q = f n для некоторого n
       have hq_in_range : q ∈ {r : ℚ | r ∈ Set.Icc (-1 : ℚ) 1} := hq_bound
       rw [hf_range] at hq_in_range
       obtain ⟨n, rfl⟩ := hq_in_range
       rw [Set.mem_iUnion]
       use n
-      -- y ∈ VitaliSet + {q}, so Real.equiv_EuclideanSpace' y ∈ E + {Real.equiv_EuclideanSpace' q}
+      -- y ∈ VitaliSet + {q}, значит Real.equiv_EuclideanSpace' y ∈ E + {Real.equiv_EuclideanSpace' q}
       rw [Set.mem_add] at hy_mem ⊢
       obtain ⟨v, hv, r, hr, hy_eq⟩ := hy_mem
       rw [Set.mem_singleton_iff] at hr
@@ -272,8 +272,8 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
       · rfl
       · ext i
         fin_cases i
-        -- Goal: (Real.equiv_EuclideanSpace' v + Real.equiv_EuclideanSpace' (f n)) 0 = Real.equiv_EuclideanSpace' y 0
-        -- Both sides equal y by hy_eq: v + f n = y
+        -- Цель: (Real.equiv_EuclideanSpace' v + Real.equiv_EuclideanSpace' (f n)) 0 = Real.equiv_EuclideanSpace' y 0
+        -- Обе стороны равны y по hy_eq: v + f n = y
         have hlhs : (Real.equiv_EuclideanSpace' v + Real.equiv_EuclideanSpace' (f n : ℝ)) ⟨0, by omega⟩ = v + (f n : ℝ) := rfl
         have hrhs : (Real.equiv_EuclideanSpace' y) ⟨0, by omega⟩ = y := rfl
         rw [hlhs, hrhs, hy_eq]
@@ -287,22 +287,22 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
             Lebesgue_outer_measure.mono h_cover
         _ = 1 := h_interval_measure
     rw [h_union_measure] at h_ge_one
-    -- 1 ≤ 0 is a contradiction
+    -- 1 ≤ 0 — противоречие
     exact absurd h_ge_one (by norm_num : ¬(1 : EReal) ≤ 0)
-  · -- Case m(E) > 0 : Then ∑ m(E) = ∞, but m(⋃) ≤ 3
-    -- The measure is nonnegative
+  · -- Случай m(E) > 0 : тогда ∑ m(E) = ∞, но m(⋃) ≤ 3
+    -- Мера неотрицательна
     have hE_nonneg : 0 ≤ Lebesgue_measure E := Lebesgue_outer_measure.nonneg E
     have hE_pos : 0 < Lebesgue_measure E := by
       cases' (hE_nonneg.lt_or_eq) with h h
       · exact h
       · exact absurd h.symm hE_zero
-    -- The sum of infinitely many positive values is ∞
+    -- Сумма бесконечно многих положительных значений равна ∞
     have h_sum_top : ∑' n, Lebesgue_measure (translateE n) = ⊤ := by
       simp only [h_translate_measure]
-      -- ∑' n, m(E) = ⊤ when m(E) > 0 and we sum over an infinite type
+      -- ∑' n, m(E) = ⊤, когда m(E) > 0, и суммирование идёт по бесконечному типу
       exact EReal.tsum_const_eq_top_of_pos hE_pos
     rw [h_sum_top] at h_union_measure
-    -- But the union is bounded: ⋃ translateE ⊆ [-1,2]
+    -- Но объединение ограничено: ⋃ translateE ⊆ [-1,2]
     have h_bounded : ⋃ n, translateE n ⊆ Real.equiv_EuclideanSpace' '' Set.Icc (-1) 2 := by
       intro z hz
       rw [Set.mem_iUnion] at hz
@@ -324,7 +324,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
           linarith [hv_in.2]
       · ext i
         fin_cases i
-        -- Goal: Real.equiv_EuclideanSpace' (v + qSeq n) 0 = z 0
+        -- Цель: Real.equiv_EuclideanSpace' (v + qSeq n) 0 = z 0
         have hlhs : (Real.equiv_EuclideanSpace' (v + (qSeq n : ℝ))) ⟨0, by omega⟩ = v + (qSeq n : ℝ) := rfl
         have hrhs : z ⟨0, by omega⟩ = (Real.equiv_EuclideanSpace' v + Real.equiv_EuclideanSpace' (qSeq n : ℝ)) ⟨0, by omega⟩ := by
           rw [← hz_eq]
@@ -339,7 +339,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
             Lebesgue_outer_measure.mono h_bounded
         _ = 3 := h_interval_measure2
     rw [h_union_measure] at h_le_three
-    -- ⊤ ≤ 3 is a contradiction
+    -- ⊤ ≤ 3 — противоречие
     have h_three_ne_top : (3 : EReal) ≠ ⊤ := by decide
     exact h_three_ne_top (le_antisymm le_top h_le_three)
 
@@ -353,9 +353,9 @@ theorem LebesgueMeasurable.nonmeasurable : ∃ E : Set (EuclideanSpace' 1), E �
     exact ⟨r, VitaliSet_subset_unit_interval hr, rfl⟩
   · exact VitaliSet.nonmeasurable
 
-/-- Exercise 1.2.26 (Outer measure is not finitely additive). -/
+/-- Exercise 1.2.26 (внешняя мера не является конечно аддитивной). -/
 example : ∃ E F : Set (EuclideanSpace' 1), E ∩ F = ∅ ∧ Bornology.IsBounded E ∧ Bornology.IsBounded F ∧ Lebesgue_outer_measure (E ∪ F) ≠ Lebesgue_outer_measure E + Lebesgue_outer_measure F := by
   sorry
 
-/-- Exercise 1.2.27 (Projections of measurable sets need not be measurable) -/
+/-- Exercise 1.2.27 (проекции измеримых множеств не обязаны быть измеримыми) -/
 example : ∃ E : Set (EuclideanSpace' 2), LebesgueMeasurable E ∧ ¬ LebesgueMeasurable ((fun x ↦ Real.equiv_EuclideanSpace' (x 0 : ℝ)) '' E) := by sorry

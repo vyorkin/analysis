@@ -2,17 +2,17 @@ import Analysis.MeasureTheory.Section_1_3_4
 import Mathlib.Topology.UrysohnsLemma
 
 /-!
-# Introduction to Measure Theory, Section 1.3.5: Littlewood's three principles
+# Введение в теорию меры, раздел 1.3.5: три принципа Литлвуда
 
-A companion to (the introduction to) Section 1.3.5 of the book "An introduction to Measure Theory".
+Сопровождение к (введению в) раздел 1.3.5 книги «An introduction to Measure Theory».
 
 -/
 
-/-- Helper: extract a simple function approximation from the sSup definition of the unsigned integral.
-  Given an unsigned absolutely integrable f and ε > 0, there exists a simple g ≤ f pointwise
-  whose integral is within ε of the integral of f. -/
+/-- Вспомогательная лемма: извлечь приближение простой функцией из определения sSup для
+  беззнакового интеграла. Если f беззнаково абсолютно интегрируема и ε > 0, то существует
+  простая g ≤ f поточечно, чей интеграл отличается от интеграла f не более чем на ε. -/
 private lemma unsigned_approx_from_sup {d : ℕ} {f : EuclideanSpace' d → EReal}
-    (hf : UnsignedAbsolutelyIntegrable f) (ε : ℝ) (hε : 0 < ε) : 
+    (hf : UnsignedAbsolutelyIntegrable f) (ε : ℝ) (hε : 0 < ε) :
     ∃ (g : EuclideanSpace' d → EReal) (hg : UnsignedSimpleFunction g),
       (∀ x, g x ≤ f x) ∧
       UnsignedLebesgueIntegral f ≤ hg.integ + ε := by
@@ -22,7 +22,7 @@ private lemma unsigned_approx_from_sup {d : ℕ} {f : EuclideanSpace' d → ERea
   have hL_nonneg : (0 : EReal) ≤ L := UnsignedLebesgueIntegral.nonneg hf.1
   have hL_ne_bot : L ≠ ⊥ :=
     ne_of_gt (lt_of_lt_of_le EReal.bot_lt_zero hL_nonneg)
-  -- L - ε < L (since ε > 0 and L is finite)
+  -- L - ε < L (поскольку ε > 0, а L конечно)
   have hε_ne_bot : (ε : EReal) ≠ ⊥ := EReal.coe_ne_bot ε
   have hε_ne_top : (ε : EReal) ≠ ⊤ := EReal.coe_ne_top ε
   have hL_sub_lt : L - (ε : EReal) < L := by
@@ -31,8 +31,8 @@ private lemma unsigned_approx_from_sup {d : ℕ} {f : EuclideanSpace' d → ERea
       _ < (ε : EReal) + L := EReal.add_lt_add_of_lt_of_le
           (EReal.coe_pos.mpr hε) le_rfl hL_ne_bot hL_ne_top
       _ = L + (ε : EReal) := add_comm _ _
-  -- Extract R from the sSup definition with R > L - ε
-  -- L = sSup S by definition (after unfolding)
+  -- Извлекаем R из определения sSup с условием R > L - ε
+  -- L = sSup S по определению (после разворачивания)
   have hR_exists : ∃ R ∈ { R : EReal | ∃ g : EuclideanSpace' d → EReal,
       ∃ hg : UnsignedSimpleFunction g, ∀ x, g x ≤ f x ∧ R = hg.integ },
       L - (ε : EReal) < R := by
@@ -51,20 +51,21 @@ private lemma unsigned_approx_from_sup {d : ℕ} {f : EuclideanSpace' d → ERea
   exact le_of_lt ((EReal.sub_lt_iff (Or.inl hε_ne_bot)
       (Or.inl hε_ne_top)).mp hR_gt)
 
-/-- Helper: convert an unsigned simple function with finite values to a real simple function. -/
+/-- Вспомогательная лемма: преобразовать беззнаковую простую функцию с конечными значениями
+  в вещественную простую функцию. -/
 private lemma UnsignedSimpleFunction.toRealSimple {d : ℕ} {g : EuclideanSpace' d → EReal}
-    (hg : UnsignedSimpleFunction g) (hfin : ∀ x, g x ≠ ⊤) : 
+    (hg : UnsignedSimpleFunction g) (hfin : ∀ x, g x ≠ ⊤) :
     ∃ (h : EuclideanSpace' d → ℝ), RealSimpleFunction h ∧
       (∀ x, 0 ≤ h x) ∧ (∀ x, (h x : EReal) = g x) := by
-  -- Unpack: g = ∑ i, c_i • indicator(E_i) with c_i ≥ 0, E_i measurable
+  -- Раскрываем: g = ∑ i, c_i • indicator(E_i), где c_i ≥ 0, E_i измеримо
   obtain ⟨k, c, E, hcond, heq⟩ := hg
-  -- Define h = ∑ i, c_i.toReal • indicator'(E_i) as a real function
+  -- Определяем h = ∑ i, c_i.toReal • indicator'(E_i) как вещественную функцию
   set c' : Fin k → ℝ := fun i => (c i).toReal with hc'_def
   set h : EuclideanSpace' d → ℝ := fun x => ∑ i, c' i * (E i).indicator' x with hh_def
   refine ⟨h, ?_, ?_, ?_⟩
   · -- RealSimpleFunction h
     exact ⟨k, c', E, fun i => (hcond i).1, by ext x; simp [hh_def, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]⟩
-  · -- h x ≥ 0 for all x
+  · -- h x ≥ 0 для всех x
     intro x; simp only [hh_def]
     apply Finset.sum_nonneg; intro i _
     apply mul_nonneg
@@ -78,8 +79,8 @@ private lemma UnsignedSimpleFunction.toRealSimple {d : ℕ} {g : EuclideanSpace'
   · -- (h x : EReal) = g x
     intro x
     simp only [hh_def, heq, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-    -- Show term-by-term that the real sum cast to EReal = the EReal sum
-    -- First, prove the casting lemma for sums
+    -- Показываем почленно, что вещественная сумма, приведённая к EReal, равна сумме в EReal
+    -- Сначала доказываем лемму о переносе приведения через сумму
     have hcoe_sum : ∀ (n : ℕ) (a : Fin n → ℝ),
         (↑(∑ i, a i) : EReal) = ∑ i, (↑(a i) : EReal) := by
       intro n a; induction n with
@@ -89,12 +90,12 @@ private lemma UnsignedSimpleFunction.toRealSimple {d : ℕ} {g : EuclideanSpace'
         congr 1; exact ih (fun i => a i.castSucc)
     rw [hcoe_sum]
     congr 1; ext i
-    -- Need: (c'_i * indicator'(E_i)(x) : EReal) = c_i * EReal.indicator(E_i)(x)
+    -- Нужно: (c'_i * indicator'(E_i)(x) : EReal) = c_i * EReal.indicator(E_i)(x)
     by_cases hx : x ∈ E i
-    · -- x ∈ E i : both sides equal c_i (resp. c_i.toReal cast)
+    · -- x ∈ E i : обе стороны равны c_i (соотв. приведению c_i.toReal)
       simp only [hc'_def, Set.indicator', Set.indicator_of_mem hx, mul_one,
         EReal.indicator, Real.EReal_fun]
-      -- Goal: ((c i).toReal : EReal) = c i
+      -- Цель: ((c i).toReal : EReal) = c i
       have hci_ne_bot : c i ≠ ⊥ :=
         ne_of_gt (lt_of_lt_of_le EReal.bot_lt_zero (hcond i).2)
       have hci_ne_top : c i ≠ ⊤ := by
@@ -114,22 +115,22 @@ private lemma UnsignedSimpleFunction.toRealSimple {d : ℕ} {g : EuclideanSpace'
                 · simp [Set.indicator'_of_notMem hxj])) (Finset.mem_univ i)
       rw [show (1 : ℝ).toEReal = (1 : EReal) from rfl, mul_one]
       exact EReal.coe_toReal hci_ne_top hci_ne_bot
-    · -- x ∉ E i : both sides are 0
+    · -- x ∉ E i : обе стороны равны 0
       simp only [Set.indicator'_of_notMem hx, mul_zero, EReal.coe_zero,
         EReal.indicator, Real.EReal_fun, MulZeroClass.mul_zero]
 
-/-- Theorem 1.3.20(i) Approximation of $L^1$ functions by simple functions (real case) -/
+/-- Theorem 1.3.20(i) Приближение функций из $L^1$ простыми функциями (вещественный случай) -/
 theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
-  (ε : ℝ) (hε : 0 < ε) : 
+  (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℝ), RealSimpleFunction g ∧ RealAbsolutelyIntegrable g ∧
     PreL1.norm (f - g) ≤ ε := by
-  -- Step 1: Get approximations for positive and negative parts
+  -- Шаг 1: получаем приближения для положительной и отрицательной частей
   have hε2 : 0 < ε / 2 := half_pos hε
   have hf_pos := hf.pos  -- UnsignedAbsolutelyIntegrable (EReal.pos_fun f)
   have hf_neg := hf.neg  -- UnsignedAbsolutelyIntegrable (EReal.neg_fun f)
   obtain ⟨g_pos, hg_pos, hg_pos_le, hg_pos_bound⟩ := unsigned_approx_from_sup hf_pos (ε / 2) hε2
   obtain ⟨g_neg, hg_neg, hg_neg_le, hg_neg_bound⟩ := unsigned_approx_from_sup hf_neg (ε / 2) hε2
-  -- Step 2: Convert to real simple functions
+  -- Шаг 2: переводим в вещественные простые функции
   have hg_pos_fin : ∀ x, g_pos x ≠ ⊤ := fun x =>
     ne_of_lt (lt_of_le_of_lt (hg_pos_le x) (by
       simp only [EReal.pos_fun]; exact EReal.coe_lt_top _))
@@ -140,12 +141,12 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
     UnsignedSimpleFunction.toRealSimple hg_pos hg_pos_fin
   obtain ⟨h_neg, hh_neg_simple, hh_neg_nonneg, hh_neg_eq⟩ :=
     UnsignedSimpleFunction.toRealSimple hg_neg hg_neg_fin
-  -- Step 3: Define g = h_pos - h_neg
+  -- Шаг 3: определяем g = h_pos - h_neg
   set g : EuclideanSpace' d → ℝ := h_pos - h_neg with hg_def
   have hg_simple : RealSimpleFunction g := by
     rw [show g = h_pos + (-1 : ℝ) • h_neg from by ext x; simp [hg_def, sub_eq_add_neg]]
     exact RealSimpleFunction.add hh_pos_simple (RealSimpleFunction.smul hh_neg_simple (-1))
-  -- Step 4: Show h_pos and h_neg are absolutely integrable
+  -- Шаг 4: показываем, что h_pos и h_neg абсолютно интегрируемы
   have habs_fun_eq_pos : EReal.abs_fun h_pos = g_pos := by
     ext x; simp only [EReal.abs_fun, Real.norm_eq_abs, abs_of_nonneg (hh_pos_nonneg x)]
     exact hh_pos_eq x
@@ -172,20 +173,20 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
         _ < ⊤ := hf_neg.2
   have hg_ai : RealAbsolutelyIntegrable g := by
     rw [hg_def]; exact RealAbsolutelyIntegrable.sub hh_pos_ai hh_neg_ai
-  -- Step 5: Show the norm bound PreL1.norm (f - g) ≤ ε
+  -- Шаг 5: показываем оценку нормы PreL1.norm (f - g) ≤ ε
   refine ⟨g, hg_simple, hg_ai, ?_⟩
   show UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) ≤ (ε : EReal)
-  -- Auxiliary: h_pos, h_neg bounded by max(f,0), max(-f,0)
+  -- Вспомогательное: h_pos, h_neg ограничены max(f,0), max(-f,0)
   have h_pos_le : ∀ x, h_pos x ≤ max (f x) 0 := fun x =>
     EReal.coe_le_coe_iff.mp (le_trans (le_of_eq (hh_pos_eq x)) (hg_pos_le x))
   have h_neg_le : ∀ x, h_neg x ≤ max (-(f x)) 0 := fun x =>
     EReal.coe_le_coe_iff.mp (le_trans (le_of_eq (hh_neg_eq x)) (hg_neg_le x))
-  -- Pointwise bound: ‖(f - g) x‖ + h_pos x + h_neg x ≤ ‖f x‖
+  -- Поточечная оценка: ‖(f - g) x‖ + h_pos x + h_neg x ≤ ‖f x‖
   have h_pw : ∀ x, ‖(f - g) x‖ + h_pos x + h_neg x ≤ ‖f x‖ := by
     intro x
     simp only [hg_def, Pi.sub_apply, Real.norm_eq_abs]
     rcases le_or_gt 0 (f x) with hfx | hfx
-    · -- f x ≥ 0 : max(-f x, 0) = 0, so h_neg x = 0
+    · -- f x ≥ 0 : max(-f x, 0) = 0, поэтому h_neg x = 0
       have hb0 : h_neg x = 0 :=
         le_antisymm (by linarith [h_neg_le x, max_eq_right (neg_nonpos.mpr hfx)])
           (hh_neg_nonneg x)
@@ -194,7 +195,7 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
       rw [hb0]; simp only [sub_zero, add_zero]
       rw [abs_of_nonneg hfx, abs_of_nonneg (sub_nonneg.mpr ha_le_fx)]
       linarith
-    · -- f x < 0 : max(f x, 0) = 0, so h_pos x = 0
+    · -- f x < 0 : max(f x, 0) = 0, поэтому h_pos x = 0
       have ha0 : h_pos x = 0 :=
         le_antisymm (by linarith [h_pos_le x, max_eq_right (le_of_lt hfx)])
           (hh_pos_nonneg x)
@@ -204,13 +205,13 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
       rw [abs_of_neg hfx, show f x - -h_neg x = f x + h_neg x from by ring,
           abs_of_nonpos (by linarith)]
       linarith
-  -- Convert to EReal: abs_fun(f-g)(x) + (g_pos + g_neg)(x) ≤ abs_fun(f)(x)
+  -- Переносим в EReal: abs_fun(f-g)(x) + (g_pos + g_neg)(x) ≤ abs_fun(f)(x)
   have h_pw_e : ∀ x, (EReal.abs_fun (f - g) + (g_pos + g_neg)) x ≤ EReal.abs_fun f x := by
     intro x
     simp only [Pi.add_apply, EReal.abs_fun]
     rw [← hh_pos_eq x, ← hh_neg_eq x, ← EReal.coe_add, ← EReal.coe_add]
     exact EReal.coe_le_coe_iff.mpr (by linarith [h_pw x])
-  -- Measurability
+  -- Измеримость
   have hm_gp : UnsignedMeasurable g_pos := hg_pos.unsignedMeasurable
   have hm_gn : UnsignedMeasurable g_neg := hg_neg.unsignedMeasurable
   have hm_gp_gn : UnsignedMeasurable (g_pos + g_neg) := hm_gp.add hm_gn
@@ -220,11 +221,11 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
     (RealAbsolutelyIntegrable.abs _ hf).1
   have hm_sum : UnsignedMeasurable (EReal.abs_fun (f - g) + (g_pos + g_neg)) :=
     hm_abs_fg.add hm_gp_gn
-  -- Monotonicity: ∫(abs_fun(f-g) + (g_pos + g_neg)) ≤ ∫(abs_fun f)
+  -- Монотонность: ∫(abs_fun(f-g) + (g_pos + g_neg)) ≤ ∫(abs_fun f)
   have h_mono : UnsignedLebesgueIntegral (EReal.abs_fun (f - g) + (g_pos + g_neg)) ≤
       UnsignedLebesgueIntegral (EReal.abs_fun f) :=
     LowerUnsignedLebesgueIntegral.mono hm_sum hm_abs_f (AlmostAlways.ofAlways h_pw_e)
-  -- Additivity: ∫(abs_fun(f-g) + (g_pos + g_neg)) = ∫abs_fun(f-g) + ∫(g_pos + g_neg)
+  -- Аддитивность: ∫(abs_fun(f-g) + (g_pos + g_neg)) = ∫abs_fun(f-g) + ∫(g_pos + g_neg)
   have h_add_lhs : UnsignedLebesgueIntegral (EReal.abs_fun (f - g) + (g_pos + g_neg)) =
       UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) +
       UnsignedLebesgueIntegral (g_pos + g_neg) :=
@@ -233,7 +234,7 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
   have h_add_gp_gn : UnsignedLebesgueIntegral (g_pos + g_neg) =
       UnsignedLebesgueIntegral g_pos + UnsignedLebesgueIntegral g_neg :=
     LowerUnsignedLebesgueIntegral.add hm_gp hm_gn hm_gp_gn
-  -- Simple integrals
+  -- Интегралы простых функций
   have h_gp_integ : UnsignedLebesgueIntegral g_pos = hg_pos.integ :=
     LowerUnsignedLebesgueIntegral.eq_simpleIntegral hg_pos
   have h_gn_integ : UnsignedLebesgueIntegral g_neg = hg_neg.integ :=
@@ -254,7 +255,7 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
     rw [h_abs_eq]
     exact LowerUnsignedLebesgueIntegral.add hf_pos.1 hf_neg.1
       (by rw [← h_abs_eq]; exact hm_abs_f)
-  -- Set C = ∫(g_pos + g_neg) = hg_pos.integ + hg_neg.integ
+  -- Полагаем C = ∫(g_pos + g_neg) = hg_pos.integ + hg_neg.integ
   set C := UnsignedLebesgueIntegral (g_pos + g_neg) with hC_def
   have hC_eq : C = hg_pos.integ + hg_neg.integ := by
     have := h_add_gp_gn; rw [h_gp_integ, h_gn_integ] at this; exact this
@@ -273,7 +274,7 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
   have hC_ne_top : C ≠ ⊤ := ne_of_lt hC_lt_top
   have hC_nonneg : (0 : EReal) ≤ C := UnsignedLebesgueIntegral.nonneg hm_gp_gn
   have hC_ne_bot : C ≠ ⊥ := ne_of_gt (lt_of_lt_of_le EReal.bot_lt_zero hC_nonneg)
-  -- Upper bound: ∫|f| ≤ C + ε
+  -- Верхняя оценка: ∫|f| ≤ C + ε
   have h_upper : UnsignedLebesgueIntegral (EReal.abs_fun f) ≤ C + (ε : EReal) := by
     rw [h_abs_add, hC_eq]
     calc UnsignedLebesgueIntegral (EReal.pos_fun f) +
@@ -284,14 +285,14 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
           rw [show (ε : EReal) = (↑(ε / 2) : EReal) + (↑(ε / 2) : EReal) from by
             rw [← EReal.coe_add]; congr 1; linarith]
           abel
-  -- Lower bound from monotonicity + additivity
+  -- Нижняя оценка из монотонности и аддитивности
   have h_lower : UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) + C ≤
       UnsignedLebesgueIntegral (EReal.abs_fun f) := by
     calc UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) + C
         ≤ UnsignedLebesgueIntegral (EReal.abs_fun (f - g) + (g_pos + g_neg)) := by
           rw [h_add_lhs]
       _ ≤ UnsignedLebesgueIntegral (EReal.abs_fun f) := h_mono
-  -- Combine and cancel C
+  -- Объединяем и сокращаем C
   have h_combined : UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) + C ≤ C + (ε : EReal) :=
     le_trans h_lower h_upper
   have hC_real : C = (C.toReal : EReal) := (EReal.coe_toReal hC_ne_top hC_ne_bot).symm
@@ -299,18 +300,18 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
   rw [add_comm (↑C.toReal : EReal) (↑ε : EReal)] at h_combined
   exact (EReal.addLECancellable_coe C.toReal).add_le_add_iff_right.mp h_combined
 
-/-- Theorem 1.3.20(i) Approximation of $L^1$ functions by simple functions (complex case) -/
+/-- Theorem 1.3.20(i) Приближение функций из $L^1$ простыми функциями (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
-  (ε : ℝ) (hε : 0 < ε) : 
+  (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), ComplexSimpleFunction g ∧ ComplexAbsolutelyIntegrable g ∧
     PreL1.norm (f - g) ≤ ε := by
-  -- Approximate real and imaginary parts within ε/2
+  -- Приближаем вещественную и мнимую части с точностью ε/2
   have hε2 : 0 < ε / 2 := half_pos hε
   obtain ⟨g_re, hg_re_simple, hg_re_ai, hg_re_norm⟩ :=
     (ComplexAbsolutelyIntegrable.re f hf).approx_by_simple (ε / 2) hε2
   obtain ⟨g_im, hg_im_simple, hg_im_ai, hg_im_norm⟩ :=
     (ComplexAbsolutelyIntegrable.im f hf).approx_by_simple (ε / 2) hε2
-  -- Construct complex approximation g = ↑g_re + I • ↑g_im
+  -- Строим комплексное приближение g = ↑g_re + I • ↑g_im
   set g : EuclideanSpace' d → ℂ :=
     Real.complex_fun g_re + Complex.I • Real.complex_fun g_im with hg_def
   have hg_re_eq : Complex.re_fun g = g_re := by
@@ -329,9 +330,9 @@ theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpa
     apply (ComplexAbsolutelyIntegrable.iff g).mpr
     exact ⟨hg_re_eq ▸ hg_re_ai, hg_im_eq ▸ hg_im_ai⟩
   refine ⟨g, hg_simple, hg_ai, ?_⟩
-  -- Norm bound: PreL1.norm (f - g) ≤ ε
+  -- Оценка нормы: PreL1.norm (f - g) ≤ ε
   show UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) ≤ (ε : EReal)
-  -- Re/Im of f - g
+  -- Re/Im от f - g
   have hfg_re : Complex.re_fun (f - g) = Complex.re_fun f - g_re := by
     ext x; simp only [Complex.re_fun, hg_def, Pi.sub_apply, Pi.add_apply, Pi.smul_apply,
       smul_eq_mul, Real.complex_fun, Complex.sub_re, Complex.add_re, Complex.ofReal_re,
@@ -340,7 +341,7 @@ theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpa
     ext x; simp only [Complex.im_fun, hg_def, Pi.sub_apply, Pi.add_apply, Pi.smul_apply,
       smul_eq_mul, Real.complex_fun, Complex.sub_im, Complex.add_im, Complex.ofReal_im,
       Complex.mul_im, Complex.I_re, Complex.I_im, Complex.ofReal_re]; ring
-  -- Pointwise: |f-g| ≤ |Re(f-g)| + |Im(f-g)|
+  -- Поточечно: |f-g| ≤ |Re(f-g)| + |Im(f-g)|
   have h_bound : ∀ x, EReal.abs_fun (f - g) x ≤
       (EReal.abs_fun (Complex.re_fun (f - g)) + EReal.abs_fun (Complex.im_fun (f - g))) x :=
     fun x => by
@@ -350,17 +351,17 @@ theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpa
         calc ‖(f - g) x‖ ≤ |((f - g) x).re| + |((f - g) x).im| :=
             Complex.norm_le_abs_re_add_abs_im _
           _ = ‖((f - g) x).re‖ + ‖((f - g) x).im‖ := by rw [Real.norm_eq_abs, Real.norm_eq_abs])
-  -- Measurability
+  -- Измеримость
   have hfg_ai := hf.sub hg_ai
   have hfg_re_ai := ComplexAbsolutelyIntegrable.re (f - g) hfg_ai
   have hfg_im_ai := ComplexAbsolutelyIntegrable.im (f - g) hfg_ai
-  -- Monotonicity: ∫|f-g| ≤ ∫(|Re(f-g)| + |Im(f-g)|)
+  -- Монотонность: ∫|f-g| ≤ ∫(|Re(f-g)| + |Im(f-g)|)
   have h_mono : UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) ≤
       UnsignedLebesgueIntegral (EReal.abs_fun (Complex.re_fun (f - g)) +
                                 EReal.abs_fun (Complex.im_fun (f - g))) :=
     LowerUnsignedLebesgueIntegral.mono hfg_ai.abs.1
       (hfg_re_ai.abs.1.add hfg_im_ai.abs.1) (AlmostAlways.ofAlways h_bound)
-  -- Additivity: ∫(|Re(f-g)| + |Im(f-g)|) = ∫|Re(f-g)| + ∫|Im(f-g)|
+  -- Аддитивность: ∫(|Re(f-g)| + |Im(f-g)|) = ∫|Re(f-g)| + ∫|Im(f-g)|
   have h_add : UnsignedLebesgueIntegral (EReal.abs_fun (Complex.re_fun (f - g)) +
       EReal.abs_fun (Complex.im_fun (f - g))) =
       UnsignedLebesgueIntegral (EReal.abs_fun (Complex.re_fun (f - g))) +
@@ -368,12 +369,12 @@ theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpa
     LowerUnsignedLebesgueIntegral.add hfg_re_ai.abs.1 hfg_im_ai.abs.1
       (hfg_re_ai.abs.1.add hfg_im_ai.abs.1)
   rw [h_add] at h_mono
-  -- Rewrite using hfg_re, hfg_im to connect to PreL1.norm
+  -- Переписываем через hfg_re, hfg_im, чтобы связать с PreL1.norm
   rw [show EReal.abs_fun (Complex.re_fun (f - g)) =
         EReal.abs_fun (Complex.re_fun f - g_re) from by rw [hfg_re],
       show EReal.abs_fun (Complex.im_fun (f - g)) =
         EReal.abs_fun (Complex.im_fun f - g_im) from by rw [hfg_im]] at h_mono
-  -- Combine: ≤ ε/2 + ε/2 = ε
+  -- Складываем: ≤ ε/2 + ε/2 = ε
   calc UnsignedLebesgueIntegral (EReal.abs_fun (f - g))
       ≤ UnsignedLebesgueIntegral (EReal.abs_fun (Complex.re_fun f - g_re)) +
         UnsignedLebesgueIntegral (EReal.abs_fun (Complex.im_fun f - g_im)) := h_mono
@@ -386,9 +387,9 @@ def ComplexStepFunction {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop :=
 def RealStepFunction {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop :=
   ∃ (S : Finset (Box d)) (c : S → ℝ), f = ∑ B, (c B • (B.val.toSet).indicator')
 
-/-- Theorem 1.3.20(ii) Approximation of $L^1$ functions by step functions -/
+/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями -/
 
--- Helper: indicator of an elementary set gives a step function
+-- Вспомогательная лемма: индикатор элементарного множества является ступенчатой функцией
 private lemma elementary_indicator_is_step {d : ℕ} {E : Set (EuclideanSpace' d)}
     (hE : IsElementary E) : RealStepFunction E.indicator' := by
   obtain ⟨T, hT_disj, hE_eq⟩ := hE.partition
@@ -419,7 +420,7 @@ private lemma elementary_indicator_is_step {d : ℕ} {E : Set (EuclideanSpace' d
     intro hx_mem
     exact hx (Set.mem_iUnion₂.mpr ⟨B, hB_mem, hx_mem⟩)
 
--- Helper: step functions are closed under scalar multiplication
+-- Вспомогательная лемма: ступенчатые функции замкнуты относительно умножения на скаляр
 private lemma RealStepFunction.smul' {d : ℕ} {f : EuclideanSpace' d → ℝ}
     (hf : RealStepFunction f) (a : ℝ) : RealStepFunction (a • f) := by
   obtain ⟨S, c, hf_eq⟩ := hf
@@ -429,7 +430,7 @@ private lemma RealStepFunction.smul' {d : ℕ} {f : EuclideanSpace' d → ℝ}
     rw [Finset.mul_sum]
     congr 1; ext B; rw [mul_assoc]⟩
 
--- Helper: step functions are closed under addition
+-- Вспомогательная лемма: ступенчатые функции замкнуты относительно сложения
 private lemma RealStepFunction.add' {d : ℕ} {f g : EuclideanSpace' d → ℝ}
     (hf : RealStepFunction f) (hg : RealStepFunction g) : RealStepFunction (f + g) := by
   obtain ⟨S₁, c₁, hf_eq⟩ := hf
@@ -437,18 +438,18 @@ private lemma RealStepFunction.add' {d : ℕ} {f g : EuclideanSpace' d → ℝ}
   refine ⟨S₁ ∪ S₂, fun B =>
     (if h : B.val ∈ S₁ then c₁ ⟨B.val, h⟩ else 0) +
     (if h : B.val ∈ S₂ then c₂ ⟨B.val, h⟩ else 0), ?_⟩
-  -- Rewrite f as sum over S₁ ∪ S₂ (extending c₁ by 0 outside S₁)
+  -- Переписываем f как сумму по S₁ ∪ S₂ (продолжая c₁ нулём вне S₁)
   have hf_union : ∀ x, (∑ B : ↥S₁, c₁ B • (B.val.toSet).indicator') x =
       (∑ B : ↥(S₁ ∪ S₂), (if h : B.val ∈ S₁ then c₁ ⟨B.val, h⟩ else 0) •
         (B.val.toSet).indicator') x := by
     intro x
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-    -- Embed S₁ into S₁ ∪ S₂
+    -- Вкладываем S₁ в S₁ ∪ S₂
     set ι : ↥S₁ → ↥(S₁ ∪ S₂) :=
       fun B => ⟨B.val, Finset.mem_union_left S₂ B.prop⟩
     have hι_inj : Function.Injective ι :=
       fun ⟨a, _⟩ ⟨b, _⟩ h => Subtype.ext (Subtype.mk.inj h)
-    -- The sum over S₁ ∪ S₂ restricts to S₁
+    -- Сумма по S₁ ∪ S₂ сводится к сумме по S₁
     have h_zero : ∀ B : ↥(S₁ ∪ S₂), B ∉ Set.range ι →
         (if h : B.val ∈ S₁ then c₁ ⟨B.val, h⟩ else 0) * (B.val.toSet).indicator' x = 0 := by
       intro ⟨B, hB⟩ hni
@@ -457,7 +458,7 @@ private lemma RealStepFunction.add' {d : ℕ} {f g : EuclideanSpace' d → ℝ}
         exact hni ⟨⟨B, hB₁⟩, Subtype.ext rfl⟩
       simp [this]
     rw [← Finset.sum_filter_of_ne (fun B _ => not_imp_comm.mpr (h_zero B))]
-    -- Show the filter equals the image of univ under ι
+    -- Показываем, что фильтр равен образу univ при ι
     have hfilter : Finset.univ.filter (fun B : ↥(S₁ ∪ S₂) => B ∈ Set.range ι) =
         Finset.univ.image ι := by
       ext ⟨B, hB⟩
@@ -504,7 +505,7 @@ private lemma RealStepFunction.add' {d : ℕ} {f g : EuclideanSpace' d → ℝ}
   rw [hf_union x, hg_union x]
   simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ← add_mul, ← Finset.sum_add_distrib]
 
--- Helper: lift a real step function to a complex step function
+-- Вспомогательная лемма: поднять вещественную ступенчатую функцию до комплексной
 private lemma RealStepFunction.toComplexStep {d : ℕ} {f : EuclideanSpace' d → ℝ}
     (hf : RealStepFunction f) : ComplexStepFunction (Real.complex_fun f) := by
   obtain ⟨S, c, hf_eq⟩ := hf
@@ -516,16 +517,16 @@ private lemma RealStepFunction.toComplexStep {d : ℕ} {f : EuclideanSpace' d �
   congr 1; ext B
   exact Complex.ofReal_mul (c B) ((B.val.toSet).indicator' x)
 
--- Helper: complex step functions are closed under addition
+-- Вспомогательная лемма: комплексные ступенчатые функции замкнуты относительно сложения
 private lemma ComplexStepFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℂ}
-    (hf : ComplexStepFunction f) (hg : ComplexStepFunction g) : 
+    (hf : ComplexStepFunction f) (hg : ComplexStepFunction g) :
     ComplexStepFunction (f + g) := by
   obtain ⟨S₁, c₁, hf_eq⟩ := hf
   obtain ⟨S₂, c₂, hg_eq⟩ := hg
   refine ⟨S₁ ∪ S₂, fun B =>
     (if h : B.val ∈ S₁ then c₁ ⟨B.val, h⟩ else 0) +
     (if h : B.val ∈ S₂ then c₂ ⟨B.val, h⟩ else 0), ?_⟩
-  -- Extend f-sum from S₁ to S₁ ∪ S₂
+  -- Продолжаем сумму по f с S₁ на S₁ ∪ S₂
   have hf_union : ∀ x, (∑ B : ↥S₁, c₁ B • Complex.indicator (B.val.toSet)) x =
       (∑ B : ↥(S₁ ∪ S₂), (if h : B.val ∈ S₁ then c₁ ⟨B.val, h⟩ else 0) •
         Complex.indicator (B.val.toSet)) x := by
@@ -546,7 +547,7 @@ private lemma ComplexStepFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℂ
         Finset.mem_image, Set.mem_range]
     rw [hfilter, Finset.sum_image (fun _ _ _ _ h => hι_inj h)]
     apply Finset.sum_congr rfl; intro ⟨B, hB⟩ _; simp only [ι, hB, dite_true]
-  -- Extend g-sum from S₂ to S₁ ∪ S₂
+  -- Продолжаем сумму по g с S₂ на S₁ ∪ S₂
   have hg_union : ∀ x, (∑ B : ↥S₂, c₂ B • Complex.indicator (B.val.toSet)) x =
       (∑ B : ↥(S₁ ∪ S₂), (if h : B.val ∈ S₂ then c₂ ⟨B.val, h⟩ else 0) •
         Complex.indicator (B.val.toSet)) x := by
@@ -580,7 +581,7 @@ private lemma ComplexStepFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℂ
   rw [hf_union x, hg_union x]
   simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ← add_mul, ← Finset.sum_add_distrib]
 
--- Helper: complex step functions are closed under scalar multiplication
+-- Вспомогательная лемма: комплексные ступенчатые функции замкнуты относительно умножения на скаляр
 private lemma ComplexStepFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℂ}
     (hf : ComplexStepFunction f) (a : ℂ) : ComplexStepFunction (a • f) := by
   obtain ⟨S, c, hf_eq⟩ := hf
@@ -590,7 +591,7 @@ private lemma ComplexStepFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℂ}
     rw [Finset.mul_sum]
     congr 1; ext B; rw [mul_assoc]⟩
 
--- Helper: the zero function is real absolutely integrable
+-- Вспомогательная лемма: нулевая функция вещественно абсолютно интегрируема
 private lemma RealAbsolutelyIntegrable.zero_fun {d : ℕ} : 
     RealAbsolutelyIntegrable (0 : EuclideanSpace' d → ℝ) := by
   constructor
@@ -607,7 +608,7 @@ private lemma RealAbsolutelyIntegrable.zero_fun {d : ℕ} :
     calc h_simple.integ = 0 := UnsignedSimpleFunction.integ_zero
       _ < ⊤ := EReal.zero_lt_top
 
--- Helper: PreL1.norm of zero ≤ any nonneg EReal value
+-- Вспомогательная лемма: PreL1.norm нуля ≤ любого неотрицательного значения EReal
 private lemma PreL1.norm_zero_le {d : ℕ} {a : EReal} (ha : 0 ≤ a) : 
     PreL1.norm (0 : EuclideanSpace' d → ℝ) ≤ a := by
   unfold PreL1.norm
@@ -621,7 +622,7 @@ private lemma PreL1.norm_zero_le {d : ℕ} {a : EReal} (ha : 0 ≤ a) :
     UnsignedSimpleFunction.integ_zero]
   exact ha
 
--- Helper: smul indicator is absolutely integrable when support has finite measure
+-- Вспомогательная лемма: скалярно умноженный индикатор абсолютно интегрируем, если носитель имеет конечную меру
 private lemma RealAbsolutelyIntegrable.smul_indicator {d : ℕ}
     {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E)
     (c : ℝ) (hfin : c ≠ 0 → Lebesgue_measure E < ⊤) : 
@@ -639,7 +640,7 @@ private lemma RealAbsolutelyIntegrable.smul_indicator {d : ℕ}
             exact hx (by rw [Set.indicator'_of_notMem h_not, mul_zero]))
         _ < ⊤ := hfin hc))
 
--- Helper: PreL1.norm of scalar * indicator of symmDiff
+-- Вспомогательная лемма: PreL1.norm от скаляра, умноженного на индикатор symmDiff
 private lemma PreL1.norm_smul_indicator_symmDiff_le {d : ℕ}
     {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F)
     (c : ℝ) : 
@@ -650,27 +651,27 @@ private lemma PreL1.norm_smul_indicator_symmDiff_le {d : ℕ}
   have hSD_simple := UnsignedSimpleFunction.indicator hSD
   have hc_nn : (Real.toEReal |c|) ≥ 0 := by exact_mod_cast abs_nonneg c
   have h_simple := hSD_simple.smul hc_nn
-  -- Pointwise: |c * indicator'_E(x) - c * indicator'_F(x)| = |c| * indicator'_{E△F}(x)
+  -- Поточечно: |c * indicator'_E(x) - c * indicator'_F(x)| = |c| * indicator'_{E△F}(x)
   have h_pw : EReal.abs_fun (c • E.indicator' - c • F.indicator') =
       (Real.toEReal |c|) • (Real.toEReal ∘ (symmDiff E F).indicator') := by
     funext x
     simp only [EReal.abs_fun, Pi.smul_apply, Pi.sub_apply, smul_eq_mul, Function.comp]
     by_cases hxE : x ∈ E <;> by_cases hxF : x ∈ F <;>
       simp [symmDiff_def, hxE, hxF]
-  -- Compute: ∫|f| = |c| • ∫indicator(E△F) = |c| * μ(E△F)
+  -- Вычисляем: ∫|f| = |c| • ∫indicator(E△F) = |c| * μ(E△F)
   unfold PreL1.norm UnsignedLebesgueIntegral
   rw [h_pw, LowerUnsignedLebesgueIntegral.eq_simpleIntegral h_simple,
     UnsignedSimpleFunction.integral_smul hSD_simple hc_nn,
     UnsignedSimpleFunction.integral_indicator hSD]
   unfold Lebesgue_measure; exact le_refl _
 
--- Helper: triangle inequality for PreL1.norm
+-- Вспомогательная лемма: неравенство треугольника для PreL1.norm
 private lemma PreL1.norm_sub_le_add {d : ℕ} {f g h : EuclideanSpace' d → ℝ}
     (hfg_ai : RealAbsolutelyIntegrable (f - g))
     (hgh_ai : RealAbsolutelyIntegrable (g - h))
-    (hfg : PreL1.norm (f - g) ≤ a) (hgh : PreL1.norm (g - h) ≤ b) : 
+    (hfg : PreL1.norm (f - g) ≤ a) (hgh : PreL1.norm (g - h) ≤ b) :
     PreL1.norm (f - h) ≤ a + b := by
-  -- Key: f - h = (f - g) + (g - h), so |f-h| ≤ |f-g| + |g-h| pointwise
+  -- Ключевой момент: f - h = (f - g) + (g - h), поэтому |f-h| ≤ |f-g| + |g-h| поточечно
   have h_eq : f - h = (f - g) + (g - h) := by ext x; simp [Pi.sub_apply]
   have hfh_ai : RealAbsolutelyIntegrable (f - h) := h_eq ▸ hfg_ai.add hgh_ai
   have h_le : ∀ x, EReal.abs_fun (f - h) x ≤
@@ -682,26 +683,27 @@ private lemma PreL1.norm_sub_le_add {d : ℕ} {f g h : EuclideanSpace' d → ℝ
   have hfg_abs := RealAbsolutelyIntegrable.abs _ hfg_ai
   have hgh_abs := RealAbsolutelyIntegrable.abs _ hgh_ai
   have hfh_abs := RealAbsolutelyIntegrable.abs _ hfh_ai
-  -- Monotonicity: ∫|f-h| ≤ ∫(|f-g| + |g-h|)
+  -- Монотонность: ∫|f-h| ≤ ∫(|f-g| + |g-h|)
   have h_mono : UnsignedLebesgueIntegral (EReal.abs_fun (f - h)) ≤
       UnsignedLebesgueIntegral (EReal.abs_fun (f - g) + EReal.abs_fun (g - h)) :=
     LowerUnsignedLebesgueIntegral.mono hfh_abs.1 (hfg_abs.1.add hgh_abs.1)
       (AlmostAlways.ofAlways h_le)
-  -- Additivity: ∫(|f-g| + |g-h|) = ∫|f-g| + ∫|g-h|
+  -- Аддитивность: ∫(|f-g| + |g-h|) = ∫|f-g| + ∫|g-h|
   have h_add : UnsignedLebesgueIntegral (EReal.abs_fun (f - g) + EReal.abs_fun (g - h)) =
       UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) + UnsignedLebesgueIntegral (EReal.abs_fun (g - h)) :=
     LowerUnsignedLebesgueIntegral.add hfg_abs.1 hgh_abs.1 (hfg_abs.1.add hgh_abs.1)
-  -- Combine
+  -- Объединяем
   unfold PreL1.norm at hfg hgh ⊢
   calc UnsignedLebesgueIntegral (EReal.abs_fun (f - h))
       ≤ UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) +
         UnsignedLebesgueIntegral (EReal.abs_fun (g - h)) := by rw [← h_add]; exact h_mono
     _ ≤ a + b := add_le_add hfg hgh
 
--- Main helper: every absolutely integrable simple function can be approximated by a step function
+-- Основная вспомогательная лемма: любую абсолютно интегрируемую простую функцию можно
+-- приблизить ступенчатой функцией
 private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpace' d → ℝ}
     (hg_simple : RealSimpleFunction g) (hg_ai : RealAbsolutelyIntegrable g)
-    (δ : ℝ) (hδ : 0 < δ) : 
+    (δ : ℝ) (hδ : 0 < δ) :
     ∃ (h : EuclideanSpace' d → ℝ), RealStepFunction h ∧ RealAbsolutelyIntegrable h ∧
       PreL1.norm (g - h) ≤ δ := by
   obtain ⟨k, c, E, hE_meas, hg_eq⟩ := hg_simple
@@ -712,16 +714,16 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
     · exact ⟨∅, fun x => (Finset.notMem_empty x.1 x.2).elim, by simp⟩
     · rw [hg_zero, sub_zero]
       exact PreL1.norm_zero_le (EReal.coe_nonneg.mpr (le_of_lt hδ))
-  · -- Case k ≠ 0 : use disjoint representation and approximate each atom
-    -- Step 1: Get disjoint representation of g
+  · -- Случай k ≠ 0 : используем разбиение на непересекающиеся множества и приближаем каждый атом
+    -- Шаг 1: получаем представление g через непересекающиеся множества
     have hg_simple' : RealSimpleFunction g := ⟨k, c, E, hE_meas, hg_eq⟩
     obtain ⟨n, v, A, hA_meas, hA_disj, hg_eq'⟩ := hg_simple'.disjoint_representation
-    -- Step 2: Show Lebesgue_measure (Support g) < ⊤
+    -- Шаг 2: показываем, что Lebesgue_measure (Support g) < ⊤
     have hg_abs_int : hg_simple'.AbsolutelyIntegrable :=
       hg_simple'.absolutelyIntegrable_iff'.mpr hg_ai
     have hg_support_fin : Lebesgue_measure (Support g) < ⊤ :=
       hg_simple'.absolutelyIntegrable_iff.mp hg_abs_int
-    -- Step 3: For each j with v j ≠ 0, A j ⊆ Support g, hence finite measure
+    -- Шаг 3: для каждого j с v j ≠ 0 имеем A j ⊆ Support g, значит, конечная мера
     have hA_sub_support : ∀ j, v j ≠ 0 → A j ⊆ Support g := by
       intro j hvj x hx
       rw [Support, Set.mem_setOf_eq, hg_eq']
@@ -740,18 +742,18 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
       calc Lebesgue_measure (A j)
           ≤ Lebesgue_outer_measure (Support g) := Lebesgue_outer_measure.mono (hA_sub_support j hvj)
         _ < ⊤ := hg_support_fin
-    -- Handle n = 0 separately (g = 0 in this case)
+    -- Отдельно рассматриваем случай n = 0 (тогда g = 0)
     by_cases hn : n = 0
-    · -- If n = 0, g = 0, so h = 0 works
+    · -- Если n = 0, то g = 0, и подходит h = 0
       have hg_zero : g = 0 := by
         rw [hg_eq']; subst hn; funext x; simp [Finset.univ_eq_empty]
       refine ⟨0, ?_, RealAbsolutelyIntegrable.zero_fun, ?_⟩
       · exact ⟨∅, fun x => (Finset.notMem_empty x.1 x.2).elim, by simp⟩
       · rw [hg_zero, sub_zero]
         exact PreL1.norm_zero_le (EReal.coe_nonneg.mpr (le_of_lt hδ))
-    -- Step 4: n ≠ 0, choose elementary approximations for each A j
+    -- Шаг 4: n ≠ 0, выбираем элементарные приближения для каждого A j
     · have hn_pos : 0 < (n : ℝ) := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)
-      -- For each j with v j ≠ 0, use TFAE to get elementary F j with small symmDiff
+      -- Для каждого j с v j ≠ 0 применяем TFAE, чтобы получить элементарное F j с малым symmDiff
       have hε_j : ∀ j : Fin n, 0 < δ / (↑n * (|v j| + 1)) := by
         intro j; apply div_pos hδ
         exact mul_pos hn_pos (by linarith [abs_nonneg (v j)])
@@ -769,22 +771,22 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
               (EReal.coe_pos.mpr (hε_j j))
           exact ⟨F, hF_elem, fun _ => hF_bound⟩
       choose F hF_elem hF_bound using hF_exists
-      -- Step 5: Define h = ∑ j : Fin n, v j • (F j).indicator'
+      -- Шаг 5: определяем h = ∑ j : Fin n, v j • (F j).indicator'
       set h : EuclideanSpace' d → ℝ := ∑ j : Fin n, v j • (F j).indicator' with hh_def
-      -- Each F j is elementary, so Lebesgue_outer_measure (F j) < ⊤
+      -- Каждое F j элементарно, поэтому Lebesgue_outer_measure (F j) < ⊤
       have hF_fin : ∀ j : Fin n, Lebesgue_outer_measure (F j) < ⊤ := by
         intro j
         rw [Lebesgue_outer_measure.elementary (F j) (hF_elem j)]
         exact EReal.coe_lt_top _
       refine ⟨h, ?_, ?_, ?_⟩
-      -- Step 6: h is a step function (by Finset induction)
+      -- Шаг 6: h — ступенчатая функция (по индукции на Finset)
       · rw [hh_def]; exact Finset.sum_induction _
           (fun f => RealStepFunction f)
           (fun f g hf hg => RealStepFunction.add' hf hg)
           ⟨∅, fun x => (Finset.notMem_empty x.1 x.2).elim, by simp⟩
           (fun j _ => RealStepFunction.smul'
             (elementary_indicator_is_step (hF_elem j)) (v j))
-      -- Step 7: h is absolutely integrable
+      -- Шаг 7: h абсолютно интегрируема
       · have hh_simple : RealSimpleFunction h :=
           ⟨n, v, fun j => F j,
            fun j => Jordan_measurable.lebesgue
@@ -813,7 +815,7 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
                   rw [← EReal.coe_finset_sum
                     (fun j _ => IsElementary.measure_nonneg (hF_elem j))]
                   exact EReal.coe_lt_top _))
-      -- Step 8: Bound PreL1.norm (g - h) ≤ δ via induction on Finset
+      -- Шаг 8: оцениваем PreL1.norm (g - h) ≤ δ по индукции на Finset
       · have hgh_eq : g - h = ∑ j : Fin n, (v j • (A j).indicator' - v j • (F j).indicator') := by
           rw [hg_eq', hh_def, ← Finset.sum_sub_distrib]
         suffices h_bound : ∀ (S : Finset (Fin n)),
@@ -855,14 +857,14 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
                 congr 1
                 rw [Finset.sum_const, Finset.card_fin, nsmul_eq_mul,
                     mul_div_cancel₀ δ (Nat.cast_ne_zero.mpr hn)]
-        -- Each term v j • (A j).indicator' - v j • (F j).indicator' is absolutely integrable
+        -- Каждое слагаемое v j • (A j).indicator' - v j • (F j).indicator' абсолютно интегрируемо
         have hterm_ai : ∀ j : Fin n, RealAbsolutelyIntegrable
             (v j • (A j).indicator' - v j • (F j).indicator') := fun j =>
           (RealAbsolutelyIntegrable.smul_indicator (hA_meas j) (v j) (hA_fin j)).sub
             (RealAbsolutelyIntegrable.smul_indicator
               (Jordan_measurable.lebesgue (IsElementary.jordanMeasurable (hF_elem j)))
               (v j) (fun _ => hF_fin j))
-        -- Prove the suffices: induction on S
+        -- Доказываем suffices: индукция по S
         intro S
         induction S using Finset.induction with
         | empty =>
@@ -876,7 +878,7 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
           set sum_S := ∑ j ∈ S, (v j • (A j).indicator' - v j • (F j).indicator')
           have hfa_ai : RealAbsolutelyIntegrable f_a := hterm_ai a
           have hsum_ai : RealAbsolutelyIntegrable sum_S := ih.1
-          -- Triangle inequality via PreL1.norm_sub_le_add
+          -- Неравенство треугольника через PreL1.norm_sub_le_add
           have h_eq1 : f_a + sum_S - sum_S = f_a := by
             ext x; simp [f_a, sum_S, Pi.add_apply, Pi.sub_apply]
           have h_eq2 : sum_S - 0 = sum_S := by ext x; simp
@@ -917,16 +919,16 @@ theorem RealAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
 theorem ComplexAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
-  (ε : ℝ) (hε : 0 < ε) : 
+  (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), ComplexStepFunction g ∧ ComplexAbsolutelyIntegrable g ∧
     PreL1.norm (f - g) ≤ ε := by
-  -- Approximate real and imaginary parts within ε/2
+  -- Приближаем вещественную и мнимую части с точностью ε/2
   have hε2 : 0 < ε / 2 := half_pos hε
   obtain ⟨g_re, hg_re_step, hg_re_ai, hg_re_norm⟩ :=
     (ComplexAbsolutelyIntegrable.re f hf).approx_by_step (ε / 2) hε2
   obtain ⟨g_im, hg_im_step, hg_im_ai, hg_im_norm⟩ :=
     (ComplexAbsolutelyIntegrable.im f hf).approx_by_step (ε / 2) hε2
-  -- Construct complex approximation g = ↑g_re + I • ↑g_im
+  -- Строим комплексное приближение g = ↑g_re + I • ↑g_im
   set g : EuclideanSpace' d → ℂ :=
     Real.complex_fun g_re + Complex.I • Real.complex_fun g_im with hg_def
   have hg_re_eq : Complex.re_fun g = g_re := by
@@ -937,17 +939,17 @@ theorem ComplexAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace
     ext x; simp only [Complex.im_fun, hg_def, Pi.add_apply, Pi.smul_apply, smul_eq_mul,
       Real.complex_fun, Complex.add_im, Complex.ofReal_im, Complex.mul_im,
       Complex.I_re, Complex.I_im, Complex.ofReal_re]; ring
-  -- g is a complex step function
+  -- g — комплексная ступенчатая функция
   have hg_step : ComplexStepFunction g :=
     ComplexStepFunction.add
       (RealStepFunction.toComplexStep hg_re_step)
       (ComplexStepFunction.smul (RealStepFunction.toComplexStep hg_im_step) Complex.I)
-  -- g is absolutely integrable
+  -- g абсолютно интегрируема
   have hg_ai : ComplexAbsolutelyIntegrable g := by
     apply (ComplexAbsolutelyIntegrable.iff g).mpr
     exact ⟨hg_re_eq ▸ hg_re_ai, hg_im_eq ▸ hg_im_ai⟩
   refine ⟨g, hg_step, hg_ai, ?_⟩
-  -- Norm bound: PreL1.norm (f - g) ≤ ε
+  -- Оценка нормы: PreL1.norm (f - g) ≤ ε
   show UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) ≤ (ε : EReal)
   have hfg_re : Complex.re_fun (f - g) = Complex.re_fun f - g_re := by
     ext x; simp only [Complex.re_fun, hg_def, Pi.sub_apply, Pi.add_apply, Pi.smul_apply,
@@ -994,11 +996,12 @@ theorem ComplexAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace
 def CompactlySupported {X Y : Type*} [TopologicalSpace X] [Zero Y] (f : X → Y) : Prop :=
   ∃ (K : Set X), IsCompact K ∧ ∀ x, x ∉ K → f x = 0
 
--- Helper: approximate a scaled box indicator by a continuous compactly supported function
-private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : ℝ) (δ : ℝ) (hδ : 0 < δ) : 
+-- Вспомогательная лемма: приблизить индикатор масштабированного бокса непрерывной функцией
+-- с компактным носителем
+private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : ℝ) (δ : ℝ) (hδ : 0 < δ) :
     ∃ (g : EuclideanSpace' d → ℝ), Continuous g ∧ CompactlySupported g ∧
       RealAbsolutelyIntegrable g ∧ PreL1.norm (c • B.toSet.indicator' - g) ≤ δ := by
-  -- Case 1: c = 0, then g = 0 works
+  -- Случай 1: c = 0, тогда подходит g = 0
   by_cases hc : c = 0
   · refine ⟨0, continuous_const, ⟨∅, isCompact_empty, fun x _ => rfl⟩,
       RealAbsolutelyIntegrable.zero_fun, ?_⟩
@@ -1006,8 +1009,8 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
       ext x; simp [hc]
     rw [this]
     exact PreL1.norm_zero_le (EReal.coe_nonneg.mpr (le_of_lt hδ))
-  -- Case 2: c ≠ 0
-  · -- B.toSet is elementary, hence Lebesgue measurable with finite measure
+  -- Случай 2: c ≠ 0
+  · -- B.toSet элементарно, значит измеримо по Лебегу с конечной мерой
     have hB_elem : IsElementary B.toSet := IsElementary.box B
     have hB_meas : LebesgueMeasurable B.toSet :=
       Jordan_measurable.lebesgue (IsElementary.jordanMeasurable hB_elem)
@@ -1015,36 +1018,36 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
       unfold Lebesgue_measure
       rw [Lebesgue_outer_measure.elementary B.toSet hB_elem]
       exact EReal.coe_lt_top _
-    -- Choose ε₀ = δ / (2 * |c|) > 0
+    -- Выбираем ε₀ = δ / (2 * |c|) > 0
     have hc_abs_pos : 0 < |c| := abs_pos.mpr hc
     set ε₀ : ℝ := δ / (2 * |c|) with hε₀_def
     have hε₀ : 0 < ε₀ := div_pos hδ (mul_pos two_pos hc_abs_pos)
-    -- Get compact K ⊆ B.toSet with measure(B.toSet \ K) ≤ ε₀
+    -- Получаем компакт K ⊆ B.toSet с мерой(B.toSet \ K) ≤ ε₀
     have h_tfae_03 := (LebesgueMeasurable.finite_TFAE B.toSet).out 0 3
     obtain ⟨K, hK_compact, hK_sub, hK_bound⟩ :=
       h_tfae_03.mp ⟨hB_meas, hB_fin⟩ (↑ε₀) (EReal.coe_pos.mpr hε₀)
-    -- Get open U ⊇ B.toSet with measure(U \ B.toSet) ≤ ε₀ and finite measure
+    -- Получаем открытое U ⊇ B.toSet с мерой(U \ B.toSet) ≤ ε₀ и конечной мерой
     have h_tfae_01 := (LebesgueMeasurable.finite_TFAE B.toSet).out 0 1
     obtain ⟨U, hU_open, hB_sub_U, hU_fin, hU_diff_bound⟩ :=
       h_tfae_01.mp ⟨hB_meas, hB_fin⟩ (↑ε₀) (EReal.coe_pos.mpr hε₀)
-    -- K ⊆ U (since K ⊆ B.toSet ⊆ U)
+    -- K ⊆ U (поскольку K ⊆ B.toSet ⊆ U)
     have hKU : K ⊆ U := hK_sub.trans hB_sub_U
-    -- K and Uᶜ are disjoint
+    -- K и Uᶜ не пересекаются
     have hKU_disj : Disjoint K Uᶜ :=
       Set.disjoint_compl_right_iff_subset.mpr hKU
-    -- Apply Urysohn: get continuous φ with HasCompactSupport, φ=1 on K, φ=0 outside U
+    -- Применяем лемму Урысона: получаем непрерывную φ с HasCompactSupport, φ=1 на K, φ=0 вне U
     obtain ⟨φ, hφ_one, hφ_zero, hφ_cs, hφ_range⟩ :=
       exists_continuous_one_zero_of_isCompact hK_compact hU_open.isClosed_compl hKU_disj
-    -- Define g = c • φ
+    -- Определяем g = c • φ
     set g : EuclideanSpace' d → ℝ := fun x => c * φ x with hg_def
-    -- Set up notation for the difference
+    -- Вводим обозначение для разности
     set diff : EuclideanSpace' d → ℝ := c • B.toSet.indicator' - g with hdiff_def
-    -- Key properties of φ
+    -- Ключевые свойства φ
     have hφ_zero' : ∀ x, x ∉ U → φ x = 0 := by
       intro x hxU
       have := hφ_zero (show x ∈ Uᶜ from hxU)
       simp at this; exact this
-    -- Pointwise bound: |diff(x)| ≤ |c| and diff = 0 outside U
+    -- Поточечная оценка: |diff(x)| ≤ |c|, и diff = 0 вне U
     have hdiff_bound : ∀ x, ‖diff x‖ ≤ |c| := by
       intro x
       simp only [diff, hg_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
@@ -1065,19 +1068,19 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
       simp only [diff, hg_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
       rw [Set.indicator'_of_notMem (fun h => hxU (hB_sub_U h)), mul_zero,
         hφ_zero' x hxU, mul_zero, sub_self]
-    -- Measurability
+    -- Измеримость
     have hg_meas : RealMeasurable g :=
       (continuous_const.mul φ.continuous).RealMeasurable
     have hcB_ai : RealAbsolutelyIntegrable (c • B.toSet.indicator') :=
       RealAbsolutelyIntegrable.smul_indicator hB_meas c (fun _ => hB_fin)
     have hdiff_meas : RealMeasurable diff := RealMeasurable.sub hcB_ai.1 hg_meas
-    -- Measurability of sets involved
+    -- Измеримость участвующих множеств
     have hBK_meas : LebesgueMeasurable (B.toSet \ K) :=
       hB_meas.inter (hK_compact.isClosed.measurable).complement
     have hUB_meas : LebesgueMeasurable (U \ B.toSet) :=
       (IsOpen.measurable hU_open).inter hB_meas.complement
-    -- Key pointwise bound: |diff(x)| ≤ |c| * (1_{B\K}(x) + 1_{U\B}(x))
-    -- Also: simpler bound |diff(x)| ≤ |c| * 1_U(x) for AI proof
+    -- Ключевая поточечная оценка: |diff(x)| ≤ |c| * (1_{B\K}(x) + 1_{U\B}(x))
+    -- А также: более простая оценка |diff(x)| ≤ |c| * 1_U(x) для доказательства AI
     have h_pw_U : ∀ x, EReal.abs_fun diff x ≤
         ((Real.toEReal |c|) • (Real.toEReal ∘ U.indicator')) x := by
       intro x
@@ -1090,14 +1093,14 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
       · rw [hdiff_support x hxU, norm_zero, Set.indicator'_of_notMem hxU]
         have : Real.toEReal 0 = (0 : EReal) := rfl
         rw [this, mul_zero]
-    -- Tighter pointwise bound (for the norm bound)
+    -- Более точная поточечная оценка (для нужд оценки нормы)
     have h_pw_tight : ∀ x, EReal.abs_fun diff x ≤
         ((Real.toEReal |c|) • ((Real.toEReal ∘ (B.toSet \ K).indicator') +
                                 (Real.toEReal ∘ (U \ B.toSet).indicator'))) x := by
       intro x
       simp only [EReal.abs_fun, Pi.smul_apply, smul_eq_mul, Function.comp, Pi.add_apply]
       by_cases hxK : x ∈ K
-      · -- On K : diff = 0
+      · -- На K : diff = 0
         have hdx : diff x = 0 := by
           simp only [diff, hg_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
           have h1 := hφ_one hxK; simp only [Pi.one_apply] at h1
@@ -1107,7 +1110,7 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
 
         apply add_nonneg <;> exact EReal.coe_nonneg.mpr ((Set.indicator_nonneg (fun _ _ => zero_le_one) x))
       · by_cases hxB : x ∈ B.toSet
-        · -- On B \ K : |diff| ≤ |c|, bound by |c| * 1
+        · -- На B \ K : |diff| ≤ |c|, оцениваем через |c| * 1
           rw [Set.indicator'_of_mem (show x ∈ B.toSet \ K from ⟨hxB, hxK⟩),
             Set.indicator'_of_notMem (show x ∉ U \ B.toSet from fun h => h.2 hxB)]
           have h0 : Real.toEReal 0 = (0 : EReal) := rfl
@@ -1115,18 +1118,18 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
           rw [h1, h0, add_zero, mul_one]
           exact EReal.coe_le_coe_iff.mpr (hdiff_bound x)
         · by_cases hxU : x ∈ U
-          · -- On U \ B : |diff| ≤ |c|, bound by |c| * 1
+          · -- На U \ B : |diff| ≤ |c|, оцениваем через |c| * 1
             rw [Set.indicator'_of_notMem (show x ∉ B.toSet \ K from fun h => hxB h.1),
               Set.indicator'_of_mem (show x ∈ U \ B.toSet from ⟨hxU, hxB⟩)]
             have h0 : Real.toEReal 0 = (0 : EReal) := rfl
             have h1 : Real.toEReal 1 = (1 : EReal) := rfl
             rw [h0, h1, zero_add, mul_one]
             exact EReal.coe_le_coe_iff.mpr (hdiff_bound x)
-          · -- Outside U : diff = 0
+          · -- Вне U : diff = 0
             rw [hdiff_support x hxU, norm_zero]
             apply mul_nonneg (EReal.coe_nonneg.mpr (abs_nonneg c))
             apply add_nonneg <;> exact EReal.coe_nonneg.mpr ((Set.indicator_nonneg (fun _ _ => zero_le_one) x))
-    -- Derive AI for diff (using the U bound)
+    -- Выводим AI для diff (используя оценку через U)
     have hU_meas : LebesgueMeasurable U := IsOpen.measurable hU_open
     have hU_simple := UnsignedSimpleFunction.indicator hU_meas
     have hc_nn : (Real.toEReal |c|) ≥ 0 := by exact_mod_cast abs_nonneg c
@@ -1163,24 +1166,24 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
                  Or.inl (le_of_lt (EReal.coe_pos.mpr hc_abs_pos)),
                  Or.inl (EReal.coe_ne_top _),
                  Or.inr (ne_of_lt hU_fin)⟩
-    -- g = (c • B.toSet.indicator') - diff, so g is AI
+    -- g = (c • B.toSet.indicator') - diff, поэтому g абсолютно интегрируема
     have hg_ai : RealAbsolutelyIntegrable g := by
       have : g = c • B.toSet.indicator' - diff := by
         ext x; simp [diff, hg_def, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
       rw [this]
       exact hcB_ai.sub hdiff_ai
     refine ⟨g, ?_, ?_, hg_ai, ?_⟩
-    -- g is continuous
+    -- g непрерывна
     · exact continuous_const.mul φ.continuous
-    -- g is compactly supported
+    -- g имеет компактный носитель
     · refine ⟨tsupport φ, hφ_cs, fun x hx => ?_⟩
       simp only [hg_def]
       have : φ x = 0 := by
         by_contra h
         exact hx (subset_tsupport φ (Function.mem_support.mpr h))
       rw [this, mul_zero]
-    -- PreL1.norm bound: PreL1.norm diff ≤ δ
-    · -- Use the tight pointwise bound
+    -- Оценка PreL1.norm: PreL1.norm diff ≤ δ
+    · -- Используем более точную поточечную оценку
       have hBK_simple := UnsignedSimpleFunction.indicator hBK_meas
       have hUB_simple := UnsignedSimpleFunction.indicator hUB_meas
       have hsum_simple : UnsignedSimpleFunction
@@ -1227,14 +1230,15 @@ private lemma Box.scaled_indicator_approx_continuous {d : ℕ} (B : Box d) (c : 
             field_simp
             ring
 
--- Helper: a step function can be approximated by a continuous compactly supported function
+-- Вспомогательная лемма: ступенчатую функцию можно приблизить непрерывной функцией
+-- с компактным носителем
 private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
     {h : EuclideanSpace' d → ℝ} (hh : RealStepFunction h) (_hh_ai : RealAbsolutelyIntegrable h)
-    (δ : ℝ) (hδ : 0 < δ) : 
+    (δ : ℝ) (hδ : 0 < δ) :
     ∃ (g : EuclideanSpace' d → ℝ), Continuous g ∧ CompactlySupported g ∧
       RealAbsolutelyIntegrable g ∧ PreL1.norm (h - g) ≤ δ := by
   obtain ⟨S, c, hh_eq⟩ := hh
-  -- Handle empty finset
+  -- Обрабатываем случай пустого Finset
   by_cases hS : S = ∅
   · have hh_zero : h = 0 := by
       subst hS; rw [hh_eq]; simp [Finset.univ_eq_empty]
@@ -1242,27 +1246,27 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
       RealAbsolutelyIntegrable.zero_fun, ?_⟩
     rw [hh_zero, sub_zero]
     exact PreL1.norm_zero_le (EReal.coe_nonneg.mpr (le_of_lt hδ))
-  -- S is nonempty
+  -- S непусто
   · have hS_nonempty : S.Nonempty := Finset.nonempty_of_ne_empty hS
     have hS_card_pos : 0 < S.card := Finset.Nonempty.card_pos hS_nonempty
     have hS_card_pos_real : 0 < (S.card : ℝ) := Nat.cast_pos.mpr hS_card_pos
-    -- Budget per box
+    -- Бюджет погрешности на один бокс
     have hδ_per : 0 < δ / S.card := div_pos hδ hS_card_pos_real
-    -- For each box B ∈ S, approximate c B • B.val.toSet.indicator' by continuous g_B
+    -- Для каждого бокса B ∈ S приближаем c B • B.val.toSet.indicator' непрерывной g_B
     have h_approx : ∀ B : S, ∃ (g_B : EuclideanSpace' d → ℝ),
         Continuous g_B ∧ CompactlySupported g_B ∧
         RealAbsolutelyIntegrable g_B ∧
         PreL1.norm (c B • B.val.toSet.indicator' - g_B) ≤ δ / S.card :=
       fun B => Box.scaled_indicator_approx_continuous B.val (c B) (δ / S.card) hδ_per
     choose g_B hg_cont hg_cs hg_ai hg_norm using h_approx
-    -- Define g = ∑ B ∈ S, g_B
+    -- Определяем g = ∑ B ∈ S, g_B
     set g : EuclideanSpace' d → ℝ := fun x => ∑ B : S, g_B B x with hg_def
     -- h - g = ∑ B ∈ S, (c B • B.val.toSet.indicator' - g_B B)
     have hfg_eq : h - g = fun x => ∑ B : S, (c B • B.val.toSet.indicator' - g_B B) x := by
       ext x
       simp only [Pi.sub_apply, hg_def, hh_eq, Finset.sum_apply, Pi.smul_apply]
       rw [Finset.sum_sub_distrib]
-    -- Each term is AI
+    -- Каждое слагаемое абсолютно интегрируемо
     have hterm_ai : ∀ B : S,
         RealAbsolutelyIntegrable (c B • B.val.toSet.indicator' - g_B B) :=
       fun B => by
@@ -1275,14 +1279,14 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
         exact (RealAbsolutelyIntegrable.smul_indicator hB_meas (c B) (fun _ => hB_fin)).sub
           (hg_ai B)
     refine ⟨g, ?_, ?_, ?_, ?_⟩
-    -- g is continuous
+    -- g непрерывна
     · show Continuous g
       apply continuous_finset_sum
       intro B _
       exact hg_cont B
-    -- g is compactly supported
+    -- g имеет компактный носитель
     · obtain ⟨B₀, hB₀⟩ := hS_nonempty
-      -- Each g_B has compact support K_B
+      -- У каждой g_B есть компактный носитель K_B
       choose K hK_compact hK_support using fun B => (hg_cs B)
       refine ⟨⋃ B : S, K B, ?_, ?_⟩
       · exact isCompact_iUnion (fun B => (hK_compact B))
@@ -1291,7 +1295,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
         push_neg at hx
         simp only [hg_def]
         exact Finset.sum_eq_zero (fun B _ => hK_support B x (hx B))
-    -- g is AI (sum of AI functions)
+    -- g абсолютно интегрируема (как сумма AI-функций)
     · show RealAbsolutelyIntegrable g
       have hg_eq_sum : g = ∑ B : S, g_B B := by
         ext x; simp [hg_def]
@@ -1300,7 +1304,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
         (fun f g hf hg => hf.add hg) RealAbsolutelyIntegrable.zero_fun
         (fun B _ => hg_ai B)
     -- PreL1.norm (h - g) ≤ δ
-    · -- Set up difference terms
+    · -- Вводим слагаемые разности
       set diff_term : S → (EuclideanSpace' d → ℝ) :=
         fun B => c B • B.val.toSet.indicator' - g_B B with hdiff_term_def
       -- h - g = ∑ diff_term
@@ -1309,7 +1313,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
         simp only [Pi.sub_apply, hh_eq, hg_def, hdiff_term_def, Finset.sum_apply,
           Pi.smul_apply, Pi.sub_apply]
         rw [Finset.sum_sub_distrib]
-      -- Prove by finset induction: AI of partial sum and norm bound
+      -- Доказываем по индукции на Finset: AI частичной суммы и оценку нормы
       suffices h_bound : ∀ (T : Finset S),
           RealAbsolutelyIntegrable (∑ B ∈ T, diff_term B) ∧
           PreL1.norm (∑ B ∈ T, diff_term B) ≤
@@ -1326,7 +1330,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
               rw [Finset.sum_const, Finset.card_univ, Fintype.card_coe,
                 nsmul_eq_mul, mul_div_cancel₀ δ
                   (Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hS_card_pos))]
-      -- Prove the suffices by induction
+      -- Доказываем suffices по индукции
       intro T
       induction T using Finset.induction with
       | empty =>
@@ -1340,7 +1344,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
         have hsum_ai : RealAbsolutelyIntegrable sum_T := ih.1
         constructor
         · exact hfa_ai.add hsum_ai
-        · -- Triangle inequality
+        · -- Неравенство треугольника
           have h_eq1 : (f_a + sum_T) - sum_T = f_a := by
             ext x; simp [f_a, sum_T, Pi.add_apply, Pi.sub_apply]
           have h_eq2 : sum_T - 0 = sum_T := by ext x; simp
@@ -1359,32 +1363,32 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
                 ∑ B ∈ T', PreL1.norm (diff_term B) :=
                 add_le_add le_rfl ih.2
 
-/-- Theorem 1.3.20(iii) Approximation of $L^1$ functions by continuous compactly supported functions -/
+/-- Theorem 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем -/
 theorem RealAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
-    (ε : ℝ) (hε : 0 < ε) : 
+    (ε : ℝ) (hε : 0 < ε) :
     ∃ (g : EuclideanSpace' d → ℝ), Continuous g ∧ CompactlySupported g ∧
         PreL1.norm (f - g) ≤ ε := by
-  -- Step 1: approximate f by step function h
+  -- Шаг 1: приближаем f ступенчатой функцией h
   have hε2 : 0 < ε / 2 := half_pos hε
   obtain ⟨h, hh_step, hh_ai, hh_norm⟩ := hf.approx_by_step (ε / 2) hε2
-  -- Step 4: approximate step function h by continuous compactly supported g
+  -- Шаг 4: приближаем ступенчатую функцию h непрерывной функцией g с компактным носителем
   obtain ⟨g, hg_cont, hg_cs, hg_ai, hg_norm⟩ :=
     RealStepFunction.approx_by_continuous_compact_aux hh_step hh_ai (ε / 2) hε2
-  -- Step 5: combine via triangle inequality
+  -- Шаг 5: объединяем через неравенство треугольника
   refine ⟨g, hg_cont, hg_cs, ?_⟩
   have h_combined := PreL1.norm_sub_le_add (hf.sub hh_ai) (hh_ai.sub hg_ai) hh_norm hg_norm
   calc PreL1.norm (f - g) ≤ ↑(ε / 2) + ↑(ε / 2) := h_combined
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
 theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
-  (ε : ℝ) (hε : 0 < ε) : 
+  (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), Continuous g ∧ CompactlySupported g ∧
     PreL1.norm (f - g) ≤ ε := by
-  -- Approximate real and imaginary parts within ε/2
-  -- Use internal aux helpers to also get RealAbsolutelyIntegrable
+  -- Приближаем вещественную и мнимую части с точностью ε/2
+  -- Используем внутренние вспомогательные леммы, чтобы заодно получить RealAbsolutelyIntegrable
   have hε2 : 0 < ε / 2 := half_pos hε
   have hε4 : 0 < ε / 2 / 2 := half_pos hε2
-  -- Real part: step function approximation then continuous approximation
+  -- Вещественная часть: приближение ступенчатой функцией, затем непрерывное приближение
   obtain ⟨h_re, hh_re_step, hh_re_ai, hh_re_norm⟩ :=
     (ComplexAbsolutelyIntegrable.re f hf).approx_by_step (ε / 2 / 2) hε4
   obtain ⟨g_re, hg_re_cont, hg_re_cs, hg_re_ai, hg_re_norm'⟩ :=
@@ -1395,7 +1399,7 @@ theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : 
     calc PreL1.norm (Complex.re_fun f - g_re)
         ≤ ↑(ε / 2 / 2) + ↑(ε / 2 / 2) := this
       _ = ↑(ε / 2) := by rw [← EReal.coe_add]; congr 1; linarith
-  -- Imaginary part: step function approximation then continuous approximation
+  -- Мнимая часть: приближение ступенчатой функцией, затем непрерывное приближение
   obtain ⟨h_im, hh_im_step, hh_im_ai, hh_im_norm⟩ :=
     (ComplexAbsolutelyIntegrable.im f hf).approx_by_step (ε / 2 / 2) hε4
   obtain ⟨g_im, hg_im_cont, hg_im_cs, hg_im_ai, hg_im_norm'⟩ :=
@@ -1406,7 +1410,7 @@ theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : 
     calc PreL1.norm (Complex.im_fun f - g_im)
         ≤ ↑(ε / 2 / 2) + ↑(ε / 2 / 2) := this
       _ = ↑(ε / 2) := by rw [← EReal.coe_add]; congr 1; linarith
-  -- Construct complex approximation g = ↑g_re + I • ↑g_im
+  -- Строим комплексное приближение g = ↑g_re + I • ↑g_im
   set g : EuclideanSpace' d → ℂ :=
     Real.complex_fun g_re + Complex.I • Real.complex_fun g_im with hg_def
   have hg_re_eq : Complex.re_fun g = g_re := by
@@ -1417,12 +1421,12 @@ theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : 
     ext x; simp only [Complex.im_fun, hg_def, Pi.add_apply, Pi.smul_apply, smul_eq_mul,
       Real.complex_fun, Complex.add_im, Complex.ofReal_im, Complex.mul_im,
       Complex.I_re, Complex.I_im, Complex.ofReal_re]; ring
-  -- g is continuous
+  -- g непрерывна
   have hg_cont : Continuous g := by
     apply Continuous.add
     · exact Complex.continuous_ofReal.comp hg_re_cont
     · exact continuous_const.mul (Complex.continuous_ofReal.comp hg_im_cont)
-  -- g is compactly supported
+  -- g имеет компактный носитель
   have hg_cs : CompactlySupported g := by
     obtain ⟨K_re, hK_re_compact, hK_re_supp⟩ := hg_re_cs
     obtain ⟨K_im, hK_im_compact, hK_im_supp⟩ := hg_im_cs
@@ -1431,12 +1435,12 @@ theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : 
     simp only [hg_def, Pi.add_apply, Pi.smul_apply, smul_eq_mul, Real.complex_fun]
     rw [hK_re_supp x hx.1, hK_im_supp x hx.2]
     simp
-  -- g is absolutely integrable
+  -- g абсолютно интегрируема
   have hg_ai : ComplexAbsolutelyIntegrable g := by
     apply (ComplexAbsolutelyIntegrable.iff g).mpr
     exact ⟨hg_re_eq ▸ hg_re_ai, hg_im_eq ▸ hg_im_ai⟩
   refine ⟨g, hg_cont, hg_cs, ?_⟩
-  -- Norm bound: PreL1.norm (f - g) ≤ ε
+  -- Оценка нормы: PreL1.norm (f - g) ≤ ε
   show UnsignedLebesgueIntegral (EReal.abs_fun (f - g)) ≤ (ε : EReal)
   have hfg_re : Complex.re_fun (f - g) = Complex.re_fun f - g_re := by
     ext x; simp only [Complex.re_fun, hg_def, Pi.sub_apply, Pi.add_apply, Pi.smul_apply,
@@ -1484,7 +1488,7 @@ def UniformlyConvergesTo {X Y : Type*} [PseudoMetricSpace Y] (f : ℕ → X → 
 
 def UniformlyConvergesToOn {X Y : Type*} [PseudoMetricSpace Y] (f : ℕ → X → Y) (g : X → Y) (S : Set X) : Prop := UniformlyConvergesTo (fun n (x : S) ↦ f n x.val) (fun x ↦ g x.val)
 
-/-- Definition 1.3.21 (Locally uniform convergence) -/
+/-- Definition 1.3.21 (локально равномерная сходимость) -/
 def LocallyUniformlyConvergesTo {X Y : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] (f : ℕ → X → Y) (g : X → Y) : Prop :=
   ∀ (K : Set X), Bornology.IsBounded K → UniformlyConvergesToOn f g K
 
@@ -1513,7 +1517,7 @@ example : PointwiseConvergesTo (fun n (x : EuclideanSpace' 1) ↦ if x.toReal > 
 
 example : ¬ LocallyUniformlyConvergesTo (fun n (x : EuclideanSpace' 1) ↦ if x.toReal > 0 then 1 / (n * x.toReal) else 0) (fun x ↦ 0) := by sorry
 
-/-- Theorem 1.3.26 (Egorov's theorem). -/
+/-- Theorem 1.3.26 (теорема Егорова). -/
 theorem PointwiseAeConvergesTo.locallyUniformlyConverges_outside_small {d : ℕ} {f : ℕ → EuclideanSpace' d → ℂ} {g : EuclideanSpace' d → ℂ}
   (hf : ∀ n, ComplexMeasurable (f n))
   (hfg : PointwiseAeConvergesTo f g)
@@ -1522,7 +1526,7 @@ theorem PointwiseAeConvergesTo.locallyUniformlyConverges_outside_small {d : ℕ}
     Lebesgue_measure E ≤ ε ∧
     LocallyUniformlyConvergesToOn f g Eᶜ := by sorry
 
-/-- The exceptional set in Egorov's theorem cannot be taken to be null -/
+/-- Исключительное множество в теореме Егорова нельзя взять нулевой меры -/
 example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSpace' d → ℝ),
     (∀ n, RealMeasurable (f n)) ∧
     PointwiseAeConvergesTo f g ∧
@@ -1530,7 +1534,7 @@ example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSp
       Lebesgue_measure E = 0 →
       ¬ LocallyUniformlyConvergesToOn f g Eᶜ := by sorry
 
-/-- Remark 1.3.27: Local uniform convergence in Egorov's theorem cannot be upgraded to uniform convergence -/
+/-- Remark 1.3.27: локально равномерную сходимость в теореме Егорова нельзя усилить до равномерной сходимости -/
 example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSpace' d → ℝ),
     (∀ n, RealMeasurable (f n)) ∧
     PointwiseAeConvergesTo f g ∧
@@ -1539,7 +1543,7 @@ example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSp
         Lebesgue_measure E ≤ ε →
         ¬ UniformlyConvergesToOn f g Eᶜ := by sorry
 
-/-- But uniform convergence can be recovered on a fixed set of finite measure -/
+/-- Однако равномерную сходимость можно восстановить на фиксированном множестве конечной меры -/
 theorem PointwiseAeConvergesTo.uniformlyConverges_outside_small {d : ℕ} {f : ℕ → EuclideanSpace' d → ℂ} {g : EuclideanSpace' d → ℂ}
   (hf : ∀ n, ComplexMeasurable (f n))
   (hfg : PointwiseAeConvergesTo f g)
@@ -1551,7 +1555,7 @@ theorem PointwiseAeConvergesTo.uniformlyConverges_outside_small {d : ℕ} {f : �
     Lebesgue_measure E ≤ ε ∧
     UniformlyConvergesToOn f g (S ∩ Eᶜ) := by sorry
 
-/-- Theorem 1.3.28 (Lusin's theorem) -/
+/-- Theorem 1.3.28 (теорема Лузина) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1559,7 +1563,7 @@ theorem ComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d : ℕ}
       Lebesgue_measure E ≤ ε ∧
       ∀ x ∉ E, g x = f x := by sorry
 
-/-- Lusin's theorem does not make the original function continuous outside of E -/
+/-- Теорема Лузина не делает исходную функцию непрерывной вне E -/
 example : ∃ (d : ℕ) (f : EuclideanSpace' d → ℝ),
     RealMeasurable f ∧
     ∀ (E : Set (EuclideanSpace' d)), LebesgueMeasurable E → Lebesgue_measure E ≤ 1 →
@@ -1568,7 +1572,7 @@ example : ∃ (d : ℕ) (f : EuclideanSpace' d → ℝ),
 def LocallyComplexAbsolutelyIntegrable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop :=
   ∀ (S : Set (EuclideanSpace' d)), LebesgueMeasurable S ∧ Bornology.IsBounded S → ComplexAbsolutelyIntegrableOn f S
 
-/-- Exercise 1.3.23 (Lusin's theorem only requires local absolute integrability). -/
+/-- Exercise 1.3.23 (теореме Лузина достаточно локальной абсолютной интегрируемости). -/
 theorem LocallyComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : LocallyComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1596,7 +1600,7 @@ theorem UnsignedMeasurable.approx_by_continuous_outside_small {d : ℕ} {f : Euc
       Lebesgue_measure E ≤ ε ∧
       ∀ x ∉ E, g x = f x := by sorry
 
-/-- Exercise 1.3.25 (a) (Littlewood-like principle) -/
+/-- Exercise 1.3.25 (a) (принцип в духе Литлвуда) -/
 theorem ComplexAbsolutelyIntegrable.almost_bounded_support {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1604,7 +1608,7 @@ theorem ComplexAbsolutelyIntegrable.almost_bounded_support {d : ℕ} {f : Euclid
 
 def BoundedOn {X Y : Type*} [PseudoMetricSpace Y] (f : X → Y) (S : Set X) : Prop := Bornology.IsBounded (f '' S)
 
-/-- Exercise 1.3.25 (b) (Littlewood-like principle) -/
+/-- Exercise 1.3.25 (b) (принцип в духе Литлвуда) -/
 theorem ComplexAbsolutelyIntegrable.almost_bounded {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 

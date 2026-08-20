@@ -4,9 +4,9 @@ import Mathlib.Algebra.Order.Floor.Semifield
 set_option doc.verso.suggestions false
 
 /-!
-# Introduction to Measure Theory, Section 1.3.2: Measurable functions
+# Введение в теорию меры, раздел 1.3.2: измеримые функции
 
-A companion to (the introduction to) Section 1.3.2 of the book "An introduction to Measure Theory".
+Сопровождение (введения) к разделу 1.3.2 книги "An introduction to Measure Theory".
 
 -/
 
@@ -14,7 +14,7 @@ def Unsigned {X Y : Type*} [LE Y] [Zero Y] (f : X → Y) : Prop := ∀ x, f x �
 
 def PointwiseConvergesTo {X Y : Type*} [TopologicalSpace Y] (f : ℕ → X → Y) (g : X → Y) : Prop := ∀ x, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x))
 
-/-- Definition 1.3.8 (Unsigned measurable function) -/
+/-- Definition 1.3.8 (беззнаково измеримая функция) -/
 def UnsignedMeasurable {d : ℕ} (f : EuclideanSpace' d → EReal) : Prop := Unsigned f ∧ ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
 def EReal.BoundedFunction {X : Type*} (f : X → EReal) : Prop := ∃ M : NNReal, ∀ x, (f x).abs ≤ M
@@ -24,35 +24,35 @@ def FiniteMeasureSupport {d : ℕ} {Y : Type*} [Zero Y] (f : EuclideanSpace' d �
 def PointwiseAeConvergesTo {d : ℕ} {Y : Type*} [TopologicalSpace Y] (f : ℕ → (EuclideanSpace' d → Y)) (g : EuclideanSpace' d → Y) : Prop := AlmostAlways (fun x ↦ Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x)))
 
 /-!
-## Helper lemmas for Lemma 1.3.9
+## Вспомогательные леммы для Lemma 1.3.9
 
-The proof follows the book's implication chain. We establish explicit edges and
-let `tfae_finish` compute the transitive closure.
+Доказательство следует цепочке импликаций из книги. Мы устанавливаем явные "рёбра", а
+`tfae_finish` вычисляет их транзитивное замыкание.
 
-**Explicit edges declared:**
-- (i) ⟺ (ii): by definition of {name}`UnsignedMeasurable`
-- (ii) ⟹ (iii): pointwise everywhere implies pointwise a.e.
-- (iv) ⟹ (ii): monotone sequences in \[0,∞\] converge to their supremum
-- (iii) ⟹ (v): via limsup representation (main technical work)
-- (v) ⟺ (vi): countable unions/intersections
-- (vi) ⟺ (vii): complementation
-- (v) ⟺ (viii): complementation
-- (v)-(viii) ⟹ (ix): intervals are intersections of half-intervals
-- (ix) ⟹ (x): open sets are countable unions of intervals
-- (x) ⟺ (xi): complementation
-- (x) ⟹ (vii): \{f < λ\} = f⁻¹'({name}`Set.Iio` λ) and {name}`Set.Iio` λ is open
-- (v)-(xi) ⟹ (iv): construction of approximating sequence
+**Явно установленные рёбра:**
+- (i) ⟺ (ii): по определению {name}`UnsignedMeasurable`
+- (ii) ⟹ (iii): поточечная сходимость всюду влечёт поточечную сходимость почти всюду
+- (iv) ⟹ (ii): монотонные последовательности в \[0,∞\] сходятся к своему супремуму
+- (iii) ⟹ (v): через представление с limsup (основная техническая работа)
+- (v) ⟺ (vi): счётные объединения/пересечения
+- (vi) ⟺ (vii): переход к дополнению
+- (v) ⟺ (viii): переход к дополнению
+- (v)-(viii) ⟹ (ix): интервалы — это пересечения полупрямых
+- (ix) ⟹ (x): открытые множества — это счётные объединения интервалов
+- (x) ⟺ (xi): переход к дополнению
+- (x) ⟹ (vii): \{f < λ\} = f⁻¹'({name}`Set.Iio` λ), и {name}`Set.Iio` λ открыто
+- (v)-(xi) ⟹ (iv): построение приближающей последовательности
 
-**Derived transitively (by `tfae_finish`):**
-- (ix) ⟹ (v) or (vi): via (ix) → (x) → (vii) → (vi) → (v)
-- (x) ⟹ (v)-(ix): via (x) → (vii) → (vi) → (v) → (viii)/(ix)
+**Выводится транзитивно (силами `tfae_finish`):**
+- (ix) ⟹ (v) или (vi): через (ix) → (x) → (vii) → (vi) → (v)
+- (x) ⟹ (v)-(ix): через (x) → (vii) → (vi) → (v) → (viii)/(ix)
 -/
 
 namespace UnsignedMeasurable.TFAE_helpers
 
 variable {d : ℕ} {f : EuclideanSpace' d → EReal}
 
--- Statement abbreviations for clarity (using indices as in the book)
+-- Сокращения для утверждений, для ясности (индексы такие же, как в книге)
 private abbrev stmt_i (f : EuclideanSpace' d → EReal) := UnsignedMeasurable f
 private abbrev stmt_ii (f : EuclideanSpace' d → EReal) :=
   ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (∀ x, Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x)))
@@ -68,7 +68,7 @@ private abbrev stmt_ix (f : EuclideanSpace' d → EReal) := ∀ I : BoundedInter
 private abbrev stmt_x (f : EuclideanSpace' d → EReal) := ∀ U : Set EReal, IsOpen U → LebesgueMeasurable (f⁻¹' U)
 private abbrev stmt_xi (f : EuclideanSpace' d → EReal) := ∀ K : Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
 
-/-! # (i) ⟺ (ii): By definition of {name}`UnsignedMeasurable` -/
+/-! # (i) ⟺ (ii): по определению {name}`UnsignedMeasurable` -/
 
 private lemma i_iff_ii (hf : Unsigned f) : stmt_i f ↔ stmt_ii f := by
   simp only [UnsignedMeasurable]
@@ -78,13 +78,13 @@ private lemma i_iff_ii (hf : Unsigned f) : stmt_i f ↔ stmt_ii f := by
   · intro ⟨g, hg_simple, hg_conv⟩
     exact ⟨hf, g, hg_simple, hg_conv⟩
 
-/-! # (ii) ⟹ (iii): Pointwise everywhere implies pointwise a.e. -/
+/-! # (ii) ⟹ (iii): поточечная сходимость всюду влечёт поточечную сходимость почти всюду -/
 
 private lemma ii_imp_iii : stmt_ii f → stmt_iii f := by
   intro ⟨g, hg_simple, hg_conv⟩
   refine ⟨g, hg_simple, ?_⟩
-  -- AlmostAlways P means IsNull {x | ¬P x}
-  -- Since pointwise convergence holds everywhere, {x | ¬Tendsto} = ∅
+  -- AlmostAlways P означает IsNull {x | ¬P x}
+  -- Поскольку поточечная сходимость выполняется всюду, {x | ¬Tendsto} = ∅
   simp only [PointwiseAeConvergesTo, AlmostAlways]
   have h_empty : {x | ¬Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x))} = ∅ := by
     ext x
@@ -93,47 +93,47 @@ private lemma ii_imp_iii : stmt_ii f → stmt_iii f := by
   rw [h_empty]
   exact Lebesgue_outer_measure.of_empty d
 
-/-! # (iv) ⟹ (ii): Monotone sequences in \[0,∞\] converge to their supremum -/
+/-! # (iv) ⟹ (ii): монотонные последовательности в \[0,∞\] сходятся к своему супремуму -/
 
 private lemma iv_imp_ii : stmt_iv f → stmt_ii f := by
   intro ⟨g, hg_props, hg_mono, hg_sup⟩
   refine ⟨g, fun n => (hg_props n).1, ?_⟩
   intro x
   rw [hg_sup x]
-  -- For monotone sequences in EReal, g n x → iSup (g · x)
+  -- Для монотонных последовательностей в EReal g n x → iSup (g · x)
   exact tendsto_atTop_iSup (hg_mono x)
 
-/-! # (iii) ⟹ (v): Via limsup representation -/
+/-! # (iii) ⟹ (v): через представление с limsup -/
 
--- Helper: Set.indicator' equals 1 when x ∈ E
-private lemma Set.indicator'_eq_one' {X : Type*} {E : Set X} {x : X} (hx : x ∈ E) : 
+-- Вспомогательная лемма: Set.indicator' равен 1, когда x ∈ E
+private lemma Set.indicator'_eq_one' {X : Type*} {E : Set X} {x : X} (hx : x ∈ E) :
     ((E.indicator' x : ℝ) : EReal) = 1 := by
   classical
   rw [Set.indicator'_apply, if_pos hx]
   rfl
 
--- Helper: Set.indicator' equals 0 when x ∉ E
-private lemma Set.indicator'_eq_zero' {X : Type*} {E : Set X} {x : X} (hx : x ∉ E) : 
+-- Вспомогательная лемма: Set.indicator' равен 0, когда x ∉ E
+private lemma Set.indicator'_eq_zero' {X : Type*} {E : Set X} {x : X} (hx : x ∉ E) :
     ((E.indicator' x : ℝ) : EReal) = 0 := by
   classical
   rw [Set.indicator'_apply, if_neg hx]
   rfl
 
--- Level sets of simple functions are Lebesgue measurable
+-- Множества уровня простых функций измеримы по Лебегу
 private lemma UnsignedSimpleFunction.levelset_gt_LebesgueMeasurable
-    {g : EuclideanSpace' d → EReal} (hg : UnsignedSimpleFunction g) (t : EReal) : 
+    {g : EuclideanSpace' d → EReal} (hg : UnsignedSimpleFunction g) (t : EReal) :
     LebesgueMeasurable {x | g x > t} := by
   obtain ⟨k, c, E, hE_props, heq⟩ := hg
-  -- For each subset S of Fin k, define the "atom" R_S where x ∈ E_i iff i ∈ S
+  -- Для каждого подмножества S множества Fin k определяем "атом" R_S, где x ∈ E_i ⟺ i ∈ S
   let R : Finset (Fin k) → Set (EuclideanSpace' d) :=
     fun S => (⋂ i ∈ S, E i) ∩ (⋂ i ∈ Sᶜ, (E i)ᶜ)
-  -- Each R_S is measurable
+  -- Каждое R_S измеримо
   have hR_meas : ∀ S, LebesgueMeasurable (R S) := by
     intro S
     apply LebesgueMeasurable.inter
     · apply LebesgueMeasurable.finset_inter; intro i _; exact (hE_props i).1
     · apply LebesgueMeasurable.finset_inter; intro i _; exact (hE_props i).1.complement
-  -- On R_S, g is constant with value ∑_{i ∈ S} c_i
+  -- На R_S функция g постоянна и равна ∑_{i ∈ S} c_i
   have hg_const : ∀ S x, x ∈ R S → g x = ∑ i ∈ S, c i := by
     intro S x hx
     rw [heq]
@@ -158,7 +158,7 @@ private lemma UnsignedSimpleFunction.levelset_gt_LebesgueMeasurable
           · exact Finset.sum_congr rfl (fun i hi => by rw [h_out i hi])
       _ = ∑ i ∈ S, c i + 0 := by simp [smul_eq_mul]
       _ = ∑ i ∈ S, c i := add_zero _
-  -- Every x belongs to exactly one R_S
+  -- Каждый x принадлежит ровно одному R_S
   have h_partition : ∀ x, ∃! S, x ∈ R S := by
     intro x
     have hDec : DecidablePred (fun i => x ∈ E i) := Classical.decPred _
@@ -191,11 +191,11 @@ private lemma UnsignedSimpleFunction.levelset_gt_LebesgueMeasurable
   rw [h_eq]
   apply LebesgueMeasurable.finset_union; intro S _; exact hR_meas S
 
--- The limsup set for (iii) ⟹ (v)
+-- Множество limsup для (iii) ⟹ (v)
 private def limsupSet (g : ℕ → EuclideanSpace' d → EReal) (t : EReal) : Set (EuclideanSpace' d) :=
   ⋃ (M : ℕ), ⋂ (N : ℕ), ⋃ n ∈ {n | n ≥ N}, {x | g n x > t + 1 / (M + 1)}
 
--- The limsup set is Lebesgue measurable when each g_n is a simple function
+-- Множество limsup измеримо по Лебегу, когда каждая g_n — простая функция
 private lemma limsupSet_LebesgueMeasurable {g : ℕ → EuclideanSpace' d → EReal}
     (hg : ∀ n, UnsignedSimpleFunction (g n)) (t : EReal) : 
     LebesgueMeasurable (limsupSet g t) := by
@@ -212,36 +212,36 @@ private lemma limsupSet_LebesgueMeasurable {g : ℕ → EuclideanSpace' d → ER
     ext x; simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists]
     intro h; exact absurd h hn
 
--- This is the main technical work of the proof
+-- Это основная техническая часть доказательства
 private lemma iii_imp_v : stmt_iii f → stmt_v f := by
   intro ⟨g, hg_simple, hg_ae_conv⟩ t
-  -- The null set where convergence fails
+  -- Нулевое множество, где сходимость нарушается
   let N := {x | ¬Filter.atTop.Tendsto (fun n ↦ g n x) (nhds (f x))}
   have hN_null : IsNull N := hg_ae_conv
-  -- The limsup set E
+  -- Множество limsup E
   let E := limsupSet g t
   have hE_meas : LebesgueMeasurable E := limsupSet_LebesgueMeasurable hg_simple t
-  -- Show {f > t} ∩ Nᶜ = E ∩ Nᶜ (they agree where convergence holds)
-  -- The key insight: f(x) = lim g_n(x) = lim sup g_n(x) a.e.
-  -- So {f > λ} = ⋃_{M≥1} ⋂_{N≥1} ⋃_{n≥N} {g_n > λ + 1/M} outside a null set
+  -- Покажем, что {f > t} ∩ Nᶜ = E ∩ Nᶜ (они совпадают там, где сходимость выполняется)
+  -- Ключевая идея: f(x) = lim g_n(x) = lim sup g_n(x) почти всюду
+  -- Поэтому {f > λ} = ⋃_{M≥1} ⋂_{N≥1} ⋃_{n≥N} {g_n > λ + 1/M} вне нулевого множества
   have h_ae_eq : {x | f x > t} ∩ Nᶜ = E ∩ Nᶜ := by
     ext x
     simp only [Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq, N]
     push_neg
     constructor
-    · -- f x > t ∧ converges → x ∈ E ∧ converges
+    · -- f x > t ∧ сходится → x ∈ E ∧ сходится
       intro ⟨hfx, hconv⟩
       refine ⟨?_, hconv⟩
-      -- Since f(x) > t and g_n(x) → f(x), we can find M such that f(x) > t + 1/M
-      -- Then eventually g_n(x) > t + 1/M, which means x ∈ limsupSet
+      -- Поскольку f(x) > t и g_n(x) → f(x), можно найти M такое, что f(x) > t + 1/M
+      -- Тогда в конце концов g_n(x) > t + 1/M, а значит x ∈ limsupSet
       simp only [E, limsupSet, Set.mem_iUnion, Set.mem_iInter, Set.mem_setOf_eq]
-      -- The detailed analysis argument uses Filter.Tendsto properties
-      -- For a limit f(x), if f(x) > t, then ∃ε>0 with f(x) > t+ε
-      -- Choose M with 1/M < ε, then eventually g_n(x) > t + 1/M
+      -- Подробный анализ использует свойства Filter.Tendsto
+      -- Для предела f(x): если f(x) > t, то ∃ε>0 с f(x) > t+ε
+      -- Выбираем M с 1/M < ε, тогда в конце концов g_n(x) > t + 1/M
 
-      -- Case 1: t = ⊥
+      -- Случай 1: t = ⊥
       rcases eq_bot_or_bot_lt t with rfl | ht_ne_bot
-      · -- t = ⊥ : threshold = ⊥ + eps = ⊥ for any M, and g n x > ⊥ since g n x ≥ 0
+      · -- t = ⊥ : порог = ⊥ + eps = ⊥ для любого M, и g n x > ⊥, так как g n x ≥ 0
         use 0
         intro N
         use N, le_refl N
@@ -258,18 +258,18 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
           exact EReal.coe_nonneg.mpr (Set.indicator_nonneg (fun _ _ => zero_le_one) x)
         calc (⊥ : EReal) < 0 := EReal.bot_lt_zero
              _ ≤ g N x := hg_nonneg
-      -- Case 2: f x = ⊤
+      -- Случай 2: f x = ⊤
       rcases eq_top_or_lt_top (f x) with hfx_top | hfx_lt_top
-      · -- f x = ⊤ : g_n → ⊤, so eventually g_n x > any threshold
+      · -- f x = ⊤ : g_n → ⊤, значит в конце концов g_n x превзойдёт любой порог
         use 0
         intro N
-        -- Since f x = ⊤ and f x > t, we have t < ⊤
+        -- Поскольку f x = ⊤ и f x > t, имеем t < ⊤
         have ht_lt_top' : t < ⊤ := lt_of_lt_of_eq hfx hfx_top
-        -- Therefore t + 1 < ⊤ (since 1 is finite)
+        -- Следовательно t + 1 < ⊤ (так как 1 конечно)
         have h_t1_lt_top : t + 1 < ⊤ := EReal.add_lt_top (ne_top_of_lt ht_lt_top') (EReal.coe_ne_top 1)
-        -- Show g n x > t + 1 for some n ≥ N using that g n → ⊤
+        -- Покажем, что g n x > t + 1 для некоторого n ≥ N, используя g n → ⊤
         rw [hfx_top] at hconv
-        -- Set.Ioi (t + 1) is a neighborhood of ⊤
+        -- Set.Ioi (t + 1) — окрестность ⊤
         have h_mem : Set.Ioi (t + 1) ∈ nhds (⊤ : EReal) := Ioi_mem_nhds h_t1_lt_top
         have h_event : ∀ᶠ n in Filter.atTop, g n x ∈ Set.Ioi (t + 1) := hconv h_mem
         rw [Filter.eventually_atTop] at h_event
@@ -279,12 +279,12 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
         simp only [Set.mem_Ioi, Nat.cast_zero, zero_add, gt_iff_lt] at h_n_mem ⊢
         calc t + 1 / 1 = t + 1 := by rw [div_one]
              _ < g (max N₀ N) x := h_n_mem
-      -- Case 3: t < ⊤ and f x < ⊤, both are finite or f x > t means t < f x < ⊤
+      -- Случай 3: t < ⊤ и f x < ⊤ — оба конечны, либо f x > t означает t < f x < ⊤
       rcases eq_top_or_lt_top t with rfl | ht_lt_top
-      · -- t = ⊤ : but hfx says f x > ⊤, impossible
+      · -- t = ⊤ : но hfx утверждает f x > ⊤, что невозможно
         exfalso; exact (not_lt.mpr le_top) hfx
-      -- Now ⊥ < t < ⊤ and f x > t, with f x < ⊤
-      -- f x is finite since f x < ⊤ and f x > t > ⊥
+      -- Теперь ⊥ < t < ⊤ и f x > t, при этом f x < ⊤
+      -- f x конечно, так как f x < ⊤ и f x > t > ⊥
       have hfx_ne_top : f x ≠ ⊤ := ne_top_of_lt hfx_lt_top
       have hfx_ne_bot : f x ≠ ⊥ := by
         intro h_eq_bot
@@ -292,19 +292,19 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
         exact not_lt_bot hfx
       have ht_ne_top : t ≠ ⊤ := ne_top_of_lt ht_lt_top
       have ht_ne_bot' : t ≠ ⊥ := ne_of_gt ht_ne_bot
-      -- Extract real numbers
+      -- Извлекаем вещественные числа
       obtain ⟨f', hf'⟩ : ∃ f' : ℝ, (f' : EReal) = f x := ⟨(f x).toReal, EReal.coe_toReal hfx_ne_top hfx_ne_bot⟩
       obtain ⟨t', ht'⟩ : ∃ t' : ℝ, (t' : EReal) = t := ⟨t.toReal, EReal.coe_toReal ht_ne_top ht_ne_bot'⟩
-      -- Both f' and t' are real numbers with f' > t'
+      -- И f', и t' — вещественные числа с f' > t'
       have hf't' : f' > t' := by
         rw [← hf', ← ht'] at hfx
         exact EReal.coe_lt_coe_iff.mp hfx
       have hgap_pos : f' - t' > 0 := sub_pos.mpr hf't'
-      -- Find M such that 1/(M+1) < f' - t'
+      -- Находим M такое, что 1/(M+1) < f' - t'
       obtain ⟨M, hM⟩ := exists_nat_gt (1 / (f' - t'))
       use M
       intro N
-      -- Show t' + 1/(M+1) < f'
+      -- Показываем t' + 1/(M+1) < f'
       have h_lt : (t' : EReal) + 1 / ((M : EReal) + 1) < f' := by
         have hM1_pos : (M : ℝ) + 1 > 0 := by positivity
         have h1 : (1 : ℝ) / (M + 1) < f' - t' := by
@@ -316,14 +316,14 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
                         _ < M + 1 := by exact_mod_cast Nat.lt_succ_self M
                _ = f' - t' := one_div_one_div (f' - t')
         have h2 : t' + 1 / (M + 1) < f' := by linarith
-        -- Coerce to EReal
+        -- Приводим к EReal
         have h_coe : ((t' : EReal) + 1 / ((M : EReal) + 1)) = ((t' + 1 / (M + 1) : ℝ) : EReal) := by
           rw [EReal.coe_add, EReal.coe_div]
           simp only [EReal.coe_one, EReal.coe_add, EReal.coe_natCast]
         rw [h_coe]
         exact EReal.coe_lt_coe_iff.mpr h2
 
-      -- By convergence, eventually g_n(x) > t' + 1/(M+1)
+      -- В силу сходимости, в конце концов g_n(x) > t' + 1/(M+1)
       have h_event : ∀ᶠ n in Filter.atTop, g n x > (t' : EReal) + 1 / ((M : EReal) + 1) := by
         have h_mem : Set.Ioi ((t' : EReal) + 1 / ((M : EReal) + 1)) ∈ nhds (f x) := by
           rw [← hf']
@@ -334,19 +334,19 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
       refine ⟨max N₀ N, le_max_right _ _, ?_⟩
       rw [← ht']
       exact hN₀ _ (le_max_left _ _)
-    · -- x ∈ E ∧ converges → f x > t ∧ converges
+    · -- x ∈ E ∧ сходится → f x > t ∧ сходится
       intro ⟨hE_mem, hconv⟩
       refine ⟨?_, hconv⟩
-      -- If x ∈ limsupSet g t, then for some M, infinitely often g_n(x) > t + 1/M
-      -- Since g_n(x) → f(x), limsup g_n(x) = f(x), so f(x) ≥ t + 1/M > t
+      -- Если x ∈ limsupSet g t, то для некоторого M бесконечно часто g_n(x) > t + 1/M
+      -- Поскольку g_n(x) → f(x), limsup g_n(x) = f(x), значит f(x) ≥ t + 1/M > t
       simp only [E, limsupSet, Set.mem_iUnion, Set.mem_iInter, Set.mem_setOf_eq] at hE_mem
       -- hE_mem : ∃ M, ∀ N, ∃ n ≥ N, g n x > t + 1/(M+1)
       obtain ⟨M, hM⟩ := hE_mem
-      -- Set threshold := t + 1/(M+1)
+      -- Пусть threshold := t + 1/(M+1)
       set threshold := t + 1 / ((M : EReal) + 1) with h_threshold
-      -- Handle edge cases first
+      -- Сначала разберём краевые случаи
       rcases eq_top_or_lt_top t with rfl | ht_ne_top
-      · -- t = ⊤ : threshold = ⊤ + eps = ⊤, and hM says g n x > ⊤, impossible
+      · -- t = ⊤ : threshold = ⊤ + eps = ⊤, а hM утверждает g n x > ⊤, что невозможно
         exfalso
         obtain ⟨n, _, hn_gt⟩ := hM 0
         have h_threshold_eq_top : threshold = ⊤ := by
@@ -364,8 +364,8 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
         rw [h_threshold_eq_top] at hn_gt
         exact (not_lt.mpr le_top) hn_gt
       rcases eq_bot_or_bot_lt t with rfl | ht_ne_bot
-      · -- t = ⊥ : threshold = ⊥ + eps = ⊥, need to show f x > ⊥
-        -- Since g_n(x) ≥ 0 and g_n(x) → f(x), we have f(x) ≥ 0 > ⊥
+      · -- t = ⊥ : threshold = ⊥ + eps = ⊥, нужно показать f x > ⊥
+        -- Поскольку g_n(x) ≥ 0 и g_n(x) → f(x), имеем f(x) ≥ 0 > ⊥
         have hg_nonneg : ∀ n, g n x ≥ 0 := fun n => by
           obtain ⟨k, c, E, hE_props, heq⟩ := hg_simple n
           rw [heq]
@@ -375,7 +375,7 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
           apply mul_nonneg (hE_props i).2
           simp only [EReal.indicator, Real.EReal_fun]
           exact EReal.coe_nonneg.mpr (Set.indicator_nonneg (fun _ _ => zero_le_one) x)
-        -- g n x ≥ 0 for all n, and g n x → f x, so f x ≥ 0
+        -- g n x ≥ 0 для всех n, и g n x → f x, значит f x ≥ 0
         have h_limit_nonneg : f x ≥ 0 := by
           by_contra h_neg
           push_neg at h_neg
@@ -387,23 +387,24 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
           exact (not_lt.mpr (hg_nonneg N₀)) this
         calc (⊥ : EReal) < 0 := EReal.bot_lt_zero
              _ ≤ f x := h_limit_nonneg
-      -- Now ⊥ < t < ⊤ (t is a finite real)
+      -- Теперь ⊥ < t < ⊤ (t — конечное вещественное число)
       by_contra h_not_gt
       push_neg at h_not_gt
       -- h_not_gt : f x ≤ t
-      -- Derive contradiction: if f x ≤ t, eventually g_n x < threshold, but frequently > threshold
+      -- Выводим противоречие: если f x ≤ t, то в конце концов g_n x < threshold, но g_n x
+      -- периодически превышает threshold
       have h_denom_ne_top : (M : EReal) + 1 ≠ ⊤ := EReal.add_ne_top (EReal.natCast_ne_top M) (EReal.coe_ne_top 1)
       have h_eps_pos : (1 : EReal) / ((M : EReal) + 1) > 0 := by
         apply EReal.div_pos (EReal.coe_pos.mpr one_pos)
         calc (0 : EReal) < 1 := EReal.coe_pos.mpr one_pos
              _ ≤ (M : EReal) + 1 := le_add_of_nonneg_left (EReal.coe_nonneg.mpr (Nat.cast_nonneg M))
         exact h_denom_ne_top
-      -- eps is finite: just use that eps > 0 is positive and less than or equal to 1
-      -- (h_eps_ne_top is not needed for the proof below, we can skip this)
-      -- t < threshold using add_lt_add for finite values
+      -- eps конечно: достаточно того, что eps > 0 положительно и не превосходит 1
+      -- (h_eps_ne_top далее не нужен, можно его пропустить)
+      -- t < threshold через add_lt_add для конечных значений
       have h_t_lt : t < threshold := by
         rw [h_threshold]
-        -- t is finite, so we can work with coercions
+        -- t конечно, поэтому можно работать с приведениями типов
         obtain ⟨t', rfl⟩ : ∃ t' : ℝ, (t' : EReal) = t := by
           induction t using EReal.rec with
           | bot => exact absurd rfl (ne_of_gt ht_ne_bot)
@@ -413,18 +414,18 @@ private lemma iii_imp_v : stmt_iii f → stmt_v f := by
         exact EReal.add_lt_add_left_coe h_eps_pos t'
       -- f x < threshold
       have h_fx_lt : f x < threshold := lt_of_le_of_lt h_not_gt h_t_lt
-      -- By convergence, eventually g_n x < threshold
+      -- В силу сходимости, в конце концов g_n x < threshold
       have h_event : ∀ᶠ n in Filter.atTop, g n x < threshold := hconv (Iio_mem_nhds h_fx_lt)
       rw [Filter.eventually_atTop] at h_event
       obtain ⟨N₀, hN₀⟩ := h_event
-      -- But by hM, there exists n ≥ N₀ with g n x > threshold
+      -- Но по hM найдётся n ≥ N₀ с g n x > threshold
       obtain ⟨n, hn_ge, hn_gt⟩ := hM N₀
       exact (lt_irrefl _) (lt_trans (hN₀ n hn_ge) hn_gt)
   exact LebesgueMeasurable.of_ae_eq hE_meas hN_null h_ae_eq
 
 /-! # (v) ⟹ (vi): \{f ≥ λ\} = ⋂\_\{n≥1\} \{f > λ - 1/n\} -/
 
--- Helper: if x > n for all n ∈ ℕ, then x = ⊤
+-- Вспомогательная лемма: если x > n для всех n ∈ ℕ, то x = ⊤
 private lemma EReal.eq_top_of_forall_nat_lt {x : EReal} (h : ∀ n : ℕ, x > n) : x = ⊤ := by
   induction x using EReal.rec with
   | bot =>
@@ -444,7 +445,7 @@ private lemma EReal.eq_top_of_forall_nat_lt {x : EReal} (h : ∀ n : ℕ, x > n)
 
 private lemma v_imp_vi : stmt_v f → stmt_vi f := by
   intro hv t
-  -- Handle cases based on t
+  -- Разбираем случаи в зависимости от t
   rcases eq_bot_or_bot_lt t with rfl | ht_bot
   · -- t = ⊥ : {f ≥ ⊥} = Set.univ
     have h_eq : {x | f x ≥ ⊥} = Set.univ := by ext x; simp
@@ -462,13 +463,13 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
       · intro hfx
         exact top_le_iff.mpr (EReal.eq_top_of_forall_nat_lt hfx)
     exact h_eq ▸ LebesgueMeasurable.countable_inter (fun n => hv _)
-  · -- t is finite : use {f ≥ t} = ⋂_{n≥1} {f > t - 1/(n+1)}
-    -- Since t < ⊤ and ⊥ < t, we know t is a real number
+  · -- t конечно : используем {f ≥ t} = ⋂_{n≥1} {f > t - 1/(n+1)}
+    -- Поскольку t < ⊤ и ⊥ < t, значит t — вещественное число
     induction t using EReal.rec with
     | bot => exact (not_lt.mpr le_rfl ht_bot).elim
     | top => exact (not_lt.mpr le_rfl ht_top).elim
     | coe t' =>
-      -- Use {f ≥ t'} = ⋂_n {f > (t' - 1/(n+1) : ℝ)}
+      -- Используем {f ≥ t'} = ⋂_n {f > (t' - 1/(n+1) : ℝ)}
       have h_eq : {x | f x ≥ (t' : EReal)} = ⋂ (n : ℕ), {x | f x > ((t' - 1 / (n + 1)) : ℝ)} := by
         ext x
         simp only [Set.mem_setOf_eq, Set.mem_iInter, ge_iff_le, gt_iff_lt]
@@ -483,7 +484,7 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
           push_neg at h
           -- f x < t'
           have hfx_lt_t' : f x < (t' : EReal) := h
-          -- Get a witness for f x being a real
+          -- Получаем свидетельство того, что f x — вещественное число
           have hfx_ne_bot : f x ≠ ⊥ := by
             intro hfx_eq_bot
             have hbot : ((t' - 1 / ((0 : ℕ) + 1)) : ℝ) < (⊥ : EReal) := by
@@ -493,7 +494,7 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
               simp
             exact not_lt_bot hbot
           have hfx_ne_top : f x ≠ ⊤ := ne_top_of_lt hfx_lt_t'
-          -- So f x is a real
+          -- Значит f x — вещественное число
           have hr : f x = (f x).toReal := (EReal.coe_toReal hfx_ne_top hfx_ne_bot).symm
           set r := (f x).toReal with hr_def
           rw [hr] at hfx_lt_t' hfx
@@ -510,7 +511,7 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
               _ < 1 / (1 / (t' - r)) := by
                   apply one_div_lt_one_div_of_lt (one_div_pos.mpr hdiff_pos) hn
               _ = t' - r := one_div_one_div (t' - r)
-          -- So (t' - 1/(n+1) : ℝ) > r
+          -- Значит (t' - 1/(n+1) : ℝ) > r
           have hcontra := hfx n
           have hcontra' := EReal.coe_lt_coe_iff.mp hcontra
           linarith
@@ -522,8 +523,8 @@ private lemma v_imp_vi : stmt_v f → stmt_vi f := by
 private lemma vi_imp_v : stmt_vi f → stmt_v f := by
   intro hvi t
   -- {f > t} = ⋃_{q : ℚ, q > t} {f ≥ q}
-  -- Since rationals are dense, for any x with f x > t, there exists q ∈ ℚ with t < q ≤ f x
-  -- Use encoding of ℚ to ℕ for countable union (via Encodable ℚ)
+  -- Поскольку рациональные числа плотны, для любого x с f x > t найдётся q ∈ ℚ с t < q ≤ f x
+  -- Используем кодирование ℚ в ℕ для счётного объединения (через Encodable ℚ)
   let F : ℕ → Set (EuclideanSpace' d) := fun n =>
     match @Encodable.decode ℚ _ n with
     | some q => if (t < ((q : ℝ) : EReal)) then {x | f x ≥ ((q : ℝ) : EReal)} else ∅
@@ -536,9 +537,9 @@ private lemma vi_imp_v : stmt_vi f → stmt_v f := by
     simp only [Set.mem_setOf_eq, Set.mem_iUnion]
     constructor
     · intro hfx
-      -- f x > t, so there exists q ∈ ℚ with t < q < f x
+      -- f x > t, значит найдётся q ∈ ℚ с t < q < f x
       obtain ⟨q, hq1, hq2⟩ := EReal.exists_rat_btwn_of_lt hfx
-      use Encodable.encode q  -- encode q as ℕ
+      use Encodable.encode q  -- кодируем q как ℕ
       rw [hF_eq, Encodable.encodek]
       simp only [hq1, ite_true, Set.mem_setOf_eq]
       exact le_of_lt hq2
@@ -554,7 +555,7 @@ private lemma vi_imp_v : stmt_vi f → stmt_v f := by
             _ ≤ f x := hn
         · simp only [h, ite_false, Set.mem_empty_iff_false] at hn
   rw [h_eq]
-  -- This is a countable union of measurable sets
+  -- Это счётное объединение измеримых множеств
   apply LebesgueMeasurable.countable_union
   intro n
   rw [hF_eq]
@@ -598,7 +599,7 @@ private lemma viii_imp_v : stmt_viii f → stmt_v f := by
   rw [h_eq]
   exact (hviii t).complement
 
-/-! # (v)-(viii) ⟹ (ix): Intervals are intersections of half-intervals -/
+/-! # (v)-(viii) ⟹ (ix): интервалы — это пересечения полупрямых -/
 
 private lemma v_to_viii_imp_ix (hv : stmt_v f) (hvi : stmt_vi f) (hvii : stmt_vii f) (hviii : stmt_viii f) : 
     stmt_ix f := by
@@ -637,9 +638,9 @@ private lemma v_to_viii_imp_ix (hv : stmt_v f) (hvi : stmt_vi f) (hvii : stmt_vi
     rw [h_eq]
     exact (hvi _).inter (hvii _)
 
-/-! # (ix) ⟹ (x): Open sets are countable unions of intervals -/
+/-! # (ix) ⟹ (x): открытые множества — это счётные объединения интервалов -/
 
--- For unsigned f, f⁻¹'({⊥}) = ∅
+-- Для беззнаковой f имеем f⁻¹'({⊥}) = ∅
 private lemma unsigned_preimage_bot_empty (hf : Unsigned f) : f⁻¹' {⊥} = ∅ := by
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_empty_iff_false, iff_false]
@@ -649,7 +650,7 @@ private lemma unsigned_preimage_bot_empty (hf : Unsigned f) : f⁻¹' {⊥} = �
   simp only [ge_iff_le] at h
   exact not_le.mpr EReal.bot_lt_zero h
 
--- The embedded reals ℝ as a subset of EReal
+-- Вложенные вещественные числа ℝ как подмножество EReal
 private lemma ereal_reals_eq_iUnion : 
     (Set.range Real.toEReal : Set EReal) = ⋃ (n : ℕ), Real.toEReal '' Set.Ioo (-(n : ℝ) - 1) (n + 1) := by
   ext x
@@ -669,14 +670,14 @@ private lemma ereal_reals_eq_iUnion :
   · intro ⟨_, r, _, hr⟩
     exact ⟨r, hr⟩
 
--- ℝ embedded in EReal has Lebesgue measurable preimage
+-- Прообраз ℝ, вложенного в EReal, измерим по Лебегу
 private lemma measurable_preimage_reals (hix : stmt_ix f) : LebesgueMeasurable (f⁻¹' (Set.range Real.toEReal)) := by
   rw [ereal_reals_eq_iUnion, Set.preimage_iUnion]
   apply LebesgueMeasurable.countable_union
   intro n
   exact hix (BoundedInterval.Ioo (-(n : ℝ) - 1) (n + 1))
 
--- {⊤} as complement of ℝ ∪ {⊥}
+-- {⊤} как дополнение к ℝ ∪ {⊥}
 private lemma ereal_top_singleton_eq : ({⊤} : Set EReal) = (Set.range Real.toEReal ∪ {⊥})ᶜ := by
   ext x
   simp only [Set.mem_singleton_iff, Set.mem_compl_iff, Set.mem_union, Set.mem_range]
@@ -695,7 +696,7 @@ private lemma ereal_top_singleton_eq : ({⊤} : Set EReal) = (Set.range Real.toE
     | top => rfl
     | coe r => exact (hx.1 r rfl).elim
 
--- For unsigned f, f⁻¹'({⊤}) is Lebesgue measurable
+-- Для беззнаковой f прообраз f⁻¹'({⊤}) измерим по Лебегу
 private lemma measurable_preimage_top (hf : Unsigned f) (hix : stmt_ix f) : LebesgueMeasurable (f⁻¹' {⊤}) := by
   rw [ereal_top_singleton_eq, Set.preimage_compl]
   apply LebesgueMeasurable.complement
@@ -705,7 +706,7 @@ private lemma measurable_preimage_top (hf : Unsigned f) (hix : stmt_ix f) : Lebe
   · rw [unsigned_preimage_bot_empty hf]
     exact LebesgueMeasurable.empty
 
--- The intersection of an open set with ℝ can be expressed using countable intervals
+-- Пересечение открытого множества с ℝ можно выразить через счётные интервалы
 private lemma open_inter_reals_eq_countable_union (U : Set EReal) (hU : IsOpen U) : 
     ∃ S : Set (Set ℝ), S.Countable ∧ (∀ I ∈ S, ∃ a b, I = Set.Ioo a b) ∧
     U ∩ Set.range Real.toEReal = ⋃ I ∈ S, Real.toEReal '' I := by
@@ -768,7 +769,7 @@ private lemma open_inter_reals_eq_countable_union (U : Set EReal) (hU : IsOpen U
 
 private lemma ix_imp_x (hf : Unsigned f) : stmt_ix f → stmt_x f := by
   intro hix U hU
-  -- Decompose U = (U ∩ ℝ) ∪ (U ∩ {⊤}) ∪ (U ∩ {⊥})
+  -- Раскладываем U = (U ∩ ℝ) ∪ (U ∩ {⊤}) ∪ (U ∩ {⊥})
   have hU_decomp : U = (U ∩ Set.range Real.toEReal) ∪ (U ∩ {⊤}) ∪ (U ∩ {⊥}) := by
     ext x
     simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_range, Set.mem_singleton_iff]
@@ -783,10 +784,10 @@ private lemma ix_imp_x (hf : Unsigned f) : stmt_ix f → stmt_x f := by
   rw [hU_decomp, Set.preimage_union, Set.preimage_union]
   apply LebesgueMeasurable.union
   apply LebesgueMeasurable.union
-  -- Part 1: f⁻¹'(U ∩ ℝ) is Lebesgue measurable
+  -- Часть 1: f⁻¹'(U ∩ ℝ) измерим по Лебегу
   · obtain ⟨S, hS_count, hS_intervals, hS_eq⟩ := open_inter_reals_eq_countable_union U hU
     rw [hS_eq, Set.preimage_iUnion₂]
-    -- Use countable encoding of S
+    -- Используем счётное кодирование S
     haveI : Countable S := hS_count.to_subtype
     haveI e : Encodable S := Encodable.ofCountable S
     let E' : ℕ → Set (EuclideanSpace' d) := fun n =>
@@ -818,7 +819,7 @@ private lemma ix_imp_x (hf : Unsigned f) : stmt_ix f → stmt_x f := by
       obtain ⟨a, b, hab⟩ := hS_intervals p.val p.property
       rw [hab]
       exact hix (BoundedInterval.Ioo a b)
-  -- Part 2: f⁻¹'(U ∩ {⊤}) is Lebesgue measurable
+  -- Часть 2: f⁻¹'(U ∩ {⊤}) измерим по Лебегу
   · by_cases htop : ⊤ ∈ U
     · have h_eq : U ∩ {⊤} = {⊤} := Set.inter_eq_right.mpr (Set.singleton_subset_iff.mpr htop)
       rw [h_eq]
@@ -826,11 +827,11 @@ private lemma ix_imp_x (hf : Unsigned f) : stmt_ix f → stmt_x f := by
     · have h_eq : U ∩ {⊤} = ∅ := Set.inter_singleton_eq_empty.mpr htop
       rw [h_eq, Set.preimage_empty]
       exact LebesgueMeasurable.empty
-  -- Part 3: f⁻¹'(U ∩ {⊥}) is Lebesgue measurable (empty for unsigned f)
+  -- Часть 3: f⁻¹'(U ∩ {⊥}) измерим по Лебегу (пусто для беззнаковой f)
   · rw [Set.preimage_inter, unsigned_preimage_bot_empty hf, Set.inter_empty]
     exact LebesgueMeasurable.empty
 
-/-! # (x) ⟺ (xi): Complementation -/
+/-! # (x) ⟺ (xi): переход к дополнению -/
 
 private lemma x_iff_xi : stmt_x f ↔ stmt_xi f := by
   constructor
@@ -843,7 +844,7 @@ private lemma x_iff_xi : stmt_x f ↔ stmt_xi f := by
     rw [h_eq]
     exact (hxi _ hU.isClosed_compl).complement
 
-/-! # (x) ⟹ (vii): \{f < λ\} = f⁻¹'({name}`Set.Iio` λ) and {name}`Set.Iio` λ is open -/
+/-! # (x) ⟹ (vii): \{f < λ\} = f⁻¹'({name}`Set.Iio` λ), и {name}`Set.Iio` λ открыто -/
 
 private lemma x_imp_vii : stmt_x f → stmt_vii f := by
   intro hx t
@@ -852,9 +853,9 @@ private lemma x_imp_vii : stmt_x f → stmt_vii f := by
   rw [h_eq]
   exact hx _ h_open
 
-/-! # (v)-(xi) ⟹ (iv): Construction of approximating sequence -/
+/-! # (v)-(xi) ⟹ (iv): построение приближающей последовательности -/
 
--- Helper: the norm ball centered at origin is Lebesgue measurable
+-- Вспомогательная лемма: шар в норме с центром в начале координат измерим по Лебегу
 private lemma normBall_LebesgueMeasurable (r : ℝ) : 
     LebesgueMeasurable {x : EuclideanSpace' d | ‖x‖ ≤ r} := by
   have h : {x : EuclideanSpace' d | ‖x‖ ≤ r} = Metric.closedBall 0 r := by
@@ -862,37 +863,37 @@ private lemma normBall_LebesgueMeasurable (r : ℝ) :
   rw [h]
   exact LebesgueMeasurable.closedBall 0 r
 
--- The approximating function: f_n(x) = floor(min(f(x), n) * 2^n) / 2^n when |x| ≤ n, else 0
--- This is the largest k·2^{-n} ≤ min(f(x), n)
+-- Приближающая функция: f_n(x) = floor(min(f(x), n) * 2^n) / 2^n при |x| ≤ n, иначе 0
+-- Это наибольшее k·2^{-n} ≤ min(f(x), n)
 private noncomputable def approx_fn (f : EuclideanSpace' d → EReal) (n : ℕ) (x : EuclideanSpace' d) : EReal :=
   if ‖x‖ ≤ n then
     let t := min (f x) n
-    if t = ⊥ then 0  -- won't happen for unsigned f
-    else if t = ⊤ then n  -- t = min(⊤, n) = n, so this case shouldn't trigger
+    if t = ⊥ then 0  -- не произойдёт для беззнаковой f
+    else if t = ⊤ then n  -- t = min(⊤, n) = n, поэтому этот случай не должен сработать
     else
       let r := t.toReal
-      if r < 0 then 0  -- won't happen for unsigned f
+      if r < 0 then 0  -- не произойдёт для беззнаковой f
       else ((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ)
   else 0
 
--- Key lemma: approx_fn takes values in {k/2^n : k = 0, 1, ..., n·2^n}
+-- Ключевая лемма: approx_fn принимает значения в {k/2^n : k = 0, 1, ..., n·2^n}
 private lemma approx_fn_values (f : EuclideanSpace' d → EReal) (hf : Unsigned f) (n : ℕ) (x : EuclideanSpace' d) : 
     ∃ k : ℕ, k ≤ n * 2^n ∧ approx_fn f n x = ((k : ℕ) : ℝ) / (2^n : ℝ) := by
   simp only [approx_fn]
   split_ifs with hnorm hbot htop hneg
-  · -- t = ⊥ case (won't happen)
+  · -- случай t = ⊥ (не произойдёт)
     use 0; simp
-  · -- t = ⊤ case : min(f x, n) = ⊤ is impossible since min(f x, n) ≤ n
+  · -- случай t = ⊤ : min(f x, n) = ⊤ невозможно, так как min(f x, n) ≤ n
     exfalso
     have h1 : min (f x) ↑n ≤ ↑n := min_le_right _ _
     rw [htop] at h1
     exact not_le.mpr (EReal.coe_lt_top n) h1
-  · -- r < 0 case (won't happen for unsigned)
+  · -- случай r < 0 (не произойдёт для беззнаковой)
     use 0; simp
-  · -- normal case
+  · -- обычный случай
     use ⌊(min (f x) ↑n).toReal * 2 ^ n⌋₊
     constructor
-    · -- Need to show floor ≤ n * 2^n
+    · -- Нужно показать floor ≤ n * 2^n
       have h_min_le : (min (f x) ↑n).toReal ≤ n := by
         have h1 : min (f x) ↑n ≤ ↑n := min_le_right _ _
         have h2 : min (f x) ↑n ≠ ⊤ := htop
@@ -913,32 +914,32 @@ private lemma approx_fn_values (f : EuclideanSpace' d → EReal) (hf : Unsigned 
           _ ≤ (n : ℝ) * 2^n := h_prod_le
       exact_mod_cast h_floor_le
     · rfl
-  · -- |x| > n case
+  · -- случай |x| > n
     use 0; simp
 
--- Helper: approx_fn is always nonnegative for unsigned functions
+-- Вспомогательная лемма: approx_fn всегда неотрицательна для беззнаковых функций
 private lemma approx_fn_nonneg (f : EuclideanSpace' d → EReal) (_hf : Unsigned f)
     (n : ℕ) (x : EuclideanSpace' d) : approx_fn f n x ≥ 0 := by
   simp only [approx_fn]
   split_ifs with hnorm hbot htop hneg
-  · exact le_refl 0  -- t = ⊥ case
-  · exact EReal.coe_nonneg.mpr (Nat.cast_nonneg n)  -- t = ⊤ case
-  · exact le_refl 0  -- r < 0 case
+  · exact le_refl 0  -- случай t = ⊥
+  · exact EReal.coe_nonneg.mpr (Nat.cast_nonneg n)  -- случай t = ⊤
+  · exact le_refl 0  -- случай r < 0
   · exact EReal.coe_nonneg.mpr (div_nonneg (Nat.cast_nonneg _) (pow_nonneg (by norm_num) n))
-  · exact le_refl 0  -- |x| > n case
+  · exact le_refl 0  -- случай |x| > n
 
--- Helper: floor approximation converges to the value as iSup
--- For r ≥ 0: r = ⨆ n, ⌊r * 2^n⌋₊ / 2^n (in EReal)
-private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) : 
+-- Вспомогательная лемма: приближение через floor сходится к значению как iSup
+-- Для r ≥ 0: r = ⨆ n, ⌊r * 2^n⌋₊ / 2^n (в EReal)
+private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
     (r : EReal) = ⨆ n : ℕ, (((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) := by
-  -- Define the approximating function for cleaner notation
+  -- Определяем приближающую функцию для более чистой записи
   let f : ℕ → ℝ := fun n => ((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ)
   change (r : EReal) = ⨆ n : ℕ, (f n : EReal)
   apply le_antisymm
-  · -- Upper bound : r ≤ iSup
+  · -- Верхняя оценка : r ≤ iSup
     apply EReal.le_of_forall_pos_le_add'
     intro ε hε
-    -- Find N such that 1/2^N < ε using (1/2)^n → 0
+    -- Находим N такое, что 1/2^N < ε, используя (1/2)^n → 0
     have h_tendsto : Filter.Tendsto (fun n : ℕ => ((1 : ℝ)/2)^n) Filter.atTop (nhds 0) :=
       tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
     rw [Metric.tendsto_atTop] at h_tendsto
@@ -949,7 +950,7 @@ private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
     have h_eps : (1 : ℝ) / 2^N < ε := by
       convert hN using 1
       rw [one_div, ← inv_pow, inv_eq_one_div]
-    -- floor approx bound: r - 1/2^N < f N
+    -- Оценка приближения через floor: r - 1/2^N < f N
     have h_floor_bound : r - 1/2^N < f N := by
       simp only [f]
       have h1 : r * 2^N - 1 < (⌊r * 2^N⌋₊ : ℝ) := Nat.sub_one_lt_floor (r * 2^N)
@@ -961,7 +962,7 @@ private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
     calc (r : EReal) ≤ (f N + ε : ℝ) := EReal.coe_le_coe_iff.mpr h3
          _ = (f N : EReal) + (ε : EReal) := by rw [← EReal.coe_add]
          _ ≤ (⨆ n : ℕ, (f n : EReal)) + ε := add_le_add_left h_le_iSup ε
-  · -- Lower bound : iSup ≤ r
+  · -- Нижняя оценка : iSup ≤ r
     apply iSup_le
     intro n
     have h2n_pos : (2 : ℝ)^n > 0 := pow_pos (by norm_num) n
@@ -972,7 +973,7 @@ private lemma floor_approx_iSup_eq (r : ℝ) (hr : r ≥ 0) :
            _ = r := by field_simp
     exact EReal.coe_le_coe_iff.mpr h_floor_le
 
--- Helper: approx_fn simplifies to floor formula when f x is finite and r ≤ n
+-- Вспомогательная лемма: approx_fn упрощается до формулы с floor, когда f x конечно и r ≤ n
 private lemma approx_fn_eq_floor_when_finite (f : EuclideanSpace' d → EReal) (_hf : Unsigned f)
     (n : ℕ) (x : EuclideanSpace' d) (hn : ‖x‖ ≤ n) (r : ℝ) (hr : f x = r) (hr_nonneg : r ≥ 0)
     (hrn : r ≤ n) : 
@@ -987,7 +988,7 @@ private lemma approx_fn_eq_floor_when_finite (f : EuclideanSpace' d → EReal) (
   simp only [h_min_ne_bot, ite_false, h_min_ne_top, h_toReal]
   simp only [not_lt.mpr hr_nonneg, ite_false]
 
--- Helper: (n * 2^n) / 2^n = n in EReal
+-- Вспомогательная лемма: (n * 2^n) / 2^n = n в EReal
 private lemma mul_pow2_div_pow2_eq (n : ℕ) : 
     ((n * 2^n : ℕ) : EReal) / ((2^n : ℕ) : EReal) = ((n : ℕ) : EReal) := by
   have h2n_ne : (2^n : ℕ) ≠ 0 := pow_ne_zero n (by norm_num)
@@ -998,7 +999,7 @@ private lemma mul_pow2_div_pow2_eq (n : ℕ) :
   rw [show ((n * 2^n : ℕ) : EReal) = ((n : ℕ) : EReal) * ((2^n : ℕ) : EReal) by push_cast; ring_nf]
   rw [mul_div_assoc, EReal.div_self h2n_ne_bot h2n_ne_top h2n_ne_zero, mul_one]
 
--- Helper: Extract equality from EReal division equality with 2^n denominator
+-- Вспомогательная лемма: извлекаем равенство из равенства делений в EReal со знаменателем 2^n
 private lemma ereal_div_pow2_eq_imp_eq (j k n : ℕ)
     (h : (((j : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) =
          (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal)) : 
@@ -1017,29 +1018,29 @@ private lemma ereal_div_pow2_eq_imp_eq (j k n : ℕ)
     exact mul_right_cancel₀ h2n_ne h_real
   exact Nat.cast_injective h_eq
 
--- Each level set of approx_fn is LebesgueMeasurable
--- The key observation: level sets are Boolean combinations of:
--- - {‖x‖ ≤ n} which is closed, hence LebesgueMeasurable
--- - {‖x‖ > n} which is open, hence LebesgueMeasurable
--- - {f x ≥ t} which is LebesgueMeasurable by hvi
--- - {f x < t} which is LebesgueMeasurable by hvii
+-- Каждое множество уровня approx_fn измеримо по Лебегу
+-- Ключевое наблюдение: множества уровня — булевы комбинации:
+-- - {‖x‖ ≤ n}, которое замкнуто и потому измеримо по Лебегу
+-- - {‖x‖ > n}, которое открыто и потому измеримо по Лебегу
+-- - {f x ≥ t}, которое измеримо по Лебегу в силу hvi
+-- - {f x < t}, которое измеримо по Лебегу в силу hvii
 private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stmt_vi f)
     (hvii : stmt_vii f) (n : ℕ) (v : EReal) : 
     LebesgueMeasurable {x | approx_fn f n x = v} := by
-  -- Helper: ball and outside ball are Lebesgue measurable
+  -- Вспомогательная лемма: шар и его внешность измеримы по Лебегу
   have ball_leb : LebesgueMeasurable {x : EuclideanSpace' d | ‖x‖ ≤ (n : ℝ)} := normBall_LebesgueMeasurable n
   have outside_leb : LebesgueMeasurable {x : EuclideanSpace' d | ‖x‖ > (n : ℝ)} :=
     (isOpen_lt continuous_const continuous_norm).measurable
 
   by_cases hv_range : v ∈ Set.range (approx_fn f n)
   swap
-  · -- v not in range : level set is empty
+  · -- v не в образе: множество уровня пусто
     convert LebesgueMeasurable.empty
     ext x; simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
     intro h; exact hv_range ⟨x, h⟩
 
-  -- v is in range: the level set is a Boolean combination of measurable sets
-  -- Decompose into inside/outside ball
+  -- v в образе: множество уровня — булева комбинация измеримых множеств
+  -- Разбиваем на внутри/вне шара
   have h_split : {x | approx_fn f n x = v} =
       ({x | ‖x‖ ≤ (n : ℝ)} ∩ {x | approx_fn f n x = v}) ∪
       ({x | ‖x‖ > (n : ℝ)} ∩ {x | approx_fn f n x = v}) := by
@@ -1048,18 +1049,18 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
   rw [h_split]
   apply LebesgueMeasurable.union
 
-  -- Inside ball case: Show {‖x‖ ≤ n} ∩ {approx_fn = v} is LebesgueMeasurable
-  -- Strategy: Show this is a Boolean combination of:
-  -- - {‖x‖ ≤ n} which is LebesgueMeasurable (closed ball)
-  -- - {f x ≥ t} for various thresholds t (LebesgueMeasurable by hvi)
-  -- - {f x < t} for various thresholds t (LebesgueMeasurable by hvii)
+  -- Случай внутри шара: показываем, что {‖x‖ ≤ n} ∩ {approx_fn = v} измеримо по Лебегу
+  -- Стратегия: показать, что это булева комбинация:
+  -- - {‖x‖ ≤ n}, которое измеримо по Лебегу (замкнутый шар)
+  -- - {f x ≥ t} для различных порогов t (измеримо по Лебегу в силу hvi)
+  -- - {f x < t} для различных порогов t (измеримо по Лебегу в силу hvii)
   · obtain ⟨x₀, hx₀⟩ := hv_range
     obtain ⟨k, hk_bound, hk_eq⟩ := approx_fn_values f hf n x₀
     have hv_eq : v = ((k : ℕ) : ℝ) / (2^n : ℝ) := by rw [← hx₀, hk_eq]
     have h2n_pos : (0 : ℝ) < 2^n := pow_pos (by norm_num) n
     have h2n_ne : (2^n : ℝ) ≠ 0 := ne_of_gt h2n_pos
     by_cases hk_max : k = n * 2^n
-    · -- k = n * 2^n : level set inside ball equals {‖x‖ ≤ n} ∩ {f x ≥ n}
+    · -- k = n * 2^n : множество уровня внутри шара равно {‖x‖ ≤ n} ∩ {f x ≥ n}
       have hv_eq_n : v = n := by
         rw [hv_eq, hk_max]
         conv_lhs => rw [show ((n * 2^n : ℕ) : ℝ) = (n : ℝ) * 2^n by simp [Nat.cast_mul, Nat.cast_pow]]
@@ -1080,8 +1081,8 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
           · exfalso
             have h_min_ge : min (f x) ↑n ≥ 0 := le_min (hf x) (EReal.coe_nonneg.mpr (Nat.cast_nonneg n))
             exact not_le.mpr hneg (EReal.toReal_nonneg h_min_ge)
-          · -- floor(...)/2^n = n means floor(...) = n*2^n
-            -- First normalize the coercions in hval
+          · -- floor(...)/2^n = n означает floor(...) = n*2^n
+            -- Сначала приводим приведения типов в hval к единому виду
             have hval' : (((⌊(min (f x) ↑n).toReal * 2 ^ n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) = (n : EReal) := by
               have h1 : ((2^n : ℕ) : EReal) = ((2^n : ℕ) : ℝ) := EReal.coe_natCast.symm
               have h2 : ((⌊(min (f x) ↑n).toReal * 2 ^ n⌋₊ : ℕ) : EReal) =
@@ -1132,13 +1133,13 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
                 simp only [Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]]
               exact Nat.floor_natCast (n * 2^n)
             rw [h_floor]
-            -- Goal: ↑↑(n * 2 ^ n) / ↑(2 ^ n) = ↑n
-            -- Use EReal.coe_natCast to normalize coercions
+            -- Цель: ↑↑(n * 2 ^ n) / ↑(2 ^ n) = ↑n
+            -- Используем EReal.coe_natCast, чтобы привести приведения типов к единому виду
             simp only [← EReal.coe_natCast, ← EReal.coe_div, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
             grind
       rw [h_eq]
       exact ball_leb.inter (hvi n)
-    · -- k < n * 2^n : level set is {‖x‖ ≤ n} ∩ {f x ≥ k/2^n} ∩ {f x < (k+1)/2^n}
+    · -- k < n * 2^n : множество уровня равно {‖x‖ ≤ n} ∩ {f x ≥ k/2^n} ∩ {f x < (k+1)/2^n}
       have hk_lt : k < n * 2^n := Nat.lt_of_le_of_ne hk_bound hk_max
       have h_le := hvi (((k : ℕ) : ℝ) / (2^n : ℝ))
       have h_lt := hvii ((((k + 1) : ℕ) : ℝ) / (2^n : ℝ))
@@ -1158,7 +1159,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
           · exfalso
             have h_min_ge : min (f x) ↑n ≥ 0 := le_min (hf x) (EReal.coe_nonneg.mpr (Nat.cast_nonneg n))
             exact not_le.mpr hneg (EReal.toReal_nonneg h_min_ge)
-          · -- Normal case : Show floor = k and derive bounds
+          · -- Обычный случай : показываем floor = k и выводим оценки
             have hval' : (((⌊(min (f x) ↑n).toReal * 2 ^ n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) =
                 (((k : ℕ) : ℝ) / (2^n : ℝ) : EReal) := by
               have h1 : ((2^n : ℕ) : EReal) = ((2^n : ℕ) : ℝ) := EReal.coe_natCast.symm
@@ -1171,7 +1172,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
               field_simp at h_coe; exact Nat.cast_injective h_coe
             have h_min_nonneg : min (f x) ↑n ≥ 0 := le_min (hf x) (EReal.coe_nonneg.mpr (Nat.cast_nonneg n))
             have h_prod_nonneg := mul_nonneg (EReal.toReal_nonneg h_min_nonneg) (le_of_lt h2n_pos)
-            -- Get bounds on (min (f x) n).toReal
+            -- Получаем оценки на (min (f x) n).toReal
             have h_ge : (min (f x) ↑n).toReal ≥ (k : ℝ) / 2^n := by
               have := Nat.floor_le h_prod_nonneg; rw [h_floor] at this
               calc (k : ℝ) / 2^n = (k : ℝ) * (2^n)⁻¹ := by ring
@@ -1184,7 +1185,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
             have h_toReal_lt : (min (f x) ↑n).toReal < ((k + 1) : ℝ) / 2^n := by
               calc (min (f x) ↑n).toReal = (min (f x) ↑n).toReal * 2^n / 2^n := by field_simp
                 _ < ((k + 1) : ℝ) / 2^n := div_lt_div_of_pos_right h_lt' h2n_pos
-            -- Show (k+1)/2^n ≤ n
+            -- Показываем (k+1)/2^n ≤ n
             have h_val_le_n : ((k + 1) : ℝ) / 2^n ≤ n := by
               have h1 : (k + 1 : ℕ) ≤ n * 2^n := by omega
               have h1' : ((k + 1) : ℝ) ≤ (n * 2^n : ℝ) := by exact_mod_cast h1
@@ -1205,12 +1206,12 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
                   calc (f x).toReal < (↑k + 1) / 2^n := h_toReal_lt
                     _ = ((k + 1) : ℕ) / 2^n := by rw [h_k1_eq]
                     _ ≤ n := h_val_le_n'
-              · -- h_fx_le_n : ¬(f x ≤ n), i.e., n < f x
+              · -- h_fx_le_n : ¬(f x ≤ n), т.е. n < f x
                 push_neg at h_fx_le_n
-                -- min(f x, n) = n when f x > n
+                -- min(f x, n) = n, когда f x > n
                 have h_min : min (f x) ↑n = ↑n := min_eq_right (le_of_lt h_fx_le_n)
                 -- h_toReal_lt : (min (f x) n).toReal < (↑k + 1) / 2^n
-                -- Becomes: n.toReal < (↑k + 1) / 2^n
+                -- становится: n.toReal < (↑k + 1) / 2^n
                 rw [h_min] at h_toReal_lt
                 have h_n_toReal : (↑n : EReal).toReal = (n : ℝ) := by
                   rw [show (↑n : EReal) = ↑(n : ℝ) from EReal.coe_natCast.symm, EReal.toReal_coe]
@@ -1221,12 +1222,12 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
             have h_fx_ne_top : f x ≠ ⊤ := by intro heq; rw [heq] at h_fx_lt_n; exact not_lt.mpr le_top h_fx_lt_n
             have h_fx_ne_bot : f x ≠ ⊥ := by intro heq; rw [h_min_eq] at hbot; exact hbot heq
             refine ⟨hnorm, ?_, ?_⟩
-            · -- Show f x ≥ k / 2^n
+            · -- Показываем f x ≥ k / 2^n
               rw [← EReal.coe_toReal h_fx_ne_top h_fx_ne_bot]
               have hk_coe : ((k : ℕ) : EReal) = ((k : ℕ) : ℝ) := EReal.coe_natCast.symm
               have h2n_coe : ((2^n : ℕ) : EReal) = ((2^n : ℕ) : ℝ) := EReal.coe_natCast.symm
               simp only [← EReal.coe_div, ge_iff_le, EReal.coe_le_coe_iff]; exact h_ge
-            · -- Show f x < (k + 1) / 2^n
+            · -- Показываем f x < (k + 1) / 2^n
               rw [← EReal.coe_toReal h_fx_ne_top h_fx_ne_bot]
               have h_k1_eq : (↑k + 1 : ℝ) = ((k + 1) : ℕ) := by simp only [Nat.cast_add, Nat.cast_one]
               have h_toReal_lt' : (f x).toReal < ((k + 1) : ℕ) / 2^n := by rw [← h_k1_eq]; exact h_toReal_lt
@@ -1234,25 +1235,25 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
         · intro ⟨hnorm, hfx_ge, hfx_lt⟩
           refine ⟨hnorm, ?_⟩
           rw [hv_eq]; simp only [approx_fn, hnorm, ite_true]
-          -- From hfx_lt: f x < (k+1)/2^n ≤ n, so min(f x, n) = f x
+          -- Из hfx_lt: f x < (k+1)/2^n ≤ n, значит min(f x, n) = f x
           have h_val_le_n : ((k + 1) : ℝ) / 2^n ≤ n := by
             have h1 : (k + 1 : ℕ) ≤ n * 2^n := by omega
             have h1' : ((k + 1) : ℝ) ≤ (n * 2^n : ℝ) := by exact_mod_cast h1
             calc ((k + 1) : ℝ) / 2^n ≤ (n * 2^n : ℝ) / 2^n := div_le_div_of_nonneg_right h1' (le_of_lt h2n_pos)
               _ = n := by field_simp
           have h_fx_lt_n : f x < ↑n := by
-            -- f x < ↑↑(k+1) / ↑(2^n) and (k+1)/2^n ≤ n, so f x < n
-            -- h_in_real lifts h_val_le_n to the correct form
+            -- f x < ↑↑(k+1) / ↑(2^n) и (k+1)/2^n ≤ n, значит f x < n
+            -- h_in_real поднимает h_val_le_n к нужной форме
             have h_in_real : (((k + 1 : ℕ) : ℝ) / ((2^n : ℕ) : ℝ)) ≤ (n : ℝ) := by
               simp only [Nat.cast_add, Nat.cast_one, Nat.cast_pow, Nat.cast_ofNat]
               exact h_val_le_n
-            -- Use refine to infer goal type from hfx_lt (which has ↑(2^n) as coerced Nat)
+            -- Используем refine, чтобы вывести тип цели из hfx_lt (где ↑(2^n) — приведённое Nat)
             refine lt_of_lt_of_le hfx_lt ?h_bound
-            -- Goal now: ↑↑(k+1) / ↑(2^n) ≤ ↑n (with ↑(2^n) as coerced Nat!)
+            -- Теперь цель: ↑↑(k+1) / ↑(2^n) ≤ ↑n (с ↑(2^n) как приведённым Nat!)
             case h_bound =>
               simp_rw [EReal.coe_natCast.symm, ← EReal.coe_div, EReal.coe_le_coe_iff]
               convert h_in_real using 2
-              -- Goal: 2 ^ n = ↑(2 ^ n) in ℝ - Real power vs coerced Nat power
+              -- Цель: 2 ^ n = ↑(2 ^ n) в ℝ — вещественная степень против приведённой степени Nat
               simp only [Nat.cast_pow, Nat.cast_ofNat]
           have h_min_eq : min (f x) ↑n = f x := min_eq_left (le_of_lt h_fx_lt_n)
           rw [h_min_eq]
@@ -1263,7 +1264,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
           · exfalso
             have h_fx_ge : f x ≥ 0 := hf x
             exact not_lt.mpr (EReal.toReal_nonneg h_fx_ge) htop'
-          · -- Show floor((f x).toReal * 2^n) = k
+          · -- Показываем floor((f x).toReal * 2^n) = k
             rw [← EReal.coe_div] at hfx_ge hfx_lt
             have h_ge' : (f x).toReal ≥ (k : ℝ) / 2^n := by
               rw [← EReal.coe_toReal h_fx_ne_top h_fx_ne_bot] at hfx_ge
@@ -1291,7 +1292,7 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
       rw [h_eq]
       exact ball_leb.inter (h_le.inter h_lt)
 
-  -- Outside ball case: {‖x‖ > n} ∩ {approx_fn = v} = {‖x‖ > n} if v = 0, else ∅
+  -- Случай вне шара: {‖x‖ > n} ∩ {approx_fn = v} = {‖x‖ > n}, если v = 0, иначе ∅
   · have h_eq : {x | ‖x‖ > (n : ℝ)} ∩ {x | approx_fn f n x = v} =
         if v = 0 then {x | ‖x‖ > (n : ℝ)} else ∅ := by
       ext x
@@ -1310,18 +1311,18 @@ private lemma approx_fn_levelset_LebesgueMeasurable (hf : Unsigned f) (hvi : stm
     rw [h_eq]
     split_ifs <;> [exact outside_leb; exact LebesgueMeasurable.empty]
 
--- The main construction lemma
-private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vii f) : 
+-- Основная лемма построения
+private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vii f) :
     stmt_iv f := by
-  -- Construct f_n(x) = largest k·2^{-n} ≤ min(f(x), n) when |x| ≤ n, else 0
+  -- Строим f_n(x) = наибольшее k·2^{-n} ≤ min(f(x), n), когда |x| ≤ n, иначе 0
   use approx_fn f
   constructor
-  · -- Each approx_fn f n is a simple function, bounded, with finite measure support
+  · -- Каждая approx_fn f n — простая функция, ограниченная, с конечным носителем меры
     intro n
     constructor
     · -- UnsignedSimpleFunction (approx_fn f n)
-      -- Strategy: use the indicator sum representation directly
-      -- approx_fn f n = sum over k from 0 to n*2^n of (k/2^n) • indicator{approx_fn f n = k/2^n}
+      -- Стратегия: напрямую использовать представление в виде суммы индикаторов
+      -- approx_fn f n = сумма по k от 0 до n*2^n слагаемых (k/2^n) • indicator{approx_fn f n = k/2^n}
       let K := n * 2^n + 1
       let c : Fin K → EReal := fun i => if i.val = n * 2^n then n else ((i.val : ℕ) : ℝ) / (2^n : ℝ)
       let E : Fin K → Set (EuclideanSpace' d) := fun i => {x | approx_fn f n x = c i}
@@ -1329,7 +1330,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
       constructor
       · intro i
         constructor
-        · -- LebesgueMeasurable (E i) - Use the helper lemma
+        · -- LebesgueMeasurable (E i) — используем вспомогательную лемму
           simp only [E]
           exact approx_fn_levelset_LebesgueMeasurable hf hvi hvii n (c i)
         · -- c i ≥ 0
@@ -1342,7 +1343,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
       · -- approx_fn f n = sum c i • indicator (E i)
         ext x
         simp only [Finset.sum_apply, Pi.smul_apply, EReal.indicator]
-        -- Find which i has x ∈ E i
+        -- Находим, для какого i выполняется x ∈ E i
         obtain ⟨k, hk_bound, hk_eq⟩ := approx_fn_values f hf n x
         have h_unique : ∃! i : Fin K, x ∈ E i := by
           by_cases hk_max : k = n * 2^n
@@ -1352,16 +1353,16 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
             · simp only [hk_max] at hk_eq
               simp only [ite_true]
               rw [hk_eq]
-              -- Use helper lemma, then normalize coercions
+              -- Используем вспомогательную лемму, затем приводим приведения типов к единому виду
               convert mul_pow2_div_pow2_eq n using 2
               simp only [← EReal.coe_natCast, Nat.cast_pow, Nat.cast_ofNat, EReal.coe_pow]
             · intro j hj
               -- hj : approx_fn f n x = if ↑j = n * 2^n then ↑n else ↑↑↑j / ↑(2^n)
-              -- The simp didn't make progress because E is not in scope for hj after previous simp
+              -- simp не смог продвинуться, так как E не в области видимости для hj после предыдущего simp
               ext; simp only
               by_cases hj_max : j.val = n * 2^n
               · exact hj_max
-              · -- j.val ≠ n*2^n, but we'll show they must be equal from hj and hk_eq
+              · -- j.val ≠ n*2^n, но мы покажем, что они должны быть равны, исходя из hj и hk_eq
                 simp only [hj_max, ↓reduceIte] at hj
                 rw [hk_max] at hk_eq
                 exfalso; apply hj_max
@@ -1376,10 +1377,10 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
               simp only [h_c_val]
               exact hk_eq
             · intro j hj
-              -- hj already has the expanded form after intro
+              -- hj уже в развёрнутой форме после intro
               ext
               by_cases hj_max : j.val = n * 2^n
-              · -- j.val = n*2^n but k ≠ n*2^n : k/2^n = n = (n*2^n)/2^n, contradiction
+              · -- j.val = n*2^n, но k ≠ n*2^n : k/2^n = n = (n*2^n)/2^n — противоречие
                 simp only [hj_max, ↓reduceIte] at hj
                 have h_k_val : (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) = (n : EReal) := by
                   convert hk_eq.symm.trans hj using 2; all_goals norm_cast
@@ -1387,17 +1388,17 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
                             (((n * 2^n : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) := by
                   rw [h_k_val]; convert (mul_pow2_div_pow2_eq n).symm using 2
                 exact absurd (ereal_div_pow2_eq_imp_eq k (n * 2^n) n h_eq) hk_max
-              · -- Both j and k are not n*2^n
+              · -- Ни j, ни k не равны n*2^n
                 simp only [hj_max, ↓reduceIte] at hj
                 have h_eq' : (((j.val : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) =
                              (((k : ℕ) : ℝ) : EReal) / ((2^n : ℕ) : EReal) := by
                   convert hj.symm.trans hk_eq using 2 <;> norm_cast
                 exact ereal_div_pow2_eq_imp_eq j.val k n h_eq'
-        -- Now use the unique i to simplify the sum
+        -- Теперь используем единственность i, чтобы упростить сумму
         have h_mem : x ∈ E (h_unique.choose) := h_unique.choose_spec.1
         rw [Finset.sum_eq_single h_unique.choose]
-        · -- h_mem : x ∈ E (h_unique.choose) means approx_fn f n x = c (h_unique.choose)
-          -- indicator = 1, so goal is approx_fn f n x = c (...) • 1 = c (...)
+        · -- h_mem : x ∈ E (h_unique.choose) означает approx_fn f n x = c (h_unique.choose)
+          -- indicator = 1, поэтому цель — approx_fn f n x = c (...) • 1 = c (...)
           simp only [Real.EReal_fun, Set.indicator'_of_mem h_mem, EReal.coe_one, smul_eq_mul, mul_one]
           exact h_mem
         · intro b hb_mem hb_ne
@@ -1422,22 +1423,22 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         have h1 : (k : ℝ) ≤ n * 2^n := by exact_mod_cast hk_bound
         calc (k : ℝ) / 2^n ≤ (n * 2^n) / 2^n := by apply div_le_div_of_nonneg_right h1 h2n_nonneg
           _ = n := by field_simp
-      -- The value k/2^n as a real
+      -- Значение k/2^n как вещественное число
       let val : ℝ := (k : ℝ) / 2^n
-      -- Direct proof - just use native simp with the relevant lemmas
+      -- Прямое доказательство — просто применяем simp с нужными леммами
       simp only [← EReal.coe_div, EReal.abs_def, abs_of_nonneg h_val_nonneg]
       calc ENNReal.ofReal val
         ≤ ENNReal.ofReal n := ENNReal.ofReal_le_ofReal h_val_le_n
         _ = ↑n := ENNReal.ofReal_natCast n
     · -- FiniteMeasureSupport (approx_fn f n)
-      -- Support ⊆ {|x| ≤ n}, which has finite Lebesgue measure
-      -- Closed balls are compact, so have finite measure
+      -- Носитель ⊆ {|x| ≤ n}, у которого конечная мера Лебега
+      -- Замкнутые шары компактны, значит имеют конечную меру
       have h_support_sub : Support (approx_fn f n) ⊆ {x | ‖x‖ ≤ n} := by
         intro x hx
         simp only [Support] at hx
         by_contra h
         simp only [Set.mem_setOf_eq, not_le] at h
-        -- When ‖x‖ > n, approx_fn f n x = 0
+        -- Когда ‖x‖ > n, approx_fn f n x = 0
         have h' : ¬(‖x‖ ≤ (n : ℝ)) := not_le.mpr h
         have h_eq : approx_fn f n x = 0 := by
           unfold approx_fn
@@ -1454,18 +1455,18 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         _ = Lebesgue_measure (Metric.closedBall 0 n) := by rw [h_ball_eq]
         _ < ⊤ := lt_top_iff_ne_top.mpr h_finite
   constructor
-  · -- Monotonicity : approx_fn f m x ≤ approx_fn f n x for m ≤ n
+  · -- Монотонность : approx_fn f m x ≤ approx_fn f n x при m ≤ n
     intro x m n hmn
-    -- Key insight: as n increases, the ball grows and approximation gets finer
+    -- Ключевая идея: при увеличении n шар растёт, и приближение становится точнее
     unfold approx_fn
     by_cases hm : ‖x‖ ≤ m
     · -- |x| ≤ m ≤ n
       have hn : ‖x‖ ≤ n := le_trans (by exact_mod_cast hm) (Nat.cast_le.mpr hmn)
       simp only [hm, hn, ite_true]
-      -- Both are non-trivial, need to compare the floor values
-      -- approx_fn f m x approximates min(f x, m) and approx_fn f n x approximates min(f x, n)
-      -- Since min(f x, m) ≤ min(f x, n) and approximation gets better, we have monotonicity
-      -- First eliminate the impossible cases using unsigned property
+      -- Оба случая нетривиальны, нужно сравнить значения floor
+      -- approx_fn f m x приближает min(f x, m), а approx_fn f n x приближает min(f x, n)
+      -- Поскольку min(f x, m) ≤ min(f x, n) и приближение улучшается, получаем монотонность
+      -- Сначала исключаем невозможные случаи, используя беззнаковость
       have hm_ne_bot : min (f x) ↑m ≠ ⊥ := by
         intro h
         have h1 : 0 ≤ min (f x) ↑m := le_min (hf x) (EReal.coe_nonneg.mpr (Nat.cast_nonneg m))
@@ -1484,8 +1485,8 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         exact EReal.toReal_nonneg h1
       simp only [hm_ne_bot, hm_ne_top, hn_ne_bot, hn_ne_top, ite_false]
       simp only [not_lt.mpr hm_nonneg, not_lt.mpr hn_nonneg, ite_false]
-      -- Now we need: floor(t_m * 2^m) / 2^m ≤ floor(t_n * 2^n) / 2^n
-      -- Key: t_m ≤ t_n and floor approximation from below
+      -- Теперь нужно: floor(t_m * 2^m) / 2^m ≤ floor(t_n * 2^n) / 2^n
+      -- Ключевое: t_m ≤ t_n и приближение через floor снизу
       set t_m := (min (f x) ↑m).toReal with ht_m
       set t_n := (min (f x) ↑n).toReal with ht_n
       have h_tm_le_tn : t_m ≤ t_n := by
@@ -1500,9 +1501,9 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         have h1 : (⌊t_m * 2^m⌋₊ : ℝ) ≤ t_m * 2^m := Nat.floor_le (mul_nonneg hm_nonneg (le_of_lt h2m_pos))
         rw [div_le_iff₀ h2m_pos]
         linarith
-      -- floor(t_n * 2^n) / 2^n is the largest multiple of 2^{-n} ≤ t_n
-      -- Since floor(t_m * 2^m) / 2^m is a multiple of 2^{-m}, hence of 2^{-n},
-      -- and it's ≤ t_m ≤ t_n, we have the result
+      -- floor(t_n * 2^n) / 2^n — наибольшее кратное 2^{-n}, не превосходящее t_n
+      -- Поскольку floor(t_m * 2^m) / 2^m кратно 2^{-m}, а значит и 2^{-n},
+      -- и не превосходит t_m ≤ t_n, получаем нужный результат
       have h_lhs_mul : ∃ k : ℕ, (⌊t_m * 2^m⌋₊ : ℝ) / 2^m = (k : ℝ) / 2^n := by
         use ⌊t_m * 2^m⌋₊ * 2^(n - m)
         have h_pow : (2 : ℝ)^m * 2^(n - m) = 2^n := by
@@ -1512,27 +1513,27 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         rw [← h_pow]
         push_cast; ring
       obtain ⟨k, hk⟩ := h_lhs_mul
-      -- k / 2^n ≤ t_m ≤ t_n, so k / 2^n ≤ floor(t_n * 2^n) / 2^n
+      -- k / 2^n ≤ t_m ≤ t_n, значит k / 2^n ≤ floor(t_n * 2^n) / 2^n
       have h_k_le_tn : (k : ℝ) / 2^n ≤ t_n := by
         rw [← hk]; exact le_trans h_floor_le_tm h_tm_le_tn
       have h_k_le_floor : k ≤ ⌊t_n * 2^n⌋₊ := by
         have h1 : (k : ℝ) ≤ t_n * 2^n := by
           rw [div_le_iff₀ h2n_pos] at h_k_le_tn; linarith
         exact Nat.le_floor h1
-      -- Final result in ℝ: floor(t_m * 2^m) / 2^m ≤ floor(t_n * 2^n) / 2^n
+      -- Итоговый результат в ℝ: floor(t_m * 2^m) / 2^m ≤ floor(t_n * 2^n) / 2^n
       have h_real : (⌊t_m * 2^m⌋₊ : ℝ) / 2^m ≤ (⌊t_n * 2^n⌋₊ : ℝ) / 2^n := by
         calc (⌊t_m * 2^m⌋₊ : ℝ) / 2^m = (k : ℝ) / 2^n := hk
              _ ≤ (⌊t_n * 2^n⌋₊ : ℝ) / 2^n := by
                apply div_le_div_of_nonneg_right _ (le_of_lt h2n_pos)
                exact_mod_cast h_k_le_floor
-      -- Coerce to EReal
+      -- Приводим к EReal
       exact EReal.coe_le_coe_iff.mpr h_real
-    · -- |x| > m, so approx_fn f m x = 0
+    · -- |x| > m, значит approx_fn f m x = 0
       simp only [hm, ite_false]
-      -- approx_fn f n x ≥ 0 by construction (it's unsigned)
+      -- approx_fn f n x ≥ 0 по построению (она беззнаковая)
       by_cases hn : ‖x‖ ≤ n
       · simp only [hn, ite_true]
-        -- Need: 0 ≤ (if bot then 0, if top then n, if neg then 0, else floor/2^n)
+        -- Нужно: 0 ≤ (если bot, то 0; если top, то n; если neg, то 0; иначе floor/2^n)
         split_ifs with h_bot h_top h_neg
         · exact le_refl 0  -- 0 ≤ 0
         · exact EReal.coe_nonneg.mpr (Nat.cast_nonneg n)  -- 0 ≤ n
@@ -1543,30 +1544,30 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
           exact le_of_lt (pow_pos (by norm_num : (0 : ℝ) < 2) n)
       · simp only [hn, ite_false]
         rfl
-  · -- Convergence : f x = iSup (fun n => approx_fn f n x)
+  · -- Сходимость : f x = iSup (fun n => approx_fn f n x)
     intro x
-    -- Case analysis: f x = ⊤ or f x < ⊤
+    -- Разбор случаев: f x = ⊤ или f x < ⊤
     rcases eq_top_or_lt_top (f x) with hfx_top | hfx_lt_top
-    · -- Case 1 : f x = ⊤
+    · -- Случай 1 : f x = ⊤
       rw [hfx_top, eq_comm, iSup_eq_top]
       intro b hb
-      -- For b < ⊤, find n with approx_fn f n x > b
+      -- Для b < ⊤ находим n с approx_fn f n x > b
       rcases eq_bot_or_bot_lt b with rfl | hb_bot
-      · -- b = ⊥ : any n works since approx_fn f n x ≥ 0 > ⊥
+      · -- b = ⊥ : подходит любое n, так как approx_fn f n x ≥ 0 > ⊥
         use max 1 (Nat.ceil ‖x‖)
         exact lt_of_lt_of_le EReal.bot_lt_zero (approx_fn_nonneg f hf _ x)
-      · -- b > ⊥ and b < ⊤, so b is a finite real
+      · -- b > ⊥ и b < ⊤, значит b — конечное вещественное число
         induction b using EReal.rec with
         | bot => exact (not_lt_bot hb_bot).elim
         | top => exact (lt_irrefl _ hb).elim
         | coe b' =>
-          -- Choose n > b' and n ≥ ‖x‖
+          -- Выбираем n > b' и n ≥ ‖x‖
           let N := max (Nat.ceil b' + 1) (Nat.ceil ‖x‖)
           use N
           have h_norm : ‖x‖ ≤ N := by
             calc ‖x‖ ≤ Nat.ceil ‖x‖ := Nat.le_ceil _
                  _ ≤ N := by exact_mod_cast Nat.le_max_right _ _
-          -- approx_fn f N x = floor(N * 2^N) / 2^N = N when f x = ⊤
+          -- approx_fn f N x = floor(N * 2^N) / 2^N = N, когда f x = ⊤
           have hN_ne_bot : ((N : ℕ) : EReal) ≠ ⊥ := EReal.coe_ne_bot N
           have hN_ne_top : ((N : ℕ) : EReal) ≠ ⊤ := EReal.coe_ne_top N
           have hN_nonneg : (0 : ℝ) ≤ N := Nat.cast_nonneg N
@@ -1582,25 +1583,25 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
           calc b' ≤ Nat.ceil b' := Nat.le_ceil _
                _ < (Nat.ceil b' : ℝ) + 1 := lt_add_one _
                _ ≤ N := by exact_mod_cast Nat.le_max_left _ _
-    · -- Case 2 : f x < ⊤ (finite)
+    · -- Случай 2 : f x < ⊤ (конечно)
       have hfx_not_bot : f x ≠ ⊥ := ne_of_gt (lt_of_lt_of_le EReal.bot_lt_zero (hf x))
-      -- f x is finite: not ⊥ (by unsigned) and not ⊤ (by hypothesis)
+      -- f x конечно: не ⊥ (в силу беззнаковости) и не ⊤ (по предположению)
       set r := (f x).toReal with hr_def
       have hr_eq : f x = r := (EReal.coe_toReal hfx_lt_top.ne hfx_not_bot).symm
       rw [hr_eq]
-      -- f x = r (finite nonnegative real)
+      -- f x = r (конечное неотрицательное вещественное число)
       have hr_nonneg : r ≥ 0 := by
         have h := hf x
         rw [hr_eq] at h
         exact EReal.coe_nonneg.mp h
-      -- Use floor_approx_iSup_eq: for large n, approx_fn f n x = floor(r * 2^n) / 2^n
+      -- Используем floor_approx_iSup_eq: для больших n approx_fn f n x = floor(r * 2^n) / 2^n
       apply le_antisymm
       · -- r ≤ iSup (approx_fn)
-        -- Strategy: use floor_approx_iSup_eq and show that for large n, floor_approx ≤ approx_fn
+        -- Стратегия: используем floor_approx_iSup_eq и показываем, что для больших n floor_approx ≤ approx_fn
         rw [floor_approx_iSup_eq r hr_nonneg]
         apply iSup_le
         intro n
-        -- Find N ≥ n with ‖x‖ ≤ N and r ≤ N
+        -- Находим N ≥ n с ‖x‖ ≤ N и r ≤ N
         let N := max n (max (Nat.ceil ‖x‖) (Nat.ceil r))
         have hnN : n ≤ N := Nat.le_max_left _ _
         have h_norm_N : ‖x‖ ≤ N := by
@@ -1614,14 +1615,14 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         -- approx_fn f N x = floor(r * 2^N) / 2^N
         have h_approx_N : approx_fn f N x = (((⌊r * 2^N⌋₊ : ℕ) : ℝ) / (2^N : ℝ) : EReal) :=
           approx_fn_eq_floor_when_finite f hf N x h_norm_N r hr_eq hr_nonneg hrN
-        -- floor(r * 2^n) / 2^n ≤ floor(r * 2^N) / 2^N (monotonicity)
+        -- floor(r * 2^n) / 2^n ≤ floor(r * 2^N) / 2^N (монотонность)
         have h2n_pos : (2 : ℝ)^n > 0 := pow_pos (by norm_num) n
         have h2N_pos : (2 : ℝ)^N > 0 := pow_pos (by norm_num) N
         have h_floor_n_le_r : (⌊r * 2^n⌋₊ : ℝ) / 2^n ≤ r := by
           rw [div_le_iff₀ h2n_pos]
           exact Nat.floor_le (mul_nonneg hr_nonneg (le_of_lt h2n_pos))
         have h_mono : (⌊r * 2^n⌋₊ : ℝ) / 2^n ≤ (⌊r * 2^N⌋₊ : ℝ) / 2^N := by
-          -- floor(r * 2^n) / 2^n is a multiple of 2^{-n}, hence of 2^{-N}
+          -- floor(r * 2^n) / 2^n кратно 2^{-n}, а значит и 2^{-N}
           have h_lhs_mul : ∃ k : ℕ, (⌊r * 2^n⌋₊ : ℝ) / 2^n = (k : ℝ) / 2^N := by
             use ⌊r * 2^n⌋₊ * 2^(N - n)
             have h_pow : (2 : ℝ)^n * 2^(N - n) = 2^N := by
@@ -1639,7 +1640,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
               rw [div_le_iff₀ h2N_pos] at h_k_le_r; linarith
             exact Nat.le_floor h1
           exact_mod_cast h_k_le_floor
-        -- Use the monotonicity and connect to iSup
+        -- Используем монотонность и связываем с iSup
         have h_le_approx : (((⌊r * 2^n⌋₊ : ℕ) : ℝ) / (2^n : ℝ) : EReal) ≤ approx_fn f N x := by
           rw [h_approx_N]
           exact EReal.coe_le_coe_iff.mpr h_mono
@@ -1651,7 +1652,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
         intro n
         by_cases h_norm : ‖x‖ ≤ n
         · simp only [approx_fn, h_norm, ite_true, hr_eq]
-          -- min r n ≤ r, and floor approx ≤ min r n
+          -- min r n ≤ r, а приближение через floor ≤ min r n
           have h_min_ne_bot : min (r : EReal) n ≠ ⊥ := by
             intro h
             rcases min_eq_bot.mp h with hr | hn
@@ -1679,7 +1680,8 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
 
 end UnsignedMeasurable.TFAE_helpers
 
-/-- Lemma 1.3.9 (Equivalent notions of measurability).  Some slight changes to the statement have been made to make the claims cleaner to state -/
+/-- Lemma 1.3.9 (эквивалентные понятия измеримости). В формулировку внесены небольшие изменения,
+    чтобы утверждения было проще сформулировать. -/
 theorem UnsignedMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : 
     [
       UnsignedMeasurable f,
@@ -1695,7 +1697,7 @@ theorem UnsignedMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → EReal} (hf 
       ∀ K : Set EReal, IsClosed K → LebesgueMeasurable (f⁻¹' K)
     ].TFAE := by
   open UnsignedMeasurable.TFAE_helpers in
-  -- Establish the implication graph
+  -- Устанавливаем граф импликаций
   tfae_have 1 ↔ 2 := i_iff_ii hf
   tfae_have 2 → 3 := ii_imp_iii
   tfae_have 4 → 2 := iv_imp_ii
@@ -1755,37 +1757,37 @@ theorem UnsignedSimpleFunction.iff {d : ℕ} {f : EuclideanSpace' d → EReal} (
 theorem UnsignedMeasurable.measurable_graph {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : LebesgueMeasurable { p | ∃ x, ∃ t : ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by sorry
 
 /-!
-## Remark 1.3.10: Measurable functions can have non-measurable preimages
+## Remark 1.3.10: у измеримых функций прообразы могут быть неизмеримы
 
-We construct an example showing that even for a measurable function f: ℝ^d → \[0, +∞\],
-the inverse image f⁻¹(E) of a Lebesgue measurable set E need not be Lebesgue measurable.
+Мы строим пример, показывающий, что даже для измеримой функции f: ℝ^d → \[0, +∞\)
+прообраз f⁻¹(E) измеримого по Лебегу множества E не обязан быть измеримым по Лебегу.
 
-**Strategy** (from the textbook):
-1. The Cantor set C := \{∑ aⱼ 3^(-j) : aⱼ ∈ \{0,2\}\} has measure zero
-2. Define f: \[0,1\] → C by mapping binary digits to ternary: f(∑ bⱼ 2^(-j)) = ∑ 2bⱼ 3^(-j)
-3. f is bijective from A (non-terminating binary decimals) onto C, and f is measurable
-4. Take non-measurable F ⊆ A (from Vitali construction)
-5. E := f(F) ⊆ C is measurable (subset of null set), but f⁻¹(E) = F is non-measurable
+**Стратегия** (из учебника):
+1. Множество Кантора C := \{∑ aⱼ 3^(-j) : aⱼ ∈ \{0,2\}\} имеет нулевую меру
+2. Определяем f: \[0,1\] → C, переводя двоичные цифры в троичные: f(∑ bⱼ 2^(-j)) = ∑ 2bⱼ 3^(-j)
+3. f — биекция из A (незавершающихся двоичных дробей) на C, и f измерима
+4. Берём неизмеримое F ⊆ A (из построения Витали)
+5. E := f(F) ⊆ C измеримо (подмножество нулевого множества), но f⁻¹(E) = F неизмеримо
 
-**Implementation note**: Our formalization differs slightly from the textbook:
-- **Textbook**: f(x) = 0 for dyadic rationals (terminating binary decimals)
-- **Our version**: f is defined uniformly for all x ∈ \[0,1\] using floor-based binary digits
+**Замечание о реализации**: наша формализация немного отличается от учебника:
+- **В учебнике**: f(x) = 0 для диадических рациональных (завершающихся двоичных дробей)
+- **В нашей версии**: f определена единообразно для всех x ∈ \[0,1\] через двоичные цифры на основе floor
 
-The textbook's f is NOT monotone on \[0,1\] (e.g., f(0.4) > 0 but f(0.5) = 0).
-Our f IS monotone on all of \[0,1\], which simplifies the measurability proof:
-sublevel sets are intervals, hence measurable by Lemma 1.3.9(viii).
+Функция f из учебника НЕ монотонна на \[0,1\] (например, f(0.4) > 0, но f(0.5) = 0).
+Наша f монотонна на всём \[0,1\], что упрощает доказательство измеримости:
+множества подуровня — интервалы, а значит измеримы по Lemma 1.3.9(viii).
 
-Both versions work for the theorem because:
-- Both are injective on A (non-dyadic numbers have unique binary expansions)
-- Both map \[0,1\] into {name}`CantorSet` ∪ \{0\}
-- Both give measurable f with f⁻¹(E) = F non-measurable
+Обе версии подходят для теоремы, потому что:
+- Обе инъективны на A (недиадические числа имеют единственное двоичное разложение)
+- Обе отображают \[0,1\] в {name}`CantorSet` ∪ \{0\}
+- Обе дают измеримую f с неизмеримым f⁻¹(E) = F
 -/
 
-/-- Dyadic rationals: numbers of the form k/2^n where k ≤ 2^n.
-    These are exactly the real numbers with terminating binary expansions. -/
+/-- Диадические рациональные числа: числа вида k/2^n, где k ≤ 2^n.
+    Это в точности вещественные числа с завершающимся двоичным разложением. -/
 def DyadicRationals : Set ℝ := {x : ℝ | ∃ (k n : ℕ), x = k / 2^n ∧ k ≤ 2^n}
 
-/-- Dyadic rationals are countable. -/
+/-- Диадические рациональные числа счётны. -/
 lemma DyadicRationals.countable : DyadicRationals.Countable := by
   let D' := ⋃ n : ℕ, (fun k : Fin (2^n + 1) => (k : ℝ) / 2^n) '' Set.univ
   have hD'_countable : D'.Countable :=
@@ -1797,32 +1799,32 @@ lemma DyadicRationals.countable : DyadicRationals.Countable := by
   have hk_lt : k < 2^n + 1 := Nat.lt_succ_of_le hk_le
   exact ⟨⟨k, hk_lt⟩, hk.symm⟩
 
-/-- Binary digit extraction: bⱼ(x) = ⌊2^j · x⌋ mod 2.
-    For x ∈ \[0,1), this extracts the j-th binary digit.
-    Special case: x = 1 has all digits = 1 (1 = 0.111...₂).
-    For x ∉ \[0,1\], all digits are 0. -/
+/-- Извлечение двоичной цифры: bⱼ(x) = ⌊2^j · x⌋ mod 2.
+    Для x ∈ \[0,1) это даёт j-ю двоичную цифру.
+    Особый случай: у x = 1 все цифры равны 1 (1 = 0.111...₂).
+    Для x ∉ \[0,1\] все цифры равны 0. -/
 noncomputable def binaryDigit (x : ℝ) (j : ℕ) : ℕ :=
   if x ∈ Set.Ico (0 : ℝ) 1 then ⌊(2 : ℝ)^j * x⌋₊ % 2
   else if x = 1 then 1
   else 0
 
-/-- Binary digits are in \{0, 1\}. -/
+/-- Двоичные цифры принадлежат \{0, 1\}. -/
 lemma binaryDigit_le_one (x : ℝ) (j : ℕ) : binaryDigit x j ≤ 1 := by
   simp only [binaryDigit]
   split_ifs with h1 h2 <;> omega
 
-/-- Binary digits of 0 are all 0. -/
+/-- У 0 все двоичные цифры равны 0. -/
 lemma binaryDigit_zero (j : ℕ) : binaryDigit 0 j = 0 := by
   simp only [binaryDigit]
   have h0' : (0 : ℝ) ∈ Set.Ico 0 1 := ⟨le_refl 0, by norm_num⟩
   rw [if_pos h0']
   simp [mul_zero]
 
-/-- Binary digits of 1 are all 1. -/
+/-- У 1 все двоичные цифры равны 1. -/
 lemma binaryDigit_one (j : ℕ) : binaryDigit 1 j = 1 := by
   simp only [binaryDigit, Set.mem_Ico, lt_self_iff_false, and_false, ↓reduceIte]
 
-/-- The full sum ∑\_\{j≥0\} 2·(1/3)^(j+1) = 1. -/
+/-- Полная сумма ∑\_\{j≥0\} 2·(1/3)^(j+1) = 1. -/
 lemma tsum_two_thirds_geometric : ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(j + 1) = 1 := by
   have h1 : ∑' j : ℕ, (1/3 : ℝ)^j = (1 - 1/3)⁻¹ :=
     tsum_geometric_of_lt_one (by norm_num) (by norm_num)
@@ -1832,7 +1834,7 @@ lemma tsum_two_thirds_geometric : ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(j + 1) 
     _ = (2/3) * (1 - 1/3)⁻¹ := by rw [h1]
     _ = 1 := by norm_num
 
-/-- The tail sum bound: ∑\_\{j≥k\} 2·(1/3)^(j+1) = (1/3)^k. -/
+/-- Оценка хвостовой суммы: ∑\_\{j≥k\} 2·(1/3)^(j+1) = (1/3)^k. -/
 lemma tsum_tail_bound (k : ℕ) : 
     ∑' j : ℕ, (2 : ℝ) * (1/3 : ℝ)^(k + j + 1) = (1/3 : ℝ)^k := by
   have h1 : ∑' j : ℕ, (1/3 : ℝ)^j = (1 - 1/3)⁻¹ :=
@@ -1845,7 +1847,7 @@ lemma tsum_tail_bound (k : ℕ) :
     _ = (2 : ℝ) * (1/3 : ℝ)^(k+1) * (1 - 1/3)⁻¹ := by rw [h1]
     _ = (1/3 : ℝ)^k := by field_simp; ring
 
-/-- Helper: if ⌊2z⌋₊ % 2 = 1 then ⌊2z⌋₊ ≥ 2⌊z⌋₊ + 1 -/
+/-- Вспомогательная лемма: если ⌊2z⌋₊ % 2 = 1, то ⌊2z⌋₊ ≥ 2⌊z⌋₊ + 1 -/
 lemma floor_two_mul_odd_ge {z : ℝ} (hz : 0 ≤ z) (hodd : ⌊2 * z⌋₊ % 2 = 1) : 
     ⌊2 * z⌋₊ ≥ 2 * ⌊z⌋₊ + 1 := by
   have h_decomp : ⌊2 * z⌋₊ = 2 * (⌊2 * z⌋₊ / 2) + ⌊2 * z⌋₊ % 2 := (Nat.div_add_mod _ _).symm
@@ -1860,7 +1862,7 @@ lemma floor_two_mul_odd_ge {z : ℝ} (hz : 0 ≤ z) (hodd : ⌊2 * z⌋₊ % 2 =
     exact (Nat.le_div_iff_mul_le (by norm_num : 0 < 2)).mpr h1
   omega
 
-/-- Helper: if ⌊2z⌋₊ % 2 = 0 then ⌊2z⌋₊ ≤ 2⌊z⌋₊ -/
+/-- Вспомогательная лемма: если ⌊2z⌋₊ % 2 = 0, то ⌊2z⌋₊ ≤ 2⌊z⌋₊ -/
 lemma floor_two_mul_even_le {z : ℝ} (hz : 0 ≤ z) (heven : ⌊2 * z⌋₊ % 2 = 0) : 
     ⌊2 * z⌋₊ ≤ 2 * ⌊z⌋₊ := by
   have h_decomp : ⌊2 * z⌋₊ = 2 * (⌊2 * z⌋₊ / 2) + ⌊2 * z⌋₊ % 2 := (Nat.div_add_mod _ _).symm
@@ -1876,7 +1878,7 @@ lemma floor_two_mul_even_le {z : ℝ} (hz : 0 ≤ z) (heven : ⌊2 * z⌋₊ % 2
     omega
   omega
 
-/-- Helper: equal mod 2 and equal ⌊z⌋ implies equal ⌊2z⌋ -/
+/-- Вспомогательная лемма: равенство по модулю 2 и равенство ⌊z⌋ влекут равенство ⌊2z⌋ -/
 lemma floor_two_mul_eq_of_mod_eq {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
     (h_floor : ⌊x⌋₊ = ⌊y⌋₊) (h_mod : ⌊2 * x⌋₊ % 2 = ⌊2 * y⌋₊ % 2) : 
     ⌊2 * x⌋₊ = ⌊2 * y⌋₊ := by
@@ -1919,31 +1921,32 @@ lemma floor_two_mul_eq_of_mod_eq {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
 
 namespace Remark_1_3_10
 
-/-- The properties required of the binary-to-ternary function for this construction.
-    The function maps \[0,1\] into the Cantor set C by converting binary digits to ternary.
+/-- Свойства, необходимые от функции преобразования из двоичной системы в троичную для этого
+    построения. Функция отображает \[0,1\] в множество Кантора C, переводя двоичные цифры в троичные.
 
-    Note: Unlike the textbook (which sets g(x) = 0 for dyadic rationals), our g is defined
-    uniformly for all x ∈ \[0,1\]. This makes g monotone on ALL of \[0,1\], not just on A. -/
+    Замечание: в отличие от учебника (где g(x) = 0 для диадических рациональных чисел), наша g
+    определена единообразно для всех x ∈ \[0,1\]. Это делает g монотонной на ВСЁМ \[0,1\], а не только на A. -/
 structure BinaryToTernaryProperties (g : ℝ → ℝ) : Prop where
   nonneg : ∀ x, 0 ≤ g x
   bounded : ∀ x, g x ≤ 1
-  zero_outside : ∀ x, x ∉ Set.Icc 0 1 → g x = 0  -- g(x) = 0 outside [0,1]
-  zero_at_zero : g 0 = 0  -- g(0) = 0 (binary 0.000... maps to ternary 0.000...)
+  zero_outside : ∀ x, x ∉ Set.Icc 0 1 → g x = 0  -- g(x) = 0 вне [0,1]
+  zero_at_zero : g 0 = 0  -- g(0) = 0 (двоичное 0.000... переходит в троичное 0.000...)
   zero_set_countable : (Set.Icc 0 1 ∩ {x | g x = 0}).Countable  -- {g = 0} ∩ [0,1] = {0}
-  monotone_on : MonotoneOn g (Set.Icc 0 1)  -- g is monotone on ALL of [0,1]
+  monotone_on : MonotoneOn g (Set.Icc 0 1)  -- g монотонна на ВСЁМ [0,1]
   image_in_cantor : g '' (Set.Icc 0 1) ⊆ CantorSet ∪ {0}
   injective_on_nonterminating : ∃ A : Set ℝ, A ⊆ Set.Icc 0 1 ∧
-    (Set.Icc 0 1 \ A).Countable ∧  -- A is co-countable in [0,1]
-    Set.InjOn g A ∧                 -- g is injective on A (hence bijective onto g(A) ⊆ C)
-    A ∩ DyadicRationals = ∅         -- A excludes dyadic rationals
+    (Set.Icc 0 1 \ A).Countable ∧  -- A ко-счётно в [0,1]
+    Set.InjOn g A ∧                 -- g инъективна на A (и потому биективна на g(A) ⊆ C)
+    A ∩ DyadicRationals = ∅         -- A не содержит диадических рациональных чисел
 
-/-- The binary-to-ternary function: g(x) = ∑\_\{j≥1\} 2·bⱼ(x)·3^(-j) for x ∈ \[0,1\], else 0. -/
+/-- Функция преобразования из двоичной системы в троичную: g(x) = ∑\_\{j≥1\} 2·bⱼ(x)·3^(-j)
+    для x ∈ \[0,1\], иначе 0. -/
 noncomputable def binaryToTernaryFn (x : ℝ) : ℝ :=
   if x ∈ Set.Icc (0 : ℝ) 1 then
     ∑' j : ℕ, (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)
   else 0
 
-/-- The series ∑ 2·bⱼ(x)·3^(-j) is summable for any x. -/
+/-- Ряд ∑ 2·bⱼ(x)·3^(-j) суммируем для любого x. -/
 lemma binaryToTernary_summable (x : ℝ) : 
     Summable (fun j => (2 * binaryDigit x (j + 1) : ℝ) * (1/3 : ℝ)^(j + 1)) := by
   apply Summable.of_nonneg_of_le
@@ -1959,9 +1962,9 @@ lemma binaryToTernary_summable (x : ℝ) :
   · have h : Summable (fun j : ℕ => (1/3 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
     exact (h.mul_left 2).comp_injective (fun _ _ h => Nat.succ_injective h)
 
-/-! # Helper lemmas for monotonicity proof -/
+/-! # Вспомогательные леммы для доказательства монотонности -/
 
-/-- For x ∈ (0, 1), there exists a position where the binary digit is 1. -/
+/-- Для x ∈ (0, 1) существует позиция, в которой двоичная цифра равна 1. -/
 lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) : 
     ∃ j, binaryDigit x (j + 1) = 1 := by
   have hx_Ico : x ∈ Set.Ico (0 : ℝ) 1 := ⟨le_of_lt hx_pos, hx_lt⟩
@@ -1996,14 +1999,14 @@ lemma binaryDigit_exists_one_of_pos {x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
     · simp only [Nat.cast_one]; linarith
   exact ⟨j, by simp only [binaryDigit, if_pos hx_Ico, h_floor_eq]⟩
 
-/-- The partial sum bounds x from below: Sₙ(x) ≤ x -/
+/-- Частичная сумма ограничивает x снизу: Sₙ(x) ≤ x -/
 lemma binaryDigit_partial_sum_le {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (n : ℕ) : 
     (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n ≤ x := by
   have h2n_pos : (0 : ℝ) < 2^n := by positivity
   rw [div_le_iff₀ h2n_pos, mul_comm]
   exact Nat.floor_le (mul_nonneg hx.1 (le_of_lt h2n_pos))
 
-/-- The partial sum bounds x from above: x < Sₙ(x) + 2^(-n) -/
+/-- Частичная сумма ограничивает x сверху: x < Sₙ(x) + 2^(-n) -/
 lemma binaryDigit_partial_sum_lt (x : ℝ) (n : ℕ) : 
     x < (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := by
   have h2n_pos : (0 : ℝ) < 2^n := by positivity
@@ -2014,7 +2017,7 @@ lemma binaryDigit_partial_sum_lt (x : ℝ) (n : ℕ) :
         apply div_lt_div_of_pos_right h1 h2n_pos
     _ = (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n + (1 : ℝ) / (2 : ℝ)^n := by ring
 
-/-- Key lemma: if bₖ(x) = 1, then `x ≥ floor(2^k * x) / 2^k + 2^(-(k+1))` -/
+/-- Ключевая лемма: если bₖ(x) = 1, то `x ≥ floor(2^k * x) / 2^k + 2^(-(k+1))` -/
 lemma binaryDigit_one_implies_lower_bound {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (k : ℕ)
     (hbk : binaryDigit x (k + 1) = 1) : 
     (⌊(2 : ℝ)^k * x⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) ≤ x := by
@@ -2034,7 +2037,7 @@ lemma binaryDigit_one_implies_lower_bound {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ
         exact_mod_cast h_floor_rel
     _ ≤ x := binaryDigit_partial_sum_le hx (k + 1)
 
-/-- Key lemma: if bₖ(y) = 0, then `y < floor(2^k * y) / 2^k + 2^(-(k+1))` -/
+/-- Ключевая лемма: если bₖ(y) = 0, то `y < floor(2^k * y) / 2^k + 2^(-(k+1))` -/
 lemma binaryDigit_zero_implies_upper_bound {y : ℝ} (hy : y ∈ Set.Ico (0 : ℝ) 1) (k : ℕ)
     (hbk : binaryDigit y (k + 1) = 0) : 
     y < (⌊(2 : ℝ)^k * y⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) := by
@@ -2057,7 +2060,8 @@ lemma binaryDigit_zero_implies_upper_bound {y : ℝ} (hy : y ∈ Set.Ico (0 : �
         linarith
     _ = (⌊(2 : ℝ)^k * y⌋₊ : ℝ) / (2 : ℝ)^k + (1 : ℝ) / (2 : ℝ)^(k + 1) := by field_simp; ring
 
-/-- Helper: floors of x, y in \[0,1) are equal up to level n if their binary digits agree up to level n-1. -/
+/-- Вспомогательная лемма: floor от x, y ∈ \[0,1) совпадают до уровня n, если их двоичные цифры
+    совпадают до уровня n-1. -/
 lemma floor_eq_of_binaryDigit_eq {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (hy : y ∈ Set.Ico (0 : ℝ) 1)
     (heq : ∀ j < n, binaryDigit x (j + 1) = binaryDigit y (j + 1)) : 
     ⌊(2 : ℝ)^n * x⌋₊ = ⌊(2 : ℝ)^n * y⌋₊ := by
@@ -2081,7 +2085,7 @@ lemma floor_eq_of_binaryDigit_eq {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (h
     rw [h1, h2]
     exact floor_two_mul_eq_of_mod_eq hx_nonneg hy_nonneg ih' hmod_eq'
 
-/-- For x, y ∈ \[0,1) with x < y, there exists a first position k where bₖ(x) < bₖ(y). -/
+/-- Для x, y ∈ \[0,1) с x < y найдётся первая позиция k, в которой bₖ(x) < bₖ(y). -/
 lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (hy : y ∈ Set.Ico (0 : ℝ) 1)
     (hxy : x < y) : 
     ∃ k, binaryDigit x (k + 1) < binaryDigit y (k + 1) ∧
@@ -2128,7 +2132,7 @@ lemma binaryDigit_first_diff {x y : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (hy : 
     rw [h_floor_eq] at hx_lb
     linarith
 
-/-- Monotonicity: if digits agree up to k and bₖ(x) < bₖ(y), then g(x) < g(y). -/
+/-- Монотонность: если цифры совпадают до k и bₖ(x) < bₖ(y), то g(x) < g(y). -/
 lemma binaryToTernary_lt_of_digit_lt {x y : ℝ}
     (hx : x ∈ Set.Icc (0 : ℝ) 1) (hy : y ∈ Set.Icc (0 : ℝ) 1) (k : ℕ)
     (hk_lt : binaryDigit x (k + 1) < binaryDigit y (k + 1))
@@ -2196,9 +2200,9 @@ lemma binaryToTernary_lt_of_digit_lt {x y : ℝ}
   have h3pos : (0 : ℝ) < (1/3)^(k + 1) := by positivity
   linarith
 
-/-! # Helper lemmas for injectivity proof -/
+/-! # Вспомогательные леммы для доказательства инъективности -/
 
-/-- Ternary \{0,2\} expansions are unique. -/
+/-- Троичные разложения по \{0,2\} единственны. -/
 lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
     (hd : ∀ j, d j ∈ ({0, 2} : Set ℕ))
     (he : ∀ j, e j ∈ ({0, 2} : Set ℕ))
@@ -2313,16 +2317,16 @@ lemma ternary_02_expansion_unique {d e : ℕ → ℕ}
     linarith
   · omega
 
-/-! # Helper lemmas for binary expansion sums -/
+/-! # Вспомогательные леммы для сумм двоичного разложения -/
 
-/-- ⌊2y⌋ = 2⌊y⌋ + ⌊2y⌋ % 2 for y ≥ 0. -/
+/-- ⌊2y⌋ = 2⌊y⌋ + ⌊2y⌋ % 2 при y ≥ 0. -/
 private lemma floor_two_mul_decomp {y : ℝ} (_hy : 0 ≤ y) : 
     ⌊2 * y⌋₊ = 2 * ⌊y⌋₊ + ⌊2 * y⌋₊ % 2 := by
   have h := Nat.div_add_mod ⌊2 * y⌋₊ 2
   have h_div : ⌊2 * y⌋₊ / 2 = ⌊y⌋₊ := Nat.cast_mul_floor_div_cancel (by norm_num : (2 : ℕ) ≠ 0) y
   omega
 
-/-- Partial sum identity: `∑ (j < n) bⱼ * 2^(-(j+1)) = floor(2^n * x) / 2^n`. -/
+/-- Тождество для частичной суммы: `∑ (j < n) bⱼ * 2^(-(j+1)) = floor(2^n * x) / 2^n`. -/
 private lemma partial_sum_eq_floor {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (n : ℕ) : 
     ∑ j ∈ Finset.range n, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) =
     (⌊(2 : ℝ)^n * x⌋₊ : ℝ) / (2 : ℝ)^n := by
@@ -2357,7 +2361,7 @@ private lemma partial_sum_eq_floor {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (n
     rw [h_floor']
     field_simp
 
-/-- Binary series is summable for x ∈ \[0,1). -/
+/-- Двоичный ряд суммируем для x ∈ \[0,1). -/
 private lemma binary_summable {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) : 
     Summable (fun j => (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1)) := by
   apply Summable.of_nonneg_of_le
@@ -2374,7 +2378,7 @@ private lemma binary_summable {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) :
   · have h : Summable (fun j : ℕ => (1/2 : ℝ)^j) := summable_geometric_of_lt_one (by norm_num) (by norm_num)
     exact h.comp_injective (fun _ _ h => Nat.succ_injective h)
 
-/-- For non-dyadic x ∈ \[0,1), x equals its binary expansion sum. -/
+/-- Для недиадического x ∈ \[0,1) x равно сумме своего двоичного разложения. -/
 lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (_hnd : x ∉ DyadicRationals) : 
     x = ∑' j : ℕ, (binaryDigit x (j + 1) : ℝ) * (1/2 : ℝ)^(j + 1) := by
   have h_summable := binary_summable hx
@@ -2420,7 +2424,7 @@ lemma non_dyadic_eq_binary_sum {x : ℝ} (hx : x ∈ Set.Ico (0 : ℝ) 1) (_hnd 
     exact h_floor_to_x
   exact tendsto_nhds_unique h_partial_to_x h_partial_to_tsum
 
-/-- Non-dyadic x ∈ \[0,1) with equal binary digits are equal. -/
+/-- Недиадические x ∈ \[0,1) с совпадающими двоичными цифрами равны. -/
 lemma eq_of_binaryDigit_eq_of_non_dyadic {x₁ x₂ : ℝ}
     (hx₁ : x₁ ∈ Set.Ico (0 : ℝ) 1) (hx₂ : x₂ ∈ Set.Ico (0 : ℝ) 1)
     (hnd₁ : x₁ ∉ DyadicRationals) (hnd₂ : x₂ ∉ DyadicRationals)
@@ -2433,9 +2437,9 @@ lemma eq_of_binaryDigit_eq_of_non_dyadic {x₁ x₂ : ℝ}
   ext j
   rw [heq (j + 1)]
 
-/-! # Helper lemmas for image_in_cantor -/
+/-! # Вспомогательные леммы для image_in_cantor -/
 
-/-- Points with \{0,2\} ternary digits are in the Cantor set. -/
+/-- Точки с троичными цифрами из \{0,2\} лежат в множестве Кантора. -/
 lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
     (hd : ∀ j, d j ∈ ({0, 2} : Set ℕ))
     (hsum : Summable (fun j => (d j : ℝ) * (1/3 : ℝ)^(j + 1)))
@@ -2498,7 +2502,7 @@ lemma mem_CantorSet_of_ternary_02 {y : ℝ} (d : ℕ → ℕ)
   · rw [← h_one_third_pow]
     exact add_le_add_right h_tail_bound _
 
-/-- Existence of a binary-to-ternary function: g(x) = ∑ 2bⱼ 3^(-j). -/
+/-- Существование функции преобразования из двоичной системы в троичную: g(x) = ∑ 2bⱼ 3^(-j). -/
 lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g := by
   use binaryToTernaryFn
   exact {
@@ -2692,13 +2696,14 @@ lemma binaryToTernary_exists : ∃ g : ℝ → ℝ, BinaryToTernaryProperties g 
         exact hx_not_dyadic hx_dyadic
   }
 
-/-- Binary-to-ternary function: g(x) = ∑ 2·bⱼ(x)·3^(-j), monotone on \[0,1\], g(\[0,1\]) ⊆ C ∪ \{0\}. -/
+/-- Функция преобразования из двоичной системы в троичную: g(x) = ∑ 2·bⱼ(x)·3^(-j), монотонна
+    на \[0,1\], g(\[0,1\]) ⊆ C ∪ \{0\}. -/
 noncomputable def binaryToTernary : ℝ → ℝ := Classical.choose binaryToTernary_exists
 
 lemma binaryToTernary_props : BinaryToTernaryProperties binaryToTernary :=
   Classical.choose_spec binaryToTernary_exists
 
-/-- {lean}`binaryToTernary x = 0` iff {lean}`x = 0` for x ∈ \[0,1\]. -/
+/-- {lean}`binaryToTernary x = 0` тогда и только тогда, когда {lean}`x = 0`, для x ∈ \[0,1\]. -/
 lemma binaryToTernary_eq_zero_iff {x : ℝ} (hx : x ∈ Set.Icc (0 : ℝ) 1) : 
     binaryToTernary x = 0 ↔ x = 0 := by
   constructor
@@ -2732,7 +2737,8 @@ lemma binaryToTernary_eq_zero_iff {x : ℝ} (hx : x ∈ Set.Icc (0 : ℝ) 1) :
     rw [h]
     exact binaryToTernary_props.zero_at_zero
 
-/-- {name}`binaryToTernary` lifted to {lean}`EuclideanSpace' 1 → EReal` (called f in informal proof). -/
+/-- {name}`binaryToTernary`, поднятая до {lean}`EuclideanSpace' 1 → EReal` (в неформальном
+    доказательстве называется f). -/
 noncomputable def f_lifted : EuclideanSpace' 1 → EReal :=
   fun x => Real.toEReal (max 0 (binaryToTernary (EuclideanSpace'.equiv_Real x)))
 
@@ -2826,7 +2832,7 @@ lemma f_lifted_zero_set_measurable : LebesgueMeasurable {x : EuclideanSpace' 1 |
       apply Set.Countable.image; exact f_zero_set_in_interval_countable
     exact Countable.Lebesgue_measure Nat.one_pos h_countable
 
-/-- Sublevel sets of {name}`f_lifted` are measurable (key lemma for `f_lifted_measurable`). -/
+/-- Множества подуровня {name}`f_lifted` измеримы (ключевая лемма для `f_lifted_measurable`). -/
 lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) : 
     LebesgueMeasurable {x : EuclideanSpace' 1 | f_lifted x ≤ t} := by
   have h_outside_zero : ∀ x : EuclideanSpace' 1, EuclideanSpace'.equiv_Real x ∉ Set.Icc 0 1 →
@@ -2886,7 +2892,7 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
         continuous_toFun := hf_cont
         continuous_invFun := hg_cont }
     exact e.isOpenMap (Set.Ioi 1) isOpen_Ioi
-  · -- Monotonicity case : {x ∈ [0,1] | f_lifted x ≤ t} is a convex set, hence measurable
+  · -- Случай монотонности : {x ∈ [0,1] | f_lifted x ≤ t} — выпуклое множество, значит измеримо
     have ht_ne_top : t ≠ ⊤ := ne_of_lt (lt_of_lt_of_le ht_lt_one le_top)
     have ht_ne_bot : t ≠ ⊥ := ne_of_gt (lt_of_le_of_lt bot_le ht_pos)
     let t' := t.toReal
@@ -2943,7 +2949,7 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
       { toEquiv := Real.equiv_EuclideanSpace'
         continuous_toFun := hf_cont
         continuous_invFun := hg_cont }
-    -- S is either [0, a] or [0, a) where a = sSup S; both are measurable
+    -- S — это либо [0, a], либо [0, a), где a = sSup S; оба измеримы
     have h_S_subset_Icc : S ⊆ Set.Icc 0 a := fun x hx => ⟨hx.1.1, le_csSup h_bdd_above hx⟩
     have h_image_Icc : Real.equiv_EuclideanSpace' '' Set.Icc 0 a =
         {x : EuclideanSpace' 1 | EuclideanSpace'.equiv_Real x ∈ Set.Icc 0 a} := by
@@ -2999,7 +3005,7 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
       exact Countable.Lebesgue_measure Nat.one_pos (Set.countable_singleton a |>.image _)
 
 lemma f_lifted_measurable : UnsignedMeasurable f_lifted := by
-  -- Apply Lemma 1.3.9(viii): f is measurable iff ∀ t, {x | f(x) ≤ t} is measurable
+  -- Применяем Lemma 1.3.9(viii): f измерима тогда и только тогда, когда ∀ t множество {x | f(x) ≤ t} измеримо
   have h_iff : UnsignedMeasurable f_lifted ↔ (∀ t, LebesgueMeasurable {x | f_lifted x ≤ t}) :=
     (UnsignedMeasurable.TFAE f_lifted_unsigned).out 0 7
   apply h_iff.mpr
@@ -3025,7 +3031,7 @@ lemma f_lifted_measurable : UnsignedMeasurable f_lifted := by
       rw [h_univ]; exact IsOpen.measurable isOpen_univ
     · exact sublevel_set_measurable t ht_pos ht_lt_one
 
-/-- Non-measurable F ⊆ \[0,1\] with {name}`binaryToTernary`(F) ⊆ Cantor set (Vitali construction). -/
+/-- Неизмеримое F ⊆ \[0,1\] с {name}`binaryToTernary`(F) ⊆ множество Кантора (построение Витали). -/
 lemma exists_nonmeasurable_with_cantor_image : 
     ∃ F : Set ℝ, ∃ A : Set ℝ, F ⊆ Set.Icc 0 1 ∧
     ¬ LebesgueMeasurable (Real.equiv_EuclideanSpace' '' F) ∧
@@ -3094,11 +3100,12 @@ lemma exists_nonmeasurable_with_cantor_image :
 
 end Remark_1_3_10
 
-/-- Remark 1.3.10: The inverse image of a Lebesgue measurable set by a measurable function
-    need not be Lebesgue measurable.
-    Proof: Let f = {name}`Remark_1_3_10.binaryToTernary` (maps \[0,1\] → Cantor set), F ⊆ \[0,1\] non-measurable (Vitali).
-    Set E = f(F) ⊆ Cantor set. Then E is null (⊆ null set) hence measurable, but f⁻¹(E) = F
-    is non-measurable. (Uses injectivity of f on non-dyadic rationals A ⊇ F.) -/
+/-- Remark 1.3.10: прообраз измеримого по Лебегу множества относительно измеримой функции
+    не обязан быть измеримым по Лебегу.
+    Доказательство: пусть f = {name}`Remark_1_3_10.binaryToTernary` (отображает \[0,1\] в множество Кантора),
+    F ⊆ \[0,1\] неизмеримо (Витали). Положим E = f(F) ⊆ множество Кантора. Тогда E — нулевое множество
+    (⊆ нулевого множества), а значит измеримо, но f⁻¹(E) = F неизмеримо. (Используется инъективность f
+    на недиадических рациональных числах A ⊇ F.) -/
 example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E : Set (EuclideanSpace' 1)) (_hE : LebesgueMeasurable E), ¬ LebesgueMeasurable (f⁻¹' ((Real.toEReal ∘ EuclideanSpace'.equiv_Real) '' E)) := by
   use Remark_1_3_10.f_lifted, Remark_1_3_10.f_lifted_measurable
   obtain ⟨F, A, hF_sub, hF_nonmeas, hF_image, hF_sub_A, hA_sub, hA_cocountable, hA_inj⟩ :=
@@ -3111,7 +3118,7 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
     intro x hx; obtain ⟨y, hy, rfl⟩ := hx
     exact ⟨y, hF_image hy, rfl⟩
   case hPreimage_nonmeas =>
-    -- Key: f is injective on A ⊆ ℝ, F ⊆ A, so f⁻¹(E) ∩ A' = F' where A', F' are A, F in EuclideanSpace'
+    -- Ключевой момент: f инъективна на A ⊆ ℝ, F ⊆ A, поэтому f⁻¹(E) ∩ A' = F', где A', F' — это A, F в EuclideanSpace'
     intro h_meas
     apply hF_nonmeas
     have h_simplify : (Real.toEReal ∘ EuclideanSpace'.equiv_Real) ''
@@ -3122,7 +3129,7 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
       · rintro ⟨p, ⟨y, hy, rfl⟩, rfl⟩; exact ⟨y, hy, by simp⟩
       · rintro ⟨y, hy, rfl⟩; exact ⟨Real.equiv_EuclideanSpace' y, ⟨y, hy, rfl⟩, by simp⟩
     rw [h_simplify] at h_meas
-    -- A', F' := A, F viewed in EuclideanSpace' 1 (via ℝ ≃ EuclideanSpace' 1)
+    -- A', F' := A, F, рассматриваемые в EuclideanSpace' 1 (через ℝ ≃ EuclideanSpace' 1)
     let A' := Real.equiv_EuclideanSpace' '' A
     let F' := Real.equiv_EuclideanSpace' '' F
     have h_preimage_inter : Remark_1_3_10.f_lifted ⁻¹' (Real.toEReal '' (Remark_1_3_10.binaryToTernary '' F)) ∩ A' = F' := by
@@ -3131,15 +3138,15 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
       constructor
       · rintro ⟨⟨z, ⟨w, hw, rfl⟩, hfp⟩, a, ha, rfl⟩
         -- p = Real.equiv_EuclideanSpace' a, a ∈ A
-        -- f p = Real.toEReal z where z = binaryToTernary w, w ∈ F
-        -- So binaryToTernary a = z = binaryToTernary w
+        -- f p = Real.toEReal z, где z = binaryToTernary w, w ∈ F
+        -- Значит binaryToTernary a = z = binaryToTernary w
         use a
         refine ⟨?_, rfl⟩
-        -- Show a ∈ F using injectivity
+        -- Показываем a ∈ F, используя инъективность
         have ha_in_Icc : a ∈ Set.Icc (0 : ℝ) 1 := hA_sub ha
         have hw_in_A : w ∈ A := hF_sub_A hw
         have hw_in_Icc : w ∈ Set.Icc (0 : ℝ) 1 := hA_sub hw_in_A
-        -- f p = binaryToTernary a (since a ∈ [0,1] and binaryToTernary a ≥ 0)
+        -- f p = binaryToTernary a (так как a ∈ [0,1] и binaryToTernary a ≥ 0)
         have hf_eq : Remark_1_3_10.f_lifted (Real.equiv_EuclideanSpace' a) =
             Real.toEReal (Remark_1_3_10.binaryToTernary a) := by
           simp only [Remark_1_3_10.f_lifted, EuclideanSpace'.equiv_Real.apply_symm_apply]
@@ -3159,7 +3166,7 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
           congr 1
           exact (max_eq_right (Remark_1_3_10.binaryToTernary_props.nonneg r)).symm
         · exact ⟨r, hF_sub_A hr, rfl⟩
-    -- A' is measurable: [0,1]' \ A' is countable hence null, use of_ae_eq with [0,1]'
+    -- A' измеримо: [0,1]' \ A' счётно, а значит нулевое; используем of_ae_eq с [0,1]'
     have hA'_meas : LebesgueMeasurable A' := by
       let Icc' := Real.equiv_EuclideanSpace' '' Set.Icc (0 : ℝ) 1
       have hIcc'_meas : LebesgueMeasurable Icc' := IsClosed.measurable <| by
@@ -3181,27 +3188,27 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
               hn (Real.equiv_EuclideanSpace'.injective he.symm ▸ hs)⟩
         exact this ▸ Set.Countable.image hA_cocountable _
       have h_A'_sub : A' ⊆ Icc' := by rintro _ ⟨a, ha, rfl⟩; exact ⟨a, hA_sub ha, rfl⟩
-      -- A' ∩ (Icc' \ A')ᶜ = Icc' ∩ (Icc' \ A')ᶜ = A' (since A' ⊆ Icc')
+      -- A' ∩ (Icc' \ A')ᶜ = Icc' ∩ (Icc' \ A')ᶜ = A' (так как A' ⊆ Icc')
       refine LebesgueMeasurable.of_ae_eq hIcc'_meas h_diff_null ?_
       ext x; simp only [Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_diff]
       constructor
       · intro ⟨hx, _⟩; exact ⟨h_A'_sub hx, fun ⟨_, h⟩ => h hx⟩
       · intro ⟨hi, hn⟩; push_neg at hn; exact ⟨hn hi, fun ⟨_, h⟩ => h (hn hi)⟩
-    -- F' = f⁻¹'(...) ∩ A' is measurable
+    -- F' = f⁻¹'(...) ∩ A' измеримо
     have : F' = Remark_1_3_10.f_lifted ⁻¹' (Real.toEReal '' (Remark_1_3_10.binaryToTernary '' F)) ∩ A' :=
       h_preimage_inter.symm
     simp only [F'] at this
     rw [this]
     exact LebesgueMeasurable.inter h_meas hA'_meas
 
-/-- Definition 1.3.11 (Complex measurability). -/
+/-- Definition 1.3.11 (комплексная измеримость). -/
 def ComplexMeasurable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
 def RealMeasurable {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
 theorem RealMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℝ} : RealMeasurable f ↔ ComplexMeasurable (Real.complex_fun f) := by
   constructor
-  -- Forward: RealMeasurable f → ComplexMeasurable (Real.complex_fun f)
+  -- Прямое направление: RealMeasurable f → ComplexMeasurable (Real.complex_fun f)
   · intro ⟨g, hg_simple, hg_conv⟩
     use fun n => Real.complex_fun (g n)
     constructor
@@ -3209,7 +3216,7 @@ theorem RealMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℝ} : RealMeasu
     · intro x
       simp only [Real.complex_fun]
       exact Complex.continuous_ofReal.continuousAt.tendsto.comp (hg_conv x)
-  -- Backward: ComplexMeasurable (Real.complex_fun f) → RealMeasurable f
+  -- Обратное направление: ComplexMeasurable (Real.complex_fun f) → RealMeasurable f
   · intro ⟨g, hg_simple, hg_conv⟩
     use fun n => Complex.re_fun (g n)
     constructor
@@ -3224,14 +3231,14 @@ theorem RealMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℝ} : RealMeasu
 
 theorem ComplexMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℂ} : ComplexMeasurable f ↔ RealMeasurable (Complex.re_fun f) ∧ RealMeasurable (Complex.im_fun f) := by
   constructor
-  -- Forward: ComplexMeasurable f → RealMeasurable (re ∘ f) ∧ RealMeasurable (im ∘ f)
+  -- Прямое направление: ComplexMeasurable f → RealMeasurable (re ∘ f) ∧ RealMeasurable (im ∘ f)
   · intro ⟨g, hg_simple, hg_conv⟩
     constructor
     · use fun n => Complex.re_fun (g n)
       exact ⟨fun n => (hg_simple n).re, fun x => Complex.continuous_re.continuousAt.tendsto.comp (hg_conv x)⟩
     · use fun n => Complex.im_fun (g n)
       exact ⟨fun n => (hg_simple n).im, fun x => Complex.continuous_im.continuousAt.tendsto.comp (hg_conv x)⟩
-  -- Backward: RealMeasurable (re ∘ f) ∧ RealMeasurable (im ∘ f) → ComplexMeasurable f
+  -- Обратное направление: RealMeasurable (re ∘ f) ∧ RealMeasurable (im ∘ f) → ComplexMeasurable f
   · intro ⟨⟨g_re, hg_re_simple, hg_re_conv⟩, ⟨g_im, hg_im_simple, hg_im_conv⟩⟩
     use fun n => Real.complex_fun (g_re n) + Complex.I • Real.complex_fun (g_im n)
     constructor
@@ -3302,17 +3309,17 @@ theorem RealMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : 
 
 theorem ComplexMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) {φ : ℂ → ℂ} (hφ : Continuous φ)  : ComplexMeasurable (φ ∘ f) := by sorry
 
-/-- Exercise 1.3.8(vi) (Sum of measurable functions) -/
+/-- Exercise 1.3.8(vi) (сумма измеримых функций) -/
 theorem RealMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f + g) := by sorry
 
 theorem ComplexMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f + g) := by sorry
 
-/-- Exercise 1.3.8(vi') (Difference of measurable functions) -/
+/-- Exercise 1.3.8(vi') (разность измеримых функций) -/
 theorem RealMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f - g) := by sorry
 
 theorem ComplexMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f - g) := by sorry
 
-/-- Exercise 1.3.8(vi'') (Product of measurable functions) -/
+/-- Exercise 1.3.8(vi'') (произведение измеримых функций) -/
 theorem RealMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f * g) := by sorry
 
 theorem ComplexMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f * g) := by sorry

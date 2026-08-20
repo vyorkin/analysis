@@ -1,13 +1,13 @@
 import Mathlib.SetTheory.Cardinal.Aleph
 import Analysis.MeasureTheory.Section_1_4_1
 /-!
-# Introduction to Measure Theory, Section 1.4.2: $\sigma$-algebras and measurable spaces
+# Введение в теорию меры, раздел 1.4.2: $\sigma$-алгебры и измеримые пространства
 
-A companion to (the introduction to) Section 1.4.2 of the book "An introduction to Measure Theory".
+Сопровождение (введения) к разделу 1.4.2 книги "An introduction to Measure Theory".
 
 -/
 
-/-- Definition 1.4.12 (Sigma algebra) -/
+/-- Definition 1.4.12 (сигма-алгебра) -/
 class ConcreteSigmaAlgebra (X : Type*) extends ConcreteBooleanAlgebra X where
   countable_union_mem : ∀ E : ℕ → Set X, (∀ n, measurable (E n)) → measurable (⋃ n, E n)
 
@@ -83,7 +83,7 @@ instance ConcreteSigmaAlgebra.instOrderBot {X : Type*} : OrderBot (ConcreteSigma
     bot_le := sorry
   }
 
-/-- Exercise 1.4.13 (Intersection of sigma-algebras) -/
+/-- Exercise 1.4.13 (пересечение сигма-алгебр) -/
 instance ConcreteSigmaAlgebra.instInfSet {X : Type*} : InfSet (ConcreteSigmaAlgebra X) :=
   {
       sInf S :=
@@ -99,7 +99,7 @@ instance ConcreteSigmaAlgebra.instInfSet {X : Type*} : InfSet (ConcreteSigmaAlge
 def ConcreteSigmaAlgebra.generated_by {X : Type*} (F : Set (Set X)) : ConcreteSigmaAlgebra X :=
   sInf { B | ∀ E ∈ F, B.measurable E }
 
-/-- Definition 1.4.14 (Generation of σ-algebras) -/
+/-- Definition 1.4.14 (порождение σ-алгебр) -/
 instance ConcreteSigmaAlgebra.instSupSet {X : Type*} : SupSet (ConcreteSigmaAlgebra X) :=
   {
       sSup S := ConcreteSigmaAlgebra.generated_by (⋃ B ∈ S, B.measurableSets)
@@ -131,7 +131,7 @@ theorem ConcreteSigmaAlgebra.induction {X : Type*} {F : Set (Set X)} {P : Set X 
   (h4 : ∀ (E : ℕ → Set X), (∀ n, P (E n)) → P (⋃ n, E n)) : ∀ E, (ConcreteSigmaAlgebra.generated_by F).measurable E → P E :=
   by sorry
 
-/-- Definition 1.4.16 (Borel σ-algebra) -/
+/-- Definition 1.4.16 (борелевская σ-алгебра) -/
 def BorelSigmaAlgebra (X : Type*) [TopologicalSpace X] : ConcreteSigmaAlgebra X :=
   ConcreteSigmaAlgebra.generated_by { U : Set X | IsOpen U }
 
@@ -154,7 +154,7 @@ theorem BorelSigmaAlgebra.generated_by_boxes (d : ℕ) : BorelSigmaAlgebra (Eucl
 theorem BorelSigmaAlgebra.generated_by_elementary (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { E : Set (EuclideanSpace' d) | IsElementary E }  := by sorry
 
 open Ordinal in
-/-- Exercise 1.4.15 (Recursive definition of generated sigma-algebra). -/
+/-- Exercise 1.4.15 (рекурсивное определение порождённой сигма-алгебры). -/
 def ConcreteSigmaAlgebra.generated_by_eq {X : Type*} (F : Set (Set X)) : 
   (ConcreteSigmaAlgebra.generated_by F).measurableSets =
   ⋃ α < ω₁,
@@ -181,7 +181,7 @@ theorem BorelSigmaAlgebra.prod {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' d₁)
   :=
   by sorry
 
-/-- Exercise 1.4.18(i) (slice along first factor). -/
+/-- Exercise 1.4.18(i) (срез вдоль первого множителя). -/
 theorem BorelSigmaAlgebra.slice_fst {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' (d₁+d₂))}
   (hE : (BorelSigmaAlgebra (EuclideanSpace' (d₁+d₂))).measurable E)
   (x₂ : EuclideanSpace' d₂ ) : 
@@ -189,7 +189,7 @@ theorem BorelSigmaAlgebra.slice_fst {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' 
   :=
   by sorry
 
-/-- Exercise 1.4.18(i) (slice along second factor). -/
+/-- Exercise 1.4.18(i) (срез вдоль второго множителя). -/
 theorem BorelSigmaAlgebra.slice_snd {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' (d₁+d₂))}
   (hE : (BorelSigmaAlgebra (EuclideanSpace' (d₁+d₂))).measurable E)
   (x₁ : EuclideanSpace' d₁ ) : 
