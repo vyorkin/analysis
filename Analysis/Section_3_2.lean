@@ -62,7 +62,7 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
     contradiction
 
 /-- Axiom 3.9 (регулярность) -/
-theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) : 
+theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
     ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A := by
   have hA : ∃ x, x ∈ A := nonempty_def h
   -- regularity_axiom
@@ -81,48 +81,48 @@ theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
   Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
   Рассела, ни пустое множество.
 -/
-theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) : 
+theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) :
     ∃ (X : Set), ∀ x, x ∉ X := by
   sorry
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
-  Рассела, ни синглтон.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты,
+  не используя ни парадокс Рассела, ни синглтон.
 -/
-theorem SetTheory.Set.singleton_exists (h : axiom_of_universal_specification) (x : Object) : 
+theorem SetTheory.Set.singleton_exists (h : axiom_of_universal_specification) (x : Object) :
     ∃ (X : Set), ∀ y, y ∈ X ↔ y = x := by
   sorry
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
-  Рассела, ни пару.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты,
+  не используя ни парадокс Рассела, ни пару.
 -/
-theorem SetTheory.Set.pair_exists (h : axiom_of_universal_specification) (x₁ x₂ : Object) : 
+theorem SetTheory.Set.pair_exists (h : axiom_of_universal_specification) (x₁ x₂ : Object) :
     ∃ (X : Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
   sorry
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
-  Рассела, ни операцию объединения.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты,
+  не используя ни парадокс Рассела, ни операцию объединения.
 -/
-theorem SetTheory.Set.union_exists (h : axiom_of_universal_specification) (A B : Set) : 
+theorem SetTheory.Set.union_exists (h : axiom_of_universal_specification) (A B : Set) :
     ∃ (Z : Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
   sorry
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
-  Рассела, ни операцию спецификации.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты,
+  не используя ни парадокс Рассела, ни операцию спецификации.
 -/
-theorem SetTheory.Set.specify_exists (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) : 
+theorem SetTheory.Set.specify_exists (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) :
     ∃ (Z : Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨ z, h ⟩ := by
   sorry
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты, не используя ни парадокс
-  Рассела, ни операцию замены.
+  Exercise 3.2.1. Суть упражнения — установить эти результаты,
+  не используя ни парадокс Рассела, ни операцию замены.
 -/
 theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A : Set)
-  (P : A → Object → Prop) (hP : ∀ x y y', P x y ∧ P x y' → y = y') : 
+  (P : A → Object → Prop) (hP : ∀ x y y', P x y ∧ P x y' → y = y') :
     ∃ (Z : Set), ∀ y, y ∈ Z ↔ ∃ a : A, P a y := by
   sorry
 

@@ -563,19 +563,27 @@ lemma SetTheory.Set.nonempty_def'' {X : Set} (h : X ≠ ∅) : ∃ x, x ∈ X :=
   rw [eq_empty_iff_forall_notMem] -- X = ∅ ↔ ∀ (x : Object), x ∉ X
   exact hc
 
+-- Утверждение: если некоторый объект `x` принадлежит множеству `X` (гипотеза `h`),
+-- то `X` не может быть пустым множеством. Это обращение леммы `nonempty_def`:
+-- там из `X ≠ ∅` выводится существование элемента, здесь наоборот — из
+-- существования (конкретного) элемента `x ∈ X` выводится `X ≠ ∅`.
 theorem SetTheory.Set.nonempty_of_inhabited
   {X : Set} {x : Object} (h : x ∈ X) : X ≠ ∅ := by
-    -- Предположим обратноe: что множество X пустое.
-    -- contrapose! это закон логической контрапозиции:
-    -- (P → Q) ⟺ (¬Q → ¬P).
+    -- Предположим обратноe: что множество `X` пустое.
+    -- `contrapose!` это закон логической контрапозиции:
+    -- `(P → Q) ⟺ (¬Q → ¬P)`.
     -- Тактика `contrapose!` заменяет цель `X ≠ ∅` (т.е. `X = ∅ → False`) и
     -- гипотезу `h : x ∈ X` на цель `x ∉ X` и гипотезу `h : X = ∅`,
-    -- попутно проталкивая отрицания внутрь (¬(a ≠ b) ⤳ a = b).
+    -- попутно проталкивая отрицания внутрь (`¬(a ≠ b) ⤳ a = b`).
     contrapose! h
     rw [eq_empty_iff_forall_notMem] at h --  X = ∅ ↔ ∀ (x : Object), x ∉ X
     specialize h x
     exact h
 
+-- `Singleton` — это тайп-класс Lean/Mathlib, который даёт нотацию `{x}` для
+-- одноэлементной коллекции: `class Singleton (α β) where singleton : α → β`.
+-- Здесь мы связываем эту нотацию с уже определённой примитивной `singleton`
+-- из аксиомы 3.4, чтобы можно было писать `{x} : Set` вместо `singleton x`.
 instance SetTheory.Set.instSingleton : Singleton Object Set where
   singleton := singleton
 
@@ -584,42 +592,92 @@ example (x : Object) : {x} = SetTheory.singleton x := rfl
 
 /--
   Axiom 3.3(a) (синглтон).
-  Замечание: в некоторых случаях может понадобиться явно привести {lean (type := "Set")}`{a}` к {name}`Set`
-  из-за уже существующей в Mathlib нотации теории множеств.
+  Здесь мы просто ссылаемся на нашу аксиому из класса типов SetTheory.
+
+  Замечание: в некоторых случаях может понадобиться явно
+  привести {lean (type := "Set")}`{a}` к {name}`Set` из-за
+  уже существующей в Mathlib нотации теории множеств.
 -/
 @[simp]
 theorem SetTheory.Set.mem_singleton (x a : Object) : x ∈ ({a} : Set) ↔ x = a :=
   singleton_axiom x a
 
+-- Аналогично `Singleton` выше: `Union` — тайп-класс, дающий нотацию `X ∪ Y`.
+-- Связываем её с примитивной `union_pair` из аксиомы 3.5,
+-- чтобы не писать `union_pair X Y` каждый раз вручную.
 instance SetTheory.Set.instUnion : Union Set where
   union := union_pair
 
 -- Теперь можно использовать нотацию `X ∪ Y` для объединения двух `Set`.
 example (X Y : Set) : X ∪ Y = SetTheory.union_pair X Y := rfl
 
-/-- Axiom 3.4 (попарное объединение). -/
+/-- Axiom 3.4 (попарное объединение).
+    Опять же, просто ссылаемся на нашу определенную выше аксиому. -/
 @[simp]
 theorem SetTheory.Set.mem_union (x : Object) (X Y : Set) :
   x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y) :=
     union_pair_axiom X Y x
 
+-- `Insert` — тайп-класс, дающий нотацию `insert x X`, а вместе с `Singleton`
+-- ещё и нотацию `{a, b, c, ...}` для конечных кортежей
+-- (она разворачивается как `insert a (insert b {c})` и т.д.).
+-- В отличие от `Singleton` и `Union` выше, здесь нет
+-- отдельной примитивной аксиомы для "вставки" элемента —
+-- мы просто определяем её через уже имеющиеся `{x}` и `∪`:
+-- добавить `x` к `X` значит взять объединение `X` с одноэлементным множеством `{x}`.
 instance SetTheory.Set.instInsert : Insert Object Set where
   insert x X := {x} ∪ X
 
+-- Множество, полученное вставкой элемента `b` в `X`, содержит
+-- ровно те же элементы, что и `X`, плюс сам `b`.
+-- Т.е. `a` попадает в `insert b X` тогда и только тогда,
+-- когда `a` совпадает с только что вставленным `b`, либо `a` уже был элементом `X`.
+--
+-- Разворачиваем `insert b X` до `{b} ∪ X` (по определению `instInsert` выше),
+-- после чего применяем уже доказанные `mem_union` и `mem_singleton`.
 @[simp]
 theorem SetTheory.Set.mem_insert (a b : Object) (X : Set) :
   a ∈ insert b X ↔ a = b ∨ a ∈ X := by
-    simp only [insert, Insert.insert, mem_union, mem_singleton]
+    simp only [insert, mem_union, mem_singleton]
 
-/-- Axiom 3.3(b) (пара).  Замечание: в некоторых случаях может понадобиться
+-- Тот же результат, но без `simp`: каждый шаг здесь можно прощёлкать
+-- в редакторе и увидеть, как именно меняются цель и гипотезы.
+theorem SetTheory.Set.mem_insert' (a b : Object) (X : Set) :
+  a ∈ insert b X ↔ a = b ∨ a ∈ X := by
+    -- `insert b X` по определению `instInsert` — это `{b} ∪ X`
+    -- `show` переписывает цель на определённо равную ей форму, не трогая доказательство.
+    show a ∈ ({b} ∪ X) ↔ a = b ∨ a ∈ X
+    constructor
+    · intro h
+      rw [mem_union] at h -- h : a ∈ {b} ∨ a ∈ X
+      rcases h with h | h
+      · left
+        rw [mem_singleton] at h -- h : a = b
+        exact h
+      · right
+        exact h
+    · intro h
+      rw [mem_union] -- цель : a ∈ {b} ∨ a ∈ X
+      rcases h with h | h
+      · left
+        rw [mem_singleton] -- цель : a = b
+        exact h
+      · right
+        exact h
+
+/-- Axiom 3.3(b) (пара).
+    Замечание: в некоторых случаях может понадобиться
     привести {lean (type := "Set")}`{a,b}` к {name}`Set`. -/
-theorem SetTheory.Set.pair_eq (a b : Object) : ({a,b} : Set) = {a} ∪ {b} := by rfl
+theorem SetTheory.Set.pair_eq (a b : Object) :
+  ({a,b} : Set) = {a} ∪ {b} := by rfl
 
-/-- Axiom 3.3(b) (пара).  Замечание: в некоторых случаях может понадобиться
+/-- Axiom 3.3(b) (пара).
+    Замечание: в некоторых случаях может понадобиться
     привести {lean (type := "Set")}`{a,b}` к {name}`Set`. -/
 @[simp]
-theorem SetTheory.Set.mem_pair (x a b : Object) : x ∈ ({a,b} : Set) ↔ (x = a ∨ x = b) := by
-  simp [pair_eq, mem_union, mem_singleton]
+theorem SetTheory.Set.mem_pair (x a b : Object) :
+  x ∈ ({a,b} : Set) ↔ (x = a ∨ x = b) := by
+    simp [pair_eq, mem_union, mem_singleton]
 
 theorem SetTheory.Set.mem_pair' (x a b : Object) :
   x ∈ ({a,b} : Set) ↔ (x = a ∨ x = b) := by
@@ -627,16 +685,45 @@ theorem SetTheory.Set.mem_pair' (x a b : Object) :
     rw [mem_union] -- x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y)
     rw [mem_singleton, mem_singleton] -- x ∈ {a} ↔ x = a
 
+-- Тройка `{a,b,c}` — это множество ровно из трёх
+-- (не обязательно различных) элементов `a`, `b`, `c`.
+-- Значит `x` попадает в `{a,b,c}` тогда и только тогда,
+-- когда `x` совпадает хотя бы с одним из них.
 @[simp]
 theorem SetTheory.Set.mem_triple (x a b c : Object) :
   x ∈ ({a,b,c} : Set) ↔ (x = a ∨ x = b ∨ x = c) := by
-    simp [Insert.insert, mem_union, mem_singleton]
+    simp [insert, mem_union, mem_singleton]
 
+-- Тот же результат, но без `simp` и пошагово.
 theorem SetTheory.Set.mem_triple' (x a b c : Object) :
   x ∈ ({a,b,c} : Set) ↔ (x = a ∨ x = b ∨ x = c) := by
-    repeat rw [Insert.insert]
-    sorry
+    -- {a,b,c} по определению instInsert равно {a} ∪ {b,c}.
+    show x ∈ (({a} ∪ {b,c} : Set)) ↔ (x = a ∨ x = b ∨ x = c)
+    constructor
+    · intro h
+      rw [mem_union] at h -- h : x ∈ {a} ∨ x ∈ {b,c}
+      rcases h with h | h
+      · left
+        rw [mem_singleton] at h -- h : x = a
+        exact h
+      · right
+        rw [mem_pair] at h -- h : x = b ∨ x = c
+        exact h
+    · intro h
+      rw [mem_union] -- цель : x ∈ {a} ∨ x ∈ {b,c}
+      rcases h with h | h
+      · left
+        rw [mem_singleton] -- цель : x = a
+        exact h
+      · right
+        rw [mem_pair] -- цель : x = b ∨ x = c
+        exact h
 
+-- Множество, содержащее ровно элементы `a` и `b` (и ничего больше), определено
+-- однозначно — существует ровно одно такое мн-во `X`.
+-- Это оправдывает саму запись `{a,b}`:
+-- мы вправе говорить "пара `a` и `b`",
+-- поскольку такое множество не только существует, но и единственно.
 /-- Remark 3.1.9 -/
 theorem SetTheory.Set.pair_uniq (a b : Object) :
   ∃! (X : Set), ∀ x, x ∈ X ↔ x = a ∨ x = b := by
@@ -651,6 +738,10 @@ theorem SetTheory.Set.pair_uniq (a b : Object) :
       specialize h₂ x
       rw [h₁, h₂]
 
+-- Аналогично `pair_uniq` выше, но для одноэлементного случая — множество,
+-- содержащее ровно элемент `a` и ничего больше, единственно.
+-- Это оправдывает запись `{a}` как обозначение конкретного,
+-- вполне определённого множества.
 /-- Remark 3.1.9 -/
 theorem SetTheory.Set.singleton_uniq (a : Object) :
   ∃! (X : Set), ∀ x, x ∈ X ↔ x = a := by
@@ -672,13 +763,17 @@ theorem SetTheory.Set.singleton_uniq (a : Object) :
       specialize h₂ x
       rw [h₁, h₂]
 
-
+-- Множество не хранит порядок элементов, поэтому
+-- пара `{a,b}` и пара `{b,a}` — это одно и то же множество.
 /-- Remark 3.1.9 -/
 theorem SetTheory.Set.pair_comm (a b : Object) : ({a,b} : Set) = {b,a} := by
   ext x
   rw [mem_pair, mem_pair]
   rw [or_comm] -- a ∨ b ↔ b ∨ a
 
+-- Множество не хранит кратность элементов: пара `{a,a}`, где элемент
+-- повторён дважды, на самом деле состоит ровно из одного элемента и
+-- совпадает с синглтоном `{a}`.
 /-- Remark 3.1.9 -/
 @[simp]
 theorem SetTheory.Set.pair_self (a : Object) : ({a,a} : Set) = {a} := by
@@ -687,6 +782,11 @@ theorem SetTheory.Set.pair_self (a : Object) : ({a,a} : Set) = {a} := by
   rw [or_self] -- (p ∨ p) = p
   rw [mem_singleton]
 
+-- Обратное к `pair_comm`/`pair_self`: раз пара как множество не различает
+-- порядок и не хранит кратность, то из равенства `{a,b} = {c,d}` можно
+-- заключить лишь то, что пары "сопоставлены" одним из двух способов —
+-- `a` с `c` и `b` с `d`, либо `a` с `d` и `b` с `c` — а не обязательно
+-- поэлементно в исходном порядке.
 /-- Exercise 3.1.1 -/
 theorem SetTheory.Set.pair_eq_pair {a b c d : Object}
   (h : ({a,b} : Set) = {c,d}) : (a = c ∧ b = d) ∨ (a = d ∧ b = c) := by
@@ -701,6 +801,16 @@ theorem SetTheory.Set.pair_eq_pair {a b c d : Object}
     -- Разбираем 4 комбинации для ha и hb.
     -- Вырожденные случаи (a=c,b=c) и (a=d,b=d) требуют hd/hc,
     -- чтобы установить, что второй элемент пары тоже совпадает
+    --
+    -- `rcases ha with rfl | rfl` разбирает `ha : a = c ∨ a = d` на два случая;
+    -- в каждом из них шаблон `rfl` (а не просто имя вроде `h`) заставляет
+    -- rcases сразу вызвать `subst`: переменная `a` физически заменяется на
+    -- `c` (или на `d`) везде в цели и контексте, а сама гипотеза `ha`
+    -- исчезает — вместо равенства `a = c`, которое пришлось бы использовать
+    -- вручную через `rw`, мы получаем контекст, где `a` больше не встречается.
+    -- Комбинатор `<;>` затем в КАЖДОМ из этих двух случаев запускает
+    -- `rcases hb with rfl | rfl`, аналогично разбирая и подставляя `b` —
+    -- итого получаем 2 × 2 = 4 цели (по одной на каждый `·` ниже).
     rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
     · rcases hd with rfl | rfl <;> left <;> exact ⟨rfl, rfl⟩
     · left; exact ⟨rfl, rfl⟩
@@ -719,23 +829,27 @@ theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
   rw [Set.ext_iff] at h
   specialize h empty
   obtain ⟨h₀, h₁⟩ := h
-  --
-  -- singleton_empty = {(empty : Object)} по определению
-  -- mem_singleton говорит: x ∈ {a} ↔ x = a
-  -- После rw [mem_singleton]: (empty : Object) = (empty : Object),
-  -- которая закрывается rfl автоматически
-  -- Это верно просто по аксиоме 3.3:
-  have hmem : (empty : Object) ∈ singleton_empty := by rw [mem_singleton]
-  --
+  -- h₁ : `empty ∈ singleton_empty → empty ∈ empty`.
+  -- Заметим, что `empty ∈ empty` (`∅ ∈ ∅`) противоречит аксиоме 3.3:
+  -- `not_mem_empty : ∀ x, x ∉ (∅ : Set)`, специализировав ее `∅` получим `∅ ∉ ∅`.
+  -- Чтобы воспользоваться `h1` и получить `empty ∈ empty`, нужна посылка `hmem`.
+  -- Она верна тривиально: `singleton_empty = {empty}`.
+  have hmem : (empty : Object) ∈ singleton_empty := by
+    -- singleton_empty = {(empty : Object)} по определению
+    -- mem_singleton говорит: x ∈ {a} ↔ x = a
+    -- После rw [mem_singleton]: (empty : Object) = (empty : Object),
+    -- которая закрывается rfl автоматически
+    -- Это верно просто по аксиоме 3.3(a):
+    rw [mem_singleton]
   have hh : (empty : Object) ∈ empty := h₁ hmem
   rw [show empty = ∅ by rfl] at hh
-  have hc := not_mem_empty (∅ : Set)  -- Axiom 3.3 : (x : Object) : x ∉ ∅
+  have hc := not_mem_empty (∅ : Set) -- Axiom 3.3 : (x : Object) : x ∉ ∅
   contradiction
 
 -- Более короткая версия доказательства теоремы выше.
 theorem SetTheory.Set.emptyset_neq_singleton' : empty ≠ singleton_empty := by
   intro h
-  -- Axiom 3.3: x ∈ {a} ↔ x = a
+  -- Axiom 3.3(a): x ∈ {a} ↔ x = a
   have hmem : (empty : Object) ∈ singleton_empty := by rw [mem_singleton]
   rw [← h] at hmem
   exact not_mem_empty _ hmem -- ∀ x, x ∉ (∅ : Set)
@@ -746,6 +860,7 @@ theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by
   intro h
   rw [Set.ext_iff] at h
   obtain ⟨h₀, h₁⟩ := h empty
+  -- Доказательство аналогично доказательству выше для синглтона.
   have hmem : (empty : Object) ∈ pair_empty := by
     rw [mem_pair]
     left
@@ -757,7 +872,7 @@ theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by
 
 theorem SetTheory.Set.emptyset_neq_pair' : empty ≠ pair_empty := by
   intro h
-  -- Это утверждение получаем "бесплатно" из Axiom 3.3:
+  -- Это утверждение получаем "бесплатно" из Axiom 3.3(b):
   have hmem : (empty : Object) ∈ pair_empty := by
     rw [mem_pair]
     tauto
@@ -780,14 +895,14 @@ theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty 
 
 /--
   Remark 3.1.11.
-  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность.)
+  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность)
 -/
 theorem SetTheory.Set.union_congr_left (A A' B : Set) (h : A = A') :
   A ∪ B = A' ∪ B := by rw [h]
 
 /--
   Remark 3.1.11.
-  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность.)
+  (Эти результаты можно доказать либо прямым переписыванием, либо через экстенсиональность)
 -/
 theorem SetTheory.Set.union_congr_right (A B B' : Set) (h : B = B') :
   A ∪ B = A ∪ B' := by rw [h]
@@ -795,7 +910,7 @@ theorem SetTheory.Set.union_congr_right (A B B' : Set) (h : B = B') :
 /-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.singleton_union_singleton (a b : Object) :
   ({a} : Set) ∪ ({b} : Set) = {a,b} := by
-    exact pair_eq a b
+    exact pair_eq a b -- {a, b} = {a} ∪ {b}
 
 /-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_comm (A B : Set) : A ∪ B = B ∪ A := by
@@ -805,7 +920,7 @@ theorem SetTheory.Set.union_comm (A B : Set) : A ∪ B = B ∪ A := by
 
 /-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_assoc (A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
-  -- это доказательство написано так, чтобы следовать структуре оригинального текста.
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   ext x
   constructor
   . intro hx
@@ -814,8 +929,8 @@ theorem SetTheory.Set.union_assoc (A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪
     . rw [mem_union] at case1
       obtain case1a | case1b := case1
       . rw [mem_union]; tauto
-      have : x ∈ B ∪ C := by rw [mem_union]; tauto
-      rw [mem_union]; tauto
+      · have : x ∈ B ∪ C := by rw [mem_union]; tauto
+        rw [mem_union]; tauto
     · have : x ∈ B ∪ C := by rw [mem_union]; tauto
       rw [mem_union]; tauto
   · intro hx; rw [mem_union] at hx
@@ -882,12 +997,15 @@ example (X Y : Set) : X ⊆ Y ↔ ∀ x, x ∈ X → x ∈ Y := by rfl
 instance SetTheory.Set.instSSubset : HasSSubset Set where
   SSubset X Y := X ⊆ Y ∧ X ≠ Y
 
-/-- Теперь можно использовать {kw (of := «term_⊂_»)}`⊂` для отношения строгого подмножества между двумя {name}`Set`. -/
+/-- Теперь можно использовать {kw (of := «term_⊂_»)}`⊂` для
+    отношения строгого подмножества между двумя {name}`Set`. -/
 example (X Y : Set) : X ⊂ Y ↔ X ⊆ Y ∧ X ≠ Y := by rfl
 
-theorem SetTheory.Set.subset_def (X Y : Set) : X ⊆ Y ↔ ∀ x, x ∈ X → x ∈ Y := by rfl
+theorem SetTheory.Set.subset_def (X Y : Set) :
+  X ⊆ Y ↔ ∀ x, x ∈ X → x ∈ Y := by rfl
 
-theorem SetTheory.Set.ssubset_def (X Y : Set) : X ⊂ Y ↔ (X ⊆ Y ∧ X ≠ Y) := by rfl
+theorem SetTheory.Set.ssubset_def (X Y : Set) :
+  X ⊂ Y ↔ (X ⊆ Y ∧ X ≠ Y) := by rfl
 
 /-- Remark 3.1.15 -/
 theorem SetTheory.Set.subset_congr_left
@@ -911,14 +1029,26 @@ theorem SetTheory.Set.empty_subset (A : Set) : ∅ ⊆ A := by
   have h₁ := not_mem_empty x
   contradiction
 
-/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
+/-- Proposition 3.1.17
+    Частичный порядок через включение множеств или мб даже лучше:
+    Транзитивность операции включения множеств. -/
 theorem SetTheory.Set.subset_trans
   {A B C : Set} (hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C := by
     -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
     rw [subset_def]
     intro x hx
     rw [subset_def] at hAB
-    apply (hAB x) at hx -- Эквивалентно следующему : replace hx := hAB x hx
+    -- Здесь `apply e at h` работает "в обратную сторону" по сравнению с `apply e` на цели:
+    -- там мы унифицируем заключение `e` с целью, а посылки `e` становятся новыми целями.
+    -- Здесь же `h` играет роль недостающей посылки:
+    -- Lean подставляет `h` в качестве аргумента `e`,
+    -- а получившееся заключение `e` записывается обратно в `h`, заменяя его.
+    --
+    -- То есть `apply (hAB x) at hx`, где `hAB x : x ∈ A → x ∈ B` и `hx : x ∈ A`,
+    -- подставляет `hx` в качестве аргумента и
+    -- кладёт результат `hAB x hx : x ∈ B` обратно в `hx`
+    -- Это эквивалентно следующему: replace hx := hAB x hx
+    apply (hAB x) at hx
     apply hBC x at hx
     assumption
 
@@ -951,8 +1081,9 @@ theorem SetTheory.Set.ssubset_trans
   оно превращает множество в подтип объектов.
 
   Формально: `A.toSubtype = { x : Object // x ∈ A }`, то есть тип пар `⟨x, hx⟩`,
-  где `x : Object` и `hx : x ∈ A`. Это «зависимая пара»: значение несёт
-  в себе объект вместе с доказательством его принадлежности множеству.
+  где `x : Object` и `hx : x ∈ A`.
+  Это «зависимая пара»: значение несёт в себе объект вместе с
+  доказательством его принадлежности множеству.
 
   Создание элемента подтипа:
   · `⟨x, hx⟩ : A.toSubtype`  — анонимный конструктор
@@ -964,20 +1095,21 @@ theorem SetTheory.Set.ssubset_trans
 
   Сокращённая запись через `CoeSort`:
   После объявления `instance : CoeSort Set (Type v)` Lean умеет автоматически
-  считать `A : Set` типом (разворачивая до `A.toSubtype`). Поэтому вместо
-  `(x' : A.toSubtype)` можно писать просто `(x' : A)` — это та же самая вещь.
+  считать `A : Set` типом (разворачивая до `A.toSubtype`).
+  Поэтому вместо `(x' : A.toSubtype)` можно писать просто `(x' : A)`.
 
   Зачем это нужно:
   Аксиомы спецификации и замены принимают предикаты `P : A → Prop`
-  (что означает `P : A.toSubtype → Prop`). Такой предикат получает
-  не просто `Object`, а пару «объект + доказательство принадлежности»,
+  (что означает `P : A.toSubtype → Prop`).
+  Такой предикат получает не просто `Object`,
+  а пару «объект + доказательство принадлежности»,
   что позволяет внутри `P` ссылаться на факт `x ∈ A` без лишних аргументов.
 -/
 
 /--
   Это определяет подтип {lean}`A.toSubtype` для любого {lean}`A:Set`.
-  Заметьте, что {lean}`A.toSubtype` — это тип, точно так же, как {name}`Object` или {name}`Set` —
-  типы.
+  Заметьте, что {lean}`A.toSubtype` — это тип, точно так же,
+  как {name}`Object` или {name}`Set` — типы.
   Значение {given (type := "A.toSubtype")}`x'` типа {lean}`A.toSubtype` объединяет
   некоторый {given}`x: Object` с доказательством того, что {given}`hx: x ∈ A`.
 
@@ -995,14 +1127,14 @@ example (A : Set) (x' : A.toSubtype) : x'.val ∈ A := x'.property
 
 -- На практике подтип позволяет упаковать объект вместе с
 -- доказательством принадлежности в одно значение.
--- Сравни два доказательства: они эквивалентны, но второе упаковывает x и hx в x.
+-- Сравни два доказательства: они эквивалентны, но второе упаковывает x и hx в x'.
 example (A B : Set) (x : Object) (hx : x ∈ A) : x ∈ A ∪ B := by simp; left; exact hx
 example (A B : Set) (x' : A.toSubtype) : x'.val ∈ A ∪ B := by simp; left; exact x'.property
 
 instance : CoeSort (Set) (Type v) where
   coe A := A.toSubtype
 
--- Теперь благодара инстансу CoeSort (Set) (Type v) вместо x : A.toSubtype можно писать просто x : A.
+-- Теперь благодаря инстансу CoeSort (Set) (Type v) вместо x : A.toSubtype можно писать просто x : A.
 -- Сравни три доказательства: они эквивалентны, но последнее читается лаконичнее всего.
 example (A B : Set) (x : Object) (hx : x ∈ A) : x ∈ A ∪ B := by simp; left; exact hx
 example (A B : Set) (x' : A.toSubtype) : x'.val ∈ A ∪ B := by simp; left; exact x'.property
@@ -1022,6 +1154,22 @@ lemma SetTheory.Set.coe_inj (A : Set) (x y : A) : x.val = y.val ↔ x = y := Sub
 -/
 def SetTheory.Set.subtype_mk (A : Set) {x : Object} (hx : x ∈ A) : A := ⟨x, hx⟩
 
+-- Слева `A.subtype_mk hx : A.toSubtype`, справа `x : Object` — типы разные,
+-- поэтому элаборатор вставляет коэрцию `↑`.
+--
+-- Это не `CoeSort (Set) (Type v)` выше, а другая,
+-- встроенная в ядро Lean коэрция специально- для `Subtype`:
+-- `instance subtypeCoe : CoeOut (Subtype p) α where coe v := v.val` (`Init/Coe.lean`).
+--
+-- Именно она и срабатывает здесь на *термах*:
+-- `A.toSubtype` — это `Subtype (fun x ↦ x ∈ A)`,
+-- так что элаборатор подставляет `↑ = Subtype.val`,
+-- и на самом деле утверждается `(A.subtype_mk hx).val = x`.
+--
+-- А `A.subtype_mk hx` по определению — это `⟨x, hx⟩` (см. `subtype_mk` выше),
+-- так что `.val` вычисляет ровно `x` уже на уровне определений
+-- (iota-редукция проекции анонимного конструктора).
+-- Отсюда равенство и закрывается `rfl`.
 @[simp]
 lemma SetTheory.Set.subtype_mk_coe {A : Set} {x : Object} (hx : x ∈ A) :
   A.subtype_mk hx = x := by rfl

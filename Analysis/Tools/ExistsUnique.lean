@@ -18,13 +18,13 @@ Mathlib.)
 /-- Это реализует аксиому единственного выбора. -/
 noncomputable def ExistsUnique.choose {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : α := h.exists.choose
 
-theorem ExistsUnique.choose_spec {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : 
+theorem ExistsUnique.choose_spec {α : Sort*} {p : α → Prop} (h : ∃! x, p x) :
   p h.choose := h.exists.choose_spec
 
-theorem ExistsUnique.choose_eq {α : Sort*} {p : α → Prop} (h : ∃! x, p x) {x : α} (hx : p x) : 
+theorem ExistsUnique.choose_eq {α : Sort*} {p : α → Prop} (h : ∃! x, p x) {x : α} (hx : p x) :
   h.choose = x := h.unique h.choose_spec hx
 
-theorem ExistsUnique.choose_iff {α : Sort*} {p : α → Prop} (h : ∃! x, p x) (x : α) : 
+theorem ExistsUnique.choose_iff {α : Sort*} {p : α → Prop} (h : ∃! x, p x) (x : α) :
   p x ↔ x = h.choose :=
   ⟨ by intro hx; exact (h.choose_eq hx).symm, by rintro rfl; exact h.choose_spec ⟩
 
@@ -38,7 +38,7 @@ noncomputable def Subsingleton.choose {α : Sort*} [Subsingleton α] [hn : Nonem
 theorem Subsingleton.choose_spec {α : Sort*} [hs : Subsingleton α] [Nonempty α] (x : α) : x = hs.choose := Subsingleton.elim _ _
 
 /-- Эквивалентность между {name}`ExistsUnique` и {name}`Subsingleton`/{name}`Nonempty` не требует аксиомы выбора. -/
-theorem ExistsUnique.iff_subsingleton_nonempty  {α : Sort*} {p : α → Prop} : 
+theorem ExistsUnique.iff_subsingleton_nonempty  {α : Sort*} {p : α → Prop} :
   (∃! x, p x) ↔ (Subsingleton {x // p x} ∧ Nonempty {x // p x}) := by
   constructor
   · intro h; obtain ⟨ x₀, hx₀ ⟩ := h.exists
