@@ -61,6 +61,22 @@ set_option doc.verso.suggestions false
   вся эта глава оказывается необязательной с точки зрения остальной части книги, но мы сохраняем
   её ради педагогической ценности.)
 
+
+## В чём я путаюсь
+
+- Экстенсиональность — про равенство множеств: A = B ↔ ∀ x, x ∈ A ↔ x ∈ B.
+- Тождество неразличимых (Лейбниц) — про равенство объектов: x = y ↔ ∀ P, P(x) ↔ P(y).
+- Однозначность/функциональность hP — про то, что отношение P ведёт себя как функция:
+                                      P(x,y) ∧ P(x,y') → y = y'.
+
+Все три утверждения имеют одну и ту же логическую форму:
+  ∀ a b, (a и b одинаково "проходят" один и тот же тест)
+Но роли у них разные, и именно поэтому смешивать названия было ошибкой.
+
+Это, по сути, теоретико-множественное/логическое проявление того,
+что в теории категорий называется леммой Йонеды — идея, что
+"объект есть не более чем совокупность способов его пронаблюдать/сравнить с другими".
+
 ## Советы от прошлых пользователей
 
 Пользователи, прошедшие упражнения этого раздела, могут присылать свои советы для будущих
@@ -146,8 +162,6 @@ class SetTheory where
   -- Условие hP (однозначность: если P x y и P x y', то y = y') превращает
   -- это отношение в функцию (в математическом смысле «каждому x — не более одного y»),
   -- хотя как объект теории множеств такая функция ещё не существует.
-  -- Другими словами, это похоже на аналог тождества Лейбница,
-  -- тождества неразличимых или, проще говоря, экстенсиональности:
   replace A (P : Subtype (mem . A) → Object → Prop)
     (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set -- Axiom 3.7
   -- `P x y` читается как «x связан с y» (или «x переходит в y»).
@@ -198,6 +212,16 @@ class SetTheory where
   --          1) пара функций туда/обратно (toFun, invFun)
   --          2) доказательства, что они взаимно обратны (left_inv, right_inv)
   --          Короче говоря, это конкретное, явное отождествление одного с другим.
+  --
+  -- Откуда берутся сами `toFun`/`invFun` и доказательства их взаимной обратности,
+  -- если мы нигде их не строим? Фишка в том, что здесь мы лишь постулируем
+  -- существование терма такого типа, а не предъявляем его.
+  -- Поскольку сам `Equiv` (`≃`) это структура с четырьмя полями
+  -- (toFun, invFun, left_inv, right_inv),
+  -- Их обязан предоставить любой, кто предъявит конкретный экземпляр `SetTheory` (модель этих аксиом).
+  -- В этом файле такой экземпляр никогда не строится —
+  -- мы работаем аксиоматически через `variable [SetTheory]`, так что `nat_equiv` остаётся
+  -- предполагаемым термом, а `.toFun`/`.invFun` ниже — это просто проекции полей `Equiv`.
 
   -- Теперь у нас есть явная функция `nat_equiv.toFun : ℕ → Subtype (mem . nat)`, которая
   -- берёт обычное натуральное число `n : ℕ` и возвращает соответствующий ему элемент множества `nat`, и
@@ -817,6 +841,9 @@ theorem SetTheory.Set.pair_eq_pair {a b c d : Object}
     · right; exact ⟨rfl, rfl⟩
     · rcases hc with rfl | rfl <;> right <;> exact ⟨rfl, rfl⟩
 
+-- `abbrev` — это просто «прозрачный» псевдоним (в отличие от `def`, Lean всегда
+-- автоматически разворачивает его при проверке типов).
+
 abbrev SetTheory.Set.empty : Set := ∅
 abbrev SetTheory.Set.singleton_empty : Set := {(empty : Object)}
 abbrev SetTheory.Set.pair_empty : Set := {(empty : Object), (singleton_empty : Object)}
@@ -1121,6 +1148,9 @@ theorem SetTheory.Set.ssubset_trans
 -/
 abbrev SetTheory.Set.toSubtype (A : Set) := Subtype (fun x ↦ x ∈ A)
 
+-- A.toSubtype - Подмножество всех элементов множества А,
+--               удовлетворяющих некоторому условию P.
+
 example (A : Set) (x : Object) (hx : x ∈ A) : A.toSubtype := ⟨x, hx⟩
 example (A : Set) (x' : A.toSubtype) : Object := x'.val
 example (A : Set) (x' : A.toSubtype) : x'.val ∈ A := x'.property
@@ -1133,6 +1163,8 @@ example (A B : Set) (x' : A.toSubtype) : x'.val ∈ A ∪ B := by simp; left; ex
 
 instance : CoeSort (Set) (Type v) where
   coe A := A.toSubtype
+
+-- Запись `x : A` означает, что x является элементом множества A.
 
 -- Теперь благодаря инстансу CoeSort (Set) (Type v) вместо x : A.toSubtype можно писать просто x : A.
 -- Сравни три доказательства: они эквивалентны, но последнее читается лаконичнее всего.
@@ -1175,7 +1207,7 @@ lemma SetTheory.Set.subtype_mk_coe {A : Set} {x : Object} (hx : x ∈ A) :
   A.subtype_mk hx = x := by rfl
 
 /-
-  ## Аксиома спецификации (Axiom 3.6): `A.specify P`
+  ## Аксиома спецификации/выделения (Axiom 3.6): `A.specify P`
 
   `A.specify P` задумана как аналог `{ x ∈ A | P(x) }`, но в Lean она объявлена
   в классе `SetTheory` как **аксиома** — то есть `specify` создаёт некое непрозрачное
@@ -1190,12 +1222,15 @@ lemma SetTheory.Set.subtype_mk_coe {A : Set} {x : Object} (hx : x ∈ A) :
   где `hx : x ∈ A`. Благодаря этому внутри `P` автоматически известно,
   что аргумент принадлежит `A`.
 -/
-abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set := SetTheory.specify A P
+abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set :=
+  SetTheory.specify A P
 
--- Три леммы покрывают три разных ситуации в доказательствах:
--- specification_axiom   — имеем `x : Object` и `x ∈ A.specify P`; извлекает `x ∈ A`.
--- specification_axiom'  — имеем `x : A` (элемент подтипа); даёт `↔` с `P x` напрямую.
--- specification_axiom'' — имеем `x : Object`; даёт `↔` через `∃ h : x ∈ A, P ⟨x, h⟩`.
+-- Три леммы ниже — это одна и та же аксиома 3.6, просто сформулированная по-разному
+-- в зависимости от того, что уже есть под рукой в доказательстве:
+--
+-- specification_axiom   : x ∈ A.specify P → x ∈ A
+-- specification_axiom'  : (x : A) → (x.val ∈ A.specify P ↔ P x)
+-- specification_axiom'' : (x : Object) → (x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨x, h⟩)
 
 -- Вот эти три теоремы просто являются
 -- спецификой реализации аксиомы спецификации (выделения) в Lean4.
@@ -1204,61 +1239,95 @@ abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set := SetTheory.speci
 -- Направление «→»: принадлежность спецификации влечёт принадлежность исходному множеству.
 -- Используй, когда имеешь `h : x ∈ A.specify P` и нужно получить `x ∈ A`.
 /-- Axiom 3.6 (аксиома спецификации) -/
-theorem SetTheory.Set.specification_axiom {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) :
-    x ∈ A :=
-  (SetTheory.specification_axiom A P).1 x h
+theorem SetTheory.Set.specification_axiom
+  {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) : x ∈ A := by
+    -- `SetTheory.specification_axiom A P` представляет собой конъюнкцию двух фактов:
+    -- 1) `∀ x, x ∈ A.specify P → x ∈ A` (спецификация ⊆ A)
+    -- 2) `∀ x, x.val ∈ A.specify P ↔ P x` (характеризация через P)
+    -- Нам нужно направление ⊆, поэтому берём первый конъюнкт `.1`
+    have hh := (SetTheory.specification_axiom A P).1
+    exact hh x h
 
 -- Двустороннее ↔, когда x уже является элементом подтипа `x : A`.
 -- Используй, когда уже держишь в руках элемент подтипа и хочешь переключиться
 -- между `x.val ∈ A.specify P` и `P x`.
 /-- Axiom 3.6 (аксиома спецификации) -/
-theorem SetTheory.Set.specification_axiom' {A : Set} (P : A → Prop) (x : A) :
-    x.val ∈ A.specify P ↔ P x :=
-  (SetTheory.specification_axiom A P).2 x
+theorem SetTheory.Set.specification_axiom'
+  {A : Set} (P : A → Prop) (x : A) : x.val ∈ A.specify P ↔ P x := by
+    have hh := (SetTheory.specification_axiom A P).2
+    exact hh x
 
--- Двустороннее ↔ для сырого объекта `x : Object`.
--- Правая часть `∃ h : x ∈ A, P ⟨x, h⟩` читается так:
---   «существует доказательство h того, что x ∈ A,
---   при котором P выполняется на паре ⟨x, h⟩ : A».
--- Это эквивалентно «x ∈ A ∧ P(x)», но записанное через ∃ — так, чтобы
--- можно было построить элемент подтипа и передать его в P.
+-- В отличие от specification_axiom' выше, здесь x : Object —
+-- просто объект, а не элемент подтипа A.
 -- Это основной вариант для работы в доказательствах с `x : Object`.
 /-- Axiom 3.6 (аксиома спецификации) -/
 @[simp]
-theorem SetTheory.Set.specification_axiom'' {A : Set} (P : A → Prop) (x : Object) :
-  x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨x, h⟩ := by
-    constructor
-    . intro h; use specification_axiom h
-      simp [←specification_axiom' P, h]
-    intro ⟨ h, hP ⟩
-    simpa [←specification_axiom' P] using hP
+theorem SetTheory.Set.specification_axiom''
+  {A : Set} (P : A → Prop) (x : Object) :
+    x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨x, h⟩ := by
+      -- Разбиваем ↔ на два направления: `mp` (→) и `mpr` (←).
+      constructor
+      . -- из `h : x ∈ A.specify P` нужно построить `∃ h : x ∈ A, P ⟨x, h⟩`.
+        intro h
+        -- Доказательство `x ∈ A` можно сразу получить из `specification_axiom h` (см лемму выше).
+        -- `use` подставляет (hxa : x ∈ A) как свидетеля существования.
+        have hxa : x ∈ A := specification_axiom h -- (h : x ∈ A.specify P) : x ∈ A
+        use hxa
+        -- `specification_axiom' P : (y : A) → (y.val ∈ A.specify P ↔ P y)`.
+        -- Переписывая цель `P ⟨x, hxa⟩` по этой эквивалентности (`←`),
+        -- получаем `↑⟨x, hxa⟩.val ∈ A.specify P`,
+        -- a по определению `.val` это есть просто `x ∈ A.specify P`,
+        -- то есть в точности гипотеза `h`.
+        rw [←specification_axiom' P]
+        exact h
+      -- Из `∃ h : x ∈ A, P ⟨x, h⟩` нужно получить `x ∈ A.specify P`.
+      intro ⟨h, hP⟩
+      -- Тем же переписыванием `←specification_axiom' P` превращаем
+      -- `hP : P ⟨x, h⟩` в `⟨x, h⟩.val ∈ A.specify P`,
+      -- то есть `x ∈ A.specify P` — это и есть цель.
+      rw [←specification_axiom' P] at hP
+      exact hP
+      -- Ну, или проще:
+      -- simpa [←specification_axiom' P] using hP
 
 -- Непосредственное следствие specification_axiom: спецификация есть подмножество A.
--- Ну, по сути, это и есть выделение некоторого подмножества при помощи фильтрации.
+-- Ну, по сути, это и есть выделение некоторого подмножества при помощи "фильтрации" по предикату.
 theorem SetTheory.Set.specify_subset {A : Set} (P : A → Prop) : A.specify P ⊆ A := by
   rw [subset_def]
   intro x hx
   exact specification_axiom hx -- (h : x ∈ A.specify P) : x ∈ A
 
-/-- Это упражнение может потребовать некоторого понимания того, как подтипы реализованы в Lean. -/
-theorem SetTheory.Set.specify_congr {A A' : Set} (hAA' : A = A') {P : A → Prop} {P' : A' → Prop}
-  (hPP' : (x : Object) → (h : x ∈ A) → (h' : x ∈ A') → (P ⟨x, h⟩ ↔ P' ⟨x, h'⟩)) :
-    A.specify P = A'.specify P' := by
-  -- Равенство множеств доказывается через экстенсиональность
-  ext x
-  have h₀ := specification_axiom'' P  x -- (x : Object) : x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
-  have h₁ := specification_axiom'' P' x -- (x : Object) : x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
-  subst hAA' -- Заменим везде A' = A
-  rw [h₀, h₁]
-  constructor
-  · rintro ⟨h, hP⟩
-    have heq := hPP' x h h
-    have hP' := heq.mp hP
-    exact ⟨h, hP'⟩
-  · rintro ⟨h, hP'⟩
-    have heq := hPP' x h h
-    have hP := heq.mpr hP'
-    exact ⟨h, hP⟩
+/--
+  Одинаковые множества + Равносильные условия ⇒ Одинаковые выделенные подмножества.
+  То есть `{x ∈ A | P x} = {x ∈ A' | P' x}`, если `A = A'` и `P`, `P'` согласны на общих x.
+
+  Это `congr`-лемма для `specify`, но обычный `congr` тут не работает: `P : A.toSubtype → Prop`
+  и `P' : A'.toSubtype → Prop` формально имеют разные типы (даже при `A = A'` типы `A.toSubtype`
+  и `A'.toSubtype` не обязаны быть определённо равны), поэтому сравнивать `P` и `P'` напрямую
+  нельзя — сравнение идёт поточечно, через исходный `x : Object` и отдельные доказательства
+  принадлежности.
+
+  Это упражнение может потребовать некоторого понимания того, как подтипы реализованы в Lean.
+-/
+theorem SetTheory.Set.specify_congr
+  {A A' : Set} (hAA' : A = A') {P : A → Prop} {P' : A' → Prop}
+    (hPP' : (x : Object) → (h : x ∈ A) → (h' : x ∈ A') → (P ⟨x, h⟩ ↔ P' ⟨x, h'⟩)) :
+      A.specify P = A'.specify P' := by
+        -- Равенство множеств доказывается через экстенсиональность
+        ext x
+        have h₀ := specification_axiom'' P  x -- (x : Object) : x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
+        have h₁ := specification_axiom'' P' x -- (x : Object) : x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
+        subst hAA' -- Заменим везде A' на A
+        rw [h₀, h₁]
+        constructor
+        · rintro ⟨h, hP⟩
+          have heq := hPP' x h h
+          have hP' := heq.mp hP
+          exact ⟨h, hP'⟩
+        · rintro ⟨h, hP'⟩
+          have heq := hPP' x h h
+          have hP := heq.mpr hP'
+          exact ⟨h, hP⟩
 
 theorem SetTheory.Set.specify_congr'
   {A A' : Set} (hAA' : A = A') {P : A → Prop} {P' : A' → Prop}
@@ -1302,9 +1371,12 @@ theorem SetTheory.Set.mem_inter (x : Object) (X Y : Set) :
   x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y) := by
     constructor
     · intro h
-      -- (h : x ∈ A.specify (P : X ∩ Y)) : x ∈ A
+      -- `X ∩ Y` определено (см. `instIntersection` выше) как `X.specify (fun x ↦ x.val ∈ Y)`.
+      -- Значит `h : x ∈ X ∩ Y` — это по определению `h : x ∈ X.specify P` для этого `P`.
+      -- Применяя `specification_axiom : x ∈ A.specify P → x ∈ A` (направление ⊆) прямо к `h`,
+      -- сразу получаем `x ∈ X` — без каких-либо дополнительных переписываний.
       have hX : x ∈ X := specification_axiom h
-      -- (P : A.toSubtype → Prop) (x : A.toSubtype) : ↑x ∈ A.specify P ↔ P x
+      -- (P : A → Prop) (x : A) : x.val ∈ A.specify P ↔ P x
       have hiff := specification_axiom' (fun z ↦ z.val ∈ Y) ⟨x, hX⟩
       have hY : x ∈ Y := hiff.mp h
       exact ⟨hX, hY⟩
@@ -1324,6 +1396,10 @@ theorem SetTheory.Set.mem_inter' (x : Object) (X Y : Set) :
     · intro ⟨ hX, hY ⟩
       exact (specification_axiom' (fun x ↦ x.val ∈ Y) ⟨x, hX⟩).mpr hY
 
+-- `SDiff` — тайп-класс, дающий нотацию `X \ Y`
+-- (аналогично `Inter`/`instIntersection` выше для `∩`).
+-- Разность множеств тоже уже выражается через `specify` —
+-- это подмножество X из тех элементов, которые не лежат в Y.
 instance SetTheory.Set.instSDiff : SDiff Set where
   sdiff X Y := X.specify (fun x ↦ x.val ∉ Y)
 
@@ -1336,9 +1412,12 @@ theorem SetTheory.Set.mem_sdiff (x : Object) (X Y : Set) :
   x ∈ (X \ Y) ↔ (x ∈ X ∧ x ∉ Y) := by
     constructor
     . intro h
-      have h' := specification_axiom h -- (h : x ∈ A.specify P) : x ∈ A
+      -- (h : x ∈ A.specify P) : x ∈ A
+      have h' := specification_axiom h
       simp [h']
-      exact (specification_axiom' _ ⟨x, h'⟩).mp h
+      -- (P : A → Prop) (x : A) : x.val ∈ A.specify P ↔ P x
+      have e := specification_axiom' (fun x ↦ x.val ∉ Y) ⟨x, h'⟩
+      exact e.mp h
     · intro ⟨hX, hY⟩
       exact (specification_axiom' (fun x ↦ x.val ∉ Y) ⟨x, hX⟩).mpr hY
 
@@ -1447,8 +1526,8 @@ theorem SetTheory.Set.compl_inter {A B X : Set} : X \ (A ∩ B) = (X \ A) ∪ (X
   rw [not_and] -- ¬(a ∧ b) ↔ a → ¬b
   tauto
 
--- Делаем множествa дистрибутивными решетками.
-/-- Не из учебника: множества образуют дистрибутивную решётку. -/
+/-- Делаем множествa дистрибутивными решетками.
+    Теперь наши множества образуют дистрибутивную решётку. -/
 instance SetTheory.Set.instDistribLattice : DistribLattice Set where
   le := (· ⊆ ·)
   le_refl : ∀ (A : Set), A ⊆ A := subset_self
@@ -1494,8 +1573,8 @@ instance SetTheory.Set.instDistribLattice : DistribLattice Set where
 /-- У множеств есть наименьший элемент.  -/
 -- Даём Set структуру решётки через ⊆ как ≤, и ∅ как ⊥.
 instance SetTheory.Set.instOrderBot : OrderBot Set where
-  bot := ∅
   bot_le : ∀ (A : Set), ∅ ⊆ A := empty_subset
+  bot := ∅
 
 -- Disjoint (что-либо "непересекающееся") в Mathlib — это
 -- общее понятие из теории решёток, а не специфичное для множеств.
@@ -1517,15 +1596,34 @@ example (A B : Set) : Prop := Disjoint A B
 
 /-- Определение непересекаемости (через предыдущие инстансы) -/
 theorem SetTheory.Set.disjoint_iff (A B : Set) : Disjoint A B ↔ A ∩ B = ∅ := by
-  convert _root_.disjoint_iff
+  -- `_root_.disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥` —
+  -- общая лемма для любой решётки с ⊥ (`SemilatticeInf` + `OrderBot`).
+  -- Наша цель `Disjoint A B ↔ A ∩ B = ∅` — это она же,
+  -- только записанная через `∩`/`∅` вместо `⊓`/`⊥`: по `instDistribLattice`
+  -- выше `⊓ := (· ∩ ·)`, а по `instOrderBot` `⊥ := ∅`,
+  -- так что `A ⊓ B` и `A ∩ B`, как и `⊥` и `∅`, определённо равны
+  -- (просто разные обозначения одного и того же терма).
+  -- Поэтому `exact` проходит напрямую:
+  -- при финальной проверке типов Lean разворачивает эти instance-поля и видит,
+  -- что тип `_root_.disjoint_iff` совпадает с целью.
+  exact _root_.disjoint_iff
 
--- Тождество неразличимых (по Лейбницу).
--- Или, проще говоря, экстенсиональность.
+-- Замена/подстановка (Axiom 3.7).
+-- Смысл тот же, что у {f(x) : x ∈ A} для какой-то функции f,
+-- только вместо явной f мы даём отношение P (P x y читается как "f(x) = y"),
+-- а hP гарантирует, что за этим отношением на самом деле стоит функция,
+-- тк этo гипотеза однозначности/функциональности
+-- (см. пример с {3,5,9}.replace ниже по файлу).
+-- A.replace hP — это множество всех "выходов" P по всем x ∈ A.
 abbrev SetTheory.Set.replace (A : Set) {P : A → Object → Prop}
   (hP : ∀ x y y', P x y ∧ P x y' → y = y') : Set := SetTheory.replace A P hP
 
 /-- Axiom 3.7 (аксиома замены) -/
--- Позволяет задавать отображения типа таких {3,4,5} → {3++,4++,5++}
+-- Позволяет задавать отображения типа таких {3,4,5} → {3++,4++,5++}.
+-- Для этого берём P x y := "y = x++"
+-- то есть P x y := ∃ n, x.val = n ∧ y = n+1,
+-- а условие hP выполняется автоматически, потому что x++ определено однозначно.
+-- Для примера см. "Example 3.1.30" ниже по файлу.
 @[simp]
 theorem SetTheory.Set.replacement_axiom {A : Set} {P : A → Object → Prop}
   (hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object) :
@@ -1535,19 +1633,26 @@ theorem SetTheory.Set.replacement_axiom {A : Set} {P : A → Object → Prop}
 abbrev Nat := SetTheory.nat
 
 -- Далее мы будем использовать `Nat` как тип.
--- Однако заметьте, что мы определили `Nat` как `SetTheory.nat`, а это `Set`, а не тип.
--- Единственная причина, по которой можно писать `x: Nat`, — это ранее определённое приведение
--- `CoeSort`, позволяющее писать `x: A` (когда `A` — это `Set`) как сокращение для `x: A.toSubtype`.
--- Именно поэтому всякий раз, когда вы видите `x: Nat`, на самом деле это `x: Nat.toSubtype`.
+-- Однако, мы определили `Nat` как `SetTheory.nat`, а это `Set`, а не тип.
+-- Единственная причина, по которой можно писать `x: Nat`, —
+-- это ранее определённое приведение `CoeSort`, позволяющее писать
+-- `x: A` (когда `A` — это `Set`) как сокращение для `x: A.toSubtype`.
+-- Именно поэтому всякий раз, когда мы видим `x: Nat`,
+-- на самом деле это `x: Nat.toSubtype`.
 example (x : Nat) : Nat.toSubtype := x
 example (x : Nat) : Object := x.val
 example (x : Nat) : (x.val ∈ Nat) := x.property
 example (o : Object) (ho : o ∈ Nat) : Nat := ⟨o, ho⟩
 
-/-- Axiom 3.8 (аксиома бесконечности) -/
+/-- Axiom 3.8 (аксиома бесконечности):
+    Существует множество ℕ, элементы которого называются натуральными числами,
+    а также объект 0 в n и объект n++, соответствующий каждому
+    такому натуральному числу n из ℕ, для которого аксиомы Пeанo справедливы.
+-/
 def SetTheory.Set.nat_equiv : ℕ ≃ Nat := SetTheory.nat_equiv
 
--- Ниже — небольшое API для работы с приведениями типов. Возможно, не самый оптимальный способ это устроить.
+-- Ниже — небольшое API для работы с приведениями типов.
+-- Возможно, не самый оптимальный способ это устроить.
 instance SetTheory.Set.instOfNat {n : ℕ} : OfNat Nat n where
   ofNat := nat_equiv n
 
@@ -1582,79 +1687,110 @@ instance SetTheory.Object.instOfNat {n : ℕ} : OfNat Object n where
 example : Object := 1
 example : Set := {1, 2, 3}
 
+-- Число `n : ℕ` можно превратить в `Object` двумя способами:
+-- напрямую `(n : Object)` или через `Nat` (`(n : Nat) : Object`).
+-- Лемма говорит, что оба способа дают один и тот же `Object`.
 @[simp]
 lemma SetTheory.Object.ofnat_eq {n : ℕ} : ((n : Nat) : Object) = (n : Object) := rfl
 
+-- То же равенство, что выше, но слева — числовой литерал `ofNat(n)`
+-- (то, как пишется число `n` в виде `Object`, например `(3 : Object)`),
+-- а не явное приведение `(n : Object)`.
 lemma SetTheory.Object.ofnat_eq' {n : ℕ} : (ofNat(n) : Object) = (n : Object) := rfl
 
+-- Если элемент `n : Nat` сначала перевести в обычное число `ℕ`
+-- (это и есть `(n : ℕ)`, через `nat_equiv`), а затем это число — в `Object`,
+-- получится то же самое, что перевести `n : Nat` в `Object` напрямую.
 @[simp]
 lemma SetTheory.Object.ofnat_eq'' {n : Nat} : ((n : ℕ) : Object) = (n : Object) := by
   simp [Nat.cast, NatCast.natCast, Equiv.apply_symm_apply]
 
+-- `⟨(n : Object), hn⟩ : nat` — это число `n`,
+-- представленное как элемент множества `nat` (`hn` доказывает, что оно ему принадлежит).
+-- Если такой элемент перевести обратно в `ℕ`, получится то же самое `n` —
+-- представление в виде элемента `nat` не теряет информацию о числе.
 @[simp]
 lemma SetTheory.Object.ofnat_eq''' {n : ℕ} {hn} : ((⟨(n : Object), hn⟩ : nat) : ℕ) = n := by
   simp [Nat.cast, NatCast.natCast, Equiv.symm_apply_apply]
 
+-- Приведение `(n : Nat)` (через `NatCast`) и числовой литерал `OfNat.ofNat n` для `Nat` —
+-- это одно и то же число, просто записанное двумя разными способами.
 lemma SetTheory.Set.nat_coe_eq {n : ℕ} : (n : Nat) = OfNat.ofNat n := rfl
 
+-- Приведение `ℕ → Nat` не путает разные числа:
+-- `(n : Nat) = (m : Nat)` в точности когда `n = m`.
 @[simp]
 lemma SetTheory.Set.nat_equiv_inj (n m : ℕ) : (n : Nat) = (m : Nat) ↔ n = m  :=
   Equiv.apply_eq_iff_eq nat_equiv
 
+-- То же самое в обратную сторону: приведение `Nat → ℕ` тоже не путает разные числа.
 @[simp]
 lemma SetTheory.Set.nat_equiv_symm_inj (n m : Nat) : (n : ℕ) = (m : ℕ) ↔ n = m :=
   Equiv.apply_eq_iff_eq nat_equiv.symm
 
+-- Позволяет сравнивать числовые литералы `Nat` (например, `(5 : Nat) = (3 : Nat)`) через
+-- равенство обычных чисел `ℕ` — этим пользуются тактики вроде `norm_num`/`decide`.
 @[simp]
 theorem SetTheory.Set.ofNat_inj (n m : ℕ) :
-    (ofNat(n) : Nat) = (ofNat(m) : Nat) ↔ ofNat(n) = ofNat(m) := by
-      convert nat_equiv_inj _ _
+  (ofNat(n) : Nat) = (ofNat(m) : Nat) ↔ ofNat(n) = ofNat(m) := by
+    exact nat_equiv_inj _ _
 
-example : (5 : Nat) ≠ (3 : Nat) := by
-  simp
+example : (5 : Nat) ≠ (3 : Nat) := by simp
 
 @[simp]
 theorem SetTheory.Set.ofNat_inj' (n m : ℕ) :
-    (ofNat(n) : Object) = (ofNat(m) : Object) ↔ ofNat(n) = ofNat(m) := by
-      simp only [←Object.ofnat_eq, Object.ofnat_eq', Set.coe_inj, Set.nat_equiv_inj]
-      rfl
+  (ofNat(n) : Object) = (ofNat(m) : Object) ↔ ofNat(n) = ofNat(m) := by
+    simp only [←Object.ofnat_eq, Object.ofnat_eq', Set.coe_inj, Set.nat_equiv_inj]
+    rfl
 
-example : (5 : Object) ≠ (3 : Object) := by
-  simp
+example : (5 : Object) ≠ (3 : Object) := by simp
 
+-- Позволяет сравнивать приведение `(m : Object)` переменной `m : ℕ` с числовым литералом
+-- `ofNat(n) : Object`, сводя такое равенство к обычному равенству чисел `m = n` — это и
+-- нужно, чтобы `simp` решал цели вроде примера ниже (`(n : Object) = 2 ↔ n = 2`).
 @[simp]
 lemma SetTheory.Set.nat_coe_eq_iff {m n : ℕ} :
   (m : Object) = ofNat(n) ↔ m = n := by
     exact ofNat_inj' m n
 
-example (n : ℕ) : (n : Object) = 2 ↔ n = 2 := by
-  simp
+example (n : ℕ) : (n : Object) = 2 ↔ n = 2 := by simp
 
+-- Инъективность приведения `ℕ → Object` в общем виде:
+-- в отличие от `nat_coe_eq_iff`, здесь обе стороны —
+-- произвольные переменные `n`, `m : ℕ`, а не число и литерал.
 @[simp]
 theorem SetTheory.Object.natCast_inj (n m : ℕ) :
     (n : Object) = (m : Object) ↔ n = m := by
       simp [←ofnat_eq, Subtype.val_inj]
 
+-- Если число `n : ℕ` перевести в `Nat`, а затем обратно в `ℕ`,
+-- получится то же самое `n` — приведение туда и обратно не теряет и не искажает число.
 @[simp]
 lemma SetTheory.Set.nat_equiv_coe_of_coe (n : ℕ) : ((n : Nat) : ℕ) = n :=
   Equiv.symm_apply_apply nat_equiv n
 
+-- То же самое в обратную сторону: элемент `n : Nat`,
+-- переведённый в `ℕ` и обратно в `Nat`, совпадает с исходным `n`.
 @[simp]
 lemma SetTheory.Set.nat_equiv_coe_of_coe' (n : Nat) : ((n : ℕ) : Nat) = n :=
   Equiv.symm_apply_apply nat_equiv.symm n
 
+-- Тот же факт «туда и обратно», что и `nat_equiv_coe_of_coe`, но для числового литерала
+-- `ofNat(n) : Nat`, а не для приведения переменной: литерал, переведённый в `ℕ`, даёт `n`.
 @[simp]
 lemma SetTheory.Set.nat_equiv_coe_of_coe'' (n : ℕ) : ((ofNat(n) : Nat) : ℕ) = n :=
   nat_equiv_coe_of_coe n
 
+-- Позволяет сравнивать в `Object` элемент `m : Nat` с числовым литералом `ofNat(n) : Object`,
+-- сведя это равенство к сравнению обычных чисел `(m : ℕ)` и `n` — то есть даёт возможность
+-- работать с `Nat`-элементами и `ℕ`-литералами единообразно.
 @[simp]
 lemma SetTheory.Set.nat_coe_eq_iff' {m : Nat} {n : ℕ} :
   (m : Object) = (ofNat(n) : Object) ↔ (m : ℕ) = ofNat(n) := by
     constructor <;> intro h <;> rw [show m = n by aesop]
     apply nat_equiv_coe_of_coe; rfl
 
-example : (2 : ℕ) ≠ (7 : Nat) := by
-  simp
+example : (2 : ℕ) ≠ (7 : Nat) := by simp
 
 /-- Example 3.1.16 (упрощённая версия).  -/
 example : ({3, 5} : Set) ⊆ {1, 3, 5} := by
@@ -1668,6 +1804,7 @@ example : ({3, 5} : Set) ⊆ {1, 3, 5} := by
 example : ({3, 5} : Set).specify (fun x ↦ x.val ≠ 3) = ({5} : Set) := by
   ext x
   rw [mem_singleton]
+  -- (P) (x) : x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
   rw [specification_axiom'']
   constructor
   · rintro ⟨h1, h2⟩
@@ -1686,7 +1823,15 @@ example : ({3, 5} : Set).specify (fun x ↦ x.val ≠ 3) = ({5} : Set) := by
 
 -- Пример использования norm_num, который мы будем использовать в упражнении ниже:
 -- Ложная гипотеза о числовых литералах закрывает любую цель.
--- `norm_num at h` сводит `h` к `False` (через ofNat_inj'), и цель уже неважна.
+--
+-- Как именно `ofNat_inj'` в этом участвует:
+--
+-- Это `@[simp]`-лемма, а `norm_num` внутри себя вызывает `simp`.
+-- Поэтому `norm_num at h`, применённый к `h : (1 : Object) = 3`,
+-- сначала переписывает `h` по `ofNat_inj'` в равенство обычных чисел `(1 : ℕ) = 3`,
+-- а затем встроенный числовой движок `norm_num` видит, что `1 ≠ 3`,
+-- и сводит `h` к `False`. Гипотеза `False` в контексте закрывает
+-- любую цель автоматически — саму цель разбирать уже не нужно.
 example (h : (1 : Object) = 3) : (1 : Object) = 2 ∨ (1 : Object) = 4 := by
   norm_num at h
 
@@ -1728,19 +1873,38 @@ example : ({1, 2} : Set) ∩ {3, 4} = ∅ := by
 -- Здесь мы хотим показать, что {1,2,3} и {2,3,4} пересекаются (у них общие элементы 2 и 3),
 -- поэтому доказываем отрицание `¬ Disjoint ...`. Чтобы работать с этим определением,
 -- сначала через `disjoint_iff` переписываем его в привычный вид `A ∩ B = ∅`, а дальше
--- `intro h` берёт это равенство как гипотезу (для доказательства отрицания) и приводит
--- к противоречию: `notMem`-форма показывает, что, например, 2 лежит
--- в обоих множествах, а значит не может лежать в пустом пересечении.
+-- `intro h` берёт это равенство как гипотезу (для доказательства отрицания). После
+-- переписывания `h` в `notMem`-форму (`∀ x, x ∉ A ∩ B`) `aesop` сам подбирает `x = 2`,
+-- проверяет по определению `∩`/`{..}`, что `2 ∈ A` и `2 ∈ B`, и тем самым противоречит `h`.
 example : ¬ Disjoint ({1, 2, 3} : Set) {2, 3, 4} := by
   rw [disjoint_iff] -- Disjoint A B ↔ A ∩ B = ∅
   intro h
   rw [eq_empty_iff_forall_notMem] at h -- X = ∅ ↔ ∀ (x : Object), x ∉ X
-  aesop -- norm_num at h
+  -- Методом "очевидности" (ниже — доказательство расписанное вручную, шаг за шагом)
+  aesop
+
+-- Методом "откуда это берётся?": вместо того, чтобы доверять `aesop`,
+-- явно предъявляем свидетеля `x = 2` и проверяем,
+-- что `h 2 : 2 ∉ A ∩ B` противоречит тому, что `2 ∈ A ∩ B`
+-- (поскольку `2` — общий элемент `{1,2,3}` и `{2,3,4}`).
+example : ¬ Disjoint ({1, 2, 3} : Set) {2, 3, 4} := by
+  rw [disjoint_iff] -- Disjoint A B ↔ A ∩ B = ∅
+  intro h
+  rw [eq_empty_iff_forall_notMem] at h -- X = ∅ ↔ ∀ (x : Object), x ∉ X
+  apply h 2
+  rw [mem_inter] -- x ∈ X ∩ Y ↔ x ∈ X ∧ x ∈ Y
+  -- refine — это "exact с дырками":
+  -- принимает терм с плейсхолдерами ?_ или ?name,
+  -- каждый плейсхолдер становится отдельной подцелью
+  refine ⟨?h2in123, ?h2in234⟩
+  · -- x ∈ {1, 2, 3} ↔ x = 1 ∨ x = 2 ∨ x = 3
+    exact (mem_triple 2 /- ∈ -/ 1 2 3).mpr (Or.inr (Or.inl rfl))
+  · exact (mem_triple 2 /- ∈ -/ 2 3 4).mpr (Or.inl rfl)
 
 -- Методом очевидности.
 example : Disjoint (∅ : Set) ∅ := by aesop
 
--- Методом "откуда это берётся?".
+-- Методом "откуда это берётся?"
 example : Disjoint (∅ : Set) ∅ := by
   rw [disjoint_iff] -- Disjoint A B ↔ A ∩ B = ∅
   rw [eq_empty_iff_forall_notMem] -- X = ∅ ↔ ∀ (x : Object), x ∉ X
@@ -1756,22 +1920,27 @@ example : ({1, 2, 3, 4} : Set) \ {2, 4, 6} = {1, 3} := by
 
 example : ({1, 2, 3, 4} : Set) \ {2, 4, 6} = {1, 3} := by
   ext x
-  rw [mem_sdiff]
-  rw [mem_pair]
+  rw [mem_sdiff] -- (x ∈ X \ Y) ↔ x ∈ X ∧ x ∉ Y
+  rw [mem_pair]  --  x ∈ {a, b} ↔ x = a ∨ x = b
   rw [mem_insert, mem_triple, mem_triple]
+  -- Просто раскидываем по кейсам и проверяем каждый.
   constructor
   · rintro ⟨h1 | h1 | h1 | h1, h2⟩ <;> subst h1 <;> tauto
   · rintro (h | h) <;> subst h <;> exact ⟨by tauto, by norm_num⟩
 
 /-
-  Мы уже накопили некоторое количество аксиом и результатов о множествах, но всё ещё есть много
-  вещей, которые мы пока не можем делать. Одна из базовых вещей, которую мы хотим делать с
-  множеством — это взять каждый объект этого множества и каким-то образом преобразовать каждый
-  такой объект в новый объект; например, мы можем захотеть начать с множества чисел, скажем
-  {3,5,9}, и увеличить каждое на единицу, получив новое множество {4,6,10}.
+  Мы уже накопили некоторое количество аксиом и результатов о множествах,
+  но всё ещё есть много вещей, которые мы пока не можем делать.
 
-  Это не то, что мы можем сделать непосредственно, используя только уже имеющиеся аксиомы,
-  поэтому нам нужна новая аксиома:
+  Одна из базовых вещей, которую мы хотим делать с множеством —
+  это взять каждый объект этого множества и каким-то образом
+  преобразовать каждый такой объект в новый объект.
+
+  Например, мы можем захотеть начать с множества чисел,
+  скажем {3,5,9}, и увеличить каждое на единицу, получив новое множество {4,6,10}.
+
+  Это не то, что мы можем сделать непосредственно,
+  используя только уже имеющиеся аксиомы, поэтому нам нужна новая аксиома:
 
   Аксиома 3.6 (Замена):
 
@@ -1782,6 +1951,13 @@ example : ({1, 2, 3, 4} : Set) \ {2, 4, 6} = {1, 3} := by
   Тогда существует множество:
     {y : P(x,y) истинно для некоторого x ∈ A}, такое что для любого объекта z,
     z ∈ {y : P(x,y) истинно для некоторого x ∈ A} ⇐⇒ P(x,z) истинно для некоторого x ∈ A.
+
+  Пояснение к формулировке выше:
+  `y` внутри `{y : ...}` — связанная переменная, у неё нет смысла вне фигурных скобок.
+  Поэтому переход от `{y : P(x,y) для некоторого x ∈ A}`
+  к условию `P(x,z) для некоторого x ∈ A` — это подстановка:
+  чтобы проверить, лежит ли конкретный объект `z` в этом множестве,
+  мы просто подставляем `z` везде, где стояло `y`, в предикат `P`.
 -/
 /-- Example 3.1.30 -/
 example : ({3, 5, 9} : Set).replace
@@ -2224,9 +2400,8 @@ theorem SetTheory.Set.specification_from_replacement {A : Set} {P : A → Prop} 
     -- Двухместное отношение для аксиомы замены (подстановки):
     -- y соответствует x, если P x выполнено и (y = x.val)
     let P' : A → Object → Prop := fun x y => P x ∧ (y = x.val)
-    -- ^^^ предикат P' показывает "неразличимость".
-    -- Однозначность / экстенсиональность / тождество неразличимых (по Лейбницу):
-    -- Если и y, и y' соответствуют одному x, то y = y' = x.val
+    -- Однозначность (hP, требуется для replace): P' — функциональное отношение,
+    -- т.к. y и y' оба вынуждены равняться x.val, а значит равны друг другу.
     have hP : ∀ (x : A) (y y' : Object), P' x y ∧ P' x y' → y = y' := by
       intro x y y'
       rintro ⟨⟨_hpx, hy⟩, _hpx', hy'⟩
