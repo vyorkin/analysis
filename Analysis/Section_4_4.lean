@@ -72,7 +72,8 @@ theorem Nat.not_even_and_odd (n : ℕ) : ¬ (Even n ∧ Odd n) := by
 
 /-- Proposition 4.4.4 / Exercise 4.4.3  -/
 theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
-  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
+  -- Это доказательство написано так,
+  -- чтобы следовать структуре оригинального текста.
   by_contra h; choose x hx using h
   have hnon : x ≠ 0 := by aesop
   wlog hpos : x > 0
@@ -135,7 +136,7 @@ theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ),
   grind
 
 /-- Example 4.4.6 -/
-example : 
+example :
   let ε : ℚ := 1/1000
   let x : ℚ := 1414/1000
   x^2 < 2 ∧ 2 < (x+ε)^2 := by norm_num

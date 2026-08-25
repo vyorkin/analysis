@@ -99,9 +99,10 @@ theorem dist_symm (x y : ℚ) : dist x y = dist y x := by sorry
 theorem dist_le (x y z : ℚ) : dist x z ≤ dist x y + dist y z := by sorry
 
 /--
-  Definition 4.3.4 (ε-близость). В тексте это понятие не определено для нулевого или
-  отрицательного ε, но в Lean удобнее присвоить "мусорное" определение в этом случае. Это также
-  позволяет несколько ослабить гипотезы в следующих далее леммах.
+  Definition 4.3.4 (ε-близость).
+  В тексте это понятие не определено для нулевого или отрицательного ε,
+  но в Lean удобнее присвоить "мусорное" определение в этом случае.
+  Это также позволяет несколько ослабить гипотезы в следующих далее леммах.
 -/
 theorem close_iff (ε x y : ℚ) : ε.Close x y ↔ |x - y| ≤ ε := by rfl
 
@@ -123,35 +124,35 @@ theorem eq_if_close (x y : ℚ) : x = y ↔ ∀ ε : ℚ, ε > 0 → ε.Close x 
 theorem close_symm (ε x y : ℚ) : ε.Close x y ↔ ε.Close y x := by sorry
 
 /-- Proposition 4.3.7(c) / Exercise 4.3.2 -/
-theorem close_trans {ε δ x y z : ℚ} (hxy : ε.Close x y) (hyz : δ.Close y z) : 
-    (ε + δ).Close x z := by sorry
+theorem close_trans {ε δ x y z : ℚ} (hxy : ε.Close x y) (hyz : δ.Close y z) :
+  (ε + δ).Close x z := by sorry
 
 /-- Proposition 4.3.7(d) (addition) / Exercise 4.3.2 -/
-theorem add_close {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) : 
-    (ε + δ).Close (x+z) (y+w) := by sorry
+theorem add_close {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) :
+  (ε + δ).Close (x+z) (y+w) := by sorry
 
 /-- Proposition 4.3.7(d) (subtraction) / Exercise 4.3.2 -/
-theorem sub_close {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) : 
-    (ε + δ).Close (x-z) (y-w) := by sorry
+theorem sub_close {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) :
+  (ε + δ).Close (x-z) (y-w) := by sorry
 
 /-- Proposition 4.3.7(e) / Exercise 4.3.2, слегка усиленное -/
-theorem close_mono {ε ε' x y : ℚ} (hxy : ε.Close x y) (hε : ε' ≥  ε) : 
-    ε'.Close x y := by sorry
+theorem close_mono {ε ε' x y : ℚ} (hxy : ε.Close x y) (hε : ε' ≥  ε) :
+  ε'.Close x y := by sorry
 
 /-- Proposition 4.3.7(f) / Exercise 4.3.2 -/
 theorem close_between {ε x y z w : ℚ} (hxy : ε.Close x y) (hxz : ε.Close x z)
   (hbetween : (y ≤ w ∧ w ≤ z) ∨ (z ≤ w ∧ w ≤ y)) : ε.Close x w := by sorry
 
 /-- Proposition 4.3.7(g) / Exercise 4.3.2 -/
-theorem close_mul_right {ε x y z : ℚ} (hxy : ε.Close x y) : 
-    (ε*|z|).Close (x * z) (y * z) := by sorry
+theorem close_mul_right {ε x y z : ℚ} (hxy : ε.Close x y) :
+  (ε*|z|).Close (x * z) (y * z) := by sorry
 
 /-- Proposition 4.3.7(h) / Exercise 4.3.2 -/
-theorem close_mul_mul {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) : 
-    (ε*|z|+δ*|x|+ε*δ).Close (x * z) (y * w) := by
-  -- Это доказательство написано так, чтобы следовать структуре оригинального текста, хотя
-  -- неотрицательность ε и δ подразумевается и не нужно указывать её в качестве
-  -- явных гипотез.
+theorem close_mul_mul {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) :
+  (ε*|z|+δ*|x|+ε*δ).Close (x * z) (y * w) := by
+  -- Это доказательство написано так, чтобы следовать структуре оригинального текста,
+  -- хотя неотрицательность ε и δ подразумевается и
+  -- не нужно указывать её в качестве явных гипотез.
   have hε : ε ≥ 0 := le_trans (abs_nonneg _) hxy
   set a := y-x
   have ha : y = x + a := by grind
@@ -168,19 +169,22 @@ theorem close_mul_mul {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close
     _ = |a| * |z| + |b| * |x| + |a| * |b| := by grind [abs_mul]
     _ ≤ _ := by gcongr
 
-/-- Этого варианта Proposition 4.3.7(h) не было в учебнике, но он может пригодиться
-в некоторых последующих упражнениях. -/
-theorem close_mul_mul' {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) : 
-    (ε*|z|+δ*|y|).Close (x * z) (y * w) := by
+/-- Этого варианта Proposition 4.3.7(h) не было в учебнике,
+    но он может пригодиться в некоторых последующих упражнениях. -/
+theorem close_mul_mul' {ε δ x y z w : ℚ} (hxy : ε.Close x y) (hzw : δ.Close z w) :
+  (ε*|z|+δ*|y|).Close (x * z) (y * w) := by
     sorry
 
-/-- Definition 4.3.9 (возведение в степень) (базовый случай). Здесь мы используем определение из Mathlib. -/
+/-- Definition 4.3.9 (возведение в степень) (базовый случай).
+    Здесь мы используем определение из Mathlib. -/
 lemma pow_zero (x : ℚ) : x^0 = 1 := _root_.pow_zero x
 
 example : (0 : ℚ)^0 = 1 := pow_zero 0
 
-/-- Definition 4.3.9 (возведение в степень) (индуктивный шаг). Здесь мы используем определение из Mathlib. -/
-lemma pow_succ (x : ℚ) (n : ℕ) : x^(n+1) = x^n * x := _root_.pow_succ x n
+/-- Definition 4.3.9 (возведение в степень) (индуктивный шаг).
+    Здесь мы используем определение из Mathlib. -/
+lemma pow_succ (x : ℚ) (n : ℕ) : x^(n+1) = x^n * x :=
+  _root_.pow_succ x n
 
 /-- Proposition 4.3.10(a) (Свойства возведения в степень, I) (сумма показателей) / Exercise 4.3.3 -/
 theorem pow_add (x : ℚ) (m n : ℕ) : x^n * x^m = x^(n+m) := by sorry

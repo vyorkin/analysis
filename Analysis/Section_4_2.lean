@@ -54,7 +54,7 @@ instance PreRat.instSetoid : Setoid PreRat where
     }
 
 @[simp]
-theorem PreRat.eq (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) : 
+theorem PreRat.eq (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) :
     (⟨ a,b,hb ⟩ : PreRat) ≈ ⟨ c,d,hd ⟩ ↔ a * d = c * b := by rfl
 
 abbrev Rat := Quotient PreRat.instSetoid
@@ -76,10 +76,10 @@ theorem Rat.eq_diff (n : Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
   simp [formalDiv, h]
 
 /--
-  Разрешимость равенства. Подсказка: измените доказательство {lean}`DecidableEq Int` из
-  предыдущего раздела. Однако поскольку формальное деление отдельно обрабатывает случай нулевого
-  знаменателя, может быть удобнее избегать этой операции и работать напрямую с API
-  {name}`Quotient`.
+  Разрешимость равенства.
+  Подсказка: измените доказательство {lean}`DecidableEq Int` из предыдущего раздела.
+  Однако поскольку формальное деление отдельно обрабатывает случай нулевого знаменателя,
+  может быть удобнее избегать этой операции и работать напрямую с API {name}`Quotient`.
 
 -/
 instance Rat.decidableEq : DecidableEq Rat := by
@@ -94,7 +94,7 @@ instance Rat.add_inst : Add Rat where
   )
 
 /-- Definition 4.2.2 (Сложение рациональных чисел) -/
-theorem Rat.add_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : 
+theorem Rat.add_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) :
     (a // b) + (c // d) = (a*d + b*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
@@ -103,7 +103,7 @@ instance Rat.mul_inst : Mul Rat where
   mul := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*c) // (b*d)) (by sorry)
 
 /-- Definition 4.2.2 (Умножение рациональных чисел) -/
-theorem Rat.mul_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : 
+theorem Rat.mul_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) :
     (a // b) * (c // d) = (a*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 

@@ -12,10 +12,6 @@ import Mathlib.Tactic
 -- выражениям, которые в обычной математике считались бы неопределёнными,
 -- так что рассуждения об неопределённых термах в учебнике нужно корректировать соответственно.
 
-/- Example A.1.1. То, что учебник называет "утверждениями" — это объекты типа `Prop` в Lean.
-   Кроме того, в Lean принято присваивать "мусорные" значения выражениям, которые в обычной
-   математике считались бы неопределёнными, так что рассуждения об неопределённых термах
-   в учебнике нужно корректировать соответственно. -/
 #check 2+2=4
 #check 2+2=5
 
@@ -156,7 +152,7 @@ example : ¬(2 + 2 = 5) := by simp
 
 example : 2 + 2 ≠ 5 := by simp
 
-example (Jane_black_hair Jane_blue_eyes : Prop) : 
+example (Jane_black_hair Jane_blue_eyes : Prop) :
   (¬(Jane_black_hair ∧ Jane_blue_eyes)) ↔ (¬Jane_black_hair ∨ ¬Jane_blue_eyes) := by
   simp; tauto
 
@@ -170,7 +166,7 @@ example (x : ℤ) : ¬(x ≥ 2 ∧ x ≤ 6) ↔ (x < 2 ∨ x > 6) := by
   have : ¬(x ≤ 6) ↔ (x > 6) := Int.not_le
   tauto
 
-example (John_brown_hair John_black_hair : Prop) : 
+example (John_brown_hair John_black_hair : Prop) :
   (¬(John_brown_hair ∨ John_black_hair)) ↔ (¬John_brown_hair ∧ ¬John_black_hair) := by
   simp
 

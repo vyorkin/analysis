@@ -28,9 +28,9 @@ set_option doc.verso.suggestions false
 namespace Chapter5
 
 /--
-  Definition 5.1.1 (Последовательность). Чтобы избежать некоторых технических сложностей,
-  связанных с зависимыми типами, мы продолжаем последовательности нулём слева от начальной точки
-  {name (full := Sequence.n₀)}`n₀`.
+  Definition 5.1.1 (Последовательность).
+  Чтобы избежать некоторых технических сложностей, связанных с зависимыми типами,
+  мы продолжаем последовательности нулём слева от начальной точки {name (full := Sequence.n₀)}`n₀`.
 -/
 @[ext]
 structure Sequence where
@@ -43,25 +43,27 @@ instance Sequence.instCoeFun : CoeFun Sequence (fun _ ↦ ℤ → ℚ) where
   coe := fun a ↦ a.seq
 
 /--
-Функции из {lean}`ℕ` в {lean}`ℚ` можно рассматривать как последовательности, начинающиеся с 0;
+Функции из {lean}`ℕ` в {lean}`ℚ` можно рассматривать
+как последовательности, начинающиеся с 0.
 {name}`Sequence.ofNatFun` выполняет это преобразование.
 
-Атрибут {attr}`coe` позволяет делаборатору печатать {lean}`Sequence.ofNatFun f` как {lit}`↑f`, что
-более лаконично; вы можете спокойно убрать его, если предпочитаете более явную нотацию.
+Атрибут {attr}`coe` позволяет делаборатору печатать
+{lean}`Sequence.ofNatFun f` как {lit}`↑f`, что более лаконично.
+Вы можете спокойно убрать его, если предпочитаете более явную нотацию.
 -/
 @[coe]
 def Sequence.ofNatFun (f : ℕ → ℚ) : Sequence where
-    n₀ := 0
-    seq n := if n ≥ 0 then f n.toNat else 0
-    vanish := by grind
+  n₀ := 0
+  seq n := if n ≥ 0 then f n.toNat else 0
+  vanish := by grind
 
 -- Обратите внимание, как делаборатор печатает это как `↑fun x ↦ ↑x ^ 2 : Sequence`.
 #check Sequence.ofNatFun (· ^ 2)
 
 /--
-Если {given}`a : ℕ → ℚ` используется в контексте, где ожидается {name}`Sequence`, автоматически
-приводит {name}`a` к {lean}`Sequence.ofNatFun a` (которое будет напечатано как
-{lean (type :="Sequence")}`↑a`).
+Если {given}`a : ℕ → ℚ` используется в контексте, где ожидается {name}`Sequence`,
+автоматически приводит {name}`a` к {lean}`Sequence.ofNatFun a`
+(которое будет напечатано как {lean (type :="Sequence")}`↑a`).
 -/
 instance : Coe (ℕ → ℚ) Sequence where
   coe := Sequence.ofNatFun
@@ -71,11 +73,12 @@ abbrev Sequence.mk' (n₀ : ℤ) (a : { n // n ≥ n₀ } → ℚ) : Sequence wh
   seq n := if h : n ≥ n₀ then a ⟨n, h⟩ else 0
   vanish := by grind
 
-lemma Sequence.eval_mk {n n₀ : ℤ} (a : { n // n ≥ n₀ } → ℚ) (h : n ≥ n₀) : 
-    (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by grind
+lemma Sequence.eval_mk {n n₀ : ℤ} (a : { n // n ≥ n₀ } → ℚ) (h : n ≥ n₀) :
+  (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by grind
 
 @[simp]
-lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℚ) : (a : Sequence) n = a n := by norm_cast
+lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℚ) : (a : Sequence) n = a n :=
+  by norm_cast
 
 @[simp]
 lemma Sequence.eval_coe_at_int (n : ℤ) (a : ℕ → ℚ) : (a : Sequence) n = if n ≥ 0 then a n.toNat else 0 := by norm_cast
@@ -112,7 +115,7 @@ end Chapter5
 abbrev Rat.Steady (ε : ℚ) (a : Chapter5.Sequence) : Prop :=
   ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m)
 
-lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) : 
+lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) :
   ε.Steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m) := by rfl
 
 namespace Chapter5
@@ -120,7 +123,7 @@ namespace Chapter5
 /--
 Definition 5.1.3 — определение {name}`ε`-устойчивости для последовательности, начинающейся с 0
 -/
-lemma Rat.Steady.coe (ε : ℚ) (a : ℕ → ℚ) : 
+lemma Rat.Steady.coe (ε : ℚ) (a : ℕ → ℚ) :
     ε.Steady a ↔ ∀ n m : ℕ, ε.Close (a n) (a m) := by
   constructor
   · intro h n m; specialize h n ?_ m ?_ <;> simp_all
@@ -212,7 +215,7 @@ example (ε : ℚ) (hε : ε<10) :  ¬ ε.Steady ((fun n : ℕ ↦ if n = 0 then
 abbrev Sequence.from (a : Sequence) (n₁ : ℤ) : Sequence :=
   mk' (max a.n₀ n₁) (fun n ↦ a (n : ℤ))
 
-lemma Sequence.from_eval (a : Sequence) {n₁ n : ℤ} (hn : n ≥ n₁) : 
+lemma Sequence.from_eval (a : Sequence) {n₁ n : ℤ} (hn : n ≥ n₁) :
   (a.from n₁) n = a n := by simp [hn]; intro h; exact (a.vanish _ h).symm
 
 end Chapter5
@@ -220,7 +223,7 @@ end Chapter5
 /-- Definition 5.1.6 (Эвентуально ε-устойчива) -/
 abbrev Rat.EventuallySteady (ε : ℚ) (a : Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.Steady (a.from N)
 
-lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) : 
+lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) :
   ε.EventuallySteady a ↔ ∃ N ≥ a.n₀, ε.Steady (a.from N) := by rfl
 
 namespace Chapter5
@@ -261,16 +264,16 @@ Example 5.1.7
 
 Последовательность 10, 0, 0, ... эвентуально ε-устойчива для любого ε > 0. Оставлено как упражнение.
 -/
-lemma Sequence.ex_5_1_7_d {ε : ℚ} (hε : ε>0) : 
+lemma Sequence.ex_5_1_7_d {ε : ℚ} (hε : ε>0) :
     ε.EventuallySteady ((fun n : ℕ ↦ if n=0 then (10 : ℚ) else (0 : ℚ) ) : Sequence) := by sorry
 
 abbrev Sequence.IsCauchy (a : Sequence) : Prop := ∀ ε > (0 : ℚ), ε.EventuallySteady a
 
-lemma Sequence.isCauchy_def (a : Sequence) : 
+lemma Sequence.isCauchy_def (a : Sequence) :
   a.IsCauchy ↔ ∀ ε > (0 : ℚ), ε.EventuallySteady a := by rfl
 
 /-- Определение последовательностей Коши для последовательности, начинающейся с {lean}`0` -/
-lemma Sequence.IsCauchy.coe (a : ℕ → ℚ) : 
+lemma Sequence.IsCauchy.coe (a : ℕ → ℚ) :
     (a : Sequence).IsCauchy ↔ ∀ ε > (0 : ℚ), ∃ N, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (a j) (a k) ≤ ε := by
   constructor <;> intro h ε hε
@@ -289,7 +292,7 @@ lemma Sequence.IsCauchy.coe (a : ℕ → ℚ) :
   all_goals try omega
   norm_cast
 
-lemma Sequence.IsCauchy.mk {n₀ : ℤ} (a : {n // n ≥ n₀} → ℚ) : 
+lemma Sequence.IsCauchy.mk {n₀ : ℤ} (a : {n // n ≥ n₀} → ℚ) :
     (mk' n₀ a).IsCauchy ↔ ∀ ε > (0 : ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by
   constructor <;> intro h ε hε <;> choose N hN h' using h ε hε
@@ -412,13 +415,13 @@ lemma Sequence.isBounded_of_isCauchy {a : Sequence} (h : a.IsCauchy) : a.IsBound
   sorry
 
 /-- Exercise 5.1.2 -/
-theorem Sequence.isBounded_add {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) : 
+theorem Sequence.isBounded_add {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a + b : Sequence).IsBounded := by sorry
 
-theorem Sequence.isBounded_sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) : 
+theorem Sequence.isBounded_sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a - b : Sequence).IsBounded := by sorry
 
-theorem Sequence.isBounded_mul {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) : 
+theorem Sequence.isBounded_mul {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a * b : Sequence).IsBounded := by sorry
 
 end Chapter5

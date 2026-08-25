@@ -41,7 +41,7 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
   unfold axiom_of_universal_specification at hus
   -- P x: "x — это (некоторое) множество, не содержащее самого себя"
   set P : Object → Prop := fun x ↦ ∃ X : Set, x = X ∧ x ∉ X -- let P : ...
-  -- x = X -- мн-во элементов, которые являются этим же множеством (самим сабими)
+  -- x = X -- мн-во элементов, которые являются этим же множеством (самими сабими)
   -- x ∉ X -- и не входят в это множество
   -- по аксиоме универсальной спецификации применённой к P, получаем:
   obtain ⟨Ω, hΩ⟩ := hus P

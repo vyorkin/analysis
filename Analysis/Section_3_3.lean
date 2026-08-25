@@ -7,10 +7,11 @@ set_option doc.verso.suggestions false
 /-!
 # Analysis I, раздел 3.3: Функции
 
-Я старался сделать перевод максимально точным перефразированием оригинального текста. Когда
-приходилось выбирать между более идиоматичным Lean-решением и более точным переводом, я, как
-правило, выбирал второе. В частности, местами Lean-код можно было бы "заголфить", сделав его более
-элегантным и идиоматичным, но я сознательно этого избегал.
+Я старался сделать перевод максимально точным перефразированием оригинального текста.
+Когда приходилось выбирать между более идиоматичным Lean-решением и более точным переводом,
+я, как правило, выбирал второе.
+В частности, местами Lean-код можно было бы "заголфить",
+сделав его более элегантным и идиоматичным, но я сознательно этого избегал.
 
 Основные конструкции и результаты этого раздела:
 
@@ -21,14 +22,15 @@ set_option doc.verso.suggestions false
 - Базовые свойства и операции над функциями, такие как композиция, инъективные и сюръективные
   функции, а также обратные функции.
 
-В оставшейся части книги мы откажемся от версии функции из Главы 3 и будем работать с понятием
-функции из Mathlib. Уже в этом разделе мы будем переходить на формализм Mathlib для некоторых
-примеров, использующих числовые системы вроде {lean}`ℤ` или {lean}`ℝ`, которые ещё не реализованы
-в рамках Главы 3.
+В оставшейся части книги мы откажемся от версии функции из Главы 3 и
+будем работать с понятием функции из Mathlib.
+Уже в этом разделе мы будем переходить на формализм Mathlib для некоторых примеров,
+использующих числовые системы вроде {lean}`ℤ` или {lean}`ℝ`,
+которые ещё не реализованы в рамках Главы 3.
 
-Здесь мы будем работать с версией {name}`Nat` натуральных чисел, внутренней для теории множеств
-Главы 3, хотя обычно мы будем использовать приведения типов, чтобы сразу же переходить к
-натуральным числам {lean}`ℕ` из Mathlib.
+Здесь мы будем работать с версией {name}`Nat` натуральных чисел,
+внутренней для теории множеств Главы 3, хотя обычно мы будем использовать
+приведения типов, чтобы сразу же переходить к натуральным числам {lean}`ℕ` из Mathlib.
 
 ## Советы от прошлых пользователей
 
@@ -46,292 +48,932 @@ export SetTheory (Set Object)
 
 variable [SetTheory]
 
+/-
+  3.3. Функции.
+
+  Для дальнейшего построения теории нам недостаточно только понятия множества.
+  Также необходимо понятие функции из одного множества в другое.
+
+  Пусть X, Y – множествa, и пусть P – свойствo,
+  относящиеся к объекту x ∈ X и объекту y ∈ Y, такие, что
+  для каждого x ∈ X существует ровно один y ∈ Y, для которого P(x, y) истинно
+  (иногда это называется тестом вертикальной линии).
+
+  Тогда мы определим функцию f: X → Y, заданную свойством P : X → Y → Prop в
+  области определения X и области значения Y как объект,
+  который при любом аргументе x ∈ X дает значение f(x) ∈ Y,
+  определяемое как ЕДИНСТВЕННЫЙ объект f(x) ∈ Y, для которого P(x, f(y)) истинно.
+-/
+
 /--
-  Definition 3.3.1. {lean}`Function X Y` — это структура функций из {lean}`X` в {lean}`Y`.
+  Definition 3.3.1. {lean}`Function X Y` —
+  это структура функций из {lean}`X` в {lean}`Y`.
   Аналог типа {lean}`X → Y` из Mathlib.
 -/
 @[ext]
 structure Function (X Y : Set) where
   P : X → Y → Prop
+  -- Однозначность/функциональность/"единственность".
+  -- Отношение P ведёт себя как функция: P(x,y) ∧ P(x,y') → y = y'.
+  --
+  -- Иными словами:
+  -- Чтобы это отношение было функциональным
+  -- для каждого x ∈ X должен существовать уникальный y ∈ Y.
   unique : ∀ x : X, ∃! y : Y, P x y
 
+-- Lean автоматически генерирует такой конструктор для создаваемых структур.
 #check Function.mk
 
 /--
   Преобразование функции {lean}`f: Function X Y` из Главы 3 в функцию {lean}`f: X → Y` из Mathlib.
-  Определение функции в Главе 3 неконструктивно, поэтому здесь приходится использовать аксиому выбора.
+
+  Определение функции в Главе 3 говорит только, что для каждого `x` существует
+  единственный подходящий `y`, но не даёт способа его вычислить.
+  Чтобы получить из такого доказательства существования конкретное значение `y : Y`,
+  используется `Exists.choose`, построенный на аксиоме `Classical.choice`.
+  Подробности — в комментарии под определением ниже.
+
+  Это техническая деталь формализации в Lean.
+  У Тао аксиома выбора обсуждается только в §3.5,
+  в связи с бесконечными декартовыми произведениями множеств.
 -/
 noncomputable def Function.to_fn {X Y : Set} (f : Function X Y) : X → Y :=
+  -- Выбирается этот самый уникальный `y` при помощи аксиома выбора.
   fun x ↦ (f.unique x).choose
 
-noncomputable instance Function.inst_coefn (X Y : Set) : CoeFun (Function X Y) (fun _ ↦ X → Y) where
-  coe := Function.to_fn
+-- ^^^ Что делает `.choose`, по шагам:
+--
+-- `f.unique x` имеет тип `∃! y : Y, f.P x y`, что раскрывается как
+-- `∃ y, f.P x y ∧ ∀ y', f.P x y' → y' = y`.
+-- Это ДОКАЗАТЕЛЬСТВО существования и единственности `y`, а не само значение `y`.
+--
+-- `Exists.choose` берёт такое доказательство `∃ y, P y` и возвращает то самое
+-- значение `y : Y`, для которого `P y` выполняется.
+-- Именно поэтому у выражения `(f.unique x).choose` тип `Y`, а не `Prop`.
+--
+-- Раз `y` единственен, других кандидатов не существует,
+-- и выбор `.choose` полностью однозначен.
+-- Аксиома здесь нужна не для разрешения неоднозначности,
+-- а по другой причине: `∃! y, f.P x y` живёт в `Prop`, а значения `Prop`
+-- стираются при компиляции (proof-irrelevant), поэтому напрямую извлечь
+-- из доказательства значение уровня `Type` нельзя.
+--
+-- Эту границу между `Prop` и `Type` обходит аксиома
+-- `Classical.choice : Nonempty α → α`, на которой построен `Exists.choose`.
+-- Она постулирует существование какого-то элемента типа `α`, но не даёт
+-- алгоритма его вычисления. Поэтому `to_fn` помечена `noncomputable`:
+--
+-- Lean МОЖЕТ РАССУЖДАТЬ ПРО ЭТУ ФУНКЦИЮ, НО НЕ МОЖЕТ ЕЁ ВЫПОЛНИТЬ.
+--
+-- У Тао аксиома выбора появится в §3.5,
+-- для бесконечных семейств множеств без единственности выбора.
+-- Выбор единственного элемента, как здесь, называется "unique choice" —
+-- более слабый частный случай, который в Lean тем не менее
+-- реализован через ту же `Classical.choice`.
 
-theorem Function.to_fn_eval {X Y : Set} (f : Function X Y) (x : X) : f.to_fn x = f x := rfl
 
-/-- Преобразование функции из Mathlib в {name}`Function` из Главы 3 -/
+-- `Function X Y` — это не Lean-функция, а структура (пара `P` + `unique`),
+-- поэтому саму `f` нельзя применить к аргументу как `f x`,
+-- не имея явного механизма для этого.
+--
+-- `CoeFun` — это тайп-класс, который как раз и говорит Lean,
+-- как превратить значение `f : Function X Y` в вызываемую функцию:
+-- После определения этого инстанса `f x` сама разворачивается в `f.to_fn x`.
+-- Иными словами, благодаря этому инстансу с `f : Function X Y` можно работать
+-- почти как с обычной Lean-функцией `X → Y`, не выписывая `.to_fn` каждый раз.
+noncomputable instance Function.inst_coefn (X Y : Set) :
+  CoeFun (Function X Y) (fun _ ↦ X → Y) where
+    coe : Function X Y → X.toSubtype → Y.toSubtype :=
+      Function.to_fn -- : X → Y := fun x ↦ (f.unique x).choose
+
+-- Подтверждает, что новая нотация `f x` (появившаяся благодаря инстансу `CoeFun` выше)
+-- означает буквально то же самое, что `f.to_fn x` — доказывается через `rfl`,
+-- так как `coe` в инстансе выше определён именно как `Function.to_fn`.
+theorem Function.to_fn_eval {X Y : Set} (f : Function X Y) (x : X) :
+  f.to_fn x = f x := rfl
+
+-- ^^^
+-- Дальше в файле есть теоремы, сформулированные именно через структуру `Function X Y` и `f.to_fn`
+-- (`one_to_one_iff`, `onto_iff`, `bijective_iff`, лемма о композиции и о `Function.inverse`) —
+-- они используют Mathlib-версии `Function.Injective`/`Surjective`/`Bijective`/`∘`,
+-- которые работают только с обычными Lean-функциями `X → Y`, а не со структурой `Function X Y`.
+--
+-- Если гипотеза или цель записана через сахар `f x`,
+-- а нужная теорема — через `Function X Y` / `f.to_fn x`,
+-- `rw` их напрямую не сматчит, хотя они и defeq:
+-- нужно явно переписать через `to_fn_eval`.
+--
+-- Пример:
+--   example {X Y : Set} (f : Function X Y) (h : f.one_to_one)
+--       (x y : X) (heq : f x = f y) : x = y := by
+--     rw [Function.one_to_one_iff] at h                         -- h : Function.Injective f.to_fn
+--     rw [← Function.to_fn_eval, ← Function.to_fn_eval] at heq  -- heq : f.to_fn x = f.to_fn y
+--     exact h heq
+
+/-- Преобразование функции из Mathlib в {name}`Function` из Главы 3.
+    Это операция обратная к `to_fn`.
+
+    Позволяет получить из `X → Y` структуру `Function X Y`.
+-/
 abbrev Function.mk_fn {X Y : Set} (f : X → Y) : Function X Y :=
-  Function.mk (fun x y ↦ y = f x) (by simp)
+  Function.mk
+    (fun x y ↦ y = f x) -- Утверждение P, связывающее y с x.
+    -- (by simp)
+    --
+    -- Доказательство существования единственного y для каждого x.
+    -- Цель: ∀ (x : X.toSubtype), ∃! y, (fun x y ↦ y = f x) x y,
+    -- то есть после бета-редукции: ∀ x, ∃! y, y = f x.
+    (by
+      intro x
+      -- `∃! y, y = f x` по определению раскрывается как
+      -- `∃ y, (y = f x) ∧ (∀ y', y' = f x → y' = y)` —
+      -- то есть нужно отдельно предъявить свидетеля `y` и доказать
+      -- две вещи про него: что он подходит, и что он единственный такой.
+      use f x
+      -- Осталось: `f x = f x ∧ (∀ y', y' = f x → y' = f x)`.
+      constructor
+      · -- Существование:
+        -- свидетель `f x` действительно подходит.
+        rfl
+      · -- Единственность:
+        -- если `y' = f x`, то `y' = f x` — то же самое равенство.
+        intro y hy
+        exact hy)
 
+-- Теорема говорит, что это одно и то же:
+-- `y` — это результат вызова `f x` ⟺ `y` удовлетворяет `P x y` (в нашем случае `f.P x y`).
+--
+-- Это ключевая теорема, связывающая два способа смотреть на `f : Function X Y`:
+--
+-- 1) Аксиоматический, через отношение `f.P x y` (то, что реально задано в структуре),
+-- 2) Функциональный, через вызов `f x`, который на самом деле определён как
+--    `f.to_fn x = (f.unique x).choose` — конкретное значение, выбранное аксиомой выбора.
+--
 /-- Definition 3.3.1 -/
-theorem Function.eval {X Y : Set} (f : Function X Y) (x : X) (y : Y) : y = f x ↔ f.P x y := by
-  convert ((f.unique x).choose_iff y).symm
+theorem Function.eval {X Y : Set} (f : Function X Y) (x : X) (y : Y) :
+  y = f x ↔ f.P x y := by
+    -- `(f.unique x).choose_iff y : f.P x y ↔ y = (f.unique x).choose`
+    exact ((f.unique x).choose_iff y).symm
 
+-- Показывает, что `mk_fn` (превращение `f : X → Y` в `Function X Y`)
+-- согласовано с вызовом через `CoeFun`:
+-- если взять `f`, обернуть в `Function` через `mk_fn`,
+-- а затем вызвать результат как функцию, `(Function.mk_fn f) x`,
+-- получится в точности `f x` — то есть обёртка `mk_fn` ничего не теряет и не меняет.
+--
+-- Помечена `@[simp]`, чтобы такие обёрнутые вызовы
+-- автоматически сводились обратно к обычному `f x`.
 @[simp]
-theorem Function.eval_of {X Y : Set} (f : X → Y) (x : X) : (Function.mk_fn f) x = f x := by
-  symm; rw [eval]
-
+theorem Function.eval_of {X Y : Set} (f : X → Y) (x : X) :
+  (Function.mk_fn f) x = f x := by
+    symm
+    rw [eval]
 
 /-- Example 3.3.3. -/
-abbrev P_3_3_3a : Nat → Nat → Prop := fun x y ↦ (y : ℕ) = (x : ℕ)+1
+-- Пример из учебника: Функция, которая увеличиваeт натуральное число на единицу.
+abbrev P_3_3_3a : Nat → Nat → Prop :=
+  fun x y ↦ (y : ℕ) = (x : ℕ)+1
 
+-- Проверяет, что `P_3_3_3a` (условие «y = x+1»)
+-- удовлетворяет требованию `∃!` (функциональности/однозначности) из Definition 3.3.1.
+-- Т.е. для каждого `x` существует ровно один `y`, для которого условие выполнено.
+--
+-- Без этой леммы нельзя было бы упаковать `P_3_3_3a` в `Function Nat Nat` —
+-- именно она и есть то самое доказательство `unique` (функциональности/однозначности),
+-- которое требует конструктор `Function.mk` в определении `f_3_3_3a` ниже:
+-- `Function.mk P_3_3_3a P_3_3_3a_existsUnique`.
 theorem SetTheory.Set.P_3_3_3a_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_3a x y := by
+  unfold P_3_3_3a
+  -- Теперь в цели:
+  -- nat_equiv.symm y = nat_equiv.symm x + 1
+  --
+  -- Если забыл, что такое nat_equiv, то это то, что делает nat «натуральными числами»:
+  -- class SetTheory
+  --   nat_equiv : ℕ ≃ Subtype (mem . nat) -- Axiom 3.8
+  --
+  -- Если nat_equiv : ℕ → Nat, то nat_equiv.symm : Nat → ℕ
+  --
+  -- Так как Equiv — это пара функций туда-обратно с доказательством,
+  -- что они взаимно обратны, у nat_equiv есть:
+  -- nat_equiv.toFun : ℕ → Nat (обычно вызывается просто nat_equiv n) —
+  --   превращает число Lean в объект теоретико-множественного Nat;
+  -- nat_equiv.symm : Nat ≃ ℕ — обратная биекция, а nat_equiv.symm y : ℕ –
+  --   берёт элемент y : Nat и возвращает соответствующее число ℕ.
+
+  -- Coercion Nat → ℕ определена именно через nat_equiv.symm (Section_3_1.lean:1678):
+  --  coe n := nat_equiv.symm n
+  --
+  -- Так что, если проигнорировать все эти коэрции, то в цели просто:
+  --
+  -- ∃! y, y = x + 1
+  --
+  -- `ExistsUnique.intro (w : α) (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x`.
+  --
+  -- Чтобы доказать `∃!`, достаточно предъявить свидетеля `w` и доказать про него два факта:
+  -- `h₁` — предикат `p` выполняется для `w`.
+  -- `h₂` — любой другой `y`, для которого выполняется `p y`, совпадает с `w`.
+  --
+  -- Это фактически и есть конструктор структуры:
+  -- theorem ExistsUnique.intro {p : α → Prop}
+  --   (w : α) (h₁ : p w) (h₂ : ∀ y, p y → y = w) :
+  --     ∃! x, p x := ⟨w, h₁, h₂⟩
+  --
+  -- Ниже `w := ((x+1 : ℕ) : Nat)` передан явным аргументом `apply`,
+  -- а `h₁` и `h₂` остаются двумя целями, которые доказываются в блоках `·` ниже.
   apply ExistsUnique.intro ((x+1 : ℕ) : Nat)
-  . simp [P_3_3_3a]
-  intro y h
-  simpa [P_3_3_3a, Equiv.symm_apply_eq] using h
+  . -- Цель здесь `nat_equiv.symm ↑(nat_equiv.symm x + 1) = nat_equiv.symm x + 1`:
+    -- слева `nat_equiv.symm x + 1 : ℕ` сначала приводится к `Nat` (внешнее `↑`),
+    -- а затем сразу обратно к `ℕ` (внешний `nat_equiv.symm`) — round-trip `ℕ → Nat → ℕ`.
+    -- A `nat_equiv_coe_of_coe : ((n : Nat) : ℕ) = n` схлопывает этот round-trip.
+    rw [nat_equiv_coe_of_coe]
+  · intro y
+    -- В `Section_3_1.lean` зарегистрированы инстансы:
+    --
+    -- `NatCast Nat` вызывает `nat_equiv n` для `n : ℕ`,
+    -- instance SetTheory.Set.instNatCast : NatCast Nat where
+    --   natCast n := nat_equiv n
+    --
+    -- `Coe Nat ℕ` вызывает `nat_equiv.symm n` для `n : Nat`.
+    -- instance SetTheory.Set.toNat : Coe Nat ℕ where
+    --   coe n := nat_equiv.symm n
+    --
+    -- Поэтому `↑` в цели ниже — это именно эти вызовы,
+    -- взятые прямо из определения инстансов.
+    --
+    -- Если раскрыть `↑`, цель выглядит так:
+    -- `nat_equiv.symm y = nat_equiv.symm x + 1 → y = nat_equiv (nat_equiv.symm x + 1)`.
+    --
+    -- Слева `nat_equiv.symm` применён к `y`, справа — `nat_equiv` применён к остальному.
+    -- `Equiv.symm_apply_eq` как раз умеет переносить `nat_equiv.symm`
+    -- с одной стороны равенства на другую сторону как `nat_equiv`
+    -- (обратная операция, как `x/2 = y ↔ x = 2*y`).
+    rw [Equiv.symm_apply_eq]
+    -- После переноса гипотеза становится
+    -- `y = nat_equiv (nat_equiv.symm x + 1)` — то же самое, что и правая часть цели.
+    exact id
 
-abbrev SetTheory.Set.f_3_3_3a : Function Nat Nat := Function.mk P_3_3_3a P_3_3_3a_existsUnique
+-- Собирает `P_3_3_3a` и доказательство `unique` выше
+--- в саму функцию-"прибавление единицы" типа `Function Nat Nat`.
+abbrev SetTheory.Set.f_3_3_3a : Function Nat Nat :=
+  Function.mk P_3_3_3a P_3_3_3a_existsUnique
 
-theorem SetTheory.Set.f_3_3_3a_eval (x y : Nat) : y = f_3_3_3a x ↔ (y : ℕ) = (x+1 : ℕ) :=
-  Function.eval _ _ _
+-- Частный случай общей теоремы `Function.eval` для конкретной `f_3_3_3a`:
+-- переформулирует аксиоматическое условие `f.P x y` в явном виде `(y : ℕ) = (x+1 : ℕ)`,
+-- которым удобнее пользоваться в дальнейших вычислениях, чем абстрактным `f.P`.
+theorem SetTheory.Set.f_3_3_3a_eval (x y : Nat) :
+  y = f_3_3_3a x ↔ (y : ℕ) = (x+1 : ℕ) :=
+    Function.eval f_3_3_3a x y
 
+-- Более удобная, «прямая» форма предыдущей леммы:
+-- равенство вместо ↔, и без обёртки в ℕ-приведение слева.
+-- Такую форму проще подставлять при вычислении конкретных значений `f_3_3_3a`.
+theorem SetTheory.Set.f_3_3_3a_eval' (n : ℕ) :
+  f_3_3_3a (n : Nat) = (n+1 : ℕ) := by
+    symm
+    rw [f_3_3_3a_eval]
+    -- nat_equiv.symm ↑n = n
+    rw [nat_equiv_coe_of_coe]
+    rw [nat_equiv_coe_of_coe]
 
-theorem SetTheory.Set.f_3_3_3a_eval' (n : ℕ) : f_3_3_3a (n : Nat) = (n+1 : ℕ) := by
-  symm
-  simp only [f_3_3_3a_eval, nat_equiv_coe_of_coe]
+-- Конкретный числовой пример: `f_3_3_3a 4 = 5`.
+--
+-- Важно:
+-- Это не вычисление через исполнение `Classical.choice`
+-- (`f.to_fn` для этого и помечена `noncomputable` — исполнить её нельзя),
+-- а доказательство равенства через `Function.eval`/`unique`:
+-- `y = f x ↔ f.P x y`, поэтому вопрос "чему равно `f_3_3_3a 4`" сводится
+-- к проверке decidable условия `P_3_3_3a 4 5`.
+theorem SetTheory.Set.f_3_3_3a_eval'' : f_3_3_3a 4 = 5 := f_3_3_3a_eval' 4
 
-theorem SetTheory.Set.f_3_3_3a_eval'' : f_3_3_3a 4 = 5 :=  f_3_3_3a_eval' 4
-
+-- Ещё один пример, но уже с произвольным алгебраическим выражением вместо числового литерала —
+-- показывает, что `f_3_3_3a_eval'` применим не только к конкретным числам, но и к формулам.
 theorem SetTheory.Set.f_3_3_3a_eval''' (n : ℕ) : f_3_3_3a (2*n+3 : ℕ) = (2*n+4 : ℕ) := by
-  convert f_3_3_3a_eval' _
+  exact f_3_3_3a_eval' (2*n+3)
 
+-- Условие-кандидат «y+1 = x» (по сути, обратная функция — вычитание единицы).
+-- Ниже показывается, что это условие НЕ годится для превращения в `Function`, потому что
+-- при x = 0 подходящего y : Nat не существует (в Nat нет отрицательных чисел).
 abbrev SetTheory.Set.P_3_3_3b : Nat → Nat → Prop := fun x y ↦ (y+1 : ℕ) = (x : ℕ)
 
+-- Доказывает, что `P_3_3_3b` не удовлетворяет `∃!` (в отличие от `P_3_3_3a_existsUnique` выше):
+-- при x = 0 не существует натурального числа `y : Nat` следующее за которым равно x:
+--   y + 1 = x
+--           |
+--   y + 1 = 0
+--
+-- Это объясняет, почему «вычитание единицы» нельзя определить
+-- как функцию на всём `Nat`, и мотивирует следующий пример `P_3_3_3c`,
+-- где область определения сужается до `Nat \ {0}`.
 theorem SetTheory.Set.not_P_3_3_3b_existsUnique : ¬ ∀ x, ∃! y : Nat, P_3_3_3b x y := by
+  -- От противного
   by_contra h
-  choose n hn _ using h (0 : Nat)
-  have : ((0 : Nat) : ℕ) = 0 := by simp [OfNat.ofNat]
-  simp [P_3_3_3b, this] at hn
+  -- Ну раз существует уникальный y для любого x,
+  -- то выберем тот самый уникальный y для x = 0.
+  --
+  -- `choose` распаковывает `h (0 : Nat) : ∃! y, P_3_3_3b 0 y` на
+  -- 1) "свидетеля существования" `y`,
+  -- 2) доказательствo, что для него выполняется `hy : y + 1 = 0`
+  -- 3) доказательство уникальности `hy₁ : ∀ y₁, P_3_3_3b 0 y₁ → y₁ = y`
+  --
+  -- Доказательство уникальности (3) ниже не используется,
+  -- поэтому имя для него не даём, используя `_`.
+  choose y hy hy₁ using h (0 : Nat)
+  unfold P_3_3_3b at hy -- y + 1 = 0
+  -- Теперь у нас есть `y` и утверждение об "отображении" 0 в y
+  have h0eq0 : ((0 : Nat) : ℕ) = 0 := by
+  -- `(0 : Nat)` через `instOfNat` разворачивается в `nat_equiv (0 : ℕ)`, а лемма
+  -- `nat_equiv_coe_of_coe''` (помечена `@[simp]`) как раз закрывает обратный переход
+  -- `ofNat(n) : Nat → ℕ`, так что достаточно обычного `simp`.
+    rw [nat_equiv_coe_of_coe'']
+  rw [h0eq0] at hy
+  rw [Nat.add_eq_zero_iff] at hy -- n + m = 0 ↔ n = 0 ∧ m = 0
+  obtain ⟨_, h1eq0⟩ := hy
+  exact Nat.one_ne_zero h1eq0 -- 1 = 0 → False
 
+-- Тот же вариант «вычитания единицы», что и `P_3_3_3b`,
+-- но с сужённой областью определения:
+-- `x` теперь пробегает `Nat \ {0}`, а не весь `Nat`.
+-- Это должно устранить проблему из `not_P_3_3_3b_existsUnique`
+-- (случай x = 0 больше не рассматривается).
 abbrev SetTheory.Set.P_3_3_3c : (Nat \ {(0 : Object)} : Set) → Nat → Prop :=
   fun x y ↦ ((y+1 : ℕ) : Object) = x
 
+-- Проверяет, что с сужённой областью определения `P_3_3_3c` действительно удовлетворяет `∃!`
+-- — то есть «вычитание единицы» уже корректно определено как функция на `Nat \ {0}`.
 theorem SetTheory.Set.P_3_3_3c_existsUnique (x : (Nat \ {(0 : Object)} : Set)) :
     ∃! y : Nat, P_3_3_3c x y := by
-  -- Здесь требуется небольшая техническая распаковка из-за тонких различий между типом `Object`,
+  -- Здесь требуется распаковка из-за различий между типом `Object`,
   -- множествами, приведёнными к подтипам `Object`, и подмножествами этих множеств.
-  obtain ⟨ x, hx ⟩ := x; simp at hx; obtain ⟨ hx1, hx2 ⟩ := hx
-  set n := ((⟨ x, hx1 ⟩ : Nat) : ℕ)
-  have : x = (n : Nat) := by simp [n]
-  simp [P_3_3_3c, this, Object.ofnat_eq'] at hx2 ⊢
-  replace hx2 : n = (n-1) + 1 := by omega
+  -- Распаковывает подтип в исходный `x : Object` и `hx : x ∈ Nat \ {0}`
+  obtain ⟨x, hx⟩ := x
+  -- Раскрывает `x ∈ Nat \ {0}` в `x ∈ Nat ∧ ¬x = 0`
+  simp at hx
+  obtain ⟨hx1, hx2⟩ := hx
+  -- Тот же `x`, но как `n : ℕ` через `nat_equiv`
+  set n := ((⟨x, hx1⟩ : Nat) : ℕ)
+  -- `x` — это в точности `n`, обёрнутый обратно в `Object`
+  have hxn : x = (n : Nat) := by simp [n]
+  unfold P_3_3_3c
+  -- Переписывает `hx2 : ¬n = 0` и цель в терминах `n`.
+  -- Символ турникета в конце означает:
+  -- "примени simp и к гипотезе hx2, и к текущей цели".
+  simp [hxn] at hx2 ⊢ -- x = n
+  -- Кандидат `y = n-1`; цель делится на существование и единственность
   apply ExistsUnique.intro ((n-1 : ℕ) : Nat)
-  . simp [←hx2]
-  intro y hy; simp [←hy]
+  . -- Существование:
+    -- Из `n ≠ 0` восстанавливает `n` как `(n-1)+1`.
+    -- Без `hx2 : n ≠ 0` в контексте это равенство было бы ложным:
+    -- `-` на `Nat` усечённое, и при `n = 0` получаем `(n-1)+1 = 0+1 = 1 ≠ 0`.
+    -- Тактика omega видит гипотезу `hx2` в контексте.
+    replace hx2 : n = (n-1) + 1 := by omega
+    simp [←hx2]
+  -- Единственность:
+  · intro y hy
+    -- Подставляет `hy` в цель `y = ↑(n-1)`,
+    -- сводя к арифметическому тождеству
+    simp [←hy]
 
+-- Собирает `P_3_3_3c` и доказательство `unique` выше в функцию «вычитание единицы»,
+-- корректно определённую как `Function (Nat \ {0}) Nat`
+-- (аналог `f_3_3_3a`, но для предшественника).
 abbrev SetTheory.Set.f_3_3_3c : Function (Nat \ {(0 : Object)} : Set) Nat :=
   Function.mk P_3_3_3c P_3_3_3c_existsUnique
 
+-- Частный случай `Function.eval` для `f_3_3_3c`, аналогично `f_3_3_3a_eval` —
+-- переписывает аксиоматическое `f.P x y` в явном виде `((y+1:ℕ):Object) = x`.
 theorem SetTheory.Set.f_3_3_3c_eval (x : (Nat \ {(0 : Object)} : Set)) (y : Nat) :
-    y = f_3_3_3c x ↔ ((y+1 : ℕ) : Object) = x := Function.eval _ _ _
+  y = f_3_3_3c x ↔ ((y+1 : ℕ) : Object) = x :=
+    Function.eval f_3_3_3c x y
 
-/-- Строит версию ненулевого {lean}`n` внутри {lean}`Nat \ {0}` для любого натурального числа n. -/
+/-- Если `n : ℕ` и `n ≠ 0`, то `coe_nonzero n h` упаковывает `n` как элемент
+    подтипа `Nat \ {0}` (натуральные без нуля). Нужно там, где ожидается
+    значение именно этого типа — например, как аргумент {name}`f_3_3_3c`. -/
 abbrev SetTheory.Set.coe_nonzero (n : ℕ) (h : n ≠ 0) : (Nat \ {(0 : Object)} : Set) :=
   ⟨((n : ℕ) : Object), by
-    simp [Object.ofnat_eq',h]
+    -- Цель: `(n:Object) ∈ Nat \ {0}`.
+    -- `mem_sdiff`/`mem_singleton` (оба `@[simp]`) раскрывают её в
+    -- `(n:Object) ∈ Nat ∧ (n:Object) ≠ (0:Object)`
+    -- `Object.ofnat_eq'` приводит литерал `(0:Object)` к виду
+    -- `((0:ℕ):Object)`, после чего второй
+    -- конъюнкт закрывается инъективностью cast'a и гипотезой `h : n ≠ 0`.
+    -- Остаётся только первый конъюнкт: `(n:Object) ∈ Nat`.
+    -- simp [Object.ofnat_eq', h]
+
+    rw [Object.ofnat_eq']
+    -- mem_sdiff     :  x ∈ X \ Y ↔ x ∈ X ∧ x ∉ Y
+    -- mem_singleton :  x ∈ {a} ↔ x = a
+    rw [mem_sdiff, mem_singleton]
+    rw [Object.natCast_inj] --  ↑n = ↑m ↔ n = m
+    simp [h]
+
+    -- `Object.ofnat_eq : ((n:Nat):Object) = (n:Object)` —
+    -- переписываем в обратную сторону, сводя цель к `(n:Nat).val ∈ Nat`.
     rw [←Object.ofnat_eq]
-    exact Subtype.property _
+    -- Цель теперь `↑↑n ∈ Nat` — две стрелочки это два разных каста подряд:
+    -- внутренний `↑` — это `Coe ℕ Nat` (n : ℕ ↦ (n:Nat) : Nat.toSubtype),
+    -- внешний `↑`    — это `.val` из `CoeSort` ((n:Nat) : Nat.toSubtype ↦ его Object).
+    -- То есть `↑↑n = (n:Nat).val`.
+    -- А это ровно `.property` элемента `(n:Nat) : Nat.toSubtype`.
+    exact Subtype.property (n : Nat)
   ⟩
 
-theorem SetTheory.Set.f_3_3_3c_eval' (n : ℕ) : f_3_3_3c (coe_nonzero (n+1) (by positivity)) = n := by
-  symm; simp [f_3_3_3c_eval]
+theorem SetTheory.Set.f_3_3_3c_eval' (n : ℕ) :
+  f_3_3_3c (coe_nonzero (n+1) (by positivity)) = n := by
+    symm
+    simp [f_3_3_3c_eval]
 
-theorem SetTheory.Set.f_3_3_3c_eval'' : f_3_3_3c (coe_nonzero 4 (by positivity)) = 3 := by
-  convert f_3_3_3c_eval' 3
+theorem SetTheory.Set.f_3_3_3c_eval'' :
+  f_3_3_3c (coe_nonzero 4 (by positivity)) = 3 := by
+    exact f_3_3_3c_eval' 3
 
 theorem SetTheory.Set.f_3_3_3c_eval''' (n : ℕ) :
-    f_3_3_3c (coe_nonzero (2*n+3) (by positivity)) = (2*n+2 : ℕ) := by convert f_3_3_3c_eval' (2*n+2)
+    f_3_3_3c (coe_nonzero (2*n+3) (by positivity)) = (2*n+2 : ℕ) := by
+      exact f_3_3_3c_eval' (2*n+2)
+
+/-!
+  ### Мини-урок: `(by tac)` как терм
+
+  `by tac` — это не только способ доказать *всю*
+  теорему целиком в виде `theorem ... := by ...`.
+
+  Это ещё и обычный терм: результат тактического блока
+  можно подставить в любое место, где Lean ожидает значение нужного типа —
+  в том числе внутрь произвольного выражения, как аргумент функции или
+  как аргумент `.mp`/`.mpr`.
+
+  Если ожидаемый тип — `Prop`-утверждение, Lean запускает `tac`,
+  чтобы построить доказательство прямо в этой позиции, без отдельного `have`.
+
+  Ниже — примеры от простого к сложному, ведущие к тому же паттерну,
+  что и `(hf (-1) y).mp (by rfl)` ниже (в примере 3.3.4).
+-/
+
+-- Уровень 1: `by tac` как один из компонентов анонимного конструктора `⟨_, _⟩`.
+-- `Exists.intro` (нотация `⟨3, _⟩`) ожидает свидетеля `3` и доказательство `3 < 5`.
+-- Доказательство можно вписать прямо на месте — `by decide` запускается
+-- с ожидаемым типом `3 < 5`, полученным из типа `∃ n, n < 5`.
+example : ∃ n : ℕ, n < 5 := ⟨3, by decide⟩
+
+-- Уровень 2: `(by tac)` как аргумент `.mp` для `Iff`.
+-- `hiff.mp` ожидает доказательство левой части `(2:ℕ) = 2`.
+-- Вместо отдельного `have`, доказательство подставляется прямо внутрь выражения.
+--
+-- by rfl — специальный синтаксис, который говорит:
+-- "запусти тактический блок, а его цель – ожидаемый тип текущей позиции".
+-- Так ⊢ (2:ℕ) = 2 и становится целью — не потому что rfl её как-то угадала,
+-- а потому что elaborator её туда подставил,
+-- ещё до того как заглянул внутрь by.
+example (P : Prop) (hiff : (2:ℕ) = 2 ↔ P) : P := hiff.mp (by rfl)
+
+-- Уровень 3: та же схема, но равенство слева становится `rfl`-очевидным
+-- только после `set`. `set y := 3` вводит `y` как `let`-определение
+-- (`y : ℕ := 3`), поэтому `y = 3` доказывается через `rfl` —
+-- тайпчекер разворачивает `y` обратно в `3`.
+example (P : Prop) (hiff : ∀ z : ℕ, z = 3 ↔ P) : P := by
+  set y := 3
+  exact (hiff y).mp (by rfl)
+
+-- Уровень 4: полная схема, как в доказательстве выше — `set` вводит `y := f 0`,
+-- гипотеза `hf` инстанцируется конкретным `x = 0`, а `.mp (by rfl)` вытаскивает
+-- правую часть `Iff`, используя `rfl`-равенство `y = f 0`, которое возникает
+-- ровно из-за `set`. Дальше `omega` находит противоречие в `y = 0 ∧ y = 1`.
+example : ¬ ∃ f : ℕ → ℕ, ∀ x y, y = f x ↔ y = x ∧ y = x + 1 := by
+  by_contra h
+  obtain ⟨f, hf⟩ := h
+  set y := f 0
+  have h1 := (hf 0 y).mp (by rfl)
+  omega
 
 /--
-  Example 3.3.4 довольно трудно воспроизвести в текущем формализме, так как вещественные числа
-  ещё не построены. Вместо этого я предлагаю несколько аналогов на Mathlib, использующих
-  Mathlib API для {name}`NNReal` и {lean}`ℝ`.
+  Example 3.3.4 довольно трудно воспроизвести в текущем формализме,
+  так как вещественные числа ещё не построены.
+  Вместо этого я предлагаю несколько аналогов на Mathlib,
+  использующих Mathlib API для {name}`NNReal` и {lean}`ℝ`.
+
+  Можно попытаться определить функцию квадратного корня,
+  связав её со свойством P, определяемым как y² = x.
+
+  То есть мы хотели бы, чтобы √x был числом y, таким, что y² = x.
+  К сожалению, есть две проблемы, которые не позволяют
+  по этому определению создать функцию:
+
+  Первая заключается в том, что существует действительные числа x,
+  для которых P(x, y) никогда не является истинным.
+
+  Например, если x = -1, то не существует действительного числа y такого, что у² = х.
 -/
 example : ¬ ∃ f : ℝ → ℝ, ∀ x y, y = f x ↔ y^2 = x := by
   by_contra h
-  obtain ⟨f, hf⟩ := h; set y := f (-1)
-  have h1 := (hf _ y).mp (by rfl)
-  have h2 := sq_nonneg y
+  obtain ⟨f, hf⟩ := h
+  -- Тайпчекер может развернуть `y` обратно в `f (-1)` при проверке типов.
+  set y : ℝ := f (-1)
+  -- `hf (-1) y` — это `y = f (-1) ↔ y^2 = -1`.
+  -- y = f x    ↔ y ^ 2 = x
+  -- y = f (-1) ↔ y ^ 2 = -1
+  have h0 := hf (-1) y
+  -- Цель `y = f (-1)` после раскрытия `y` превращается в `f (-1) = f (-1)`,
+  -- поэтому доказывается через `rfl`. Применяя `.mp`, получаем:
+  have h1 := h0.mp (by rfl)
+  -- `h1 : y^2 = -1`, что противоречит `h2 : 0 ≤ y^2`.
+  have h2 := sq_nonneg y -- 0 ≤ a ^ 2
   linarith
 
+/-
+  Проблему выше можно решить, ограничив область определения
+  до правого полуинтервала [0, +∞): f : NNReal → ℝ.
+
+  Вторая проблема заключается в том, что даже когда х ∈ [0, +∞),
+  в области значений ℝ, может существовать более одного у, для которого y² = х.
+  Например, если x = 4, то и y = 2 и y = -2
+  подчиняется свойству P(x, y), то есть √4 = +-2.
+-/
 example : ¬ ∃ f : NNReal → ℝ, ∀ x y, y = f x ↔ y^2 = x := by
   by_contra h
-  obtain ⟨f, hf⟩ := h; specialize hf 4; set y := f 4
+  obtain ⟨f, hf⟩ := h
+  specialize hf 4
+  set y := f 4
   have hy := (hf y).mp (by rfl)
+  -- 2 ^ 2 = 4 → 2 = y
   have h1 : 2 = y := (hf 2).mpr (by norm_num)
+  -- (-2) ^ 2 = 4 → (-2) = y
   have h2 : -2 = y := (hf (-2)).mpr (by norm_num)
+  -- Получаем противоречиe при помощи тактики linarith.
   linarith
 
+/-
+  Проблему выше можно решить, если ограничить и область значений ℝ на [0, +∞).
+-/
 example : ∃ f : NNReal → NNReal, ∀ x y, y = f x ↔ y^2 = x := by
-  use NNReal.sqrt; intro x y
+  use NNReal.sqrt
+  intro x y
   constructor <;> intro h
+  -- NNReal.sq_sqrt : NNReal.sqrt x ^ 2 = x
   · rw [h, NNReal.sq_sqrt]
   · rw [←h, NNReal.sqrt_sq]
 
-/-- Example 3.3.5. Неиспользуемая переменная {lit}`_x` помечена подчёркиванием, чтобы не срабатывал линтер. -/
+/-- Example 3.3.5:
+    Константная функция, всегда возвращает второй аргумент, вне зависимости от первого.
+ -/
 abbrev SetTheory.Set.P_3_3_5 : Nat → Nat → Prop := fun _x y ↦ y = 7
 
 theorem SetTheory.Set.P_3_3_5_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_5 x y := by
   apply ExistsUnique.intro 7 <;> simp [P_3_3_5]
 
-abbrev SetTheory.Set.f_3_3_5 : Function Nat Nat := Function.mk P_3_3_5 P_3_3_5_existsUnique
+abbrev SetTheory.Set.f_3_3_5 : Function Nat Nat :=
+  Function.mk P_3_3_5 P_3_3_5_existsUnique
 
 theorem SetTheory.Set.f_3_3_5_eval (x : Nat) : f_3_3_5 x = 7 := by
-  symm; rw [Function.eval]
+  symm
+  rw [Function.eval]
 
-/-- Definition 3.3.8 (Равенство функций) -/
-theorem Function.eq_iff {X Y : Set} (f g : Function X Y) : f = g ↔ ∀ x : X, f x = g x := by
-  constructor <;> intro h
-  . simp [h]
-  ext x y; constructor <;> intros
-  . rwa [←Function.eval, ←h x, Function.eval]
-  rwa [←Function.eval, h x, Function.eval]
+/-- Definition 3.3.8 (Равенство функций).
+
+    Две функции называются равными,
+    если их области определения и области значения совпадают.
+
+    Ф-ции `f` и `g` имеют один и тот же тип `Function X Y`.
+    Область определения `X` и область значений `Y` у них совпадают по построению,
+    это гарантирует сама сигнатура теоремы.
+    Содержательное условие равенства проверяется в каждой точке `x`:
+    `f = g` тогда и только тогда, когда `f x = g x` для каждого `x ∈ X`.
+ -/
+theorem Function.eq_iff {X Y : Set} (f g : Function X Y) :
+  f = g ↔ ∀ x : X, f x = g x := by
+    constructor <;> intro h
+    . -- simp [h]
+      intro x
+      rw [h]
+    · ext x y
+      constructor <;> intros
+      . rwa [←Function.eval, ←h x, Function.eval]
+      · rwa [←Function.eval, h x, Function.eval]
 
 /--
-  Example 3.3.10 (упрощённый вариант). Вторую часть примера трудно воспроизвести в этом
-  формализме, поэтому вместо неё предлагается аналог на Mathlib.
+  Example 3.3.10 (упрощённый вариант).
+  Вторую часть примера трудно воспроизвести в этом формализме,
+  поэтому вместо неё предлагается аналог на Mathlib.
 -/
-abbrev SetTheory.Set.f_3_3_10a : Function Nat Nat := Function.mk_fn (fun x ↦ (x^2 + 2*x + 1 : ℕ))
+abbrev SetTheory.Set.f_3_3_10a : Function Nat Nat :=
+  Function.mk_fn (fun x ↦ (x^2 + 2*x + 1 : ℕ))
 
-abbrev SetTheory.Set.f_3_3_10b : Function Nat Nat := Function.mk_fn (fun x ↦ ((x+1)^2 : ℕ))
+abbrev SetTheory.Set.f_3_3_10b : Function Nat Nat :=
+  Function.mk_fn (fun x ↦ ((x+1)^2 : ℕ))
 
 theorem SetTheory.Set.f_3_3_10_eq : f_3_3_10a = f_3_3_10b := by
-  simp_rw [Function.eq_iff, Function.eval_of]
-  intros; simp; ring
+  rw [Function.eq_iff]
+  unfold f_3_3_10a f_3_3_10b
+  simp_rw [Function.eval_of] -- (Function.mk_fn f).to_fn x = f x
+  intros
+  simp
+  ring
 
+-- Эти функции равны на положительной вещественной оси.
 example : (fun x : NNReal ↦ (x : ℝ)) = (fun x : NNReal ↦ |(x : ℝ)|) := by
-  simp_rw [NNReal.abs_eq]
+  simp_rw [NNReal.abs_eq] -- |↑x| = ↑x
 
+-- Но они не равны на оси вещественных чисел.
 example : (fun x : ℝ ↦ (x : ℝ)) ≠ (fun x : ℝ ↦ |(x : ℝ)|) := by
   intro h
   let a := (fun (x : ℝ) ↦ x) (-1)
   let b := (fun x : ℝ ↦ |(x : ℝ)|) (-1)
-  have hab : a = b := by unfold a; rw [h]
-  norm_num [a, b] at hab
+  have hab : a = b := by
+    unfold a b
+    rw [h]
+  unfold a b at hab
+  -- `simp` бета-редуцирует обе стороны до `-1 = |(-1:ℝ)|`
+  -- `abs_neg : |-a| = |a|` превращает `|(-1:ℝ)|` в `|(1:ℝ)|`
+  -- `abs_one : |1| = 1` — в `1`
+  simp only [abs_neg, abs_one] at hab
+  -- `norm_num` видит, что `-1 = 1` численно ложно,
+  -- превращает `hab` в доказательство `False`, которым и закрывается цель.
+  norm_num at hab
 
-/-- Example 3.3.11 -/
+/-- Example 3.3.11:
+    Довольно скучным примером является пустая функция f : ∅ → X.
+ -/
 abbrev SetTheory.Set.f_3_3_11 (X : Set) : Function (∅ : Set) X :=
-  Function.mk (fun _ _ ↦ True) (by intro ⟨ x, hx ⟩; simp at hx)
+  Function.mk
+    -- Свойство P, связывающее пару элементов двух множеств
+    (fun e x ↦ True)
+    -- Лемма `not_mem_empty : ∀ x, x ∉ (∅:Set)` помечена `@[simp]`,
+    -- поэтому `simp at hx` сразу превращает `hx` в доказательство `False`,
+    -- которым и закрывается любая цель — саму `∃! y, ...` разбирать не нужно.
+    (by intro ⟨x, hx⟩; simp at hx) -- Доказательствo уникальности
 
-theorem SetTheory.Set.empty_function_unique {X : Set} (f g : Function (∅ : Set) X) : f = g := by sorry
+-- Из определения 3.3.8 следует, что
+-- все функции из пустого множества в Х равны.
+theorem SetTheory.Set.empty_function_unique {X : Set}
+  (f g : Function (∅ : Set) X) : f = g := by
+    -- 3.3.8
+    -- Функции `f` и `g` равны тогда и только тогда,
+    -- когда `f x = g x` для каждого `x ∈ X`
+    --
+    -- (f g : Function X Y) :
+    --   f = g ↔ ∀ (x : X.toSubtype), f.to_fn x = g.to_fn x
+    rw [Function.eq_iff]
+    intro e
+    -- То, что существует элемент x, принадлежащий пустому множеству уже
+    -- сразу противоречит аксиоме 3.3 o том, что в пустом множестве нет элементов.
+    obtain ⟨x, hx⟩ := e
+    have hxne : x ∉ ∅ := not_mem_empty x
+    contradiction
 
 /-- Definition 3.3.13 (Композиция) -/
-noncomputable abbrev Function.comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) :
+noncomputable abbrev Function.comp {X Y Z : Set}
+  (g : Function Y Z) (f : Function X Y) :
     Function X Z :=
-  Function.mk_fn (fun x ↦ g (f x))
+      Function.mk_fn (fun x ↦ g (f x))
 
 -- `∘` уже занят в Mathlib для композиции функций Mathlib,
 -- поэтому здесь мы используем `○`, чтобы избежать неоднозначности.
 infix:90 "○" => Function.comp
 
-theorem Function.comp_eval {X Y Z : Set} (g : Function Y Z) (f : Function X Y) (x : X) :
+-- Связывает нотацию `g ○ f` из `Function.comp` с обычным применением функций:
+-- значение композиции в точке `x` — это `g`, применённая к `f x`.
+theorem Function.comp_eval {X Y Z : Set}
+  (g : Function Y Z) (f : Function X Y) (x : X) :
     (g ○ f) x = g (f x) := Function.eval_of _ _
+
+-- Немного более подробное доказательство для лучшего понимания его механики.
+theorem Function.comp_eval' {X Y Z : Set}
+  (g : Function Y Z) (f : Function X Y) (x : X) :
+    (g ○ f) x = g (f x) := by
+      unfold Function.comp
+      -- eval_of : (mk_fn f).to_fn x = f x
+      --
+      -- если `f` обернуть в `Function` через `mk_fn`,
+      -- а затем вызвать результат как функцию `(Function.mk_fn f) x`,
+      -- получится в точности `f x`
+      --
+      exact Function.eval_of (fun x ↦ g (f x)) x
 
 /--
   Совместимость с операцией композиции из Mathlib.
 -/
-theorem Function.comp_eq_comp {X Y Z : Set} (g : Function Y Z) (f : Function X Y) :
+theorem Function.comp_eq_comp {X Y Z : Set}
+  (g : Function Y Z) (f : Function X Y) :
     (g ○ f).to_fn = g.to_fn ∘ f.to_fn := by
-  ext; simp only [Function.comp_eval, Function.comp_apply]
+      ext
+      simp only [Function.comp_eval, Function.comp_apply]
 
 /-- Example 3.3.14 -/
-abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat := Function.mk_fn (fun x ↦ (2*x : ℕ))
+abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat :=
+  Function.mk_fn (fun x ↦ (2*x : ℕ))
 
-abbrev SetTheory.Set.g_3_3_14 : Function Nat Nat := Function.mk_fn (fun x ↦ (x+3 : ℕ))
+abbrev SetTheory.Set.g_3_3_14 : Function Nat Nat :=
+  Function.mk_fn (fun x ↦ (x+3 : ℕ))
 
 theorem SetTheory.Set.g_circ_f_3_3_14 :
-    g_3_3_14 ○ f_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+3 : ℕ) : Nat)) := by
-  simp [Function.eq_iff, Function.eval_of]
+  g_3_3_14 ○ f_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+3 : ℕ) : Nat)) := by
+    -- simp [Function.eq_iff, Function.eval_of]
+    rw [Function.eq_iff]
+    intro x
+    repeat rw [Function.eval_of] -- (Function.mk_fn f).to_fn x = f x
+    rw [nat_equiv_coe_of_coe] -- nat_equiv.symm ↑n = n
 
 theorem SetTheory.Set.f_circ_g_3_3_14 :
-    f_3_3_14 ○ g_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+6 : ℕ) : Nat)) := by
-  simp [Function.eq_iff, Function.eval_of]
-  intros; ring
+  f_3_3_14 ○ g_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+6 : ℕ) : Nat)) := by
+    simp [Function.eq_iff, Function.eval_of]
+    intros
+    ring
 
 /-- Lemma 3.3.15 (Композиция ассоциативна) -/
-theorem SetTheory.Set.comp_assoc {W X Y Z : Set} (h : Function Y Z) (g : Function X Y)
-  (f : Function W X) :
+theorem SetTheory.Set.comp_assoc {W X Y Z : Set}
+  (h : Function Y Z) (g : Function X Y) (f : Function W X) :
     h ○ (g ○ f) = (h ○ g) ○ f := by
-  simp [Function.eq_iff]
+      -- f = g ↔ ∀ (x : X.toSubtype), f.to_fn x = g.to_fn x
+      simp [Function.eq_iff]
 
-abbrev Function.one_to_one {X Y : Set} (f : Function X Y) : Prop := ∀ x x' : X, x ≠ x' → f x ≠ f x'
+-- Определение 3.3.16:
+-- `f` инъективна (взаимно однозначна), если разным элементам
+-- области определения она сопоставляет разные элементы области значений.
+abbrev Function.one_to_one {X Y : Set} (f : Function X Y) : Prop :=
+  ∀ x x' : X, x ≠ x' → f x ≠ f x'
 
+-- Равносильная (контрапозитивная) формулировка инъективности:
+-- вместо «x ≠ x' влечёт f x ≠ f x'» — «f x = f x' влечёт x = x'».
+-- Именно эта форма обычно используется на практике для доказательства инъективности.
 theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) :
-    f.one_to_one ↔ ∀ x x' : X, f x = f x' → x = x' := by
-  peel with x hx; tauto
+  f.one_to_one ↔ ∀ x x' : X, f x = f x' → x = x' := by
+    -- Обе части — это `∀ x x', P x x'` для соответствующих `P`.
+    -- `peel` снимает одинаковые кванторы `∀ x x'` сразу с обеих сторон `↔`,
+    -- сводя цель к пропозициональной эквивалентности
+    -- `x ≠ x' → f x ≠ f x' ↔ f x = f x' → x = x'` для конкретных `x`, `x'`.
+    peel with x hx
+    -- Это в точности логическая контрапозиция, `tauto` закрывает её автоматически.
+    tauto
 
 /--
-  Совместимость с {name}`Function.Injective` из Mathlib. Может быть полезно применить тактику
-  {tactic}`unfold`, чтобы разобраться в таких понятиях Mathlib, как {name}`Function.Injective`.
+  Совместимость с {name}`Function.Injective` из Mathlib.
+  Может быть полезно применить тактику {tactic}`unfold`,
+  чтобы разобраться в таких понятиях Mathlib, как {name}`Function.Injective`.
 -/
 theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) :
-    f.one_to_one ↔ Function.Injective f.to_fn := by
-  rw [one_to_one_iff, Function.Injective]
+  f.one_to_one ↔ Function.Injective f.to_fn := by
+    unfold Function.Injective
+    rw [one_to_one_iff]
 
 /--
-  Example 3.3.18. Одна половина примера требует целых чисел, поэтому она выражена
-  через функции Mathlib, а не функции Главы 3.
+  Example 3.3.18. Одна половина примера требует целых чисел,
+  поэтому она выражена через функции Mathlib, а не функции Главы 3.
 -/
 theorem SetTheory.Set.f_3_3_18_one_to_one :
-    (Function.mk_fn (fun (n : Nat) ↦ ((n^2 : ℕ) : Nat))).one_to_one := by
-  rw [Function.one_to_one_iff]
-  intro _ _ h
-  simpa [Function.eval, Function.eval_of] using h
+  (Function.mk_fn (fun (n : Nat) ↦ ((n^2 : ℕ) : Nat))).one_to_one := by
+    rw [Function.one_to_one_iff]
+    intro _ _ h
+    simpa [Function.eval, Function.eval_of] using h
 
+/- Такая функция не является инъективной,
+   так как различные элементы -1 и 1 отображаются в один и тот же элемент 1.
+-/
 example : ¬ Function.Injective (fun (n : ℤ) ↦ n^2) := by
   intro h
   have h1 : (fun n ↦ n ^ 2) 1 = (1 : ℤ) := by norm_num
   have h2 : (fun n ↦ n ^ 2) (-1) = (1 : ℤ) := by norm_num
   nth_rewrite 2 [←h1] at h2
+  unfold Function.Injective at h
   specialize h h2
+  -- Теперь `h : (-1 : ℤ) = 1`.
+  -- `ℤ` — индуктивный тип с двумя конструкторами (`Int.ofNat`, `Int.negSucc`),
+  -- а `-1` и `1` построены разными конструкторами
+  -- (`-1 = Int.negSucc 0`, `1 = Int.ofNat 1`).
+  --
+  -- Фишка в том, что `contradiction` умеет
+  -- не только искать пару гипотез `p` и `¬p`, но и,
+  -- когда среди гипотез находится равенство `a = b`
+  -- между значениями индуктивного типа с разными головными конструкторами,
+  -- выводить из него `False` напрямую.
   contradiction
 
+/- С другой стороны, если мы ограничим эту функцию
+   на натуральные числа, то она будет являться инъективной.
+
+   Таким образом, понятие инъективности зависит не только от того,
+   как устроена функция, но и от того, какова область её определения.
+-/
 example : Function.Injective (fun (n : ℕ) ↦ n^2) := by
-  intro _ _ _; rwa [← pow_left_inj₀ (by norm_num) (by norm_num) (show 2 ≠ 0 by norm_num)]
+  intro _ _ _
+  rwa [← pow_left_inj₀ (by norm_num) (by norm_num) (show 2 ≠ 0 by norm_num)]
 
-/-- Remark 3.3.19 -/
+/- Тот же самый пример, но с подробным пошаговым доказательством. -/
+example : Function.Injective (fun (n : ℕ) ↦ n^2) := by
+  -- `Function.Injective f` разворачивается в
+  -- `∀ a b, f a = f b → a = b`,
+  -- поэтому вводим `a`, `b` и гипотезу `h`.
+  intro a b h
+  -- Применение лямбды к аргументу раскрывается β-редукцией.
+  simp only at h
+  -- Хотим воспользоваться леммой `pow_left_inj₀`, которая утверждает,
+  -- что для `0 ≤ a`, `0 ≤ b`, `n ≠ 0` выполняется `a ^ n = b ^ n ↔ a = b`.
+  -- В натуральных числах `0 ≤ a` и `0 ≤ b` верны всегда.
+  have ha : (0 : ℕ) ≤ a := Nat.zero_le a
+  have hb : (0 : ℕ) ≤ b := Nat.zero_le b
+  have hn : (2 : ℕ) ≠ 0 := by norm_num
+  -- Подставляем эти факты в `pow_left_inj₀`, получая нужную эквивалентность.
+  have key : a ^ 2 = b ^ 2 ↔ a = b := pow_left_inj₀ ha hb hn
+  exact key.mp h
+
+/-- Remark 3.3.19.
+    Если `f` не инъективна, то найдутся два РАЗНЫХ элемента `x`, `x'`,
+    отображающиеся в один и тот же элемент — отсюда и название "two-to-one"
+    (буквально доказывает отрицание инъективности в явном, конструктивном виде). -/
 theorem SetTheory.Set.two_to_one {X Y : Set} {f : Function X Y} (h : ¬ f.one_to_one) :
-    ∃ x x' : X, x ≠ x' ∧ f x = f x' := by
-  rw [Function.one_to_one] at h; aesop
+  ∃ x x' : X, x ≠ x' ∧ f x = f x' := by
+    rw [Function.one_to_one] at h
+    aesop
 
-/-- Definition 3.3.20 (Сюръективные функции) -/
-abbrev Function.onto {X Y : Set} (f : Function X Y) : Prop := ∀ y : Y, ∃ x : X, f x = y
+/-- То же самое утверждение, но с пошаговым доказательством без `aesop`. -/
+theorem SetTheory.Set.two_to_one' {X Y : Set} {f : Function X Y} (h : ¬ f.one_to_one) :
+  ∃ x x' : X, x ≠ x' ∧ f x = f x' := by
+    rw [Function.one_to_one] at h
+    -- `h : ¬ ∀ x x' : X, x ≠ x' → f x ≠ f x'`.
+    -- Доказываем цель от противного:
+    -- предполагаем, что искомой пары не существует.
+    by_contra hcon
+    -- `hcon : ¬ ∃ x x' : X, x ≠ x' ∧ f x = f x'`.
+    -- Применяем `h`: чтобы получить `False`, достаточно доказать
+    -- `∀ x x' : X, x ≠ x' → f x ≠ f x'`, то есть саму инъективность `f`.
+    apply h
+    -- Берём произвольные `x`, `x'` с `x ≠ x'` и
+    -- предполагаем `f x = f x'`, чтобы вывести противоречие.
+    intro x x' hxx' hfxfx'
+    -- Пара `(x, x')` как раз свидетельствует о том, что `hcon` ложно.
+    exact hcon ⟨x, x', hxx', hfxfx'⟩
+
+/-- Definition 3.3.20 (Сюръективные функции).
+    Функция называется сюръективной (или сюрьекцией), если
+    каждый элемент в Y получается в результате применения f к некоторому элементу в X.
+    То есть для каждого y ∈ Y найдется x ∈ X, такой, что f от x = y.
+
+    Короче, все элементы из Y могут быть получены с помощью f : X → Y.
+ -/
+abbrev Function.onto {X Y : Set} (f : Function X Y) : Prop :=
+  ∀ y : Y, ∃ x : X, f x = y
 
 /-- Совместимость с {name}`Function.Surjective` из Mathlib -/
-theorem Function.onto_iff {X Y : Set} (f : Function X Y) : f.onto ↔ Function.Surjective f.to_fn := by rfl
+theorem Function.onto_iff {X Y : Set} (f : Function X Y) :
+  f.onto ↔ Function.Surjective f.to_fn := by rfl
 
-/-- Example 3.3.21 (с использованием Mathlib) -/
+/-- Example 3.3.21 (с использованием Mathlib).
+  Функция f : ℤ → ℤ, определяемая как f(n) = n^2, не является суррективной,
+  так как отрицательные числа не входят в ℤ (образ f).
+-/
 example : ¬ Function.Surjective (fun (n : ℤ) ↦ n^2) := by
-  unfold Function.Surjective; push_neg
-  use (-1); intro a
+  unfold Function.Surjective
+  push_neg
+  use (-1)
+  intro a
   linarith [sq_nonneg a]
 
+/- Однако, если ограничить область значений множеством целых квадратов (A_3_3_21),
+   то функция `g : ℤ → A_3_3_21` теперь является сюръекцией.
+
+   Таким образом, понятие суррективной функции зависит не только от того,
+   как устроена функция, но и от того, какова область ее значений.
+-/
+-- `A_3_3_21` — это подтип целых чисел, являющихся квадратами:
+-- его элементы — пары `⟨значение, доказательство⟩`, где
+-- значение : ℤ, а доказательство : ∃ n, значение = n^2.
 abbrev A_3_3_21 := { m : ℤ // ∃ n : ℤ, m = n^2 }
 
-example : Function.Surjective (fun (n : ℤ) ↦ ⟨ n^2, by use n ⟩ : ℤ → A_3_3_21) := by
-  rintro ⟨b, ⟨a, ha⟩⟩; use a
+-- Эта функция анонимна (в коде у неё нет имени; в тексте выше она обозначена как `g`).
+-- Она сопоставляет `n ↦ ⟨n^2, доказательство того, что n^2 — квадрат⟩`.
+-- Доказательство `by use n` тривиально, зайди внутрь и посмотри на цель :)
+example : Function.Surjective (fun (n : ℤ) ↦ ⟨n^2, by use n⟩ : ℤ → A_3_3_21) := by
+  -- `unfold` разворачивает `Function.Surjective (fun n ↦ ...)` в
+  -- `∀ b : A_3_3_21, ∃ a : ℤ, (fun n ↦ ...) a = b`.
+  unfold Function.Surjective
+  -- Берём произвольный `b : A_3_3_21` и сразу разбираем его двумя уровнями:
+  -- `b` — это пара `⟨b, ⟨a, ha⟩⟩`, где сама `b : ℤ` — значение,
+  -- а `⟨a, ha⟩ : ∃ n, b = n^2` — доказательство существования корня `a` с `ha : b = a^2`.
+  -- (Здесь имя `b` "затирает" исходное имя переменной подтипа — берётся именно первая компонента.)
+  rintro ⟨b, ⟨a, ha⟩⟩
+  -- Предъявляем найденный корень `a` в качестве искомого прообраза.
+  use a
+  -- Цель теперь: `⟨a^2, ⋯⟩ = ⟨b, ⋯⟩` — равенство пар подтипа `A_3_3_21`.
+  -- Вторая компонента (доказательство) в печати скрыта под `⋯` (это управляется опцией
+  -- `pp.proofs`, по умолчанию выключенной), но она в любом случае не участвует
+  -- в сравнении: элементы подтипа равны тогда и только тогда, когда равны их
+  -- первые компоненты (`Subtype.mk.injEq`), поскольку вторая компонента лежит
+  -- в `Prop`, а любые два доказательства одного и того же предложения равны
+  -- по proof irrelevance.
+  -- Поэтому `simp` сводит цель к `a^2 = b` и закрывает её гипотезой `ha : b = a^2`.
   simp only [ha]
 
 /-- Definition 3.3.23 (Биективные функции) -/
-abbrev Function.bijective {X Y : Set} (f : Function X Y) : Prop := f.one_to_one ∧ f.onto
+abbrev Function.bijective {X Y : Set} (f : Function X Y) : Prop :=
+  f.one_to_one ∧ f.onto
 
 /-- Совместимость с {name}`Function.Bijective` из Mathlib -/
 theorem Function.bijective_iff {X Y : Set} (f : Function X Y) :
-    f.bijective ↔ Function.Bijective f.to_fn := by
-  rw [Function.bijective, Function.Bijective, one_to_one_iff', onto_iff]
+  f.bijective ↔ Function.Bijective f.to_fn := by
+    rw [Function.bijective, Function.Bijective, one_to_one_iff', onto_iff]
 
-/-- Example 3.3.24 (с использованием Mathlib) -/
+/-- Example 3.3.24 (с использованием Mathlib).
+    Эта функция не является инъективной Так как если мы зададим `y = 3`,
+    то в `{0,1,2}` найдется более одного `x` такого, что `f(x) = y`.
+    Это и есть нарушение инъективности.
+-/
 abbrev f_3_3_24 : Fin 3 → ({3,4} : _root_.Set ℕ) := fun x ↦ match x with
 | 0 => ⟨ 3, by norm_num ⟩
 | 1 => ⟨ 3, by norm_num ⟩
@@ -340,6 +982,8 @@ abbrev f_3_3_24 : Fin 3 → ({3,4} : _root_.Set ℕ) := fun x ↦ match x with
 example : ¬ Function.Injective f_3_3_24 := by decide
 example : ¬ Function.Bijective f_3_3_24 := by decide
 
+-- Здесь у нас на нарушение сюръективности,
+-- А, следовательно, и нарушение биективности.
 abbrev g_3_3_24 : Fin 2 → ({2,3,4} : _root_.Set ℕ) := fun x ↦ match x with
 | 0 => ⟨ 2, by norm_num ⟩
 | 1 => ⟨ 3, by norm_num ⟩
@@ -347,6 +991,7 @@ abbrev g_3_3_24 : Fin 2 → ({2,3,4} : _root_.Set ℕ) := fun x ↦ match x with
 example : ¬ Function.Surjective g_3_3_24 := by decide
 example : ¬ Function.Bijective g_3_3_24 := by decide
 
+-- А вот эта функция биективна.
 abbrev h_3_3_24 : Fin 3 → ({3,4,5} : _root_.Set ℕ) := fun x ↦ match x with
 | 0 => ⟨ 3, by norm_num ⟩
 | 1 => ⟨ 4, by norm_num ⟩
@@ -358,60 +1003,101 @@ example : Function.Bijective h_3_3_24 := by decide
   Example 3.3.25 сформулирован с использованием Mathlib, а не рамок теории множеств здесь,
   чтобы избежать некоторых утомительных технических сложностей (ср. Exercise 3.3.2)
 -/
-example : Function.Bijective (fun n ↦ ⟨ n+1, by omega⟩ : ℕ → { n : ℕ // n ≠ 0 }) := by
+example : Function.Bijective (fun n ↦ ⟨n+1, by omega⟩ : ℕ → { n : ℕ // n ≠ 0 }) := by
+  -- Биективность это инъективность и сюръективность.
   constructor
-  · intro _ _
-    simp only [Subtype.mk.injEq]; omega
-  intro ⟨x, hx⟩; use x-1
-  simp only [Subtype.mk.injEq]; omega
+  · -- Инъективность
+    --
+    unfold Function.Injective
+    intro x y
+    -- Позволяет выполнить только бета-редукцию,
+    -- чтобы явно увидеть утверждение о равенстве конструкторов подтипа.
+    dsimp only
+    -- `Subtype.mk.injEq` — это автоматически сгенерированная лемма
+    -- о равенстве конструктора подтипа:
+    -- `⟨a, ha⟩ = ⟨b, hb⟩ ↔ a = b`
+    -- (компоненты-доказательства в сравнение не входят, см. пред. пример про `A_3_3_21`).
+    simp only [Subtype.mk.injEq]
+    -- Цель `x + 1 = y + 1 → x = y` — это ровно
+    -- `Nat.add_right_cancel (h : n + m = k + m) : n = k`
+    exact Nat.add_right_cancel
+  · -- Сюръективность
+    --
+    unfold Function.Surjective
+    -- `intro ⟨x, hx⟩` берёт произвольный элемент `{n // n ≠ 0}`
+    -- и разбирает его на значение `x : ℕ` и доказательство `hx : x ≠ 0`.
+    intro ⟨x, hx⟩
+    -- Ищем прообраз: раз `f n = n + 1`, для `x ≥ 1` подходит `x - 1`.
+    use x-1
+    -- Цель: `⟨(x-1)+1, ⋯⟩ = ⟨x, hx⟩`. Как и выше, `Subtype.mk.injEq` сводит
+    -- равенство пар к равенству первых компонент: `x - 1 + 1 = x`.
+    simp only [Subtype.mk.injEq]
+    -- Нельзя просто применить `rfl` из-за "усечённого вычитания" над `ℕ`
+    -- (`x - 1` при `x = 0` было бы `0`),
+    -- поэтому сначала превращаем `hx : x ≠ 0` в `1 ≤ x`.
+    have hx' : 1 ≤ x := Nat.pos_of_ne_zero hx
+    -- `Nat.sub_add_cancel : m ≤ n → n - m + m = n` при `m = 1`
+    -- даёт нужное равенство.
+    exact Nat.sub_add_cancel hx'
 
 example : ¬ Function.Bijective (fun n ↦ n+1) := by
-  suffices h : ¬ Function.Surjective (fun n ↦ n+1) by unfold Function.Bijective; tauto
-  unfold Function.Surjective; push_neg
-  use 0; intros
-  symm; apply Nat.zero_ne_add_one
+  suffices h : ¬ Function.Surjective (fun n ↦ n+1) by
+    unfold Function.Bijective
+    tauto
+  unfold Function.Surjective
+  push_neg
+  use 0
+  intros
+  symm
+  apply Nat.zero_ne_add_one
 
 /-- Remark 3.3.27 -/
 theorem Function.bijective_incorrect_def :
-    ∃ X Y : Set, ∃ f : Function X Y, (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective := by
-  use Nat, Nat
-  set f := mk_fn fun x ↦ (0 : Nat); use f
-  constructor
-  · intros
-    apply existsUnique_of_exists_of_unique
-    · use 0; rw [Function.eval]
-    intros; rw [Function.eval] at *; aesop
-  rw [Function.bijective]
-  suffices h : ¬ f.one_to_one by tauto
-  rw [Function.one_to_one_iff]
-  push_neg; use 0, 1; simp [f]
+  ∃ X Y : Set, ∃ f : Function X Y, (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective := by
+    use Nat, Nat
+    set f := mk_fn fun x ↦ (0 : Nat)
+    use f
+    constructor
+    · intros
+      apply existsUnique_of_exists_of_unique
+      · use 0; rw [Function.eval]
+      intros; rw [Function.eval] at *; aesop
+    rw [Function.bijective]
+    suffices h : ¬ f.one_to_one by tauto
+    rw [Function.one_to_one_iff]
+    push_neg; use 0, 1; simp [f]
 
 /--
-  Мы не можем использовать нотацию {syntax term}`f⁻¹` для обратной функции, потому что в классе {name}`Inv`
-  из Mathlib обратная к {name}`f` должна иметь ровно тот же тип, что и {name}`f`, а {lean}`Function Y X` —
+  Мы не можем использовать нотацию {syntax term}`f⁻¹` для обратной функции,
+  потому что в классе {name}`Inv` из Mathlib обратная к {name}`f` должна
+  иметь ровно тот же тип, что и {name}`f`, а {lean}`Function Y X` —
   это другой тип, отличный от {lean}`Function X Y`.
 -/
 abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
-    Function Y X :=
-  Function.mk (fun y x ↦ f x = y) (by
-    intros
-    apply existsUnique_of_exists_of_unique
-    . aesop
-    intro _ _ hx hx'; simp at hx hx'
-    rw [←hx'] at hx
-    apply f.one_to_one_iff.mp h.1
-    simp [hx]
-  )
+  Function Y X :=
+    Function.mk (fun y x ↦ f x = y) (by
+      intros
+      apply existsUnique_of_exists_of_unique
+      . aesop
+      intro _ _ hx hx'
+      simp at hx hx'
+      rw [←hx'] at hx
+      apply f.one_to_one_iff.mp h.1
+      simp [hx]
+    )
 
-theorem Function.inverse_eval {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) :
+theorem Function.inverse_eval
+  {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) :
     x = (f.inverse h) y ↔ f x = y := Function.eval _ _ _
 
 /-- Совместимость с понятием обратной функции из Mathlib -/
 theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) :
-    (f.inverse h).to_fn = Function.invFun f.to_fn := by
-  ext y; congr; symm
-  rw [inverse_eval]
-  apply Function.rightInverse_invFun (f.bijective_iff.mp h).2
+  (f.inverse h).to_fn = Function.invFun f.to_fn := by
+    ext y
+    congr
+    symm
+    rw [inverse_eval]
+    apply Function.rightInverse_invFun (f.bijective_iff.mp h).2
 
 /--
   Exercise 3.3.1. Хотя доказательство, работающее напрямую с функциями, было бы короче,
