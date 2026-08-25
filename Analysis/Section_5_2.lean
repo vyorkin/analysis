@@ -12,7 +12,7 @@ import Analysis.Section_5_1
 
 Основные конструкции и результаты этого раздела:
 
-- Понятие ε-близких и эвентуально ε-близких последовательностей рациональных чисел.
+- Понятие ε-близких и финально ε-близких последовательностей рациональных чисел.
 - Понятие эквивалентных последовательностей Коши рациональных чисел.
 
 ## Советы от прошлых пользователей
@@ -47,11 +47,11 @@ example : ¬ (0.1 : ℚ).Steady ((fun n : ℕ ↦ ((-1)^n : ℚ)) : Sequence) :=
 /-- Example 5.2.2 (c) -/
 example : ¬ (0.1 : ℚ).Steady ((fun n : ℕ ↦ ((1.1 : ℚ) * (-1)^n)) : Sequence) := by sorry
 
-/-- Definition 5.2.3 (Эвентуально ε-близкие последовательности) -/
+/-- Definition 5.2.3 (Финально ε-близкие последовательности) -/
 lemma Rat.eventuallyClose_def (ε : ℚ) (a b : Sequence) : 
     ε.EventuallyClose a b ↔ ∃ N, ε.CloseSeq (a.from N) (b.from N) := by rfl
 
-/-- Definition 5.2.3 (Эвентуально ε-близкие последовательности) -/
+/-- Definition 5.2.3 (Финально ε-близкие последовательности) -/
 lemma Rat.eventuallyClose_iff (ε : ℚ) (a b : ℕ → ℚ) : 
     ε.EventuallyClose (a : Sequence) (b : Sequence) ↔ ∃ N, ∀ n ≥ N, |a n - b n| ≤ ε := by sorry
 

@@ -14,7 +14,7 @@ set_option doc.verso.suggestions false
 Основные конструкции и результаты этого раздела:
 
 - Понятие последовательности рациональных чисел
-- Понятия `ε`-устойчивости, эвентуальной `ε`-устойчивости и последовательностей Коши
+- Понятия `ε`-устойчивости, финальной `ε`-устойчивости и последовательностей Коши
 
 ## Советы от прошлых пользователей
 
@@ -104,12 +104,13 @@ abbrev Sequence.squares_from_three : Sequence := mk' 3 (·^2)
 /-- Example 5.1.2 (f) -/
 example (n : ℤ) (hn : n ≥ 3) : Sequence.squares_from_three n = n^2 := Sequence.eval_mk _ hn
 
--- нужно временно выйти из пространства имён `Chapter5`, чтобы ввести следующую нотацию
+-- Нужно временно выйти из пространства имён `Chapter5`, чтобы ввести следующую нотацию
 
 end Chapter5
 
 /--
-Небольшое обобщение Definition 5.1.3 — определение {name}`ε`-устойчивости для последовательности
+Небольшое обобщение Definition 5.1.3 —
+определение {name}`ε`-устойчивости для последовательности
 с произвольной начальной точкой {lean}`a.n₀`
 -/
 abbrev Rat.Steady (ε : ℚ) (a : Chapter5.Sequence) : Prop :=
@@ -121,16 +122,18 @@ lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) :
 namespace Chapter5
 
 /--
-Definition 5.1.3 — определение {name}`ε`-устойчивости для последовательности, начинающейся с 0
+Definition 5.1.3 —
+определение {name}`ε`-устойчивости для последовательности,
+начинающейся с 0
 -/
 lemma Rat.Steady.coe (ε : ℚ) (a : ℕ → ℚ) :
-    ε.Steady a ↔ ∀ n m : ℕ, ε.Close (a n) (a m) := by
-  constructor
-  · intro h n m; specialize h n ?_ m ?_ <;> simp_all
-  intro h n hn m hm
-  lift n to ℕ using hn
-  lift m to ℕ using hm
-  simp [h n m]
+  ε.Steady a ↔ ∀ n m : ℕ, ε.Close (a n) (a m) := by
+    constructor
+    · intro h n m; specialize h n ?_ m ?_ <;> simp_all
+    intro h n hn m hm
+    lift n to ℕ using hn
+    lift m to ℕ using hm
+    simp [h n m]
 
 /--
 Не из учебника: последовательность 3, 3 ... является 1-устойчивой.
@@ -145,7 +148,8 @@ example : (1 : ℚ).Steady ((fun _ : ℕ ↦ (3 : ℚ)) : Sequence) := by
 побочные условия {lean}`hn : n ≥ 0` и {lean}`hm : m ≥ 0`, которые придётся обрабатывать.
 -/
 example : (1 : ℚ).Steady ((fun _ : ℕ ↦ (3 : ℚ)) : Sequence) := by
-  intro n _ m _; simp_all [Sequence.n0_coe, Sequence.eval_coe_at_int, Rat.Close]
+  intro n _ m _
+  simp_all [Sequence.n0_coe, Sequence.eval_coe_at_int, Rat.Close]
 
 /--
 Example 5.1.5: последовательность `1, 0, 1, 0, ...` является 1-устойчивой.
@@ -220,7 +224,7 @@ lemma Sequence.from_eval (a : Sequence) {n₁ n : ℤ} (hn : n ≥ n₁) :
 
 end Chapter5
 
-/-- Definition 5.1.6 (Эвентуально ε-устойчива) -/
+/-- Definition 5.1.6 (Финально ε-устойчива) -/
 abbrev Rat.EventuallySteady (ε : ℚ) (a : Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.Steady (a.from N)
 
 lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) :
@@ -254,7 +258,7 @@ lemma Sequence.ex_5_1_7_b : (0.1 : ℚ).Steady (((fun n : ℕ ↦ (n+1 : ℚ)⁻
   positivity
 
 /--
-Example 5.1.7: последовательность 1, 1/2, 1/3, ... эвентуально 0.1-устойчива
+Example 5.1.7: последовательность 1, 1/2, 1/3, ... финально 0.1-устойчива
 -/
 lemma Sequence.ex_5_1_7_c : (0.1 : ℚ).EventuallySteady ((fun n : ℕ ↦ (n+1 : ℚ)⁻¹ ) : Sequence) :=
   ⟨10, by simp, ex_5_1_7_b⟩
@@ -262,7 +266,7 @@ lemma Sequence.ex_5_1_7_c : (0.1 : ℚ).EventuallySteady ((fun n : ℕ ↦ (n+1 
 /--
 Example 5.1.7
 
-Последовательность 10, 0, 0, ... эвентуально ε-устойчива для любого ε > 0. Оставлено как упражнение.
+Последовательность 10, 0, 0, ... финально ε-устойчива для любого ε > 0. Оставлено как упражнение.
 -/
 lemma Sequence.ex_5_1_7_d {ε : ℚ} (hε : ε>0) :
     ε.EventuallySteady ((fun n : ℕ ↦ if n=0 then (10 : ℚ) else (0 : ℚ) ) : Sequence) := by sorry
