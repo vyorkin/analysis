@@ -678,7 +678,7 @@ lemma Box.toSet_injective_of_nonempty {d : ℕ} {B₁ B₂ : Box d}
     объединения боксов. -/
 abbrev IsElementary {d : ℕ} (E : Set (EuclideanSpace' d)) : Prop := ∃ S : Finset (Box d), E = ⋃ B ∈ S, ↑B
 
-/-- Каждый бокс является элементарным множеством (свидетель — синглтон-finset). -/
+/-- Каждый бокс является элементарным множеством (свидетель — одноэлементный finset). -/
 theorem IsElementary.box {d : ℕ} (B : Box d) : IsElementary B.toSet := by
   use {B}
   simp
@@ -1293,7 +1293,7 @@ lemma IsElementary.measure_of_empty (d : ℕ) : (IsElementary.empty d).measure =
 /-- Мера одного бокса равна его объёму. -/
 @[simp]
 lemma IsElementary.measure_of_box {d : ℕ} (B : Box d) : (IsElementary.box B).measure = |B|ᵥ := by
-  -- Стратегия: используем синглтон-разбиение T = {B}, применяем measure_eq,
+  -- Стратегия: используем одноэлементное разбиение T = {B}, применяем measure_eq,
   -- упрощаем через Finset.sum_singleton
   classical
   have h_box_eq : B.toSet = ⋃ B' ∈ ({B} : Finset (Box d)), B'.toSet := by
@@ -1302,7 +1302,7 @@ lemma IsElementary.measure_of_box {d : ℕ} (B : Box d) : (IsElementary.box B).m
     rw [Set.pairwiseDisjoint_iff]
     intro B₁ hB₁ B₂ hB₂ hB₁B₂
     simp at hB₁ hB₂
-    -- Для синглтона B₁ = B₂ = B, поэтому условие выполняется тривиально
+    -- Для одноэлементного разбиения B₁ = B₂ = B, поэтому условие выполняется тривиально
     rw [hB₁, hB₂]
   rw [(IsElementary.box B).measure_eq h_box_disj h_box_eq]
   simp [Finset.sum_singleton]

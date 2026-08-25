@@ -18,7 +18,7 @@ lemma exercise_1_2_1_union :
       (∀ n, E n ⊆ Set.Icc 0 1) ∧
       ¬ JordanMeasurable (⋃ n, Real.equiv_EuclideanSpace' '' (E n)) := by
   -- Стратегия: пусть E_n = {q_n}, где q_n — n-е рациональное число из [0,1].
-  -- Каждый синглтон измерим по Жордану с мерой 0,
+  -- Каждое одноэлементное множество измеримо по Жордану с мерой 0,
   -- но объединение — это все рациональные числа из [0,1], которое НЕ измеримо по Жордану
 
   -- Получаем перечисление рациональных чисел из [0,1]
@@ -26,21 +26,21 @@ lemma exercise_1_2_1_union :
   have h_nonempty : (Set.Icc (0 : ℚ) 1).Nonempty := ⟨0, by simp⟩
   obtain ⟨q, hq_surj⟩ := h_countable.exists_surjective h_nonempty
 
-  -- Определяем E_n = {q_n} (синглтон, содержащий n-е рациональное число)
+  -- Определяем E_n = {q_n} (одноэлементное множество, содержащее n-е рациональное число)
   let E : ℕ → Set ℝ := fun n => {((q n).val : ℝ)}
 
   use E
 
   constructor
-  -- Часть 1: каждое E_n ограничено (синглтоны тривиально ограничены)
+  -- Часть 1: каждое E_n ограничено (одноэлементные множества тривиально ограничены)
   · intro n
     apply Set.Finite.isBounded
     exact Set.finite_singleton _
 
   constructor
-  -- Часть 2: каждое E_n измеримо по Жордану (синглтоны имеют меру 0)
+  -- Часть 2: каждое E_n измеримо по Жордану (одноэлементные множества имеют меру 0)
   · intro n
-    -- Синглтон {x} в ℝ отображается в вырожденный прямоугольник в EuclideanSpace' 1.
+    -- Одноэлементное множество {x} в ℝ отображается в вырожденный прямоугольник в EuclideanSpace' 1.
     -- А именно, Real.equiv_EuclideanSpace' '' {x} = Icc x x (как одномерный прямоугольник)
     -- Прямоугольники элементарны, а элементарные множества измеримы по Жордану
     let x := ((q n).val : ℝ)
@@ -949,7 +949,7 @@ lemma hasSum_indicator_top_of_infinite (X : Set ℕ) (hX : ¬X.Finite) :
 
 open Classical in
 /-- В размерности 0 внешняя мера Лебега равна 1 для непустых множеств и 0 для пустого множества.
-    Это происходит потому, что все прямоугольники в размерности 0 — это синглтоны с объёмом 1
+    Это происходит потому, что все прямоугольники в размерности 0 — это одноточечные множества с объёмом 1
     (пустое произведение). -/
 lemma Lebesgue_outer_measure_of_dim_zero {E : Set (EuclideanSpace' 0)} :
     Lebesgue_outer_measure E = if E.Nonempty then 1 else 0 := by
@@ -974,7 +974,7 @@ lemma Lebesgue_outer_measure_of_dim_zero {E : Set (EuclideanSpace' 0)} :
 
     -- Верхняя граница: показываем sInf ≤ 1, предъявив покрытие с суммой = 1
     · apply sInf_le
-      -- Строим покрытие, используя синглтон {0}
+      -- Строим покрытие, используя одноэлементное множество {0}
       let X : Set ℕ := {0}
       let B₀ : Box 0 := ⟨fun i => Fin.elim0 i⟩
       let S : X → Box 0 := fun _ => B₀
@@ -1492,13 +1492,13 @@ example {R : ℝ} (hR : 0 < R) : Jordan_outer_measure (Real.equiv_EuclideanSpace
 -- У любого счётного множества (в положительной размерности) внешняя мера Лебега равна нулю.
 theorem Countable.Lebesgue_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpace' d)} (hE : E.Countable) : Lebesgue_outer_measure E = 0 := by
   unfold Lebesgue_outer_measure
-  -- Стратегия: покрываем E синглтон-прямоугольниками, у каждого из которых объём 0
+  -- Стратегия: покрываем E одноточечными прямоугольниками, у каждого из которых объём 0
 
   -- Получаем перечисление: E ⊆ range f для некоторого f : ℕ → EuclideanSpace' d
   haveI : Nonempty (EuclideanSpace' d) := inferInstance
   obtain ⟨f, hf⟩ := Set.countable_iff_exists_subset_range.mp hE
 
-  -- Строим синглтон-прямоугольник для каждого f(n)
+  -- Строим одноточечный прямоугольник для каждого f(n)
   let singleton_box : ℕ → Box d := fun n => ⟨fun i => BoundedInterval.Icc (f n i) (f n i)⟩
 
   -- Показываем, что E покрыто этими прямоугольниками
@@ -1513,7 +1513,7 @@ theorem Countable.Lebesgue_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpa
          simp [BoundedInterval.toSet]
          exact ⟨le_refl _, le_refl _⟩
 
-  -- У каждого синглтон-прямоугольника объём 0
+  -- У каждого одноточечного прямоугольника объём 0
   have h_vol : ∀ n, (singleton_box n).volume = 0 := by
     intro n
     exact Box.volume_singleton hd (f n)
@@ -1539,7 +1539,7 @@ theorem Countable.Lebesgue_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpa
         intro i _
         unfold BoundedInterval.length
         exact le_max_right _ _)
-    · -- Показываем, что 0 входит в множество (через наше синглтон-покрытие)
+    · -- Показываем, что 0 входит в множество (через наше одноточечное покрытие)
       use Set.univ
       use fun (n : Set.univ) => singleton_box n.val
       refine ⟨?_, ?_⟩
@@ -1556,7 +1556,7 @@ theorem Countable.Lebesgue_measure {d : ℕ} (hd : 0 < d) {E : Set (EuclideanSpa
   -- Показываем, что инфимум не меньше 0
   have h_ge : 0 ≤ sInf { V | ∃ (X : Set ℕ) (S : X → Box d), E ⊆ ⋃ n, (S n).toSet ∧ V = ∑' n, (S n).volume.toEReal } := by
     apply le_csInf
-    · -- Показываем, что множество непусто (у нас есть синглтон-покрытие)
+    · -- Показываем, что множество непусто (у нас есть одноточечное покрытие)
       use 0
       use Set.univ
       use fun (n : Set.univ) => singleton_box n.val

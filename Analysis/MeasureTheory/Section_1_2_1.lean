@@ -1001,7 +1001,7 @@ lemma volume_subdivide {d : ℕ} (B : Box d) :
     Это следует из того, что каждая сторона делится пополам, уменьшая диагональ в связанное с
     √2 число раз. Замечание: гипотеза непустоты B необходима, поскольку разбиение пополам всегда
     создаёт замкнутые интервалы, которые могут превратить вырожденные открытые интервалы
-    ({given -show}`a` {lean}`Ioo a a`) в непустые синглтоны. -/
+    ({given -show}`a` {lean}`Ioo a a`) в непустые одноэлементные множества. -/
 lemma subdivide_diameter_bound {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) :
     ∀ B' ∈ B.subdivide, B'.diameter ≤ B.diameter / Real.sqrt 2 := by
   intro B' hB'
@@ -1264,9 +1264,9 @@ lemma volume_subdivide_iter {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (k : �
         -- Ключевая идея: позиции в сетке — целые числа, но fst=snd требует полуцелого сдвига
         -- Для вырожденного случая (L=0): все интервалы схлопываются, поэтому B₁=B₂
         by_cases hL : |B.side i|ₗ = 0
-        · -- Вырожденный случай : все стороны по измерению i — синглтоны
-          -- Когда длина = 0 для непустого прямоугольника (box), a = b (синглтон)
-          -- У всех подразбиений одна и та же сторона-синглтон
+        · -- Вырожденный случай : все стороны по измерению i — одноэлементные множества
+          -- Когда длина = 0 для непустого прямоугольника (box), a = b (одна точка)
+          -- У всех подразбиений одна и та же одноэлементная сторона
           have h1a : (B₁.side i).a = (B.side i).a := by rw [hj₁, hL]; simp
           have h2a : (B₂.side i).a = (B.side i).a := by rw [hj₂, hL]; simp
           have h1len : |B₁.side i|ₗ = 0 := by rw [h_len₁, hL]; simp
@@ -2573,7 +2573,7 @@ lemma Box.shrink_to_closed {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (δ : �
         simp only [BoundedInterval.length, BoundedInterval.a, BoundedInterval.b, sub_self]
         exact max_eq_right (le_refl 0)
       rw [hvol', hvol_zero]; linarith
-    · -- B'.toSet.Nonempty (вырожденный случай) : B' = {x} — синглтон, содержащий x
+    · -- B'.toSet.Nonempty (вырожденный случай) : B' = {x} — одноэлементное множество, содержащее x
       use x
       simp only [Box.mem_toSet]
       intro i
@@ -3079,13 +3079,13 @@ end IsElementary
 /-- Случай размерности 0 для леммы 1.2.6 -/
 lemma Lebesgue_outer_measure.elementary_dim_zero (E : Set (EuclideanSpace' 0)) (hE : IsElementary E) :
     Lebesgue_outer_measure E = hE.measure := by
-  -- В размерности 0 EuclideanSpace' 0 — синглтон (только пустая функция Fin 0 → ℝ)
+  -- В размерности 0 EuclideanSpace' 0 — одноточечное пространство (только пустая функция Fin 0 → ℝ)
   -- Внешняя мера равна 1 для непустых множеств, 0 для пустого
   rw [Lebesgue_outer_measure_of_dim_zero]
   by_cases hne : E.Nonempty
-  · -- Случай : E непусто → E = Set.univ (тип-синглтон), внешняя мера = 1
+  · -- Случай : E непусто → E = Set.univ (одноточечный тип), внешняя мера = 1
     simp only [hne, ↓reduceIte]
-    -- В размерности 0 любое непустое элементарное множество — это Set.univ (всё пространство-синглтон)
+    -- В размерности 0 любое непустое элементарное множество — это Set.univ (всё пространство одноточечно)
     -- Разбиение состоит из одного прямоугольника, покрывающего univ, с объёмом = пустое
     -- произведение = 1
     -- Значит hE.measure = 1
@@ -3097,7 +3097,7 @@ lemma Lebesgue_outer_measure.elementary_dim_zero (E : Set (EuclideanSpace' 0)) (
       constructor
       · intro _; exact Set.mem_univ x
       · intro _
-        -- Покажем x ∈ E, используя непустоту E и то, что пространство — синглтон
+        -- Покажем x ∈ E, используя непустоту E и то, что пространство одноточечно
         obtain ⟨y, hy⟩ := hne
         -- В EuclideanSpace' 0 = (Fin 0 → ℝ) все элементы равны (единственная функция из пустого типа)
         have : x = y := by ext i; exact i.elim0
@@ -3137,7 +3137,7 @@ lemma Lebesgue_outer_measure.elementary_dim_zero (E : Set (EuclideanSpace' 0)) (
 theorem Lebesgue_outer_measure.elementary {d : ℕ} (E : Set (EuclideanSpace' d)) (hE : IsElementary E) :
     Lebesgue_outer_measure E = hE.measure := by
   by_cases hd : d = 0
-  · -- Случай размерности 0 : тривиальный краевой случай (EuclideanSpace' 0 — синглтон)
+  · -- Случай размерности 0 : тривиальный краевой случай (EuclideanSpace' 0 — одноточечное пространство)
     -- В размерности 0 у всех прямоугольников объём 1, E либо пусто (мера 0), либо равно univ (мера 1)
     subst hd
     -- Этот краевой случай требует аккуратной работы со структурой разбиения в размерности 0
@@ -3161,7 +3161,7 @@ theorem EuclideanSpace'.uncountable (d : ℕ) (hd : 0 < d) : Uncountable (Euclid
   exact hf.uncountable
 
 /-- Нет несчётной субаддитивности: единичный куб имеет меру 1, но если разложить его на
-синглтоны (каждый с мерой 0), сумма равна 0. -/
+одноэлементные множества (каждое с мерой 0), сумма равна 0. -/
 example {d : ℕ} {hd : 0 < d} : ∃ (S : Type) (E : S → Set (EuclideanSpace' d)), ¬ Lebesgue_outer_measure (⋃ i, E i) ≤ ∑' i, Lebesgue_outer_measure (E i) := by
   use (Box.unit_cube d).toSet
   use fun x => {x.val}
@@ -3175,7 +3175,7 @@ example {d : ℕ} {hd : 0 < d} : ∃ (S : Type) (E : S → Set (EuclideanSpace' 
     simp only [IsElementary.measure_of_box]
     simp only [Box.volume, BoundedInterval.length, BoundedInterval.b, BoundedInterval.a]
     simp
-  -- У каждого синглтона мера 0
+  -- У каждого одноэлементного множества мера 0
   have h_sing : ∀ x : (Box.unit_cube d).toSet, Lebesgue_outer_measure ({x.val} : Set (EuclideanSpace' d)) = 0 := by
     intro x
     exact Countable.Lebesgue_measure hd (Set.countable_singleton x.val)
@@ -4919,7 +4919,7 @@ lemma dyadicCubeLargerNotInSmaller {d : ℕ} (hd : 0 < d) {n m : ℤ} (hnm : n <
     1. Для каждого x ∈ E по {name}`IsOpen.exists_dyadic_cube_subset` существует диадический куб,
        содержащий x, ⊆ E
     2. Множество всех таких диадических кубов счётно (подмножество {lean}`ℕ × (Fin d → ℤ)`)
-    3. Берём максимальные кубы (не содержащиеся строго в другом кубе коллекции)
+    3. Берём максимальные кубы (не содержащиеся строго в другом кубе семейства)
     4. По {name}`DyadicCube.nesting` различные максимальные кубы почти не пересекаются
     5. E равно объединению этих максимальных кубов -/
 theorem IsOpen.eq_union_boxes {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d)) (hE : IsOpen E)
@@ -5190,7 +5190,7 @@ theorem Lebesgue_outer_measure.of_open {d : ℕ} (E : Set (EuclideanSpace' d)) (
     · -- Случай : E непусто → E = Set.univ в размерности 0
       simp only [hne, ↓reduceIte]
       -- Покажем Jordan_inner_measure E = 1
-      -- E = Set.univ, поскольку EuclideanSpace' 0 — синглтон, а E непусто
+      -- E = Set.univ, поскольку EuclideanSpace' 0 — одноточечное пространство, а E непусто
       have hE_univ : E = Set.univ := by
         ext x
         constructor
@@ -5333,7 +5333,7 @@ theorem Lebesgue_outer_measure.eq {d : ℕ} (E : Set (EuclideanSpace' d)) : Lebe
   · -- Направление ≥ : sInf S ≤ m*(E) (основная работа)
     -- Отдельно обрабатываем размерность 0
     by_cases hd : d = 0
-    · -- d = 0 : в размерности 0 EuclideanSpace' 0 — тип-синглтон
+    · -- d = 0 : в размерности 0 EuclideanSpace' 0 — одноточечный тип
       subst hd
       have h_singleton : ∀ (y z : EuclideanSpace' 0), y = z := fun y z =>
         PiLp.ext fun i => Fin.elim0 i
@@ -5349,7 +5349,7 @@ theorem Lebesgue_outer_measure.eq {d : ℕ} (E : Set (EuclideanSpace' d)) : Lebe
           exact Lebesgue_outer_measure.nonneg U
         · exact ⟨∅, Set.Subset.rfl, isOpen_empty, rfl⟩
         · exact le_refl _
-      · -- E ≠ ∅ : тогда E = Set.univ (поскольку любое непустое множество в синглтоне — это univ)
+      · -- E ≠ ∅ : тогда E = Set.univ (поскольку любое непустое множество в одноточечном пространстве — это univ)
         have hE_univ : E = Set.univ := by
           ext x; constructor
           · intro _; exact Set.mem_univ x
