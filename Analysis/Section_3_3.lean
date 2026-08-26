@@ -688,8 +688,9 @@ example : (fun x : ℝ ↦ (x : ℝ)) ≠ (fun x : ℝ ↦ |(x : ℝ)|) := by
   -- превращает `hab` в доказательство `False`, которым и закрывается цель.
   norm_num at hab
 
-/-- Example 3.3.11:
-    Довольно скучным примером является пустая функция f : ∅ → X.
+/--
+Пример 3.3.11:
+Довольно скучным примером является пустая функция f : ∅ → X.
  -/
 abbrev SetTheory.Set.f_3_3_11 (X : Set) : Function (∅ : Set) X :=
   Function.mk
@@ -700,8 +701,10 @@ abbrev SetTheory.Set.f_3_3_11 (X : Set) : Function (∅ : Set) X :=
     -- которым и закрывается любая цель — саму `∃! y, ...` разбирать не нужно.
     (by intro ⟨x, hx⟩; simp at hx) -- Доказательствo уникальности
 
--- Из определения 3.3.8 следует, что
--- все функции из пустого множества в Х равны.
+/--
+Из определения 3.3.8 следует,
+что все функции из пустого множества в Х равны.
+-/
 theorem SetTheory.Set.empty_function_unique {X : Set}
   (f g : Function (∅ : Set) X) : f = g := by
     -- 3.3.8
@@ -728,8 +731,10 @@ noncomputable abbrev Function.comp {X Y Z : Set}
 -- поэтому здесь мы используем `○`, чтобы избежать неоднозначности.
 infix:90 "○" => Function.comp
 
--- Связывает нотацию `g ○ f` из `Function.comp` с обычным применением функций:
--- значение композиции в точке `x` — это `g`, применённая к `f x`.
+/--
+Связывает нотацию `g ○ f` из `Function.comp` с обычным применением функций:
+значение композиции в точке `x` — это `g`, применённая к `f x`.
+-/
 theorem Function.comp_eval {X Y Z : Set}
   (g : Function Y Z) (f : Function X Y) (x : X) :
     (g ○ f) x = g (f x) := Function.eval_of _ _
@@ -777,22 +782,26 @@ theorem SetTheory.Set.f_circ_g_3_3_14 :
     intros
     ring
 
-/-- Lemma 3.3.15 (Композиция ассоциативна) -/
+/-- Лемма 3.3.15: Композиция ассоциативна. -/
 theorem SetTheory.Set.comp_assoc {W X Y Z : Set}
   (h : Function Y Z) (g : Function X Y) (f : Function W X) :
     h ○ (g ○ f) = (h ○ g) ○ f := by
       -- f = g ↔ ∀ (x : X.toSubtype), f.to_fn x = g.to_fn x
       simp [Function.eq_iff]
 
--- Определение 3.3.16:
--- `f` инъективна (взаимно однозначна), если разным элементам
--- области определения она сопоставляет разные элементы области значений.
+/--
+Определение 3.3.16:
+`f` инъективна (взаимно однозначна), если разным элементам
+области определения она сопоставляет разные элементы области значений.
+-/
 abbrev Function.one_to_one {X Y : Set} (f : Function X Y) : Prop :=
   ∀ x x' : X, x ≠ x' → f x ≠ f x'
 
+/--
 -- Равносильная (контрапозитивная) формулировка инъективности:
 -- вместо «x ≠ x' влечёт f x ≠ f x'» — «f x = f x' влечёт x = x'».
 -- Именно эта форма обычно используется на практике для доказательства инъективности.
+-/
 theorem Function.one_to_one_iff {X Y : Set} (f : Function X Y) :
   f.one_to_one ↔ ∀ x x' : X, f x = f x' → x = x' := by
     -- Обе части — это `∀ x x', P x x'` для соответствующих `P`.
@@ -1133,7 +1142,7 @@ theorem Function.bijective_incorrect_def :
         -- любые два значения, связанные с `x`, совпадают.
         intro y₁ y₂
         -- Переписываем посылки цели `yᵢ = f x` в форму отношения `f.P x yᵢ`.
-        rw [Function.eval]; rw [Function.eval]
+        rw [Function.eval, Function.eval]
         -- Цель: `f.P x y₁ → f.P x y₂ → y₁ = y₂`, вводим обе посылки.
         intro h₁ h₂
         -- Для `f = mk_fn (fun _ ↦ 0)` отношение `f.P` — это `fun x y ↦ y = 0`,
@@ -1168,8 +1177,7 @@ theorem Function.bijective_incorrect_def :
       use 0, 1
       -- `eval_of : (mk_fn g) x = g x` снимает обёртку `mk_fn`
       -- по очереди с `f 0` и с `f 1`, оставляя в обеих частях `0`.
-      rw [Function.eval_of]
-      rw [Function.eval_of]
+      rw [Function.eval_of, Function.eval_of]
       constructor
       · rfl
       · -- Литералы `0` и `1` типа `Nat` — это образы `0` и `1` из `ℕ`
@@ -1204,9 +1212,22 @@ abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
         exact hx
     )
 
+/--
+  Правило вычисления для обратной функции:
+  `x` — это значение `f⁻¹` в точке `y` тогда и только тогда, когда `f x = y`.
+
+  Доказательство — просто применение `Function.eval` к `f.inverse h : Function Y X`:
+  `Function.eval (f.inverse h) y x : x = (f.inverse h) y ↔ (f.inverse h).P y x`.
+
+  Отношение `(f.inverse h).P` по построению `f.inverse` — это `fun y x ↦ f x = y`,
+  поэтому правая часть эквивалентности `(f.inverse h).P y x` и требуемое `f x = y` —
+  одно и то же утверждение с точностью до развёртки определений,
+  и Lean принимает терм без дополнительных тактик.
+-/
 theorem Function.inverse_eval
   {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) :
-    x = (f.inverse h) y ↔ f x = y := Function.eval _ _ _
+    x = (f.inverse h) y ↔ f x = y :=
+      Function.eval (f.inverse h) y x
 
 /-- Совместимость с понятием обратной функции из Mathlib. -/
 theorem Function.inverse_eq
@@ -1234,67 +1255,224 @@ theorem Function.inverse_eq
   Exercise 3.3.1.
   Хотя доказательство, работающее напрямую с функциями, было бы короче,
   суть упражнения — показать это, используя определение {name}`Function.eq_iff`.
+
+  Конечно, эти утверждения о равенствах
+  в теоремах ниже следуют просто сразу из аксиомы равенства,
+  применяемой непосредственно к рассматриваемым функциям.
+  Но смысл упражнения в том, чтобы показать, что их можно установить,
+  применяя аксиому равенства не к самим функциям,
+  а к элементам области определения и области значения этих функций.
+
+  Примечаниe:
+
+  В учебнике от нас просят показать, что определение равенства в определении 3.3.8
+  является рефлексивным, симметричным и транзитивным.
+  Здесь же от нас, по всей видимости, хотят другого.
 -/
 theorem Function.refl {X Y : Set} (f : Function X Y) : f = f := by
-  sorry
+  -- f = g ↔ ∀ (x : X.toSubtype), f.to_fn x = g.to_fn x
+  rw [Function.eq_iff]
+  intro x
+  -- А вот теперь уже мы можем воспользоваться аксиомой равенства
+  -- двух элементов из области значений функции f.
+  --
+  -- Рефлексивность равенства функций сведена к рефлексивности
+  -- равенства значений в `Y`: `Eq.refl a : a = a`.
+  -- Обе части равенства это один и тот же терм.
+  -- Разворачивать нечего, никакой скрытой структуры под Eq.refl нет.
+  rfl
+  -- exact Eq.refl (f x)
 
 theorem Function.symm {X Y : Set} (f g : Function X Y) : f = g ↔ g = f := by
-  sorry
+  rw [Function.eq_iff, Function.eq_iff]
+  constructor <;>
+  · intro h x
+    symm
+    rw [h]
 
 theorem Function.trans {X Y : Set} {f g h : Function X Y}
   (hfg : f = g) (hgh : g = h) : f = h := by
-    sorry
+    rw [Function.eq_iff] at *
+    intro x
+    rw [hfg, hgh]
 
 theorem Function.comp_congr {X Y Z : Set} {f f' : Function X Y}
   (hff' : f = f') {g g' : Function Y Z} (hgg' : g = g') :
     g ○ f = g' ○ f' := by
-      sorry
+      rw [Function.eq_iff] at *
+      intro x
+      rw [Function.comp_eval, Function.comp_eval]
+      rw [hff', hgg']
 
 /-- Exercise 3.3.2 -/
-theorem Function.comp_of_inj
-  {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.one_to_one)
-    (hg : g.one_to_one) : (g ○ f).one_to_one := by
-      sorry
+theorem Function.comp_of_inj {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
+  (hf : f.one_to_one) (hg : g.one_to_one) : (g ○ f).one_to_one := by
+    rw [Function.one_to_one_iff] at *
+    intro x x' h
+    -- rw [Function.comp_eval, Function.comp_eval] at h
+    simp only [Function.comp_eval] at h
+    specialize hf x x'
+    specialize hg (f x) (f x')
+    apply hf
+    apply hg
+    exact h
 
 theorem Function.comp_of_surj
   {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.onto)
     (hg : g.onto) : (g ○ f).onto := by
-      sorry
+      -- Раскрываем определение сюръективности везде.
+      rw [Function.onto_iff] at *
+      unfold Function.Surjective at *
+      intro z
+      obtain ⟨y, hyeqz⟩ := hg z
+      obtain ⟨x, hxeqy⟩ := hf y
+      -- unfold Function.comp
+      use x
+      rw [Function.eval_of] -- (Function.mk_fn f).to_fn x = f x
+      rw [hxeqy, hyeqz]
 
 /--
   Exercise 3.3.3 — заполните sorry в формулировках разумным образом.
+
+  Когда пустая функция в заданное множество X инъективнa?
+  Ответ: Всегда.
+
+  Если значения функции совпадают на любых двух элементах
+  из пустого множества, то и сами эти элементы совпадают.
+  Но в пустом множестве этих элементов попросту нет,
+  поэтому это утверждение всегда истинно.
 -/
 theorem empty_function_one_to_one_iff
-  (X : Set) (f : Function ∅ X) : f.one_to_one ↔ sorry := by
-    sorry
+  (X : Set) (f : Function ∅ X) : f.one_to_one ↔ True := by
+    rw [Function.one_to_one_iff]
+    constructor
+    · intro h
+      exact True.intro
+    · intro _ x x'
+      have ⟨x, hx⟩ := x
+      have hxne : x ∉ ∅ := SetTheory.Set.not_mem_empty x
+      contradiction
 
+/--
+Когда пустая функция в заданное множество X сюръективнa?
+Ответ: когда и само это множество Х пустоe.
+-/
 theorem empty_function_onto_iff
-  (X : Set) (f : Function ∅ X) : f.onto ↔ sorry := by
-    sorry
+  (X : Set) (f : Function ∅ X) : f.onto ↔ X = ∅ := by
+    rw [Function.onto_iff]
+    unfold Function.Surjective
+    constructor
+    · intro h
+      -- Если множество пустое, то у него нет элементов:
+      -- X = ∅ ↔ ∀ (x : Object), x ∉ X
+      rw [SetTheory.Set.eq_empty_iff_forall_notMem]
+      intro x hx
+      have b : X := ⟨x, hx⟩
+      specialize h b
+      obtain ⟨⟨a, ha⟩, _⟩ := h
+      have hane : a ∉ ∅ := SetTheory.Set.not_mem_empty a
+      contradiction
+    · intro hxe xsub
+      have ⟨x, hx⟩ := xsub
+      have hxne : x ∉ ∅ := SetTheory.Set.not_mem_empty x
+      rw [hxe] at hx
+      contradiction
 
+/--
+  То же самое, но короче: обе части `↔` сразу переводятся в поточечную форму,
+  после чего каждое направление — это одна и та же мысль
+  «элемента пустого множества не существует», применённая к разным множествам.
+-/
+theorem empty_function_onto_iff'
+  (X : Set) (f : Function ∅ X) : f.onto ↔ X = ∅ := by
+    rw [Function.onto_iff, SetTheory.Set.eq_empty_iff_forall_notMem]
+    constructor
+    · intro h x hx
+      obtain ⟨⟨e, he⟩⟩ := h ⟨x, hx⟩
+      exact SetTheory.Set.not_mem_empty e he
+    · intro h b
+      obtain ⟨y, hy⟩ := b
+      have hny : y ∉ X := h y
+      exact absurd hy hny
+
+/--
+Когда пустая функция в заданное множество X биeктивнa?
+Ответ: Когда само это множество X – пустое.
+-/
 theorem empty_function_bijective_iff
-  (X : Set) (f : Function ∅ X) : f.bijective ↔ sorry:= by
-    sorry
+  (X : Set) (f : Function ∅ X) : f.bijective ↔ X = ∅ := by
+    rw [Function.bijective]
+    rw [empty_function_one_to_one_iff]
+    rw [empty_function_onto_iff]
+    tauto
+
+-- Можно было бы остаться и на предыдущем уровне косвенности.
+-- Но, видимо, суть вопроса просит нас спуститься до теории множеств.
+theorem empty_function_bijective_iff'
+  (X : Set) (f : Function ∅ X) : f.bijective ↔ f.onto := by
+    rw [Function.bijective]
+    rw [empty_function_one_to_one_iff]
+    tauto
 
 /--
   Exercise 3.3.4.
+  В этом упражнении мы дадим некоторые законы сокращения для композиции.
 -/
-theorem Function.comp_cancel_left {X Y Z : Set} {f f' : Function X Y} {g : Function Y Z}
-  (heq : g ○ f = g ○ f') (hg : g.one_to_one) : f = f' := by
-    sorry
+theorem Function.comp_cancel_left
+  {X Y Z : Set} {f f' : Function X Y} {g : Function Y Z}
+    (heq : g ○ f = g ○ f') (hg : g.one_to_one) : f = f' := by
+      rw [Function.eq_iff]
+      intro x
+      rw [Function.eq_iff] at heq
+      specialize heq x
+      rw [Function.one_to_one_iff] at hg
+      -- rw [Function.comp_eval, Function.comp_eval] at heq
+      simp only [Function.comp_eval] at heq
+      have h := hg (f x) (f' x)
+      apply h
+      exact heq
 
-theorem Function.comp_cancel_right {X Y Z : Set} {f : Function X Y} {g g' : Function Y Z}
-  (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by
-    sorry
+/--
+  То же самое, но короче: все три подготовительных переписывания делаются разом,
+  до `intro x`, после чего остаётся ровно один содержательный шаг —
+  применение инъективности `g`.
+-/
+theorem Function.comp_cancel_left'
+  {X Y Z : Set} {f f' : Function X Y} {g : Function Y Z}
+    (heq : g ○ f = g ○ f') (hg : g.one_to_one) : f = f' := by
+      rw [Function.eq_iff] at heq ⊢
+      rw [Function.one_to_one_iff] at hg
+      simp only [Function.comp_eval] at heq
+      intro x
+      specialize heq x
+      exact hg (f x) (f' x) heq
 
+theorem Function.comp_cancel_right
+  {X Y Z : Set} {f : Function X Y} {g g' : Function Y Z}
+    (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by
+      rw [Function.eq_iff] at heq ⊢
+      rw [Function.onto] at hf
+      simp only [Function.comp_eval] at heq
+      intro y
+      obtain ⟨x, hx⟩ := hf y
+      specialize heq x
+      rw [← hx]
+      exact heq
+
+/--
+  Верно ли то же утверждение, если g не инъективна?
+-/
 def Function.comp_cancel_left_without_hg :
   Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
-    -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+    -- Первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
     sorry
 
+/--
+  Верно ли то же утверждение, если f не сюръективна?
+-/
 def Function.comp_cancel_right_without_hg :
   Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
-    -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+    -- Первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
     sorry
 
 /--
