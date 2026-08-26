@@ -74,7 +74,8 @@ theorem Nat.not_even_and_odd (n : ℕ) : ¬ (Even n ∧ Odd n) := by
 theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
   -- Это доказательство написано так,
   -- чтобы следовать структуре оригинального текста.
-  by_contra h; choose x hx using h
+  by_contra h
+  choose x hx using h
   have hnon : x ≠ 0 := by aesop
   wlog hpos : x > 0
   . apply this _ _ _ (show -x>0 by simp; order) <;> grind
@@ -83,9 +84,12 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
     observe hnum_pos : x.num > 0
     observe hden_pos : x.den > 0
     refine ⟨ by simp [hpos], hden_pos, ?_ ⟩
-    rw [←num_div_den x] at hx; field_simp at hx
+    rw [←num_div_den x] at hx
+    field_simp at hx
     have hnum_cast : x.num = x.num.toNat := Int.eq_natCast_toNat.mpr (by positivity)
-    rw [hnum_cast] at hx; norm_cast at hx; grind
+    rw [hnum_cast] at hx
+    norm_cast at hx
+    grind
   set P : ℕ → Prop := fun p ↦ p > 0 ∧ ∃ q > 0, p^2 = 2*q^2
   have hP : ∃ p, P p := by aesop
   have hiter (p : ℕ) (hPp : P p) : ∃ q, q < p ∧ P q := by
@@ -108,7 +112,8 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
   classical
   set f : ℕ → ℕ := fun p ↦ if hPp : P p then (hiter p hPp).choose else 0
   have hf (p : ℕ) (hPp : P p) : (f p < p) ∧ P (f p) := by
-    simp [f, hPp]; exact (hiter p hPp).choose_spec
+    simp [f, hPp]
+    exact (hiter p hPp).choose_spec
   choose p hP using hP
   set a : ℕ → ℕ := Nat.rec p (fun n p ↦ f p)
   have ha (n : ℕ) : P (a n) := by
@@ -126,7 +131,8 @@ theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ),
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra! h
   have (n : ℕ) : (n*ε)^2 < 2 := by
-    induction' n with n hn; simp
+    induction' n with n hn
+    simp
     simp [add_mul]
     apply lt_of_le_of_ne (h (n*ε) (by positivity) hn)
     have := not_exist_sqrt_two

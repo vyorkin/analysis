@@ -38,7 +38,10 @@ def Rat.Close (ε : ℚ) (x y : ℚ) := |x-y| ≤ ε
 namespace Section_4_3
 
 /-- Definition 4.3.1 (Абсолютная величина) -/
-abbrev abs (x : ℚ) : ℚ := if x > 0 then x else (if x < 0 then -x else 0)
+abbrev abs (x : ℚ) : ℚ :=
+  if x > 0
+  then x
+  else (if x < 0 then -x else 0)
 
 /-- Definition 4.3.1 (Абсолютная величина) (случай положительного числа) -/
 theorem abs_of_pos {x : ℚ} (hx : 0 < x) : abs x = x := by grind

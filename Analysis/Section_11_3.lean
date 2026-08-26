@@ -33,11 +33,11 @@ noncomputable abbrev upper_integral (f : ℝ → ℝ) (I : BoundedInterval) : �
 noncomputable abbrev lower_integral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ :=
   sSup ((PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
 
-theorem upper_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) : 
+theorem upper_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   upper_integral f I = upper_integral g I := by
   simp [upper_integral]; congr! 2; ext; simp; grind
 
-theorem lower_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) : 
+theorem lower_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   lower_integral f I = lower_integral g I := by
   simp [lower_integral]; congr! 2; ext; simp; grind
 
@@ -45,13 +45,13 @@ lemma integral_bound_upper_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedIn
   simp
   refine' ⟨ fun _ ↦ M , ⟨ ⟨ _, _ ⟩, PiecewiseConstantOn.integ_const _ _ ⟩ ⟩
   . grind [abs_le']
-  apply (ConstantOn.of_const (c := M) _).piecewiseConstantOn; simp
+  · apply (ConstantOn.of_const (c := M) _).piecewiseConstantOn; simp
 
 lemma integral_bound_lower_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedInterval} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) : -M * |I|ₗ ∈ (PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine' ⟨ fun _ ↦ -M , ⟨ ⟨ _, _ ⟩, by convert PiecewiseConstantOn.integ_const _ _ using 1; simp ⟩ ⟩
   . grind [abs_le']
-  exact (ConstantOn.of_const (c := -M) (by simp)).piecewiseConstantOn
+  · exact (ConstantOn.of_const (c := -M) (by simp)).piecewiseConstantOn
 
 lemma integral_bound_upper_nonempty {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : ((PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty :=
   ⟨ _, integral_bound_upper_of_bounded h.choose_spec ⟩
@@ -67,22 +67,22 @@ lemma integral_bound_lower_le_upper {f : ℝ → ℝ} {I : BoundedInterval} {a b
     obtain ⟨ h, ⟨ ⟨ hmin, hhp⟩, rfl ⟩ ⟩ := hb
     apply hhp.integ_mono _ hgp; intro x hx; linarith [hmin _ hx, hmaj _ hx]
 
-lemma integral_bound_below {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : 
+lemma integral_bound_below {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   BddBelow ((PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
     rw [bddBelow_def]; use (integral_bound_lower_nonempty h).some
     intro a ha; exact integral_bound_lower_le_upper ha (integral_bound_lower_nonempty h).some_mem
 
-lemma integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : 
+lemma integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   BddAbove ((PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
     rw [bddAbove_def]; use (integral_bound_upper_nonempty h).some
     intro b hb; exact integral_bound_lower_le_upper (integral_bound_upper_nonempty h).some_mem hb
 
 /-- Lemma 11.3.3. Доказательство несколько реорганизовано по сравнению с учебником. -/
-lemma le_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) : 
+lemma le_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) :
   -M * |I|ₗ ≤ lower_integral f I :=
   le_csSup (integral_bound_above (BddOn.of_bounded h)) (integral_bound_lower_of_bounded h)
 
-lemma lower_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : 
+lemma lower_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   lower_integral f I ≤ upper_integral f I := by
   apply csSup_le (integral_bound_lower_nonempty h)
   intros
@@ -90,30 +90,30 @@ lemma lower_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn
   intros
   solve_by_elim [integral_bound_lower_le_upper]
 
-lemma upper_integral_le {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) : 
+lemma upper_integral_le {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) :
   upper_integral f I ≤ M * |I|ₗ :=
   csInf_le (integral_bound_below (BddOn.of_bounded h)) (integral_bound_upper_of_bounded h)
 
 lemma upper_integral_le_integ {f g : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
-  (hfg : MajorizesOn g f I) (hg : PiecewiseConstantOn g I) : 
+  (hfg : MajorizesOn g f I) (hg : PiecewiseConstantOn g I) :
   upper_integral f I ≤ hg.integ' := by
   apply csInf_le (integral_bound_below hf) _
   use g; simpa [hg]
 
 lemma integ_le_lower_integral {f h : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
-  (hfh : MinorizesOn h f I) (hg : PiecewiseConstantOn h I) : 
+  (hfh : MinorizesOn h f I) (hg : PiecewiseConstantOn h I) :
   hg.integ' ≤ lower_integral f I := by
   apply le_csSup (integral_bound_above hf) _
   use h; simpa [hg]
 
 lemma lt_of_gt_upper_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
-  {X : ℝ} (hX : upper_integral f I < X ) : 
+  {X : ℝ} (hX : upper_integral f I < X ) :
   ∃ g, MajorizesOn g f I ∧ PiecewiseConstantOn g I ∧ PiecewiseConstantOn.integ g I < X := by
   choose Y hY hYX using exists_lt_of_csInf_lt (integral_bound_upper_nonempty hf) hX
   simp at hY; peel hY; simp_all; tauto
 
 lemma gt_of_lt_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
-  {X : ℝ} (hX : X < lower_integral f I) : 
+  {X : ℝ} (hX : X < lower_integral f I) :
   ∃ h, MinorizesOn h f I ∧ PiecewiseConstantOn h I ∧ X < PiecewiseConstantOn.integ h I := by
   choose Y hY hYX using exists_lt_of_lt_csSup (integral_bound_lower_nonempty hf) hX
   simp at hY; peel hY; simp_all; tauto
@@ -122,19 +122,19 @@ lemma gt_of_lt_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddO
 Поскольку мы допускаем бросовые значения, простейшее определение интеграла Римана — через верхний интеграл. -/
 noncomputable abbrev integ (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := upper_integral f I
 
-theorem integ_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) : 
+theorem integ_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   integ f I = integ g I := upper_integral_congr h
 
 noncomputable abbrev IntegrableOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop :=
   BddOn f I ∧ lower_integral f I = upper_integral f I
 
 /-- Lemma 11.3.7 / Exercise 11.3.3 -/
-theorem integ_of_piecewise_const {f : ℝ → ℝ} {I : BoundedInterval} (hf : PiecewiseConstantOn f I) : 
+theorem integ_of_piecewise_const {f : ℝ → ℝ} {I : BoundedInterval} (hf : PiecewiseConstantOn f I) :
   IntegrableOn f I ∧ integ f I = hf.integ' := by
   sorry
 
 /-- Remark 11.3.8 -/
-theorem integ_on_subsingleton {f : ℝ → ℝ} {I : BoundedInterval} (hI : |I|ₗ = 0) : 
+theorem integ_on_subsingleton {f : ℝ → ℝ} {I : BoundedInterval} (hI : |I|ₗ = 0) :
   IntegrableOn f I ∧ integ f I = 0 := by
   observe : Subsingleton I.toSet
   observe hconst : ConstantOn f I
@@ -150,12 +150,12 @@ noncomputable abbrev lower_riemann_sum (f : ℝ → ℝ) {I : BoundedInterval} (
 
 /-- Lemma 11.3.11 / Exercise 11.3.4 -/
 theorem upper_riemann_sum_le {f g : ℝ → ℝ} {I : BoundedInterval} (P : Partition I)
-  (hgf : MajorizesOn g f I) (hg : PiecewiseConstantWith g P) : 
+  (hgf : MajorizesOn g f I) (hg : PiecewiseConstantWith g P) :
   upper_riemann_sum f P ≤ integ g I := by
    sorry
 
 theorem lower_riemann_sum_ge {f h : ℝ → ℝ} {I : BoundedInterval} (P : Partition I)
-  (hfh : MinorizesOn h f I) (hg : PiecewiseConstantWith h P) : 
+  (hfh : MinorizesOn h f I) (hg : PiecewiseConstantWith h P) :
   integ h I ≤ lower_riemann_sum f P := by
    sorry
 
@@ -164,7 +164,7 @@ theorem upper_integ_le_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : B
   (P : Partition I) : upper_integral f I ≤ upper_riemann_sum f P := by
   sorry
 
-theorem upper_integ_eq_inf_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) : 
+theorem upper_integ_eq_inf_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) :
   upper_integral f I = sInf (.range (fun P : Partition I ↦ upper_riemann_sum f P)) := by
   sorry
 
@@ -172,7 +172,7 @@ theorem lower_integ_ge_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : B
   (P : Partition I) : lower_riemann_sum f P ≤ lower_integral f I := by
   sorry
 
-theorem lower_integ_eq_sup_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) : 
+theorem lower_integ_eq_sup_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) :
   lower_integral f I = sSup (.range (fun P : Partition I ↦ lower_riemann_sum f P)) := by
   sorry
 
@@ -182,7 +182,7 @@ theorem MajorizesOn.trans {f g h : ℝ → ℝ} {I : BoundedInterval}
   sorry
 
 /-- Exercise 11.3.1 (ii) -/
-theorem MajorizesOn.anti_symm {f g : ℝ → ℝ} {I : BoundedInterval} : 
+theorem MajorizesOn.anti_symm {f g : ℝ → ℝ} {I : BoundedInterval} :
   (∀ x ∈ (I : Set ℝ), f x = g x) ↔ MajorizesOn f g I ∧ MajorizesOn g f I := by
   sorry
 
