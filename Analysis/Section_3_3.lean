@@ -1000,8 +1000,10 @@ abbrev h_3_3_24 : Fin 3 → ({3,4,5} : _root_.Set ℕ) := fun x ↦ match x with
 example : Function.Bijective h_3_3_24 := by decide
 
 /--
-  Example 3.3.25 сформулирован с использованием Mathlib, а не рамок теории множеств здесь,
+  Example 3.3.25 сформулирован с использованием Mathlib, а не нашей теории множеств,
   чтобы избежать некоторых утомительных технических сложностей (ср. Exercise 3.3.2)
+
+  Функция `f : ℕ → ℕ{0}`, определяемая `f(n) := n++` является биекцией.
 -/
 example : Function.Bijective (fun n ↦ ⟨n+1, by omega⟩ : ℕ → { n : ℕ // n ≠ 0 }) := by
   -- Биективность это инъективность и сюръективность.
@@ -1026,196 +1028,370 @@ example : Function.Bijective (fun n ↦ ⟨n+1, by omega⟩ : ℕ → { n : ℕ 
     unfold Function.Surjective
     -- `intro ⟨x, hx⟩` берёт произвольный элемент `{n // n ≠ 0}`
     -- и разбирает его на значение `x : ℕ` и доказательство `hx : x ≠ 0`.
-    intro ⟨x, hx⟩
+    intro ⟨b, hb⟩
     -- Ищем прообраз: раз `f n = n + 1`, для `x ≥ 1` подходит `x - 1`.
-    use x-1
-    -- Цель: `⟨(x-1)+1, ⋯⟩ = ⟨x, hx⟩`. Как и выше, `Subtype.mk.injEq` сводит
-    -- равенство пар к равенству первых компонент: `x - 1 + 1 = x`.
+    use b-1
+    dsimp only
+    -- Как и выше, `Subtype.mk.injEq` сводит
+    -- равенство пар к равенству первых компонент: `b - 1 + 1 = b`.
     simp only [Subtype.mk.injEq]
     -- Нельзя просто применить `rfl` из-за "усечённого вычитания" над `ℕ`
     -- (`x - 1` при `x = 0` было бы `0`),
     -- поэтому сначала превращаем `hx : x ≠ 0` в `1 ≤ x`.
-    have hx' : 1 ≤ x := Nat.pos_of_ne_zero hx
-    -- `Nat.sub_add_cancel : m ≤ n → n - m + m = n` при `m = 1`
-    -- даёт нужное равенство.
-    exact Nat.sub_add_cancel hx'
+    have hb' : 1 ≤ b := Nat.pos_of_ne_zero hb
+    -- `Nat.sub_add_cancel : m ≤ n → n - m + m = n`
+    -- при `m = 1` -- даёт нужное равенство.
+    exact Nat.sub_add_cancel hb'
 
+/--
+  А уже вот такая функция f : ℕ → ℕ не является биекцией.
+
+  Таким образом, понятие биективной функции зависит не только от того,
+  как устроена функция, но и от того, каковы область её определения и область значений.
+-/
 example : ¬ Function.Bijective (fun n ↦ n+1) := by
+  -- Биективность — это конъюнкция инъективности и сюръективности,
+  -- поэтому достаточно опровергнуть любую из двух частей.
+  -- Берём сюръективность:
+  -- функция `n ↦ n + 1` не попадает в `0`.
   suffices h : ¬ Function.Surjective (fun n ↦ n+1) by
-    unfold Function.Bijective
-    tauto
+    intro hbij
+    -- `Function.Bijective f` по определению разворачивается в
+    -- `Function.Injective f ∧ Function.Surjective f`,
+    -- поэтому проекция `hbij.2` — это в точности
+    -- доказательство сюръективности, которое и опровергает `h`.
+    exact h hbij.2
   unfold Function.Surjective
+  -- Сюръективность — это `∀ b, ∃ a, f a = b`, поэтому её отрицание
+  -- `push_neg` переносит внутрь кванторов, получая `∃ b, ∀ a, f a ≠ b`.
   push_neg
+  -- Значение, в которое ни один элемент не переходит – это `0`.
   use 0
-  intros
+  intro n
+  -- Цель `n + 1 ≠ 0` переворачиваем в `0 ≠ n + 1`,
+  -- чтобы она совпала с формулировкой `Nat.zero_ne_add_one`.
   symm
   apply Nat.zero_ne_add_one
 
-/-- Remark 3.3.27 -/
+/--
+Remark 3.3.27.
+
+Распространенной ошибкой является утверждение,
+что функция `f : X ↔ Y` является биективной,
+если для каждого x ∈ X существует ровно один y ∈ Y такой, что y = f(x).
+Это не означает, что функция f является биективной.
+Скорее, это просто утверждение, что f является функцией.
+
+Для того чтобы f была биективной ф-цией, утверждения выше недостаточно:
+Функция не может принимать два разных значения на одном аргументе.
+Например, нельзя иметь функцию f, для которой одновременно f(0) = 1 и f(0) = 2.
+
+Теорема ниже формализует это замечание в виде контрпримера:
+предъявляются множества `X`, `Y` и функция `f : Function X Y`,
+для которой ошибочное условие выполнено, а биективность — нет.
+Тем самым условие «для каждого `x` существует ровно один `y` с `y = f x`»
+строго слабее биективности и никак её не влечёт.
+
+Контрпример берётся простой: `X = Y = Nat` и константная ф-ция `f x = 0`.
+Ошибочное условие для неё выполнено просто потому,
+что `f` — функция, а вот инъективность нарушена, поскольку `f 0 = f 1 = 0`.
+
+Теорема проясняет роль квантора `∃!` в определении структуры {name}`Function`:
+он гарантирует однозначность значения на каждом аргументе,
+то есть корректность самого понятия функции,
+и ничего не говорит о том, как `f` ведёт себя на разных аргументах.
+-/
 theorem Function.bijective_incorrect_def :
-  ∃ X Y : Set, ∃ f : Function X Y, (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective := by
+  -- Существует такая структура `Function X Y`,
+  ∃ X Y : Set, ∃ f : Function X Y,
+  -- Для которой выполняется требование однозначности/функциональности,
+  -- но не выполняется биективность.
+  (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective := by
+    -- Область определения и область значений контрпримера — натуральные числа.
     use Nat, Nat
-    set f := mk_fn fun x ↦ (0 : Nat)
+    -- Константная функция `x ↦ 0`,
+    -- обёрнутая в структуру `Function` через
+    -- `mk_fn: (f : X.toSubtype → Y.toSubtype) : Function X Y`.
+    set f : Function Nat Nat := mk_fn fun (x : Nat) ↦ (0 : Nat)
     use f
     constructor
-    · intros
+    -- Первая часть:
+    -- Условие однозначности/функциональности для `f` выполнено.
+    · intro x
+      -- `∃!` распадается на существование свидетеля и его единственность.
       apply existsUnique_of_exists_of_unique
-      · use 0; rw [Function.eval]
-      intros; rw [Function.eval] at *; aesop
-    rw [Function.bijective]
-    suffices h : ¬ f.one_to_one by tauto
-    rw [Function.one_to_one_iff]
-    push_neg; use 0, 1; simp [f]
+      · -- Существование
+        show ∃ y, y = f.to_fn x
+        -- Свидетель — `0`, ведь `f` константна.
+        use 0
+        -- Переводит цель `0 = f x` в утверждение `f.P x 0`
+        -- Для `mk_fn` оно бета-редуцируется до
+        -- `0 = (mk_fn fun x ↦ 0) x` => `0 = 0`
+        -- и закрывается `rfl` внутри самого `rw`.
+        rw [Function.eval] -- `y = f x ↔ f.P x y`
+      · -- Единственность:
+        -- любые два значения, связанные с `x`, совпадают.
+        intro y₁ y₂
+        -- Переписываем посылки цели `yᵢ = f x` в форму отношения `f.P x yᵢ`.
+        rw [Function.eval]; rw [Function.eval]
+        -- Цель: `f.P x y₁ → f.P x y₂ → y₁ = y₂`, вводим обе посылки.
+        intro h₁ h₂
+        -- Для `f = mk_fn (fun _ ↦ 0)` отношение `f.P` — это `fun x y ↦ y = 0`,
+        -- поэтому `f.P x yᵢ` и `yᵢ = 0` — одно и то же утверждение по определению.
+        -- Достаточно указать желаемый тип в `have`: Lean проверит совпадение
+        -- с типом `hᵢ` с точностью до развёртки определений, никаких тактик не нужно.
+        have e₁ : y₁ = (0 : Nat) := h₁
+        have e₂ : y₂ = (0 : Nat) := h₂
+        -- Оба значения оказались нулём, и цель превращается в `0 = 0`,
+        -- которую `rw` закрывает автоматически через `rfl`.
+        rw [e₁, e₂]
+    -- Вторая часть: биективность нарушена.
+    · rw [Function.bijective]
+      -- Биективность — конъюнкция инъективности и сюръективности,
+      -- поэтому достаточно опровергнуть одну из частей
+      -- (это нам и помогает сделать тактикa suffices)
+      -- Берём инъективность.
+      suffices hninj : ¬ f.one_to_one by
+        intro hbij
+        obtain ⟨hone, honto⟩ := hbij
+        -- Инъективность противоречит `h : ¬ f.one_to_one`
+        exact hninj hone
+      -- Удобнее работать с контрапозитивной формой:
+      -- `∀ x x', f x = f x' → x = x'`
+      rw [Function.one_to_one_iff]
+      -- Если не все x и x' равны с этой посылкой,
+      -- то существуют такие x и x', которые не равны.
+      -- С помощью push_neg отрицание переносим внутрь кванторов:
+      -- `∃ x x', f x = f x' ∧ x ≠ x'`.
+      push_neg
+      -- Разные аргументы с одним и тем же значением: `f 0 = f 1 = 0`.
+      use 0, 1
+      -- `eval_of : (mk_fn g) x = g x` снимает обёртку `mk_fn`
+      -- по очереди с `f 0` и с `f 1`, оставляя в обеих частях `0`.
+      rw [Function.eval_of]
+      rw [Function.eval_of]
+      constructor
+      · rfl
+      · -- Литералы `0` и `1` типа `Nat` — это образы `0` и `1` из `ℕ`
+        -- при биекции `nat_equiv : ℕ ≃ Nat` (инстанс `OfNat` определён именно так).
+        -- `rw [Ne]` разворачивает `≠` в `¬ (0 = 1)`, после чего
+        -- `ofNat_inj : (ofNat(n) : Nat) = ofNat(m) ↔ ofNat(n) = ofNat(m)`
+        -- переносит равенство литералов обратно в `ℕ`.
+        rw [Ne, SetTheory.Set.ofNat_inj]
+        exact Nat.zero_ne_one -- Nat.zero_ne_one : 0 ≠ 1
 
 /--
   Мы не можем использовать нотацию {syntax term}`f⁻¹` для обратной функции,
-  потому что в классе {name}`Inv` из Mathlib обратная к {name}`f` должна
+  потому что в классе {name}`Inv` из Mathlib обратная ф-ция к {name}`f` должна
   иметь ровно тот же тип, что и {name}`f`, а {lean}`Function Y X` —
   это другой тип, отличный от {lean}`Function X Y`.
 -/
 abbrev Function.inverse {X Y : Set} (f : Function X Y) (h : f.bijective) :
   Function Y X :=
     Function.mk (fun y x ↦ f x = y) (by
-      intros
+      intro y
       apply existsUnique_of_exists_of_unique
-      . aesop
-      intro _ _ hx hx'
-      simp at hx hx'
-      rw [←hx'] at hx
-      apply f.one_to_one_iff.mp h.1
-      simp [hx]
+      · dsimp only
+        obtain ⟨hinj, hsurj⟩ := h
+        unfold one_to_one at hinj
+        unfold onto at hsurj
+        exact hsurj y
+      · intro y₁ y₂ hx hx'
+        dsimp only at hx hx'
+        rw [←hx'] at hx
+        -- f.one_to_one ↔ ∀ (x x' : X.toSubtype), f.to_fn x = f.to_fn x' → x = x'
+        apply f.one_to_one_iff.mp h.1
+        exact hx
     )
 
 theorem Function.inverse_eval
   {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) (x : X) :
     x = (f.inverse h) y ↔ f x = y := Function.eval _ _ _
 
-/-- Совместимость с понятием обратной функции из Mathlib -/
-theorem Function.inverse_eq {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) :
-  (f.inverse h).to_fn = Function.invFun f.to_fn := by
-    ext y
-    congr
-    symm
-    rw [inverse_eval]
-    apply Function.rightInverse_invFun (f.bijective_iff.mp h).2
+/-- Совместимость с понятием обратной функции из Mathlib. -/
+theorem Function.inverse_eq
+  {X Y : Set} [Nonempty X] {f : Function X Y} (h : f.bijective) :
+    (f.inverse h).to_fn = Function.invFun f.to_fn := by
+      have hbij : Function.Bijective f.to_fn := f.bijective_iff.mp h
+      have hsurj : Function.Surjective f.to_fn := hbij.2
+      -- Напоминание:
+      -- LeftInverse  : g ∘ f = id
+      -- RightInverse : f ∘ g = id
+      --
+      -- `Function.RightInverse (invFun f.to_fn) f.to_fn`, то есть
+      -- `∀ y, f.to_fn (invFun f.to_fn y) = y`: на сюръективной `f.to_fn`
+      -- `Function.invFun` действительно выбирает прообраз.
+      -- Короче вот такой путь: Y → X → Y
+      have hright : ∀ y : Y, f.to_fn (Function.invFun f.to_fn y) = y :=
+        Function.rightInverse_invFun hsurj
+      funext y
+      symm
+      -- `inverse_eval : x = (f.inverse h) y ↔ f x = y`
+      rw [inverse_eval]
+      exact hright y
 
 /--
-  Exercise 3.3.1. Хотя доказательство, работающее напрямую с функциями, было бы короче,
+  Exercise 3.3.1.
+  Хотя доказательство, работающее напрямую с функциями, было бы короче,
   суть упражнения — показать это, используя определение {name}`Function.eq_iff`.
 -/
-theorem Function.refl {X Y : Set} (f : Function X Y) : f = f := by sorry
+theorem Function.refl {X Y : Set} (f : Function X Y) : f = f := by
+  sorry
 
-theorem Function.symm {X Y : Set} (f g : Function X Y) : f = g ↔ g = f := by sorry
+theorem Function.symm {X Y : Set} (f g : Function X Y) : f = g ↔ g = f := by
+  sorry
 
-theorem Function.trans {X Y : Set} {f g h : Function X Y} (hfg : f = g) (hgh : g = h) : f = h := by sorry
+theorem Function.trans {X Y : Set} {f g h : Function X Y}
+  (hfg : f = g) (hgh : g = h) : f = h := by
+    sorry
 
-theorem Function.comp_congr {X Y Z : Set} {f f' : Function X Y} (hff' : f = f') {g g' : Function Y Z}
-  (hgg' : g = g') : g ○ f = g' ○ f' := by sorry
+theorem Function.comp_congr {X Y Z : Set} {f f' : Function X Y}
+  (hff' : f = f') {g g' : Function Y Z} (hgg' : g = g') :
+    g ○ f = g' ○ f' := by
+      sorry
 
 /-- Exercise 3.3.2 -/
-theorem Function.comp_of_inj {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.one_to_one)
-  (hg : g.one_to_one) : (g ○ f).one_to_one := by sorry
+theorem Function.comp_of_inj
+  {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.one_to_one)
+    (hg : g.one_to_one) : (g ○ f).one_to_one := by
+      sorry
 
-theorem Function.comp_of_surj {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.onto)
-  (hg : g.onto) : (g ○ f).onto := by sorry
+theorem Function.comp_of_surj
+  {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.onto)
+    (hg : g.onto) : (g ○ f).onto := by
+      sorry
 
 /--
   Exercise 3.3.3 — заполните sorry в формулировках разумным образом.
 -/
-theorem empty_function_one_to_one_iff (X : Set) (f : Function ∅ X) : f.one_to_one ↔ sorry := by sorry
+theorem empty_function_one_to_one_iff
+  (X : Set) (f : Function ∅ X) : f.one_to_one ↔ sorry := by
+    sorry
 
-theorem empty_function_onto_iff (X : Set) (f : Function ∅ X) : f.onto ↔ sorry := by sorry
+theorem empty_function_onto_iff
+  (X : Set) (f : Function ∅ X) : f.onto ↔ sorry := by
+    sorry
 
-theorem empty_function_bijective_iff (X : Set) (f : Function ∅ X) : f.bijective ↔ sorry:= by sorry
+theorem empty_function_bijective_iff
+  (X : Set) (f : Function ∅ X) : f.bijective ↔ sorry:= by
+    sorry
 
 /--
   Exercise 3.3.4.
 -/
 theorem Function.comp_cancel_left {X Y Z : Set} {f f' : Function X Y} {g : Function Y Z}
-  (heq : g ○ f = g ○ f') (hg : g.one_to_one) : f = f' := by sorry
+  (heq : g ○ f = g ○ f') (hg : g.one_to_one) : f = f' := by
+    sorry
 
 theorem Function.comp_cancel_right {X Y Z : Set} {f : Function X Y} {g g' : Function Y Z}
-  (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by sorry
+  (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by
+    sorry
 
-def Function.comp_cancel_left_without_hg : Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
-  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+def Function.comp_cancel_left_without_hg :
+  Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
+    -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+    sorry
 
-def Function.comp_cancel_right_without_hg : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
-  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+def Function.comp_cancel_right_without_hg :
+  Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
+    -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+    sorry
 
 /--
   Exercise 3.3.5.
 -/
-theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hinj :
-    (g ○ f).one_to_one) : f.one_to_one := by sorry
+theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
+  (hinj : (g ○ f).one_to_one) : f.one_to_one := by
+    sorry
 
-theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hsurj :
-    (g ○ f).onto) : g.onto := by sorry
+theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
+  (hsurj : (g ○ f).onto) : g.onto := by
+    sorry
 
-def Function.comp_injective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hinj :
-    (g ○ f).one_to_one), g.one_to_one) := by
-  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+def Function.comp_injective' :
+  Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)
+    (hinj : (g ○ f).one_to_one), g.one_to_one) := by
+      -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+      sorry
 
-def Function.comp_surjective' : Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z) (hsurj :
-    (g ○ f).onto), f.onto) := by
-  -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+def Function.comp_surjective' :
+  Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)
+    (hsurj : (g ○ f).onto), f.onto) := by
+      -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+      sorry
 
 /-- Exercise 3.3.6 -/
-theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y} (h : f.bijective) (x : X) :
-    (f.inverse h) (f x) = x := by sorry
+theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y}
+  (h : f.bijective) (x : X) :
+    (f.inverse h) (f x) = x := by
+      sorry
 
-theorem Function.self_comp_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) (y : Y) :
-    f ((f.inverse h) y) = y := by sorry
+theorem Function.self_comp_inverse {X Y : Set} {f : Function X Y}
+  (h : f.bijective) (y : Y) :
+    f ((f.inverse h) y) = y := by
+      sorry
 
 theorem Function.inverse_bijective {X Y : Set} {f : Function X Y} (h : f.bijective) :
-    (f.inverse h).bijective := by sorry
+  (f.inverse h).bijective := by
+    sorry
 
 theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) :
-    (f.inverse h).inverse (f.inverse_bijective h) = f := by sorry
+  (f.inverse h).inverse (f.inverse_bijective h) = f := by
+    sorry
 
 /-- Exercise 3.3.7 -/
 theorem Function.comp_bijective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.bijective)
-  (hg : g.bijective) : (g ○ f).bijective := by sorry
+  (hg : g.bijective) : (g ○ f).bijective := by
+    sorry
 
 theorem Function.inv_of_comp {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hf : f.bijective) (hg : g.bijective) :
-    (g ○ f).inverse (Function.comp_bijective hf hg) = (f.inverse hf) ○ (g.inverse hg) := by sorry
+    (g ○ f).inverse (Function.comp_bijective hf hg) = (f.inverse hf) ○ (g.inverse hg) := by
+      sorry
 
 /-- Exercise 3.3.8 -/
 abbrev Function.inclusion {X Y : Set} (h : X ⊆ Y) :
-    Function X Y := Function.mk_fn (fun x ↦ ⟨ x.val, h x.val x.property ⟩ )
+  Function X Y := Function.mk_fn (fun x ↦ ⟨x.val, h x.val x.property⟩ )
 
-abbrev Function.id (X : Set) : Function X X := Function.mk_fn (fun x ↦ x)
+abbrev Function.id (X : Set) : Function X X :=
+  Function.mk_fn (fun x ↦ x)
 
 theorem Function.inclusion_id (X : Set) :
-    Function.inclusion (SetTheory.Set.subset_self X) = Function.id X := by sorry
+  Function.inclusion (SetTheory.Set.subset_self X) = Function.id X := by
+    sorry
 
-theorem Function.inclusion_comp (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
-    Function.inclusion hYZ ○ Function.inclusion hXY = Function.inclusion (SetTheory.Set.subset_trans hXY hYZ) := by sorry
+theorem Function.inclusion_comp
+  (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
+    Function.inclusion hYZ ○ Function.inclusion hXY = Function.inclusion (SetTheory.Set.subset_trans hXY hYZ) := by
+      sorry
 
-theorem Function.comp_id {A B : Set} (f : Function A B) : f ○ Function.id A = f := by sorry
+theorem Function.comp_id {A B : Set} (f : Function A B) :
+  f ○ Function.id A = f := by
+    sorry
 
-theorem Function.id_comp {A B : Set} (f : Function A B) : Function.id B ○ f = f := by sorry
+theorem Function.id_comp {A B : Set} (f : Function A B) :
+  Function.id B ○ f = f := by
+    sorry
 
 theorem Function.comp_inv {A B : Set} (f : Function A B) (hf : f.bijective) :
-    f ○ f.inverse hf = Function.id B := by sorry
+  f ○ f.inverse hf = Function.id B := by
+    sorry
 
 theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) :
-    f.inverse hf ○ f = Function.id A := by sorry
+  f.inverse hf ○ f = Function.id A := by
+    sorry
 
 open Classical in
 theorem Function.glue {X Y Z : Set} (hXY : Disjoint X Y) (f : Function X Z) (g : Function Y Z) :
-    ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
-    ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by sorry
+  ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
+  ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by
+    sorry
 
 open Classical in
 theorem Function.glue' {X Y Z : Set} (f : Function X Z) (g : Function Y Z)
-    (hfg : ∀ x : ((X ∩ Y) : Set), f ⟨x.val, by aesop⟩ = g ⟨x.val, by aesop⟩)  :
-    ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
-    ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by sorry
+  (hfg : ∀ x : ((X ∩ Y) : Set), f ⟨x.val, by aesop⟩ = g ⟨x.val, by aesop⟩)  :
+  ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
+  ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by
+    sorry
 
 end Chapter3
