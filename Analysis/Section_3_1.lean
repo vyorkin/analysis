@@ -851,7 +851,7 @@ abbrev SetTheory.Set.singleton_empty : Set := {(empty : Object)}
 abbrev SetTheory.Set.pair_empty : Set := {(empty : Object), (singleton_empty : Object)}
 
 -- Пустое множество не равно одноэлементному множеству из пустого.
-/-- Exercise 3.1.2 -/
+/-- Exercise 3.1.2 (пустое множество не является одноэлементным) -/
 theorem SetTheory.Set.emptyset_neq_singleton : empty ≠ singleton_empty := by
   intro h
   -- ^ По сути, рассуждаем от противного таким образом.
@@ -883,7 +883,7 @@ theorem SetTheory.Set.emptyset_neq_singleton' : empty ≠ singleton_empty := by
   rw [← h] at hmem
   exact not_mem_empty _ hmem -- ∀ x, x ∉ (∅ : Set)
 
-/-- Exercise 3.1.2 -/
+/-- Exercise 3.1.2 (пустое множество не является парой) -/
 -- Пустое множество не равно 2-х элементному множеству из двух пустых.
 theorem SetTheory.Set.emptyset_neq_pair : empty ≠ pair_empty := by
   intro h
@@ -910,7 +910,7 @@ theorem SetTheory.Set.emptyset_neq_pair' : empty ≠ pair_empty := by
   contradiction
 
 -- Одноэлементное множество из пустого не равно двухэлементному множеству из пустых.
-/-- Exercise 3.1.2 -/
+/-- Exercise 3.1.2 (одноэлементное не является парой) -/
 theorem SetTheory.Set.singleton_empty_neq_pair : singleton_empty ≠ pair_empty := by
   intro h
   -- По аксиоме 3.3:
@@ -936,18 +936,18 @@ theorem SetTheory.Set.union_congr_left (A A' B : Set) (h : A = A') :
 theorem SetTheory.Set.union_congr_right (A B B' : Set) (h : B = B') :
   A ∪ B = A ∪ B' := by rw [h]
 
-/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений, одноэлементные) / Exercise 3.1.3 -/
 theorem SetTheory.Set.singleton_union_singleton (a b : Object) :
   ({a} : Set) ∪ ({b} : Set) = {a,b} := by
     exact pair_eq a b -- {a, b} = {a} ∪ {b}
 
-/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений, коммутативность) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_comm (A B : Set) : A ∪ B = B ∪ A := by
   ext x
   rw [mem_union, mem_union]
   tauto
 
-/-- Lemma 3.1.12 (базовые свойства объединений) / Exercise 3.1.3 -/
+/-- Lemma 3.1.12 (базовые свойства объединений, ассоциативность) / Exercise 3.1.3 -/
 theorem SetTheory.Set.union_assoc (A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   ext x
@@ -1042,7 +1042,7 @@ theorem SetTheory.Set.subset_congr_left
     rw [← hAA']
     exact hAB
 
-/-- Examples 3.1.16 -/
+/-- Examples 3.1.16 (reflexivity) -/
 @[simp, refl]
 theorem SetTheory.Set.subset_self (A : Set) : A ⊆ A := by
   -- tauto
@@ -1050,7 +1050,7 @@ theorem SetTheory.Set.subset_self (A : Set) : A ⊆ A := by
   intro x h
   exact h
 
-/-- Examples 3.1.16 -/
+/-- Examples 3.1.16 (the empty set is a subset) -/
 @[simp]
 theorem SetTheory.Set.empty_subset (A : Set) : ∅ ⊆ A := by
   rw [subset_def]
@@ -1081,7 +1081,7 @@ theorem SetTheory.Set.subset_trans
     apply hBC x at hx
     assumption
 
-/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
+/-- Proposition 3.1.17 (частичный порядок через включение множеств, антисимметричность) -/
 theorem SetTheory.Set.subset_antisymm
   (A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A) : A = B := by
     ext x
@@ -1091,7 +1091,7 @@ theorem SetTheory.Set.subset_antisymm
     specialize hBA x
     exact ⟨hAB, hBA⟩
 
-/-- Proposition 3.1.17 (частичный порядок через включение множеств) -/
+/-- Proposition 3.1.17 (частичный порядок через включение множеств, строгая транзитивность) -/
 theorem SetTheory.Set.ssubset_trans
   (A B C : Set) (hAB : A ⊂ B) (hBC : B ⊂ C) : A ⊂ C := by
     rw [ssubset_def] at *
@@ -1240,7 +1240,7 @@ abbrev SetTheory.Set.specify (A : Set) (P : A → Prop) : Set :=
 
 -- Направление «→»: принадлежность спецификации влечёт принадлежность исходному множеству.
 -- Используй, когда имеешь `h : x ∈ A.specify P` и нужно получить `x ∈ A`.
-/-- Axiom 3.6 (аксиома спецификации) -/
+/-- Axiom 3.6 (аксиома спецификации, принадлежность) -/
 theorem SetTheory.Set.specification_axiom
   {A : Set} {P : A → Prop} {x : Object} (h : x ∈ A.specify P) : x ∈ A := by
     -- `SetTheory.specification_axiom A P` представляет собой конъюнкцию двух фактов:
@@ -1253,7 +1253,7 @@ theorem SetTheory.Set.specification_axiom
 -- Двустороннее ↔, когда x уже является элементом подтипа `x : A`.
 -- Используй, когда уже держишь в руках элемент подтипа и хочешь переключиться
 -- между `x.val ∈ A.specify P` и `P x`.
-/-- Axiom 3.6 (аксиома спецификации) -/
+/-- Axiom 3.6 (аксиома спецификации, предикат выполняется) -/
 theorem SetTheory.Set.specification_axiom'
   {A : Set} (P : A → Prop) (x : A) : x.val ∈ A.specify P ↔ P x := by
     have hh := (SetTheory.specification_axiom A P).2
@@ -1262,7 +1262,7 @@ theorem SetTheory.Set.specification_axiom'
 -- В отличие от specification_axiom' выше, здесь x : Object —
 -- просто объект, а не элемент подтипа A.
 -- Это основной вариант для работы в доказательствах с `x : Object`.
-/-- Axiom 3.6 (аксиома спецификации) -/
+/-- Axiom 3.6 (аксиома спецификации, выделенное множество — подмножество) -/
 @[simp]
 theorem SetTheory.Set.specification_axiom''
   {A : Set} (P : A → Prop) (x : Object) :
@@ -2501,7 +2501,7 @@ theorem SetTheory.Set.specification_from_replacement' {A : Set} {P : A → Prop}
 #check subset_union_right -- B ⊆ A ∪ B
 #check subset_trans       -- (hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C
 
-/-- Exercise 3.1.12. -/
+/-- Exercise 3.1.12 (unions) -/
 theorem SetTheory.Set.subset_union_subset {A B A' B' : Set}
   (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : A' ∪ B' ⊆ A ∪ B := by
     rw [subset_def] at *
@@ -2524,7 +2524,7 @@ theorem SetTheory.Set.subset_union_subset' {A B A' B' : Set}
     · have hB : B ⊆ A ∪ B := subset_union_right A B
       exact subset_trans hB'B hB
 
-/-- Exercise 3.1.12. -/
+/-- Exercise 3.1.12 (intersections) -/
 theorem SetTheory.Set.subset_inter_subset {A B A' B' : Set}
   (hA'A : A' ⊆ A) (hB'B : B' ⊆ B) : A' ∩ B' ⊆ A ∩ B := by
     rw [subset_inter_iff]
@@ -2534,7 +2534,7 @@ theorem SetTheory.Set.subset_inter_subset {A B A' B' : Set}
     · have hB := inter_subset_right A' B'
       exact subset_trans hB hB'B
 
-/-- Exercise 3.1.12. -/
+/-- Exercise 3.1.12 (differences: a counterexample) -/
 theorem SetTheory.Set.subset_diff_subset_counter :
   ∃ (A B A' B' : Set),
     (A' ⊆ A) ∧ (B' ⊆ B) ∧ ¬((A' \ B') ⊆ (A \ B)) := by

@@ -153,17 +153,25 @@ theorem Jordan_inner_le_outer {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Born
       -- Поскольку A ⊆ E ⊆ B, имеем A ⊆ B, значит A.measure ≤ B.measure
       exact IsElementary.measure_mono hA hB (Set.Subset.trans hA_subset_E hE_subset_B)
 
-/-- Элементарная мера подмножества — нижняя граница внутренней меры Жордана. -/
-theorem le_Jordan_inner {d : ℕ} {E A : Set (EuclideanSpace' d)}
-  (hA : IsElementary A) (hAE : A ⊆ E) : hA.measure ≤ Jordan_inner_measure A := by
-  -- Стратегия:
-  -- 1. Раскрываем определение:
-  --    Jordan_inner_measure A = sSup { m | ∃ B, IsElementary B, B ⊆ A ∧ m = hB.measure }
-  -- 2. Показываем, что hA.measure входит в это множество: используем само A
-  --    (A ⊆ A, и hA.measure = hA.measure)
-  -- 3. Показываем, что множество ограничено сверху hA.measure: для любого элементарного B ⊆ A
-  --    B.measure ≤ A.measure по монотонности
-  -- 4. Применяем le_csSup: любой элемент множества ≤ его супремума
+/-- Elementary measure of a subset is a lower bound for inner Jordan measure. -/
+theorem le_Jordan_inner {d:ℕ} {E A: Set (EuclideanSpace' d)}
+  (hA: IsElementary A) (hAE: A ⊆ E) (hE: Bornology.IsBounded E) :
+  hA.measure ≤ Jordan_inner_measure E := by
+  -- `hA.measure` is one of the numbers the supremum ranges over, and the whole
+  -- family is bounded above by the measure of an elementary set containing `E`.
+  obtain ⟨C, hC, hEC⟩ := IsElementary.contains_bounded hE
+  refine le_csSup ⟨hC.measure, ?_⟩ ⟨A, hA, hAE, rfl⟩
+  rintro m ⟨B, hB, hBE, rfl⟩
+  exact IsElementary.measure_mono hB hC (hBE.trans hEC)
+
+/-- The elementary measure of a set is a lower bound for its own inner Jordan measure. -/
+theorem le_Jordan_inner_self {d:ℕ} {A: Set (EuclideanSpace' d)}
+  (hA: IsElementary A) : hA.measure ≤ Jordan_inner_measure A := by
+  -- Strategy:
+  -- 1. Unfold definition: Jordan_inner_measure A = sSup { m | ∃ B, IsElementary B, B ⊆ A ∧ m = hB.measure }
+  -- 2. Show hA.measure is in this set: use A itself (A ⊆ A, and hA.measure = hA.measure)
+  -- 3. Show the set is bounded above by hA.measure: for any B ⊆ A elementary, B.measure ≤ A.measure by monotonicity
+  -- 4. Apply le_csSup: any element of a set is ≤ its supremum
   unfold Jordan_inner_measure
   -- Шаг 2: показываем, что hA.measure входит в множество
   have h_mem : hA.measure ∈ { m : ℝ | ∃ (B : Set (EuclideanSpace' d)), ∃ hB : IsElementary B, B ⊆ A ∧ m = hB.measure } := by
@@ -178,17 +186,23 @@ theorem le_Jordan_inner {d : ℕ} {E A : Set (EuclideanSpace' d)}
   -- Шаг 4: применяем le_csSup
   exact le_csSup h_bdd h_mem
 
-/-- Элементарная мера надмножества — верхняя граница внешней меры Жордана. -/
-theorem Jordan_outer_le {d : ℕ} {E A : Set (EuclideanSpace' d)}
-  (hA : IsElementary A) (hAE : E ⊆ A) : Jordan_outer_measure A ≤ hA.measure := by
-  -- Стратегия:
-  -- 1. Раскрываем определение:
-  --    Jordan_outer_measure A = sInf { m | ∃ B, IsElementary B, A ⊆ B ∧ m = hB.measure }
-  -- 2. Показываем, что hA.measure входит в это множество: используем само A
-  --    (A ⊆ A, и hA.measure = hA.measure)
-  -- 3. Показываем, что множество ограничено снизу нулём: для любого элементарного B ⊇ A
-  --    0 ≤ B.measure по неотрицательности
-  -- 4. Применяем csInf_le: инфимум множества ≤ любого его элемента
+/-- Elementary measure of a superset is an upper bound for outer Jordan measure. -/
+theorem Jordan_outer_le {d:ℕ} {E A: Set (EuclideanSpace' d)}
+  (hA: IsElementary A) (hAE: E ⊆ A) : Jordan_outer_measure E ≤ hA.measure := by
+  -- `hA.measure` is one of the numbers the infimum ranges over, and they are all
+  -- non-negative.
+  refine csInf_le ⟨0, ?_⟩ ⟨A, hA, hAE, rfl⟩
+  rintro m ⟨B, hB, -, rfl⟩
+  exact IsElementary.measure_nonneg hB
+
+/-- The elementary measure of a set is an upper bound for its own outer Jordan measure. -/
+theorem Jordan_outer_le_self {d:ℕ} {A: Set (EuclideanSpace' d)}
+  (hA: IsElementary A) : Jordan_outer_measure A ≤ hA.measure := by
+  -- Strategy:
+  -- 1. Unfold definition: Jordan_outer_measure A = sInf { m | ∃ B, IsElementary B, A ⊆ B ∧ m = hB.measure }
+  -- 2. Show hA.measure is in this set: use A itself (A ⊆ A, and hA.measure = hA.measure)
+  -- 3. Show the set is bounded below by 0: for any B ⊇ A elementary, 0 ≤ B.measure by nonnegativity
+  -- 4. Apply csInf_le: infimum of a set is ≤ any element in the set
   unfold Jordan_outer_measure
   -- Шаг 2: показываем, что hA.measure входит в множество
   have h_mem : hA.measure ∈ { m : ℝ | ∃ (B : Set (EuclideanSpace' d)), ∃ hB : IsElementary B, A ⊆ B ∧ m = hB.measure } := by
@@ -261,22 +275,63 @@ theorem JordanMeasurable.equiv {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bor
   ∀ ε>0, ∃ A, ∃ hA : IsElementary A, Jordan_outer_measure (symmDiff E A) ≤ ε].TFAE := by
   sorry
 
-/-- Каждое элементарное множество измеримо по Жордану. -/
-theorem IsElementary.jordanMeasurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsElementary E) : JordanMeasurable E := by
-  sorry
+/-- An elementary set is bounded: it is a finite union of boxes, and each box sits inside
+the closed ball of radius the norm of its corner. -/
+theorem IsElementary.isBounded {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: IsElementary E) :
+    Bornology.IsBounded E := by
+  classical
+  obtain ⟨S, rfl⟩ := hE
+  rw [Bornology.isBounded_biUnion_finset]
+  intro B _
+  -- each coordinate of a point of `B` is trapped between the endpoints of that side
+  set M : ℝ := Real.sqrt (∑ i, (max |(B.side i).a| |(B.side i).b|)^2) with hM
+  rw [Metric.isBounded_iff_subset_closedBall 0]
+  refine ⟨M, fun x hx ↦ ?_⟩
+  rw [Metric.mem_closedBall, dist_zero_right]
+  have hcoord (i : Fin d) : |x i| ≤ max |(B.side i).a| |(B.side i).b| := by
+    have hxi : x i ∈ ((B.side i : BoundedInterval) : Set ℝ) := hx i
+    have hsub := (B.side i).subset_Icc
+    rw [BoundedInterval.subset_iff] at hsub
+    have hmem := hsub hxi
+    simp only [BoundedInterval.set_Icc, Set.mem_Icc] at hmem
+    rcases abs_cases (x i) with ⟨h, -⟩ | ⟨h, -⟩
+    · calc |x i| = x i := h
+        _ ≤ (B.side i).b := hmem.2
+        _ ≤ |(B.side i).b| := le_abs_self _
+        _ ≤ _ := le_max_right _ _
+    · calc |x i| = -x i := h
+        _ ≤ -(B.side i).a := by linarith [hmem.1]
+        _ ≤ |(B.side i).a| := neg_le_abs _
+        _ ≤ _ := le_max_left _ _
+  rw [EuclideanSpace'.norm_eq, hM]
+  apply Real.sqrt_le_sqrt
+  refine Finset.sum_le_sum (fun i _ ↦ ?_)
+  calc (x i)^2 = |x i|^2 := (sq_abs _).symm
+    _ ≤ (max |(B.side i).a| |(B.side i).b|)^2 := by
+        nlinarith [hcoord i, abs_nonneg (x i)]
 
-/-- Мера Жордана элементарного множества равна его элементарной мере. -/
-theorem JordanMeasurable.mes_of_elementary {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsElementary E) : hE.jordanMeasurable.measure = hE.measure := by
-  sorry
+/-- Every elementary set is Jordan measurable. -/
+theorem IsElementary.jordanMeasurable {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: IsElementary E) : JordanMeasurable E := by
+  refine ⟨hE.isBounded, le_antisymm (Jordan_inner_le_outer hE.isBounded) ?_⟩
+  -- outer ≤ measure ≤ inner, taking `E` itself as the enclosing and the enclosed set
+  exact (Jordan_outer_le hE (Set.Subset.refl E)).trans
+    (le_Jordan_inner hE (Set.Subset.refl E) hE.isBounded)
 
-/-- Пустое множество измеримо по Жордану. -/
-theorem JordanMeasurable.empty (d : ℕ) : JordanMeasurable (∅ : Set (EuclideanSpace' d)) := by
-  sorry
+/-- The Jordan measure of an elementary set equals its elementary measure. -/
+theorem JordanMeasurable.mes_of_elementary {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: IsElementary E) : hE.jordanMeasurable.measure = hE.measure := by
+  refine le_antisymm ?_ (le_Jordan_inner hE (Set.Subset.refl E) hE.isBounded)
+  rw [JordanMeasurable.eq_outer hE.jordanMeasurable]
+  exact Jordan_outer_le hE (Set.Subset.refl E)
+
+/-- The empty set is Jordan measurable. -/
+theorem JordanMeasurable.empty (d:ℕ) : JordanMeasurable (∅: Set (EuclideanSpace' d)) :=
+  IsElementary.jordanMeasurable (IsElementary.empty d)
 
 /-- Пустое множество имеет нулевую меру Жордана. -/
 @[simp]
-theorem JordanMeasurable.mes_of_empty (d : ℕ) : (JordanMeasurable.empty d).measure = 0 := by
-  sorry
+theorem JordanMeasurable.mes_of_empty (d:ℕ) : (JordanMeasurable.empty d).measure = 0 := by
+  have h := JordanMeasurable.mes_of_elementary (IsElementary.empty d)
+  rwa [IsElementary.measure_of_empty] at h
 
 
 /-- Exercise 1.1.6 (i) (булева замкнутость) -/
@@ -691,16 +746,23 @@ lemma JordanMeasurable.measure_of_translate {d : ℕ} {E : Set (EuclideanSpace' 
   · convert JordanMeasurable.eq_outer _;
   · exact eq_outer hE;
 
-/-- Exercise 1.1.7 (i) (Области под графиками измеримы по Жордану) -/
-lemma JordanMeasurable.graph {d : ℕ} {B : Box d} {f : EuclideanSpace' d → ℝ} (hf : ContinuousOn f B.toSet) : JordanMeasurable { p | ∃ x ∈ B.toSet, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, f x ⟩ } := by
+/-- Exercise 1.1.7 (i) (Regions under graphs are Jordan measurable) -/
+lemma JordanMeasurable.graph {d:ℕ} {B:Box d} (hB: IsClosed B.toSet) {f: EuclideanSpace' d → ℝ}
+  (hf: ContinuousOn f B.toSet) :
+  JordanMeasurable { p | ∃ x ∈ B.toSet, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, f x ⟩ } := by
   sorry
 
-/-- Exercise 1.1.7 (i) (Области под графиками измеримы по Жордану) -/
-lemma JordanMeasurable.measure_of_graph {d : ℕ} {B : Box d} {f : EuclideanSpace' d → ℝ} (hf : ContinuousOn f B.toSet) : (JordanMeasurable.graph hf).measure = 0 := by
+/-- Exercise 1.1.7 (i) (Regions under graphs are Jordan measurable) -/
+lemma JordanMeasurable.measure_of_graph {d:ℕ} {B:Box d} (hB: IsClosed B.toSet)
+  {f: EuclideanSpace' d → ℝ} (hf: ContinuousOn f B.toSet) :
+  (JordanMeasurable.graph hB hf).measure = 0 := by
   sorry
 
-/-- Exercise 1.1.7 (i) (Области под графиками измеримы по Жордану) -/
-lemma JordanMeasurable.undergraph {d : ℕ} {B : Box d} {f : EuclideanSpace' d → ℝ} (hf : ContinuousOn f B.toSet) : JordanMeasurable { p | ∃ x ∈ B.toSet, ∃ t : ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by
+/-- Exercise 1.1.7 (i) (Regions under graphs are Jordan measurable) -/
+lemma JordanMeasurable.undergraph {d:ℕ} {B:Box d} (hB: IsClosed B.toSet)
+  {f: EuclideanSpace' d → ℝ} (hf: ContinuousOn f B.toSet) :
+  JordanMeasurable
+    { p | ∃ x ∈ B.toSet, ∃ t:ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by
   sorry
 
 /-- Exercise 1.1.8(i) (Треугольник измерим по Жордану) -/

@@ -34,11 +34,11 @@ example :
     (fun n ↦ (10 : ℝ)^(-(n : ℤ)-1)) := by
   sorry
 
-/-- Lemma 6.6.4 / Exercise 6.6.1 -/
+/-- Lemma 6.6.4 (рефлексивность) / Exercise 6.6.1 -/
 theorem Sequence.subseq_self (a : ℕ → ℝ) : Sequence.subseq a a := by sorry
 
-/-- Lemma 6.6.4 / Exercise 6.6.1 -/
-theorem Sequence.subseq_trans {a b c : ℕ → ℝ} (hab : Sequence.subseq a b) (hbc : Sequence.subseq b c) : 
+/-- Lemma 6.6.4 (транзитивность) / Exercise 6.6.1 -/
+theorem Sequence.subseq_trans {a b c : ℕ → ℝ} (hab : Sequence.subseq a b) (hbc : Sequence.subseq b c) :
     Sequence.subseq a c := by sorry
 
 /-- Proposition 6.6.5 / Exercise 6.6.4 -/

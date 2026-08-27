@@ -171,12 +171,12 @@ noncomputable abbrev SetTheory.Set.curry_equiv {X Y Z : Set} : (X → Y → Z) �
 abbrev SetTheory.Set.tuple {I : Set} {X : I → Set} (x : ∀ i, X i) : Object :=
   ((fun i ↦ ⟨ x i, by rw [mem_iUnion]; use i; exact (x i).property ⟩) : I → iUnion I X)
 
-/-- Definition 3.5.6 -/
+/-- Definition 3.5.6 (indexed product) -/
 abbrev SetTheory.Set.iProd {I : Set} (X : I → Set) : Set :=
   ((iUnion I X)^I).specify (fun t ↦ ∃ x : ∀ i, X i, t = tuple x)
 
-/-- Definition 3.5.6 -/
-theorem SetTheory.Set.mem_iProd {I : Set} {X : I → Set} (t : Object) : 
+/-- Definition 3.5.6 (membership in an indexed product) -/
+theorem SetTheory.Set.mem_iProd {I : Set} {X : I → Set} (t : Object) :
     t ∈ iProd X ↔ ∃ x : ∀ i, X i, t = tuple x := by
   simp only [iProd, specification_axiom'']; constructor
   . intro ⟨ ht, x, h ⟩; use x

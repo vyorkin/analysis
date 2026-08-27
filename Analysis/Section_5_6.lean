@@ -40,28 +40,28 @@ lemma Real.pow_of_coe (q : ℚ) (n : ℕ) : (q : Real) ^ n = (q ^ n : ℚ) := by
 известно как `Field`), но дух этих упражнений — адаптировать доказательства Proposition 4.3.10,
 которые вы установили ранее. -/
 
-/-- Аналог Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) (сумма показателей) -/
 theorem Real.pow_add (x : Real) (m n : ℕ) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Аналог Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) (произведение показателей) -/
 theorem Real.pow_mul (x : Real) (m n : ℕ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Аналог Proposition 4.3.10(a) -/
+/-- Аналог Proposition 4.3.10(a) (степень произведения) -/
 theorem Real.mul_pow (x y : Real) (n : ℕ) : (x*y)^n = x^n * y^n := by sorry
 
 /-- Аналог Proposition 4.3.10(b) -/
 theorem Real.pow_eq_zero (x : Real) (n : ℕ) (hn : 0 < n) : x^n = 0 ↔ x = 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) (неотрицательность) -/
 theorem Real.pow_nonneg {x : Real} (n : ℕ) (hx : x ≥ 0) : x^n ≥ 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) (положительность) -/
 theorem Real.pow_pos {x : Real} (n : ℕ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) (монотонность, нестрогая) -/
 theorem Real.pow_ge_pow (x y : Real) (n : ℕ) (hxy : x ≥ y) (hy : y ≥ 0) : x^n ≥ y^n := by sorry
 
-/-- Аналог Proposition 4.3.10(c) -/
+/-- Аналог Proposition 4.3.10(c) (монотонность, строгая) -/
 theorem Real.pow_gt_pow (x y : Real) (n : ℕ) (hxy : x > y) (hy : y ≥ 0) (hn : n > 0) : x^n > y^n := by sorry
 
 /-- Аналог Proposition 4.3.10(d) -/
@@ -75,19 +75,19 @@ lemma Real.zpow_zero (x : Real) : x ^ (0 : ℤ) = 1 := by rfl
 
 lemma Real.zpow_neg {x : Real} (n : ℕ) : x^(-n : ℤ) = 1 / (x^n) := by simp
 
-/-- Аналог Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) (сумма показателей) -/
 theorem Real.zpow_add (x : Real) (n m : ℤ) (hx : x ≠ 0) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Аналог Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) (произведение показателей) -/
 theorem Real.zpow_mul (x : Real) (n m : ℤ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Аналог Proposition 4.3.12(a) -/
+/-- Аналог Proposition 4.3.12(a) (степень произведения) -/
 theorem Real.mul_zpow (x y : Real) (n : ℤ) : (x*y)^n = x^n * y^n := by sorry
 
-/-- Аналог Proposition 4.3.12(b) -/
+/-- Аналог Proposition 4.3.12(b) (положительность) -/
 theorem Real.zpow_pos {x : Real} (n : ℤ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Аналог Proposition 4.3.12(b) -/
+/-- Аналог Proposition 4.3.12(b) (монотонность) -/
 theorem Real.zpow_ge_zpow {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n > 0) : x^n ≥ y^n := by sorry
 
 theorem Real.zpow_ge_zpow_ofneg {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n < 0) : x^n ≤ y^n := by
@@ -129,10 +129,10 @@ theorem Real.rootset_bddAbove {x : Real} (n : ℕ) (hn : n ≥ 1) : BddAbove { y
 theorem Real.eq_root_iff_pow_eq {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn : n ≥ 1) : 
   y = x.root n ↔ y^n = x := by sorry
 
-/-- Lemma 5.6.6 (c) / Exercise 5.6.1 -/
+/-- Lemma 5.6.6 (c) (неотрицательность) / Exercise 5.6.1 -/
 theorem Real.root_nonneg {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.root n ≥ 0 := by sorry
 
-/-- Lemma 5.6.6 (c) / Exercise 5.6.1 -/
+/-- Lemma 5.6.6 (c) (положительность) / Exercise 5.6.1 -/
 theorem Real.root_pos {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.root n > 0 ↔ x > 0 := by sorry
 
 theorem Real.pow_of_root {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : 
@@ -144,13 +144,13 @@ theorem Real.root_of_pow {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) :
 /-- Lemma 5.6.6 (d) / Exercise 5.6.1 -/
 theorem Real.root_mono {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn : n ≥ 1) : x > y ↔ x.root n > y.root n := by sorry
 
-/-- Lemma 5.6.6 (e) / Exercise 5.6.1 -/
+/-- Lemma 5.6.6 (e) (основание больше единицы) / Exercise 5.6.1 -/
 theorem Real.root_mono_of_gt_one {x : Real} (hx : x > 1) {k l : ℕ} (hkl : k > l) (hl : l ≥ 1) : x.root k < x.root l := by sorry
 
-/-- Lemma 5.6.6 (e) / Exercise 5.6.1 -/
+/-- Lemma 5.6.6 (e) (основание меньше единицы) / Exercise 5.6.1 -/
 theorem Real.root_mono_of_lt_one {x : Real} (hx0 : 0 < x) (hx : x < 1) {k l : ℕ} (hkl : k > l) (hl : l ≥ 1) : x.root k > x.root l := by sorry
 
-/-- Lemma 5.6.6 (e) / Exercise 5.6.1 -/
+/-- Lemma 5.6.6 (e) (основание единица) / Exercise 5.6.1 -/
 theorem Real.root_of_one {k : ℕ} (hk : k ≥ 1) : (1 : Real).root k = 1 := by sorry
 
 /-- Lemma 5.6.6 (f) / Exercise 5.6.1 -/
@@ -217,11 +217,11 @@ theorem Real.ratPow_eq_pow {x : Real} (hx : x > 0) (n : ℤ) : x^(n : ℚ) = x^n
 theorem Real.ratPow_pos {x : Real} (hx : x > 0) (q : ℚ) : x^q > 0 := by
   sorry
 
-/-- Lemma 5.6.9(b) / Exercise 5.6.2 -/
+/-- Lemma 5.6.9(b) (сумма показателей) / Exercise 5.6.2 -/
 theorem Real.ratPow_add {x : Real} (hx : x > 0) (q r : ℚ) : x^(q+r) = x^q * x^r := by
   sorry
 
-/-- Lemma 5.6.9(b) / Exercise 5.6.2 -/
+/-- Lemma 5.6.9(b) (произведение показателей) / Exercise 5.6.2 -/
 theorem Real.ratPow_ratPow {x : Real} (hx : x > 0) (q r : ℚ) : (x^q)^r = x^(q*r) := by
   sorry
 
@@ -233,11 +233,11 @@ theorem Real.ratPow_neg {x : Real} (hx : x > 0) (q : ℚ) : x^(-q) = 1 / x^q := 
 theorem Real.ratPow_mono {x y : Real} (hx : x > 0) (hy : y > 0) {q : ℚ} (h : q > 0) : x > y ↔ x^q > y^q := by
   sorry
 
-/-- Lemma 5.6.9(e) / Exercise 5.6.2 -/
+/-- Lemma 5.6.9(e) (основание больше единицы) / Exercise 5.6.2 -/
 theorem Real.ratPow_mono_of_gt_one {x : Real} (hx : x > 1) {q r : ℚ} : x^q > x^r ↔ q > r := by
   sorry
 
-/-- Lemma 5.6.9(e) / Exercise 5.6.2 -/
+/-- Lemma 5.6.9(e) (основание меньше единицы) / Exercise 5.6.2 -/
 theorem Real.ratPow_mono_of_lt_one {x : Real} (hx0 : 0 < x) (hx : x < 1) {q r : ℚ} : x^q > x^r ↔ q < r := by
   sorry
 

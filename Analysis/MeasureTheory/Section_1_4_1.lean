@@ -29,8 +29,8 @@ instance ConcreteBooleanAlgebra.instPartialOrder (X : Type*) : PartialOrder (Con
 def ConcreteBooleanAlgebra.measurableSets {X : Type*} (B : ConcreteBooleanAlgebra X) : Set (Set X) :=
   { E | B.measurable E }
 
-/-- Example 1.4.3 -/
-instance ConcreteBooleanAlgebra.instOrderTop {X : Type*} : OrderTop (ConcreteBooleanAlgebra X) :=
+/-- Example 1.4.3 (the largest algebra) -/
+instance ConcreteBooleanAlgebra.instOrderTop {X:Type*} : OrderTop (ConcreteBooleanAlgebra X) :=
   {
     top := {
       measurable := fun _ => True
@@ -41,8 +41,8 @@ instance ConcreteBooleanAlgebra.instOrderTop {X : Type*} : OrderTop (ConcreteBoo
     le_top := sorry
   }
 
-/-- Example 1.4.3 -/
-instance ConcreteBooleanAlgebra.instOrderBot {X : Type*} : OrderBot (ConcreteBooleanAlgebra X) :=
+/-- Example 1.4.3 (the smallest algebra) -/
+instance ConcreteBooleanAlgebra.instOrderBot {X:Type*} : OrderBot (ConcreteBooleanAlgebra X) :=
   {
     bot := {
       measurable := fun E => E = ∅ ∨ E = Set.univ

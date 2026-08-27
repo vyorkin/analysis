@@ -69,16 +69,16 @@ theorem Sequence.lim_of_power_decay {k : ℕ} :
     · simp
   simp [lim_eq, ha', eq_zero_of_pow_eq_zero hlim]
 
-/-- Lemma 6.5.2 / Exercise 6.5.2 -/
+/-- Lemma 6.5.2 (модуль отношения меньше единицы) / Exercise 6.5.2 -/
 theorem Sequence.lim_of_geometric {x : ℝ} (hx : |x| < 1) : ((fun (n : ℕ) ↦ x^n) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Lemma 6.5.2 / Exercise 6.5.2 -/
+/-- Lemma 6.5.2 (отношение равно единице) / Exercise 6.5.2 -/
 theorem Sequence.lim_of_geometric' {x : ℝ} (hx : x = 1) : ((fun (n : ℕ) ↦ x^n) : Sequence).TendsTo 1 := by
   sorry
 
-/-- Lemma 6.5.2 / Exercise 6.5.2 -/
-theorem Sequence.lim_of_geometric'' {x : ℝ} (hx : x = -1 ∨ |x| > 1) : 
+/-- Lemma 6.5.2 (отношение минус единица или модуль больше единицы) / Exercise 6.5.2 -/
+theorem Sequence.lim_of_geometric'' {x : ℝ} (hx : x = -1 ∨ |x| > 1) :
     ((fun (n : ℕ) ↦ x^n) : Sequence).Divergent := by
   sorry
 

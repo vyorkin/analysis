@@ -574,17 +574,21 @@ example :
 
 
 /-- Exercise 1.2.2 -/
--- Поточечный предел равномерно ограниченных риманово интегрируемых функций не обязан быть риманово интегрируемым.
-example : ∃ f : ℕ → ℝ → ℝ, ∃ F : ℝ → ℝ, ∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M ∧
+-- The pointwise limit of uniformly bounded Riemann integrable functions need not be Riemann integrable.
+example : ∃ f: ℕ → ℝ → ℝ, ∃ F: ℝ → ℝ,
+    (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) ∧
     (∀ x ∈ Set.Icc 0 1, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (F x))) ∧
     (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) ∧
     ¬ RiemannIntegrableOn F (Icc 0 1) := by
   sorry
 
 /-- Exercise 1.2.2' -/
--- Определите, сохраняет ли равномерная сходимость равномерно ограниченных риманово интегрируемых функций риманову интегрируемость (верно или нет).
-def Ex_1_2_2b : Decidable ( ∀ f : ℕ → ℝ → ℝ, ∀ F : ℝ → ℝ, (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) → (∀ x ∈ Set.Icc 0 1, TendstoUniformly f F Filter.atTop) → (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) → RiemannIntegrableOn F (Icc 0 1) ) := by
-  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`, в зависимости от того, считаете ли вы данное утверждение истинным или ложным.
+-- Determine whether uniform convergence of uniformly bounded Riemann integrable functions preserves Riemann integrability (true or false).
+def Ex_1_2_2b : Decidable ( ∀ f: ℕ → ℝ → ℝ, ∀ F: ℝ → ℝ,
+    (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) →
+    TendstoUniformlyOn f F Filter.atTop (Set.Icc 0 1) →
+    (∀ n, RiemannIntegrableOn (f n) (Icc 0 1)) → RiemannIntegrableOn F (Icc 0 1) ) := by
+  -- the first line of this construction should be either `apply isTrue` or `apply isFalse`, depending on whether you believe the given statement to be true or false.
   sorry
 
 -- Внешняя мера Жордана равна инфимуму сумм объёмов прямоугольников по всем конечным покрытиям прямоугольниками.

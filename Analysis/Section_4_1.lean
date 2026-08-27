@@ -64,7 +64,7 @@ abbrev Int.formalDiff (a b : ℕ)  : Int := Quotient.mk PreInt.instSetoid ⟨ a,
 
 infix:100 " —— " => Int.formalDiff
 
-/-- Definition 4.1.1 (Целые числа) -/
+/-- Definition 4.1.1 (Целые числа, равенство) -/
 theorem Int.eq (a b c d : ℕ) : a —— b = c —— d ↔ a + d = c + b :=
   ⟨ Quotient.exact, by intro h; exact Quotient.sound h ⟩
 
@@ -78,7 +78,7 @@ instance Int.decidableEq : DecidableEq Int := by
     exact decEq _ _
   exact Quotient.recOnSubsingleton₂ a b this
 
-/-- Definition 4.1.1 (Целые числа) -/
+/-- Definition 4.1.1 (Целые числа, существование представления) -/
 theorem Int.eq_diff (n : Int) : ∃ a b, n = a —— b := by apply n.ind _; intro ⟨ a, b ⟩; use a, b
 
 /-- Lemma 4.1.3 (Сложение определено корректно) -/
@@ -91,8 +91,8 @@ instance Int.instAdd : Add Int where
 /-- Definition 4.1.2 (Определение сложения) -/
 theorem Int.add_eq (a b c d : ℕ) : a —— b + c —— d = (a+c)——(b+d) := Quotient.lift₂_mk _ _ _ _
 
-/-- Lemma 4.1.3 (Умножение определено корректно) -/
-theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h : a —— b = a' —— b') : 
+/-- Lemma 4.1.3 (Умножение определено корректно, левый аргумент) -/
+theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h : a —— b = a' —— b') :
     (a*c+b*d) —— (a*d+b*c) = (a'*c+b'*d) —— (a'*d+b'*c) := by
   simp only [eq] at *
   calc
@@ -100,8 +100,8 @@ theorem Int.mul_congr_left (a b a' b' c d : ℕ) (h : a —— b = a' —— b')
     _ = c*(a'+b) + d*(a+b') := by rw [h]
     _ = _ := by ring
 
-/-- Lemma 4.1.3 (Умножение определено корректно) -/
-theorem Int.mul_congr_right (a b c d c' d' : ℕ) (h : c —— d = c' —— d') : 
+/-- Lemma 4.1.3 (Умножение определено корректно, правый аргумент) -/
+theorem Int.mul_congr_right (a b c d c' d' : ℕ) (h : c —— d = c' —— d') :
     (a*c+b*d) —— (a*d+b*c) = (a*c'+b*d') —— (a*d'+b*c') := by
   simp only [eq] at *
   calc
@@ -109,8 +109,8 @@ theorem Int.mul_congr_right (a b c d c' d' : ℕ) (h : c —— d = c' —— d'
     _ = a*(c'+d) + b*(c+d') := by rw [h]
     _ = _ := by ring
 
-/-- Lemma 4.1.3 (Умножение определено корректно) -/
-theorem Int.mul_congr {a b c d a' b' c' d' : ℕ} (h1 : a —— b = a' —— b') (h2 : c —— d = c' —— d') : 
+/-- Lemma 4.1.3 (Умножение определено корректно, оба аргумента) -/
+theorem Int.mul_congr {a b c d a' b' c' d' : ℕ} (h1 : a —— b = a' —— b') (h2 : c —— d = c' —— d') :
   (a*c+b*d) —— (a*d+b*c) = (a'*c'+b'*d') —— (a'*d'+b'*c') := by
   rw [mul_congr_left a b a' b' c d h1, mul_congr_right a' b' c d c' d' h2]
 
@@ -189,15 +189,15 @@ theorem Int.not_pos_neg (x : Int) : x.IsPos ∧ x.IsNeg → False := by
   rintro ⟨ ⟨ n, _, rfl ⟩, ⟨ m, _, hm ⟩ ⟩; simp_rw [natCast_eq, neg_eq, eq] at hm
   linarith
 
-/-- Proposition 4.1.6 (законы алгебры) / Exercise 4.1.4 -/
+/-- Proposition 4.1.6 (законы алгебры, аддитивная группа) / Exercise 4.1.4 -/
 instance Int.instAddGroup : AddGroup Int :=
   AddGroup.ofLeftAxioms (by sorry) (by sorry) (by sorry)
 
-/-- Proposition 4.1.6 (законы алгебры) / Exercise 4.1.4 -/
+/-- Proposition 4.1.6 (законы алгебры, аддитивная коммутативная группа) / Exercise 4.1.4 -/
 instance Int.instAddCommGroup : AddCommGroup Int where
   add_comm := by sorry
 
-/-- Proposition 4.1.6 (законы алгебры) / Exercise 4.1.4 -/
+/-- Proposition 4.1.6 (законы алгебры, коммутативный моноид) / Exercise 4.1.4 -/
 instance Int.instCommMonoid : CommMonoid Int where
   mul_comm := by sorry
   mul_assoc := by
@@ -210,7 +210,7 @@ instance Int.instCommMonoid : CommMonoid Int where
   one_mul := by sorry
   mul_one := by sorry
 
-/-- Proposition 4.1.6 (законы алгебры) / Exercise 4.1.4 -/
+/-- Proposition 4.1.6 (законы алгебры, коммутативное кольцо) / Exercise 4.1.4 -/
 instance Int.instCommRing : CommRing Int where
   left_distrib := by sorry
   right_distrib := by sorry
@@ -228,11 +228,11 @@ theorem Int.mul_eq_zero {a b : Int} (h : a * b = 0) : a = 0 ∨ b = 0 := by sorr
 /-- Corollary 4.1.9 (Закон сокращения) / Exercise 4.1.6 -/
 theorem Int.mul_right_cancel₀ (a b c : Int) (h : a*c = b*c) (hc : c ≠ 0) : a = b := by sorry
 
-/-- Definition 4.1.10 (Порядок на целых числах) -/
+/-- Definition 4.1.10 (Порядок на целых числах, нестрогий) -/
 instance Int.instLE : LE Int where
   le n m := ∃ a : ℕ, m = n + a
 
-/-- Definition 4.1.10 (Порядок на целых числах) -/
+/-- Definition 4.1.10 (Порядок на целых числах, строгий) -/
 instance Int.instLT : LT Int where
   lt n m := n ≤ m ∧ n ≠ m
 
@@ -249,25 +249,25 @@ theorem Int.add_lt_add_right {a b : Int} (c : Int) (h : a < b) : a+c < b+c := by
 /-- Lemma 4.1.11(c) (Умножение на положительное сохраняет порядок) / Exercise 4.1.7 -/
 theorem Int.mul_lt_mul_of_pos_right {a b c : Int} (hab : a < b) (hc : 0 < c) : a*c < b*c := by sorry
 
-/-- Lemma 4.1.11(d) (Отрицание обращает порядок) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(d) (Отрицание обращает порядок, строгий) / Exercise 4.1.7 -/
 theorem Int.neg_gt_neg {a b : Int} (h : b < a) : -a < -b := by sorry
 
-/-- Lemma 4.1.11(d) (Отрицание обращает порядок) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(d) (Отрицание обращает порядок, нестрогий) / Exercise 4.1.7 -/
 theorem Int.neg_ge_neg {a b : Int} (h : b ≤ a) : -a ≤ -b := by sorry
 
 /-- Lemma 4.1.11(e) (Порядок транзитивен) / Exercise 4.1.7 -/
 theorem Int.lt_trans {a b c : Int} (hab : a < b) (hbc : b < c) : a < c := by sorry
 
-/-- Lemma 4.1.11(f) (Трихотомия порядка) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(f) (Трихотомия порядка, утверждение) / Exercise 4.1.7 -/
 theorem Int.trichotomous' (a b : Int) : a > b ∨ a < b ∨ a = b := by sorry
 
-/-- Lemma 4.1.11(f) (Трихотомия порядка) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(f) (Трихотомия порядка, не больше и меньше одновременно) / Exercise 4.1.7 -/
 theorem Int.not_gt_and_lt (a b : Int) : ¬ (a > b ∧ a < b):= by sorry
 
-/-- Lemma 4.1.11(f) (Трихотомия порядка) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(f) (Трихотомия порядка, не больше и равно одновременно) / Exercise 4.1.7 -/
 theorem Int.not_gt_and_eq (a b : Int) : ¬ (a > b ∧ a = b):= by sorry
 
-/-- Lemma 4.1.11(f) (Трихотомия порядка) / Exercise 4.1.7 -/
+/-- Lemma 4.1.11(f) (Трихотомия порядка, не меньше и равно одновременно) / Exercise 4.1.7 -/
 theorem Int.not_lt_and_eq (a b : Int) : ¬ (a < b ∧ a = b):= by sorry
 
 /-- (Не из учебника) Устанавливает разрешимость этого порядка. -/

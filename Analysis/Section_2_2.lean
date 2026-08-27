@@ -660,7 +660,7 @@ theorem Nat.ge_antisymm₂ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b :
 --    have h' := h. Потому что она может тебе пригодиться позже именно в таком
 --    нетронутом виде.
 
-/-- (d) (сложение сохраняет порядок). Сравните с `Nat.add_le_add_right` из Mathlib. -/
+/-- (d) (сложение сохраняет порядок, ≥). Сравните с `Nat.add_le_add_right` из Mathlib. -/
 /-
 (d) Сложение сохраняет порядок: a ≥ b ↔ a + c ≥ b + c.
 (→) Из a = b + x: a + c = (b + x) + c = (b + c) + x  (по ассоциативности/коммутативности), значит a + c ≥ b + c.
@@ -690,16 +690,16 @@ theorem Nat.add_ge_add_right (a b c : Nat) : a ≥ b ↔ a + c ≥ b + c := by
     rw [Nat.add_zero] at h
     use x
 
-/-- (d) (сложение сохраняет порядок). Сравните с {name}`Nat.add_le_add_right` из Mathlib. -/
+/-- (d) (сложение сохраняет порядок, ≤). Сравните с {name}`Nat.add_le_add_right` из Mathlib. -/
 theorem Nat.add_le_add_right (a b c : Nat) : a ≤ b ↔ a + c ≤ b + c :=
   add_ge_add_right b a c
 
-/-- (d) (сложение сохраняет порядок). Сравните с {name}`Nat.add_le_add_left` из Mathlib. -/
+/-- (d) (сложение сохраняет порядок, ≥). Сравните с {name}`Nat.add_le_add_left` из Mathlib. -/
 theorem Nat.add_ge_add_left (a b c : Nat) : a ≥ b ↔ c + a ≥ c + b := by
   simp only [add_comm]
   exact add_ge_add_right a b c
 
-/-- (d) (сложение сохраняет порядок). Сравните с {name}`Nat.add_le_add_left` из Mathlib. -/
+/-- (d) (сложение сохраняет порядок, ≤). Сравните с {name}`Nat.add_le_add_left` из Mathlib. -/
 theorem Nat.add_le_add_left (a b c : Nat) : a ≤ b ↔ c + a ≤ c + b :=
   add_ge_add_left b a c
 
