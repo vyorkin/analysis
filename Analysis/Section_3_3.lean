@@ -1465,14 +1465,14 @@ theorem Function.comp_cancel_right
   Верно ли то же утверждение, если g не инъективна?
 -/
 def Function.comp_cancel_left_without_hg : Decidable
-  (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
+  (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (_heq : g ○ f = g ○ f'), f = f') := by
     -- Первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
     apply isFalse
     intro h
-    have hx1 : (1 : Object) ∈ ({1} : Set) := by simp
-    have hy1 : (1 : Object) ∈ ({1, 2} : Set) := by simp
-    have hy2 : (2 : Object) ∈ ({1, 2} : Set) := by simp
-    have hz3 : (3 : Object) ∈ ({3} : Set) := by simp
+    have hx1 : 1 ∈ ({1} : Set) := by simp
+    have hy1 : 1 ∈ ({1, 2} : Set) := by simp
+    have hy2 : 2 ∈ ({1, 2} : Set) := by simp
+    have hz3 : 3 ∈ ({3} : Set) := by simp
     -- Здесь важно `set`, а не `have`: `have` стирает определение
     -- (значение переменной становится непрозрачным для дальнейших тактик),
     -- а `set` оставляет его развёртываемым, что нужно для `Function.eval_of` ниже.
@@ -1505,13 +1505,13 @@ def Function.comp_cancel_left_without_hg : Decidable
   Верно ли то же утверждение, если f не сюръективна?
 -/
 def Function.comp_cancel_right_without_hg : Decidable
-  (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
+  (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (_heq : g ○ f = g' ○ f), g = g') := by
     -- Первой строкой этой конструкции должно быть
     -- либо `apply isTrue`, либо `apply isFalse`.
     apply isFalse
     intro h
-    have hy1 : (1 : Object) ∈ ({1, 2} : Set) := by simp
-    have hy2 : (2 : Object) ∈ ({1, 2} : Set) := by simp
+    have hy1 : 1 ∈ ({1, 2} : Set) := by simp
+    have hy2 : 2 ∈ ({1, 2} : Set) := by simp
     -- Здесь важно `set`, а не `have`: `have` стирает определение
     -- (значение переменной становится непрозрачным для дальнейших тактик),
     -- а `set` оставляет его развёртываемым, что нужно для `Function.eval_of` ниже.
@@ -1541,8 +1541,7 @@ def Function.comp_cancel_right_without_hg : Decidable
 /--
   Exercise 3.3.5.
   Если композиция `g ○ f` инъективна, то и `f` инъективна:
-  если бы `f` отождествляла две разные точки,
-  то и вся композиция отождествляла бы их же.
+  если бы `f` отождествляла две разные точки, то и вся композиция отождествляла бы их же.
 -/
 theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hinj : (g ○ f).one_to_one) : f.one_to_one := by
@@ -1554,8 +1553,7 @@ theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y
 
 /--
   Если композиция `g ○ f` сюръективна, то и `g` сюръективна:
-  любой `z ∈ Z` достигается через некоторый `x`,
-  а значит `z = g (f x)` лежит в образе `g`.
+  любой `z ∈ Z` достигается через некоторый `x`, значит `z = g (f x)` лежит в образе `g`.
 -/
 theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hsurj : (g ○ f).onto) : g.onto := by
@@ -1569,13 +1567,64 @@ theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function 
 /--
   `comp_injective` показывает, что из инъективности `g ○ f` следует инъективность `f`.
   Верно ли то же самое для `g` — то есть должна ли и `g` быть инъективной?
+
+  Инъективность `g ∘ f` — это утверждение только о том, что происходит на образе `f`.
+  Если X устроен так, что через `f` мы вообще не можем получить две разные точки y ≠ y' в Y,
+  то `g` может как угодно "склеивать" точки вне этого образа —
+  на инъективность композиции это не повлияет, потому что
+  в прообразе (Y) есть всего лишь одна точка, короче,
+  "склеивать" с помощью неинъективной функции `g` нечего.
+
+  Предельный случай:
+  Пусть X — одноэлементное множество `{1}`.
+  Тогда `g ∘ f : X → Z` инъективна автоматически,
+  у одноэлементного домена просто нет двух разных точек,
+  на которых инъективность могла бы нарушиться, независимо от того, что делает `g`.
+  А `g` при этом можно взять неинъективной, если Y содержит хотя бы две точки.
 -/
 def Function.comp_injective' :
   Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)
-    (hinj : (g ○ f).one_to_one), g.one_to_one) := by
+    (_hinj : (g ○ f).one_to_one), g.one_to_one) := by
       -- Первой строкой этой конструкции
       -- должно быть либо `apply isTrue`, либо `apply isFalse`.
-      sorry
+      apply isFalse
+      intro h
+      set X : Set := {1}
+      set Y : Set := {1, 2}
+      set Z : Set := {1, 2}
+      -- Вот что внутри использует тактика simp для двух утверждений ниже.
+      have hy1 : 1 ∈ Y := (SetTheory.Set.mem_pair 1 1 2).mpr (Or.inl rfl)
+      have hy2 : 2 ∈ Y := by simp [Y]
+      have hz : 1 ∈ Z := by simp [Z]
+      -- f : X ↦ Y инъективная
+      --   {1} ↦ {1, 2}
+      set f : Function X Y :=
+        Function.mk_fn (fun _ ↦ (⟨1, hy1⟩ : Y))
+      --  g : Y ↦ Z не инъективная, константная
+      -- {1, 2} ↦ {1, 2}
+      set g : Function Y Z :=
+        Function.mk_fn (fun _ ↦ (⟨1, hz⟩ : Z))
+      -- Нам понадобится гипотеза инъективности композиции.
+      have hinj : (g ○ f).one_to_one := by
+        rw [Function.one_to_one_iff]
+        intro x x' _
+        obtain ⟨x1, hx1⟩ := x
+        obtain ⟨x2, hx2⟩ := x'
+        unfold X at hx1 hx2
+        -- x1, x2 ∈ X = {1}, значит оба равны 1, а значит равны и как элементы X.
+        -- mem_singleton : x ∈ {a} ↔ x = a
+        rw [SetTheory.Set.mem_singleton] at hx1 hx2
+        subst hx1
+        subst hx2
+        rfl
+      have hcontra := h X Y Z f g hinj
+      rw [Function.one_to_one_iff] at hcontra
+      specialize hcontra ⟨1, hy1⟩ ⟨2, hy2⟩
+      rw [Function.eval_of, Function.eval_of] at hcontra
+      -- Посылка выполнена тривиально
+      have hval := hcontra rfl
+      -- Противоречие
+      simp at hval
 
 /--
   `comp_surjective` показывает, что из сюръективности `g ○ f` следует сюръективность `g`.
@@ -1616,7 +1665,8 @@ theorem Function.inverse_bijective {X Y : Set} {f : Function X Y} (h : f.bijecti
 
 /--
   Обратная к обратной функции — это снова исходная `f`:
-  операция взятия обратной функции инволютивна.
+  операция взятия обратной функции инволютивна, то есть, применённая дважды,
+  возвращает исходный объект (`(f⁻¹)⁻¹ = f`, как `-(-x) = x` или двойное отрицание).
 -/
 theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) :
   (f.inverse h).inverse (f.inverse_bijective h) = f := by
@@ -1638,9 +1688,11 @@ theorem Function.inv_of_comp {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
       sorry
 
 /--
-  Exercise 3.3.8. Функция включения: если `X ⊆ Y`, то каждый `x ∈ X`
-  можно рассматривать как элемент `Y` — `inclusion` и есть эта функция
-  «естественного вложения».
+  Exercise 3.3.8.
+  Функция включения:
+
+  Если `X ⊆ Y`, то каждый `x ∈ X` можно рассматривать как элемент `Y` —
+  `inclusion` и есть эта функция «естественного вложения».
 -/
 abbrev Function.inclusion {X Y : Set} (h : X ⊆ Y) :
   Function X Y := Function.mk_fn (fun x ↦ ⟨x.val, h x.val x.property⟩ )
@@ -1655,8 +1707,8 @@ theorem Function.inclusion_id (X : Set) :
     sorry
 
 /--
-  Композиция двух вложений `X ⊆ Y` и `Y ⊆ Z` — это снова вложение,
-  но уже сразу для `X ⊆ Z`.
+  Композиция двух вложений `X ⊆ Y` и `Y ⊆ Z` —
+  это снова вложение, но уже сразу для `X ⊆ Z`.
 -/
 theorem Function.inclusion_comp
   (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
@@ -1674,16 +1726,16 @@ theorem Function.id_comp {A B : Set} (f : Function A B) :
     sorry
 
 /--
-  Композиция `f` с обратной к ней (в этом порядке) даёт тождественную
-  функцию на `B` — переформулировка `self_comp_inverse` на языке композиции.
+  Композиция `f` с обратной к ней (в этом порядке) даёт
+  тождественную функцию на `B` — переформулировка `self_comp_inverse` на языке композиции.
 -/
 theorem Function.comp_inv {A B : Set} (f : Function A B) (hf : f.bijective) :
   f ○ f.inverse hf = Function.id B := by
     sorry
 
 /--
-  А в обратном порядке композиция `f` с обратной к ней даёт тождественную
-  функцию на `A` — переформулировка `inverse_comp_self` на языке композиции.
+  А в обратном порядке композиция `f` с обратной к ней даёт
+  тождественную функцию на `A` — переформулировка `inverse_comp_self` на языке композиции.
 -/
 theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) :
   f.inverse hf ○ f = Function.id A := by
@@ -1692,8 +1744,8 @@ theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) :
 open Classical in
 /--
   Если `X` и `Y` не пересекаются, то функции `f : Function X Z` и
-  `g : Function Y Z` можно однозначно «склеить» в единую функцию `h`
-  на `X ∪ Y`, которая на `X` действует как `f`, а на `Y` — как `g`.
+  `g : Function Y Z` можно однозначно «склеить» в единую функцию `h` на `X ∪ Y`,
+  которая на `X` действует как `f`, а на `Y` — как `g`.
 -/
 theorem Function.glue {X Y Z : Set} (hXY : Disjoint X Y) (f : Function X Z) (g : Function Y Z) :
   ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
