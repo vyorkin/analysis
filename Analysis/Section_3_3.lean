@@ -215,14 +215,16 @@ theorem Function.eval {X Y : Set} (f : Function X Y) (x : X) (y : Y) :
     -- `(f.unique x).choose_iff y : f.P x y ↔ y = (f.unique x).choose`
     exact ((f.unique x).choose_iff y).symm
 
--- Показывает, что `mk_fn` (превращение `f : X → Y` в `Function X Y`)
--- согласовано с вызовом через `CoeFun`:
--- если взять `f`, обернуть в `Function` через `mk_fn`,
--- а затем вызвать результат как функцию, `(Function.mk_fn f) x`,
--- получится в точности `f x` — то есть обёртка `mk_fn` ничего не теряет и не меняет.
---
--- Помечена `@[simp]`, чтобы такие обёрнутые вызовы
--- автоматически сводились обратно к обычному `f x`.
+/--
+Показывает, что `mk_fn` (превращение `f : X → Y` в `Function X Y`)
+согласовано с вызовом через `CoeFun`:
+если взять `f`, обернуть в `Function` через `mk_fn`,
+а затем вызвать результат как функцию, `(Function.mk_fn f) x`,
+получится в точности `f x` — то есть обёртка `mk_fn` ничего не теряет и не меняет.
+
+Помечена `@[simp]`, чтобы такие обёрнутые вызовы
+автоматически сводились обратно к обычному `f x`.
+-/
 @[simp]
 theorem Function.eval_of {X Y : Set} (f : X → Y) (x : X) :
   (Function.mk_fn f) x = f x := by
@@ -1462,18 +1464,79 @@ theorem Function.comp_cancel_right
 /--
   Верно ли то же утверждение, если g не инъективна?
 -/
-def Function.comp_cancel_left_without_hg :
-  Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
+def Function.comp_cancel_left_without_hg : Decidable
+  (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z) (heq : g ○ f = g ○ f'), f = f') := by
     -- Первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-    sorry
+    apply isFalse
+    intro h
+    have hx1 : (1 : Object) ∈ ({1} : Set) := by simp
+    have hy1 : (1 : Object) ∈ ({1, 2} : Set) := by simp
+    have hy2 : (2 : Object) ∈ ({1, 2} : Set) := by simp
+    have hz3 : (3 : Object) ∈ ({3} : Set) := by simp
+    -- Здесь важно `set`, а не `have`: `have` стирает определение
+    -- (значение переменной становится непрозрачным для дальнейших тактик),
+    -- а `set` оставляет его развёртываемым, что нужно для `Function.eval_of` ниже.
+    set f  : Function ({1} : Set) ({1, 2} : Set) :=
+      Function.mk_fn (fun _ ↦ (⟨1, hy1⟩ : ({1, 2} : Set)))
+    set f' : Function ({1} : Set) ({1, 2} : Set) :=
+      Function.mk_fn (fun _ ↦ (⟨2, hy2⟩ : ({1, 2} : Set)))
+    -- Ф-ция `g` константная, поэтому `g ○ f = g ○ f'` выполняется
+    -- независимо от того, чем являются `f` и `f'`.
+    set g : Function ({1, 2} : Set) ({3} : Set) :=
+      Function.mk_fn (fun _ ↦ (⟨3, hz3⟩ : ({3} : Set)))
+    have heq : g ○ f = g ○ f' := by
+      rw [Function.eq_iff]
+      intro x
+      simp only [Function.comp_eval]
+      rw [Function.eval_of, Function.eval_of]
+    -- Все посылки выполняются, а функции не равны на самом-то деле,
+    -- а здесь мы получаем, что они равны.
+    have hcontra :=
+      h ({1} : Set) ({1, 2} : Set) ({3} : Set) f f' g heq
+    rw [Function.eq_iff] at hcontra
+    -- Подставим единицу в эти функции.
+    have hval := hcontra ⟨1, hx1⟩
+    -- "Вызовем" обе функции и посмотрим на значения.
+    rw [Function.eval_of, Function.eval_of] at hval
+    -- Имеем 1 = 2 – противоречиe.
+    simp at hval
 
 /--
   Верно ли то же утверждение, если f не сюръективна?
 -/
-def Function.comp_cancel_right_without_hg :
-  Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
-    -- Первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
-    sorry
+def Function.comp_cancel_right_without_hg : Decidable
+  (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z) (heq : g ○ f = g' ○ f), g = g') := by
+    -- Первой строкой этой конструкции должно быть
+    -- либо `apply isTrue`, либо `apply isFalse`.
+    apply isFalse
+    intro h
+    have hy1 : (1 : Object) ∈ ({1, 2} : Set) := by simp
+    have hy2 : (2 : Object) ∈ ({1, 2} : Set) := by simp
+    -- Здесь важно `set`, а не `have`: `have` стирает определение
+    -- (значение переменной становится непрозрачным для дальнейших тактик),
+    -- а `set` оставляет его развёртываемым, что нужно для `Function.eval_of` ниже.
+    --
+    -- `f` не сюръективна: она всегда отображает в 1, но никогда — в 2.
+    set f : Function ({1} : Set) ({1, 2} : Set) :=
+      Function.mk_fn (fun _ ↦ (⟨1, hy1⟩ : ({1, 2} : Set)))
+    -- `g` постоянна и "склеивает" 1 и 2 в одну точку.
+    set g : Function ({1, 2} : Set) ({1, 2} : Set) :=
+      Function.mk_fn (fun _ ↦ (⟨1, hy1⟩ : ({1, 2} : Set)))
+    -- `g'` тождественна, поэтому различает 1 и 2,
+    -- но на образе `f` (то есть на {1}) совпадает с `g`.
+    set g' : Function ({1, 2} : Set) ({1, 2} : Set) :=
+      Function.mk_fn (fun y ↦ y)
+    have heq : g ○ f = g' ○ f := by
+      rw [Function.eq_iff]
+      intro x
+      simp only [Function.comp_eval]
+      rw [Function.eval_of, Function.eval_of, Function.eval_of]
+    have hcontra :=
+      h ({1} : Set) ({1, 2} : Set) ({1, 2} : Set) f g g' heq
+    rw [Function.eq_iff] at hcontra
+    have hval := hcontra ⟨2, hy2⟩
+    rw [Function.eval_of, Function.eval_of] at hval
+    simp at hval
 
 /--
   Exercise 3.3.5.
