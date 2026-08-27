@@ -1540,95 +1540,172 @@ def Function.comp_cancel_right_without_hg : Decidable
 
 /--
   Exercise 3.3.5.
+  Если композиция `g ○ f` инъективна, то и `f` инъективна:
+  если бы `f` отождествляла две разные точки,
+  то и вся композиция отождествляла бы их же.
 -/
 theorem Function.comp_injective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hinj : (g ○ f).one_to_one) : f.one_to_one := by
-    sorry
+    rw [Function.one_to_one_iff] at *
+    intro x x' hff'
+    apply hinj
+    simp only [Function.comp_eval]
+    rw [hff']
 
+/--
+  Если композиция `g ○ f` сюръективна, то и `g` сюръективна:
+  любой `z ∈ Z` достигается через некоторый `x`,
+  а значит `z = g (f x)` лежит в образе `g`.
+-/
 theorem Function.comp_surjective {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hsurj : (g ○ f).onto) : g.onto := by
-    sorry
+    rw [Function.onto_iff] at *
+    unfold Function.Surjective at *
+    intro z
+    obtain ⟨y, h⟩ := hsurj z
+    rw [Function.comp_eval] at h
+    use (f y)
 
+/--
+  `comp_injective` показывает, что из инъективности `g ○ f` следует инъективность `f`.
+  Верно ли то же самое для `g` — то есть должна ли и `g` быть инъективной?
+-/
 def Function.comp_injective' :
   Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)
     (hinj : (g ○ f).one_to_one), g.one_to_one) := by
-      -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+      -- Первой строкой этой конструкции
+      -- должно быть либо `apply isTrue`, либо `apply isFalse`.
       sorry
 
+/--
+  `comp_surjective` показывает, что из сюръективности `g ○ f` следует сюръективность `g`.
+  Верно ли то же самое для `f` — то есть должна ли и `f` быть сюръективной?
+-/
 def Function.comp_surjective' :
   Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)
     (hsurj : (g ○ f).onto), f.onto) := by
-      -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
+      -- Первой строкой этой конструкции
+      -- должно быть либо `apply isTrue`, либо `apply isFalse`.
       sorry
 
-/-- Exercise 3.3.6 -/
+/--
+  Exercise 3.3.6. `f.inverse h` — левая обратная к `f`:
+  применив сначала `f`, а затем обратную функцию, возвращаемся к исходному `x`.
+-/
 theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y}
   (h : f.bijective) (x : X) :
     (f.inverse h) (f x) = x := by
       sorry
 
+/--
+  `f.inverse h` также является и правой обратной к `f`:
+  применение `f` после обратной функции восстанавливает исходный `y`.
+-/
 theorem Function.self_comp_inverse {X Y : Set} {f : Function X Y}
   (h : f.bijective) (y : Y) :
     f ((f.inverse h) y) = y := by
       sorry
 
+/--
+  Обратная функция к биекции сама является биекцией —
+  взятие обратной функции сохраняет биективность.
+-/
 theorem Function.inverse_bijective {X Y : Set} {f : Function X Y} (h : f.bijective) :
   (f.inverse h).bijective := by
     sorry
 
+/--
+  Обратная к обратной функции — это снова исходная `f`:
+  операция взятия обратной функции инволютивна.
+-/
 theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective) :
   (f.inverse h).inverse (f.inverse_bijective h) = f := by
     sorry
 
-/-- Exercise 3.3.7 -/
+/-- Exercise 3.3.7. Композиция двух биекций снова является биекцией. -/
 theorem Function.comp_bijective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.bijective)
   (hg : g.bijective) : (g ○ f).bijective := by
     sorry
 
+/--
+  Обратная к композиции переставляет порядок функций и
+  обращает каждую из них по отдельности:
+  `(g ○ f)⁻¹ = f⁻¹ ○ g⁻¹`.
+-/
 theorem Function.inv_of_comp {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hf : f.bijective) (hg : g.bijective) :
     (g ○ f).inverse (Function.comp_bijective hf hg) = (f.inverse hf) ○ (g.inverse hg) := by
       sorry
 
-/-- Exercise 3.3.8 -/
+/--
+  Exercise 3.3.8. Функция включения: если `X ⊆ Y`, то каждый `x ∈ X`
+  можно рассматривать как элемент `Y` — `inclusion` и есть эта функция
+  «естественного вложения».
+-/
 abbrev Function.inclusion {X Y : Set} (h : X ⊆ Y) :
   Function X Y := Function.mk_fn (fun x ↦ ⟨x.val, h x.val x.property⟩ )
 
+/-- Тождественная функция на `X`: каждому `x` сопоставляет его же. -/
 abbrev Function.id (X : Set) : Function X X :=
   Function.mk_fn (fun x ↦ x)
 
+/-- Вложение множества `X` в само себя — это то же самое, что тождественная функция на `X`. -/
 theorem Function.inclusion_id (X : Set) :
   Function.inclusion (SetTheory.Set.subset_self X) = Function.id X := by
     sorry
 
+/--
+  Композиция двух вложений `X ⊆ Y` и `Y ⊆ Z` — это снова вложение,
+  но уже сразу для `X ⊆ Z`.
+-/
 theorem Function.inclusion_comp
   (X Y Z : Set) (hXY : X ⊆ Y) (hYZ : Y ⊆ Z) :
     Function.inclusion hYZ ○ Function.inclusion hXY = Function.inclusion (SetTheory.Set.subset_trans hXY hYZ) := by
       sorry
 
+/-- Тождественная функция — правый нейтральный элемент для композиции. -/
 theorem Function.comp_id {A B : Set} (f : Function A B) :
   f ○ Function.id A = f := by
     sorry
 
+/-- Тождественная функция — левый нейтральный элемент для композиции. -/
 theorem Function.id_comp {A B : Set} (f : Function A B) :
   Function.id B ○ f = f := by
     sorry
 
+/--
+  Композиция `f` с обратной к ней (в этом порядке) даёт тождественную
+  функцию на `B` — переформулировка `self_comp_inverse` на языке композиции.
+-/
 theorem Function.comp_inv {A B : Set} (f : Function A B) (hf : f.bijective) :
   f ○ f.inverse hf = Function.id B := by
     sorry
 
+/--
+  А в обратном порядке композиция `f` с обратной к ней даёт тождественную
+  функцию на `A` — переформулировка `inverse_comp_self` на языке композиции.
+-/
 theorem Function.inv_comp {A B : Set} (f : Function A B) (hf : f.bijective) :
   f.inverse hf ○ f = Function.id A := by
     sorry
 
 open Classical in
+/--
+  Если `X` и `Y` не пересекаются, то функции `f : Function X Z` и
+  `g : Function Y Z` можно однозначно «склеить» в единую функцию `h`
+  на `X ∪ Y`, которая на `X` действует как `f`, а на `Y` — как `g`.
+-/
 theorem Function.glue {X Y Z : Set} (hXY : Disjoint X Y) (f : Function X Z) (g : Function Y Z) :
   ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
   ∧ (h ○ Function.inclusion (SetTheory.Set.subset_union_right X Y) = g) := by
     sorry
 
 open Classical in
+/--
+  Обобщение `glue` на случай, когда `X` и `Y` могут пересекаться:
+  склейка `f` и `g` в единую функцию на `X ∪ Y` возможна, если они
+  согласованы на общей части `X ∩ Y`.
+-/
 theorem Function.glue' {X Y Z : Set} (f : Function X Z) (g : Function Y Z)
   (hfg : ∀ x : ((X ∩ Y) : Set), f ⟨x.val, by aesop⟩ = g ⟨x.val, by aesop⟩)  :
   ∃! h : Function (X ∪ Y) Z, (h ○ Function.inclusion (SetTheory.Set.subset_union_left X Y) = f)
