@@ -33,6 +33,10 @@
 
 - Fix: prefer `rw` or `change` for controlled rewriting. Use `simp only [specific_lemmas]` to limit what gets unfolded.
 
+**Doesn't unfold local `let`/`set`-bound definitions by default.** `simp`'s matching engine has `zetaDelta := false` by default, so a lemma like `Function.eval_of : (Function.mk_fn f) x = f x` won't fire on a goal mentioning a local `f` that's actually `let f := Function.mk_fn (...)` (from tactic `let` or `set`) — `simp only [Function.eval_of]` just leaves it untouched. `rw`/`rfl`/`exact` don't have this problem: their unification (`isDefEq`/`kabstract`) unfolds local `let`/`set` definitions by default, so `rw [Function.eval_of]` matches fine even without any hint.
+
+- Fix: either use `rw` instead of `simp` for the step that needs to see through the local definition, or add the local name itself to the simp set (`simp only [f, Function.eval_of]`) — citing a `let`/`set`-bound name in `simp only` unfolds it.
+
 ## `positivity`
 
 **Works well with `zpow`.** `positivity` can prove `0 < (10:ℝ) ^ (-n - 1)` and `0 < 1 + (10:ℝ) ^ (-n - 1)` without help.

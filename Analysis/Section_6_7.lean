@@ -28,7 +28,7 @@ open Sequence Real
 
 /-- Lemma 6.7.1 (непрерывность возведения в степень) -/
 lemma ratPow_continuous {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
- (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) : 
+ (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  ((fun n ↦ x^(q n : ℝ)) : Sequence).Convergent := by
   -- Это доказательство немного переставлено по сравнению с оригинальным текстом.
   choose M hM hbound using bounded_of_convergent ⟨ α, hq ⟩
@@ -79,7 +79,7 @@ lemma ratPow_continuous {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
 
 lemma ratPow_lim_uniq {x α : ℝ} (hx : x > 0) {q q' : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α)
- (hq' : ((fun n ↦ (q' n : ℝ)) : Sequence).TendsTo α) : 
+ (hq' : ((fun n ↦ (q' n : ℝ)) : Sequence).TendsTo α) :
  lim ((fun n ↦ x^(q n : ℝ)) : Sequence) = lim ((fun n ↦ x^(q' n : ℝ)) : Sequence) := by
  -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set r := q - q'
@@ -130,17 +130,17 @@ theorem Real.eq_lim_of_rat (α : ℝ) : ∃ q : ℕ → ℚ, ((fun n ↦ (q n : 
 noncomputable abbrev Real.rpow (x : ℝ) (α : ℝ) : ℝ := lim ((fun n ↦ x^((eq_lim_of_rat α).choose n : ℝ)) : Sequence)
 
 lemma Real.rpow_eq_lim_ratPow {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
- (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) : 
+ (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  rpow x α = lim ((fun n ↦ x^(q n : ℝ)) : Sequence) :=
    ratPow_lim_uniq hx (eq_lim_of_rat α).choose_spec hq
 
 lemma Real.ratPow_tendsto_rpow {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
- (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) : 
+ (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  ((fun n ↦ x^(q n : ℝ)) : Sequence).TendsTo (rpow x α) := by
   rw [lim_eq]
   exact ⟨ ratPow_continuous hx hq, (rpow_eq_lim_ratPow hx hq).symm ⟩
 
-lemma Real.rpow_of_rat_eq_ratPow {x : ℝ} (hx : x > 0) {q : ℚ} : 
+lemma Real.rpow_of_rat_eq_ratPow {x : ℝ} (hx : x > 0) {q : ℚ} :
   rpow x (q : ℝ) = x^(q : ℝ) := by
   convert rpow_eq_lim_ratPow hx (α := q) (lim_of_const _)
   exact (lim_eq.mp (lim_of_const _)).2.symm

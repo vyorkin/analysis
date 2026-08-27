@@ -30,16 +30,27 @@ export SetTheory (Set Object nat)
 
 variable [SetTheory]
 
-/-- Definition 3.4.1. Интересно, что определение не требует, чтобы {lean}`S` было подмножеством {lean}`X`. -/
+/--
+Definition 3.4.1.
+Интересно, что определение не требует, чтобы {lean}`S` было подмножеством {lean}`X`.
+-/
 abbrev SetTheory.Set.image {X Y : Set} (f : X → Y) (S : Set) : Set :=
-  X.replace (P := fun x y ↦ f x = y ∧ x.val ∈ S) (by simp_all)
+  X.replace (P := fun x y ↦ f x = y ∧ x.val ∈ S) (by
+    -- simp_all
+    -- Аксиома замены требует функциональности предиката `P`:
+    -- каждому `x` он сопоставляет не более одного `y`.
+    intro x y y' h
+    obtain ⟨⟨hy, _⟩, ⟨hy', _⟩⟩ := h
+    -- Обе части конъюнкции говорят, что соответствующий `y` — это `f x`,
+    -- поэтому оба значения совпадают с `f x`, а значит и друг с другом.
+    rw [← hy, ← hy'])
 
 /-- Definition 3.4.1 -/
 theorem SetTheory.Set.mem_image {X Y : Set} (f : X → Y) (S : Set) (y : Object) :
   y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y := by
     grind [replacement_axiom]
 
-/-- Альтернативное определение образа через аксиому спецификации -/
+/-- Альтернативное определение образа через аксиому спецификации. -/
 theorem SetTheory.Set.image_eq_specify {X Y : Set} (f : X → Y) (S : Set) :
   image f S = Y.specify (fun y ↦ ∃ x : X, x.val ∈ S ∧ f x = y) := by sorry
 
@@ -63,7 +74,8 @@ theorem SetTheory.Set.image_in_codomain {X Y : Set} (f : X → Y) (S : Set) :
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n : ℕ)
 
 theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
-  ext; simp only [mem_image, mem_triple, f_3_4_2]
+  ext
+  simp only [mem_image, mem_triple, f_3_4_2]
   constructor
   · rintro ⟨_, (_ | _ | _), rfl⟩ <;> simp_all
   · rintro (_ | _ | _)
@@ -83,12 +95,14 @@ theorem SetTheory.Set.mem_image_of_eval_counter :
   Definition 3.4.4 (прообразы).
   Здесь также не требуется, чтобы {lean}`U` было подмножеством {lean}`Y`.
 -/
-abbrev SetTheory.Set.preimage {X Y : Set} (f : X → Y) (U : Set) : Set := X.specify (P := fun x ↦ (f x).val ∈ U)
+abbrev SetTheory.Set.preimage {X Y : Set} (f : X → Y) (U : Set) : Set :=
+  X.specify (P := fun x ↦ (f x).val ∈ U)
 
 @[simp]
 theorem SetTheory.Set.mem_preimage {X Y : Set}
   (f : X → Y) (U : Set) (x : X) :
-    x.val ∈ preimage f U ↔ (f x).val ∈ U := by rw [specification_axiom']
+    x.val ∈ preimage f U ↔ (f x).val ∈ U :=
+      by rw [specification_axiom']
 
 /--
   Версия {name}`mem_preimage`, не требующая, чтобы {lean}`x` имел тип {lean}`X`.
@@ -108,10 +122,13 @@ theorem SetTheory.Set.mem_preimage' {X Y : Set} (f : X → Y) (U : Set) (x : Obj
 /-- Связь с понятием прообраза из Mathlib. -/
 theorem SetTheory.Set.preimage_eq {X Y : Set} (f : X → Y) (U : Set) :
   ((preimage f U) : _root_.Set Object) = Subtype.val '' (f⁻¹' {y | y.val ∈ U}) := by
-    ext; simp
+    ext
+    simp
 
 theorem SetTheory.Set.preimage_in_domain {X Y : Set} (f : X → Y) (U : Set) :
-    (preimage f U) ⊆ X := by intro _ _; aesop
+  (preimage f U) ⊆ X := by
+    intro _ _
+    aesop
 
 /-- Example 3.4.6 -/
 theorem SetTheory.Set.preimage_f_3_4_2 : preimage f_3_4_2 {2,4,6} = {1,2,3} := by
@@ -128,17 +145,23 @@ theorem SetTheory.Set.image_preimage_f_3_4_2 :
 
 /-- Example 3.4.7 (с использованием понятия прообраза из Mathlib) -/
 example : (fun n : ℤ ↦ n^2) ⁻¹' {0,1,4} = {-2,-1,0,1,2} := by
-  ext; refine ⟨ ?_, by aesop ⟩; rintro (_ | _ | h)
-  on_goal 3 => have : 2 ^ 2 = (4 : ℤ) := (by norm_num); rw [←h, sq_eq_sq_iff_eq_or_eq_neg] at this
+  ext
+  refine ⟨ ?_, by aesop ⟩
+  rintro (_ | _ | h)
+  on_goal 3 =>
+    have : 2 ^ 2 = (4 : ℤ) := (by norm_num)
+    rw [←h, sq_eq_sq_iff_eq_or_eq_neg] at this
   all_goals aesop
 
-example : (fun n : ℤ ↦ n^2) ⁻¹' ((fun n : ℤ ↦ n^2) '' {-1,0,1,2}) ≠ {-1,0,1,2} := by sorry
+example : (fun n : ℤ ↦ n^2) ⁻¹' ((fun n : ℤ ↦ n^2) '' {-1,0,1,2}) ≠ {-1,0,1,2} := by
+  sorry
 
 instance SetTheory.Set.inst_pow : Pow Set Set where
   pow := pow
 
 @[coe]
-def SetTheory.Set.coe_of_fun {X Y : Set} (f : X → Y) : Object := function_to_object X Y f
+def SetTheory.Set.coe_of_fun {X Y : Set} (f : X → Y) : Object :=
+  function_to_object X Y f
 
 /-- Это приведение должно быть {name}`CoeOut`, а не
 {name}`Coe`, потому что входной тип {lean}`X → Y` содержит
@@ -147,13 +170,15 @@ instance SetTheory.Set.inst_coe_of_fun {X Y : Set} : CoeOut (X → Y) Object whe
   coe := coe_of_fun
 
 @[simp]
-theorem SetTheory.Set.coe_of_fun_inj {X Y : Set} (f g : X → Y) : (f : Object) = (g : Object) ↔ f = g := by
-  simp [coe_of_fun]
+theorem SetTheory.Set.coe_of_fun_inj
+  {X Y : Set} (f g : X → Y) : (f : Object) = (g : Object) ↔ f = g := by
+    simp [coe_of_fun]
 
 /-- Axiom 3.11 (Аксиома степенного множества) -/
 @[simp]
 theorem SetTheory.Set.powerset_axiom {X Y : Set} (F : Object) :
-    F ∈ (X ^ Y) ↔ ∃ f : Y → X, f = F := SetTheory.powerset_axiom X Y F
+  F ∈ (X ^ Y) ↔ ∃ f : Y → X, f = F :=
+    SetTheory.powerset_axiom X Y F
 
 /-- Example 3.4.9 -/
 abbrev f_3_4_9_a : ({4,7} : Set) → ({0,1} : Set) := fun x ↦ ⟨ 0, by simp ⟩
@@ -179,7 +204,10 @@ theorem SetTheory.Set.example_3_4_9 (F : Object) :
   simp [coe_of_fun_inj] at *
   obtain _ | _ := h1 <;> obtain _ | _ := h2
   map_tacs [left; (right;left); (right;right;left); (right;right;right)]
-  all_goals ext ⟨_, hx⟩; simp at hx; grind
+  all_goals
+    ext ⟨_, hx⟩
+    simp at hx
+    grind
 
 /-- Exercise 3.4.6 (i). Здесь нужно дать подходящее определение степенного множества. -/
 def SetTheory.Set.powerset (X : Set) : Set :=

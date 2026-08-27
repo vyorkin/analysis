@@ -244,7 +244,7 @@ theorem Nat.add_assoc (a b c : Nat) : (a + b) + c = a + (b + c) := by
   revert a
   -- Будем использовать индукцию по a
   apply induction
-  · -- Сначала рассмотрим базовый случай : 
+  · -- Сначала рассмотрим базовый случай :
     show (0 + b) + c = 0 + (b + c)
     -- По определению сложения:
     -- (0 + b) + c = b + c
@@ -1036,7 +1036,7 @@ instance Nat.isOrderedAddMonoid : IsOrderedAddMonoid Nat where
 
 /-- Эта иллюстрация тактики {tactic}`gcongr` не из
     учебника. -/
-example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) : 
+example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) :
   a + d ≤ c + e := by
   gcongr
   order

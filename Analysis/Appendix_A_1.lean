@@ -203,15 +203,15 @@ example (x : ℝ) : x = 3 ↔ 2 * x = 6 := by
   constructor
   . intro h
     linarith
-  intro h
-  linarith
+  · intro h
+    linarith
 
 example : ¬ (∀ x : ℝ, x = 3 ↔ x^2 = 9) := by
   simp
   use -3
   norm_cast
 
-example {X Y : Prop} (hXY : X ↔ Y) (hX : ¬ X) : ¬ Y := by
+example {X Y : Prop} (hXY : X ↔ Y) (hX : ¬X) : ¬Y := by
   by_contra this
   rw [←hXY] at this
   contradiction
@@ -229,29 +229,52 @@ example {X Y Z : Prop} (hXY : X ↔ Y) (hXZ : X ↔ Z) : [X,Y,Z].TFAE := by
 example {X Y Z : Prop} (h : [X,Y,Z].TFAE) : X ↔ Y := by
   exact h.out 0 1
 
-/-- Exercise A.1.1.  Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
-example {X Y : Prop} : ¬ ((X ∨ Y) ∧ ¬ (X ∧ Y)) ↔ sorry := by sorry
+/-- Exercise A.1.1. Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
+example {X Y : Prop} : ¬((X ∨ Y) ∧ ¬(X ∧ Y)) ↔ (¬(X ∨ Y) ∨ (X ∧ Y)) := by tauto
 
-/-- Exercise A.1.2.  Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
-example {X Y : Prop} : ¬ (X ↔ Y) ↔ sorry := by sorry
+/--
+Exercise A.1.2.
+Заполните первый {syntax term}`sorry` чем-нибудь разумным.
+
+¬(X ↔ Y) означает, что они различаются — ровно одно из двух истинно, а другое ложно.
+Это классическое "исключающее или" (XOR).
+-/
+example {X Y : Prop} : ¬(X ↔ Y) ↔ ((¬X ∧ Y) ∨ (¬Y ∧ X)) := by tauto
 
 /-- Exercise A.1.3. -/
-def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬ Y) → (X ↔ Y)) := by
-  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`,
+def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬Y) → (X ↔ Y)) := by
+  -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`,
   -- в зависимости от того, считаете ли вы данное утверждение истинным или ложным.
-  sorry
+  apply isTrue
+  tauto
 
 /-- Exercise A.1.4. -/
-def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬ X) → (X ↔ Y)) := by
-  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬X) → (X ↔ Y)) := by
+  -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
+  apply isFalse
+  intro h
+  specialize h False True
+  -- Конкретно вот это не верно: False → True
+  tauto
 
-/-- Exercise A.1.5. -/
+/--
+Exercise A.1.5.
+TFAE: The Following (propositions) Are Equivalent.
+-/
 def Exercise_A_1_5 : Decidable (∀ (X Y Z : Prop), (X ↔ Y) → (Y ↔ Z) → [X,Y,Z].TFAE) := by
-  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+  -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
+  apply isTrue
+  intro X Y Z hXY hYZ
+  tfae_have 1 ↔ 2 := hXY
+  tfae_have 2 ↔ 3 := hYZ
+  tfae_finish
 
 /-- Exercise A.1.6. -/
 def Exercise_A_1_6 : Decidable (∀ (X Y Z : Prop), (X → Y) → (Y → Z) → (Z → X) → [X,Y,Z].TFAE) := by
-  -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
-  sorry
+  -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
+  apply isTrue
+  intro X Y Z hXY hYZ hZX
+  tfae_have 1 → 2 := hXY
+  tfae_have 2 → 3 := hYZ
+  tfae_have 3 → 1 := hZX
+  tfae_finish
