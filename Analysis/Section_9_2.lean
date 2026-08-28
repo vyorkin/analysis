@@ -22,16 +22,22 @@ noncomputable abbrev function_example : ℝ → ℝ := fun x ↦ if x ∈ ((fun 
 /-- Definition 9.2.1 (Арифметические операции над функциями). -/
 theorem add_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f + g) x = f x + g x := rfl
 
+-- Поточечное определение разности функций: `(f - g) x = f x - g x`
 theorem sub_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f - g) x = f x - g x := rfl
 
+-- Поточечное определение максимума функций: `(max f g) x = max (f x) (g x)`
 theorem max_func_eval (f g : ℝ → ℝ) (x : ℝ) : max f g x = max (f x) (g x) := rfl
 
+-- Поточечное определение минимума функций: `(min f g) x = min (f x) (g x)`
 theorem min_func_eval (f g : ℝ → ℝ) (x : ℝ) : min f g x = min (f x) (g x) := rfl
 
+-- Поточечное определение произведения функций: `(f * g) x = f x * g x`
 theorem mul_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f * g) x = f x * g x := rfl
 
+-- Поточечное определение частного функций: `(f / g) x = f x / g x`
 theorem div_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f / g) x = f x / g x := rfl
 
+-- Поточечное определение скалярного умножения функции: `(c • f) x = c * f x`
 theorem smul_func_eval (c : ℝ) (f : ℝ → ℝ) (x : ℝ) : (c • f) x = c * f x := rfl
 
 abbrev f_9_2_2 : ℝ → ℝ := fun x ↦ x^2

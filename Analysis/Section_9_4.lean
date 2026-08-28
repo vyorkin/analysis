@@ -82,28 +82,33 @@ theorem ContinuousWithinAt.add {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ}
   rw [iff] at hf hg ⊢; convert hf.add hg using 1
 
 
+-- Разность непрерывных в точке функций непрерывна в этой точке
 theorem ContinuousWithinAt.sub {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ}
   (hf : ContinuousWithinAt f X x₀) (hg : ContinuousWithinAt g X x₀) : 
   ContinuousWithinAt (f - g) X x₀ := by
   rw [iff] at hf hg ⊢; convert hf.sub hg using 1
 
+-- Максимум непрерывных в точке функций непрерывен в этой точке
 theorem ContinuousWithinAt.max {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ}
   (hf : ContinuousWithinAt f X x₀) (hg : ContinuousWithinAt g X x₀) : 
   ContinuousWithinAt (max f g) X x₀ := by
   rw [iff] at hf hg ⊢; convert hf.max hg using 1
 
 
+-- Минимум непрерывных в точке функций непрерывен в этой точке
 theorem ContinuousWithinAt.min {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ}
   (hf : ContinuousWithinAt f X x₀) (hg : ContinuousWithinAt g X x₀) : 
   ContinuousWithinAt (min f g) X x₀ := by
   rw [iff] at hf hg ⊢; convert hf.min hg using 1
 
 
+-- Произведение непрерывных в точке функций непрерывно в этой точке
 theorem ContinuousWithinAt.mul' {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ}
   (hf : ContinuousWithinAt f X x₀) (hg : ContinuousWithinAt g X x₀) : 
   ContinuousWithinAt (f * g) X x₀ := by
   rw [iff] at hf hg ⊢; convert hf.mul hg using 1
 
+-- Частное непрерывных в точке функций непрерывно в этой точке, если знаменатель там не обращается в ноль
 theorem ContinuousWithinAt.div' {X : Set ℝ} (f g : ℝ → ℝ) {x₀ : ℝ} (hM : g x₀ ≠ 0)
   (hf : ContinuousWithinAt f X x₀) (hg : ContinuousWithinAt g X x₀) : 
   ContinuousWithinAt (f / g) X x₀ := by

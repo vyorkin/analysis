@@ -55,14 +55,17 @@ theorem SetTheory.Set.Example_3_6_2 : EqualCard {0,1,2} {3,4,5} := by
 /-- Example 3.6.3 -/
 theorem SetTheory.Set.Example_3_6_3 : EqualCard nat (nat.specify (fun x ↦ Even (x : ℕ))) := by sorry
 
+-- рефлексивность равномощности: `X` равномощно самому себе
 @[refl]
 theorem SetTheory.Set.EqualCard.refl (X : Set) : EqualCard X X := by
   sorry
 
+-- симметричность равномощности: из `X` равномощно `Y` следует, что и `Y` равномощно `X`
 @[symm]
 theorem SetTheory.Set.EqualCard.symm {X Y : Set} (h : EqualCard X Y) : EqualCard Y X := by
   sorry
 
+-- транзитивность равномощности: из `X` равномощно `Y` и `Y` равномощно `Z` следует `X` равномощно `Z`
 @[trans]
 theorem SetTheory.Set.EqualCard.trans {X Y Z : Set} (h1 : EqualCard X Y) (h2 : EqualCard Y Z) : EqualCard X Z := by
   sorry
@@ -73,6 +76,7 @@ instance SetTheory.Set.EqualCard.inst_setoid : Setoid SetTheory.Set := ⟨ Equal
 /-- Definition 3.6.5 -/
 abbrev SetTheory.Set.has_card (X : Set) (n : ℕ) : Prop := X ≈ Fin n
 
+-- разворачивает `has_card`: `X` имеет мощность `n` тогда и только тогда, когда существует биекция `X → Fin n`
 theorem SetTheory.Set.has_card_iff (X : Set) (n : ℕ) : 
     X.has_card n ↔ ∃ f : X → Fin n, Function.Bijective f := by
   simp [has_card, HasEquiv.Equiv, instHasEquivOfSetoid, Setoid.r, EqualCard]
@@ -92,6 +96,7 @@ theorem SetTheory.Set.Example_3_6_7a (a : Object) : ({a} : Set).has_card 1 := by
   have := Fin.toNat_lt y
   simp_all
 
+-- пример: множество из четырёх попарно различных элементов `{a,b,c,d}` имеет мощность `4`
 theorem SetTheory.Set.Example_3_6_7b {a b c d : Object} (hab : a ≠ b) (hac : a ≠ c) (had : a ≠ d)
     (hbc : b ≠ c) (hbd : b ≠ d) (hcd : c ≠ d) : ({a,b,c,d} : Set).has_card 4 := by
   rw [has_card_iff]
@@ -159,6 +164,7 @@ theorem SetTheory.Set.card_uniq {X : Set} {n m : ℕ} (h1 : X.has_card n) (h2 : 
   have : m ≠ 0 := by contrapose! this; simpa [has_card_zero, this] using h2
   specialize hn (card_erase ?_ h1 ⟨ _, hx ⟩) (card_erase ?_ h2 ⟨ _, hx ⟩) <;> omega
 
+-- пример: множество `{0,1,2}` имеет мощность `3`
 lemma SetTheory.Set.Example_3_6_8_a : ({0,1,2} : Set).has_card 3 := by
   rw [has_card_iff]
   have : ({0, 1, 2} : Set) = SetTheory.Set.Fin 3 := by
@@ -173,6 +179,7 @@ lemma SetTheory.Set.Example_3_6_8_a : ({0,1,2} : Set).has_card 3 := by
   use id
   exact Function.bijective_id
 
+-- пример: множество `{3,4}` имеет мощность `2`
 lemma SetTheory.Set.Example_3_6_8_b : ({3,4} : Set).has_card 2 := by
   rw [has_card_iff]
   use open Classical in fun x ↦ Fin_mk _ (if x = (3 : Object) then 0 else 1) (by aesop)
@@ -184,6 +191,7 @@ lemma SetTheory.Set.Example_3_6_8_b : ({3,4} : Set).has_card 2 := by
   have : y = (0 : ℕ) ∨ y = (1 : ℕ) := by omega
   aesop
 
+-- пример: множества `{0,1,2}` и `{3,4}` не равномощны, поскольку имеют разную мощность (3 и 2)
 lemma SetTheory.Set.Example_3_6_8_c : ¬({0,1,2} : Set) ≈ ({3,4} : Set) := by
   by_contra h
   have h1 : Fin 3 ≈ Fin 2 := (Example_3_6_8_a.symm.trans h).trans Example_3_6_8_b
@@ -212,27 +220,35 @@ open Classical in
 /-- Для удобства в Lean бесконечным множествам присваивается "мусорная" мощность, равная нулю. -/
 noncomputable def SetTheory.Set.card (X : Set) : ℕ := if h : X.finite then h.choose else 0
 
+-- для конечного `X` число `X.card` действительно является его мощностью в смысле `has_card`
 theorem SetTheory.Set.has_card_card {X : Set} (hX : X.finite) : X.has_card (SetTheory.Set.card X) := by
   simp [card, hX, hX.choose_spec]
 
+-- если `X` имеет мощность `n`, то функция `card` вычисляет именно `n`
 theorem SetTheory.Set.has_card_to_card {X : Set} {n : ℕ} : X.has_card n → X.card = n := by
   intro h; simp [card, card_uniq (⟨ n, h ⟩ : X.finite).choose_spec h]; aesop
 
+-- обратное направление: при ненулевом `n` равенство `X.card = n` влечёт `X.has_card n`
 theorem SetTheory.Set.card_to_has_card {X : Set} {n : ℕ} (hn : n ≠ 0) : X.card = n → X.has_card n
   := by grind [card, has_card_card]
 
+-- множество `Fin n` имеет мощность `n`, как и ожидается
 theorem SetTheory.Set.card_fin_eq (n : ℕ) : (Fin n).has_card n := (has_card_iff _ _).mp ⟨ id, Function.bijective_id ⟩
 
+-- значение `card` на `Fin n` равно `n`
 theorem SetTheory.Set.Fin_card (n : ℕ) : (Fin n).card = n := has_card_to_card (card_fin_eq n)
 
+-- множество `Fin n` конечно
 theorem SetTheory.Set.Fin_finite (n : ℕ) : (Fin n).finite := ⟨n, card_fin_eq n⟩
 
+-- равномощные множества имеют одну и ту же мощность `n` (для любого `n`)
 theorem SetTheory.Set.EquivCard_to_has_card_eq {X Y : Set} {n : ℕ} (h : X ≈ Y) : X.has_card n ↔ Y.has_card n := by
   choose f hf using h; let e := Equiv.ofBijective f hf
   constructor <;> (intro h'; rw [has_card_iff] at *; choose g hg using h')
   . use e.symm.trans (.ofBijective _ hg); apply Equiv.bijective
   . use e.trans (.ofBijective _ hg); apply Equiv.bijective
 
+-- равномощные множества имеют равные значения `card`
 theorem SetTheory.Set.EquivCard_to_card_eq {X Y : Set} (h : X ≈ Y) : X.card = Y.card := by
   by_cases hX : X.finite <;> by_cases hY : Y.finite <;> try rw [finite] at hX hY
   . choose nX hXn using hX; choose nY hYn using hY
@@ -246,24 +262,29 @@ theorem SetTheory.Set.EquivCard_to_card_eq {X Y : Set} (h : X ≈ Y) : X.card = 
 theorem SetTheory.Set.empty_iff_card_eq_zero {X : Set} : X = ∅ ↔ X.finite ∧ X.card = 0 := by
   sorry
 
+-- конечное множество нулевой мощности пусто
 lemma SetTheory.Set.empty_of_card_eq_zero {X : Set} (hX : X.finite) : X.card = 0 → X = ∅ := by
   intro h
   rw [empty_iff_card_eq_zero]
   exact ⟨hX, h⟩
 
+-- пустое множество конечно
 lemma SetTheory.Set.finite_of_empty {X : Set} : X = ∅ → X.finite := by
   intro h
   rw [empty_iff_card_eq_zero] at h
   exact h.1
 
+-- мощность пустого множества равна нулю
 lemma SetTheory.Set.card_eq_zero_of_empty {X : Set} : X = ∅ → X.card = 0 := by
   intro h
   rw [empty_iff_card_eq_zero] at h
   exact h.2
 
+-- пустое множество конечно (частный случай `finite_of_empty`)
 @[simp]
 lemma SetTheory.Set.empty_finite : (∅ : Set).finite := finite_of_empty rfl
 
+-- мощность пустого множества равна нулю (частный случай `card_eq_zero_of_empty`)
 @[simp]
 lemma SetTheory.Set.empty_card_eq_zero : (∅ : Set).card = 0 := card_eq_zero_of_empty rfl
 
@@ -305,6 +326,7 @@ noncomputable def SetTheory.Set.pow_fun_equiv {A B : Set} : ↑(A ^ B) ≃ (B �
   left_inv := sorry
   right_inv := sorry
 
+-- элементы `A ^ B` равны тогда и только тогда, когда равны их образы под `pow_fun_equiv`
 lemma SetTheory.Set.pow_fun_eq_iff {A B : Set} (x y : ↑(A ^ B)) : x = y ↔ pow_fun_equiv x = pow_fun_equiv y := by
   rw [←pow_fun_equiv.apply_eq_iff_eq]
 
@@ -323,11 +345,14 @@ noncomputable abbrev SetTheory.Set.pow_fun_equiv' (A B : Set) : ↑(A ^ B) ≃ (
 theorem SetTheory.Set.pow_pow_EqualCard_pow_prod (A B C : Set) : 
     EqualCard ((A ^ B) ^ C) (A ^ (B ×ˢ C)) := by sorry
 
+-- закон степеней для натуральных чисел: `(a^b)^c = a^(b*c)`
 theorem SetTheory.Set.pow_pow_eq_pow_mul (a b c : ℕ) : (a^b)^c = a^(b*c) := by sorry
 
+-- для непересекающихся `B` и `C` произведение `(A^B) ×ˢ (A^C)` равномощно `A^(B ∪ C)`
 theorem SetTheory.Set.pow_prod_pow_EqualCard_pow_union (A B C : Set) (hd : Disjoint B C) : 
     EqualCard ((A ^ B) ×ˢ (A ^ C)) (A ^ (B ∪ C)) := by sorry
 
+-- закон степеней для натуральных чисел: `a^b * a^c = a^(b+c)`
 theorem SetTheory.Set.pow_mul_pow_eq_pow_add (a b c : ℕ) : (a^b) * a^c = a^(b+c) := by sorry
 
 /-- Exercise 3.6.7 -/
@@ -364,9 +389,11 @@ noncomputable def SetTheory.Set.Permutations_toFun {n : ℕ} (p : Permutations n
   simp only [Permutations, specification_axiom'', powerset_axiom] at this
   exact this.choose.choose
 
+-- функция `Permutations_toFun p`, отвечающая перестановке `p`, действительно биективна
 theorem SetTheory.Set.Permutations_bijective {n : ℕ} (p : Permutations n) : 
     Function.Bijective (Permutations_toFun p) := by sorry
 
+-- `Permutations_toFun` инъективна: разные перестановки задают разные функции `Fin n → Fin n`
 theorem SetTheory.Set.Permutations_inj {n : ℕ} (p1 p2 : Permutations n) : 
     Permutations_toFun p1 = Permutations_toFun p2 ↔ p1 = p2 := by sorry
 
@@ -385,9 +412,11 @@ noncomputable def SetTheory.Set.perm_equiv_equiv {n : ℕ} : Permutations n ≃ 
 def SetTheory.Set.Fin.castSucc {n} (x : Fin n) : Fin (n + 1) :=
   Fin_embed _ _ (by omega) x
 
+-- вложение `castSucc : Fin n → Fin (n+1)` инъективно
 @[simp]
 lemma SetTheory.Set.Fin.castSucc_inj {n} {x y : Fin n} : castSucc x = castSucc y ↔ x = y := by sorry
 
+-- `castSucc` не отображает ни один элемент `Fin n` в `n`
 @[simp]
 theorem SetTheory.Set.Fin.castSucc_ne {n} (x : Fin n) : castSucc x ≠ n := by sorry
 
@@ -395,10 +424,12 @@ theorem SetTheory.Set.Fin.castSucc_ne {n} (x : Fin n) : castSucc x ≠ n := by s
 noncomputable def SetTheory.Set.Fin.castPred {n} (x : Fin (n + 1)) (h : (x : ℕ) ≠ n) : Fin n :=
   Fin_mk _ (x : ℕ) (by have := Fin.toNat_lt x; omega)
 
+-- `castSucc` восстанавливает `x`, применённый после `castPred` (когда `x ≠ n`)
 @[simp]
 theorem SetTheory.Set.Fin.castSucc_castPred {n} (x : Fin (n + 1)) (h : (x : ℕ) ≠ n) : 
     castSucc (castPred x h) = x := by sorry
 
+-- `castPred` восстанавливает `x` после применения `castSucc` — обратное направление к `castSucc_castPred`
 @[simp]
 theorem SetTheory.Set.Fin.castPred_castSucc {n} (x : Fin n) (h : ((castSucc x : Fin (n + 1)) : ℕ) ≠ n) : 
     castPred (castSucc x) h = x := by sorry
@@ -438,13 +469,16 @@ noncomputable def SetTheory.Set.Fin.succAbove {n} (i : Fin (n + 1)) (x : Fin n) 
   else
     Fin_mk _ ((x : ℕ) + 1) (by sorry)
 
+-- расширение `succAbove i x` никогда не попадает в "дыру" `i`
 @[simp]
 theorem SetTheory.Set.Fin.succAbove_ne {n} (i : Fin (n + 1)) (x : Fin n) : succAbove i x ≠ i := by sorry
 
+-- `succAbove` восстанавливает `x` после `predAbove` — эти операции взаимно обратны
 @[simp]
 theorem SetTheory.Set.Fin.succAbove_predAbove {n} (i : Fin (n + 1)) (x : Fin (n + 1)) (h : x ≠ i) : 
     (succAbove i) (predAbove i x h) = x := by sorry
 
+-- `predAbove` восстанавливает `x` после `succAbove` — обратное направление к `succAbove_predAbove`
 @[simp]
 theorem SetTheory.Set.Fin.predAbove_succAbove {n} (i : Fin (n + 1)) (x : Fin n) : 
     (predAbove i) (succAbove i x) (succAbove_ne i x) = x := by sorry

@@ -576,6 +576,8 @@ theorem Jordan_outer_subadd {d : ℕ} {E F : Set (EuclideanSpace' d)}
 
 end JordanFiniteAdditivityLemmas
 
+/-- Мера Жордана конечно аддитивна: мера объединения двух непересекающихся измеримых
+    множеств равна сумме их мер. -/
 theorem JordanMeasurable.mes_of_disjUnion {d : ℕ} {E F : Set (EuclideanSpace' d)}
   (hE : JordanMeasurable E) (hF : JordanMeasurable F) (hEF : Disjoint E F)
   : (hE.union hF).measure = hE.measure + hF.measure := by

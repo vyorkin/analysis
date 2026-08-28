@@ -31,7 +31,7 @@ export SetTheory (Set Object nat)
 variable [SetTheory]
 
 /--
-Definition 3.4.1.
+Definition 3.4.1:
 Интересно, что определение не требует, чтобы {lean}`S` было подмножеством {lean}`X`.
 -/
 abbrev SetTheory.Set.image {X Y : Set} (f : X → Y) (S : Set) : Set :=
@@ -45,18 +45,55 @@ abbrev SetTheory.Set.image {X Y : Set} (f : X → Y) (S : Set) : Set :=
     -- поэтому оба значения совпадают с `f x`, а значит и друг с другом.
     rw [← hy, ← hy'])
 
-/-- Definition 3.4.1 -/
+/--
+Definition 3.4.1:
+По сути, здесь с двух сторон написано ровно одно и то же,
+лишь конъюнкты поменены местами.
+-/
 theorem SetTheory.Set.mem_image {X Y : Set} (f : X → Y) (S : Set) (y : Object) :
   y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y := by
     grind [replacement_axiom]
 
+-- Тот же результат, что и `mem_image`, но доказан явно через `rw` и `constructor`, а не `grind`
+theorem SetTheory.Set.mem_image' {X Y : Set} (f : X → Y) (S : Set) (y : Object) :
+  y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y := by
+    rw [image]
+    -- (hP : ∀ (x : A.toSubtype)
+    -- (y y' : Object), P x y ∧ P x y' → y = y')
+    -- (y : Object)
+    -- : y ∈ A.replace hP ↔ ∃ x, P x y
+    rw [replacement_axiom]
+    constructor
+    · rintro ⟨x, hx, hS⟩
+      exact ⟨x, hS, hx⟩
+    · rintro ⟨x, hS, hx⟩
+      exact ⟨x, hx, hS⟩
+
 /-- Альтернативное определение образа через аксиому спецификации. -/
 theorem SetTheory.Set.image_eq_specify {X Y : Set} (f : X → Y) (S : Set) :
-  image f S = Y.specify (fun y ↦ ∃ x : X, x.val ∈ S ∧ f x = y) := by sorry
+  image f S = Y.specify (fun y ↦ ∃ x : X, x.val ∈ S ∧ f x = y) := by
+    unfold image
+    ext y
+    rw [specification_axiom''] -- x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
+    constructor
+    · rw [replacement_axiom] -- y ∈ A.replace hP ↔ ∃ x, P x y
+      rintro ⟨x, ⟨hfx, hsx⟩⟩
+      refine ⟨?_, x, hsx, ?_⟩
+      · rw [← hfx]
+        have ⟨y, hy⟩ := f x
+        exact hy
+      · subst hfx
+        rfl
+    · rw [replacement_axiom]
+      rintro ⟨y', ⟨x, hx⟩⟩
+      obtain ⟨hxs, hfx⟩ := hx
+      refine ⟨x, ⟨?_, hxs⟩⟩
+      rw [hfx]
 
 /--
-  Связь с понятием образа из Mathlib. Обратите внимание на необходимость приведения
-  {name}`Subtype.val`, чтобы согласовать типы.
+  Связь с понятием образа из Mathlib.
+  Обратите внимание на необходимость приведения {name}`Subtype.val`,
+  чтобы согласовать типы.
 -/
 theorem SetTheory.Set.image_eq_image {X Y : Set} (f : X → Y) (S : Set) :
   (image f S : _root_.Set Object) = Subtype.val '' (f '' {x | x.val ∈ S}) := by
@@ -64,6 +101,10 @@ theorem SetTheory.Set.image_eq_image {X Y : Set} (f : X → Y) (S : Set) :
     simp
     grind
 
+/--
+  Образ {lean}`image f S` (при любом {lean}`S`) лежит
+  в области значений {lean}`f`, то есть {lean}`image f S ⊆ Y`.
+-/
 theorem SetTheory.Set.image_in_codomain {X Y : Set} (f : X → Y) (S : Set) :
   image f S ⊆ Y := by
     intro _ h
@@ -73,6 +114,7 @@ theorem SetTheory.Set.image_in_codomain {X Y : Set} (f : X → Y) (S : Set) :
 /-- Example 3.4.2 -/
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n : ℕ)
 
+-- конкретное вычисление: образ `{1,2,3}` под удвоением `f_3_4_2` — это `{2,4,6}`
 theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
   ext
   simp only [mem_image, mem_triple, f_3_4_2]
@@ -85,9 +127,11 @@ theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
 /-- Example 3.4.3 записан с использованием понятия образа из Mathlib. -/
 example : (fun n : ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by aesop
 
+-- прямое направление `mem_image`: если `x ∈ S`, то `f x` лежит в образе `image f S`
 theorem SetTheory.Set.mem_image_of_eval {X Y : Set} (f : X → Y) (S : Set) (x : X) :
     x.val ∈ S → (f x).val ∈ image f S := by sorry
 
+-- контрпример к обратному направлению: `f x ∈ image f S` не гарантирует `x ∈ S`
 theorem SetTheory.Set.mem_image_of_eval_counter :
     ∃ (X Y : Set) (f : X → Y) (S : Set) (x : X), ¬((f x).val ∈ image f S → x.val ∈ S) := by sorry
 
@@ -98,6 +142,7 @@ theorem SetTheory.Set.mem_image_of_eval_counter :
 abbrev SetTheory.Set.preimage {X Y : Set} (f : X → Y) (U : Set) : Set :=
   X.specify (P := fun x ↦ (f x).val ∈ U)
 
+-- элемент `x : X` попадает в прообраз `preimage f U` тогда и только тогда, когда `f x ∈ U`
 @[simp]
 theorem SetTheory.Set.mem_preimage {X Y : Set}
   (f : X → Y) (U : Set) (x : X) :
@@ -125,6 +170,7 @@ theorem SetTheory.Set.preimage_eq {X Y : Set} (f : X → Y) (U : Set) :
     ext
     simp
 
+-- прообраз `preimage f U` целиком лежит в области определения `X`
 theorem SetTheory.Set.preimage_in_domain {X Y : Set} (f : X → Y) (U : Set) :
   (preimage f U) ⊆ X := by
     intro _ _
@@ -140,6 +186,8 @@ theorem SetTheory.Set.preimage_f_3_4_2 : preimage f_3_4_2 {2,4,6} = {1,2,3} := b
     map_tacs [use 1; use 2; use 3]
     all_goals simp
 
+-- конкретный пример: образ прообраза `{1,2,3}` под `f_3_4_2` не восстанавливает `{1,2,3}`,
+-- поскольку `f_3_4_2` не сюръективна
 theorem SetTheory.Set.image_preimage_f_3_4_2 :
   image f_3_4_2 (preimage f_3_4_2 {1,2,3}) ≠ {1,2,3} := by sorry
 
@@ -169,6 +217,8 @@ def SetTheory.Set.coe_of_fun {X Y : Set} (f : X → Y) : Object :=
 instance SetTheory.Set.inst_coe_of_fun {X Y : Set} : CoeOut (X → Y) Object where
   coe := coe_of_fun
 
+-- приведение функции `X → Y` к `Object` инъективно: `f` и `g` совпадают как объекты
+-- тогда и только тогда, когда они равны как функции
 @[simp]
 theorem SetTheory.Set.coe_of_fun_inj
   {X Y : Set} (f g : X → Y) : (f : Object) = (g : Object) ↔ f = g := by
@@ -193,6 +243,7 @@ noncomputable abbrev f_3_4_9_c : ({4,7} : Set) → ({0,1} : Set) :=
 
 abbrev f_3_4_9_d : ({4,7} : Set) → ({0,1} : Set) := fun x ↦ ⟨ 1, by simp ⟩
 
+-- объект `F ∈ {0,1}^{4,7}` — это ровно одна из четырёх функций `{4,7} → {0,1}`, перечисленных выше
 theorem SetTheory.Set.example_3_4_9 (F : Object) :
     F ∈ ({0,1} : Set) ^ ({4,7} : Set) ↔ F = f_3_4_9_a
     ∨ F = f_3_4_9_b ∨ F = f_3_4_9_c ∨ F = f_3_4_9_d := by
@@ -269,6 +320,8 @@ theorem SetTheory.Set.union_eq (A : Set) :
 abbrev SetTheory.Set.iUnion (I : Set) (A : I → Set) : Set :=
   union (I.replace (P := fun α S ↦ S = A α) (by intro _ _ _ ⟨h1, h2⟩; exact h1.trans h2.symm))
 
+-- `x` лежит в индексированном объединении `iUnion I A` тогда и только тогда,
+-- когда `x` принадлежит хотя бы одному из множеств `A α`
 theorem SetTheory.Set.mem_iUnion {I : Set} (A : I → Set) (x : Object) :
     x ∈ iUnion I A ↔ ∃ α : I, x ∈ A α := by
   rw [union_axiom]; constructor
@@ -279,6 +332,7 @@ open Classical in
 noncomputable abbrev SetTheory.Set.index_example : ({1,2,3} : Set) → Set :=
   fun i ↦ if i.val = 1 then {2,3} else if i.val = 2 then {3,4} else {4,5}
 
+-- конкретное вычисление: объединение `index_example` по индексам `{1,2,3}` даёт `{2,3,4,5}`
 theorem SetTheory.Set.iUnion_example : iUnion {1,2,3} index_example = {2,3,4,5} := by
   apply ext; intros; simp [mem_iUnion, index_example, Insert.insert]
   refine ⟨ by aesop, ?_ ⟩; rintro (_ | _ | _); map_tacs [use 1; use 2; use 3]
@@ -289,6 +343,7 @@ theorem SetTheory.Set.iUnion_eq (I : Set) (A : I → Set) :
     (iUnion I A : _root_.Set Object) = ⋃ α, (A α : _root_.Set Object) := by
   ext; simp [mem_iUnion]
 
+-- объединение по пустому семейству индексов пусто
 theorem SetTheory.Set.iUnion_of_empty (A : (∅ : Set) → Set) : iUnion (∅ : Set) A = ∅ := by sorry
 
 /-- Индексированное пересечение -/
@@ -301,6 +356,8 @@ abbrev SetTheory.Set.iInter' (I : Set) (β : I) (A : I → Set) : Set :=
 noncomputable abbrev SetTheory.Set.iInter (I : Set) (hI : I ≠ ∅) (A : I → Set) : Set :=
   iInter' I (nonempty_choose hI) A
 
+-- `x` лежит в индексированном пересечении `iInter I hI A` тогда и только тогда,
+-- когда `x` принадлежит каждому из множеств `A α`
 theorem SetTheory.Set.mem_iInter {I : Set} (hI : I ≠ ∅) (A : I → Set) (x : Object) :
     x ∈ iInter I hI A ↔ ∀ α : I, x ∈ A α := by
   sorry
@@ -327,9 +384,11 @@ theorem SetTheory.Set.preimage_eq_image_of_inv {X Y V : Set} (f : X → Y) (f_in
 theorem SetTheory.Set.image_of_inter {X Y : Set} (f : X → Y) (A B : Set) :
     image f (A ∩ B) ⊆ (image f A) ∩ (image f B) := by sorry
 
+-- разность образов содержится в образе разности: `(image f A) \ (image f B) ⊆ image f (A \ B)`
 theorem SetTheory.Set.image_of_diff {X Y : Set} (f : X → Y) (A B : Set) :
     (image f A) \ (image f B) ⊆ image f (A \ B) := by sorry
 
+-- образ объединения равен объединению образов
 theorem SetTheory.Set.image_of_union {X Y : Set} (f : X → Y) (A B : Set) :
     image f (A ∪ B) = (image f A) ∪ (image f B) := by sorry
 
@@ -345,9 +404,11 @@ def SetTheory.Set.image_of_diff' : Decidable (∀ X Y : Set, ∀ f : X → Y, �
 theorem SetTheory.Set.preimage_of_inter {X Y : Set} (f : X → Y) (A B : Set) :
     preimage f (A ∩ B) = (preimage f A) ∩ (preimage f B) := by sorry
 
+-- прообраз объединения равен объединению прообразов
 theorem SetTheory.Set.preimage_of_union {X Y : Set} (f : X → Y) (A B : Set) :
     preimage f (A ∪ B) = (preimage f A) ∪ (preimage f B) := by sorry
 
+-- прообраз разности равен разности прообразов
 theorem SetTheory.Set.preimage_of_diff {X Y : Set} (f : X → Y) (A B : Set) :
     preimage f (A \ B) = (preimage f A) \ (preimage f B)  := by sorry
 

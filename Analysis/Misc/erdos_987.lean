@@ -9,6 +9,8 @@ import Mathlib
 
 open Filter Complex Finset
 
+-- Проблема Эрдёша #987: для любой последовательности точек `z : ℕ → Circle` на единичной окружности
+-- степенные суммы `∑_{j<n} z_j^k` неограниченны — двойной `limsup` по `k`, затем по `n` от их нормы равен `⊤`
 theorem Erdos_987 (z : ℕ → Circle) : 
   atTop.limsup (fun k : ℕ ↦ atTop.limsup (fun n : ℕ ↦ (‖∑ j ∈ range n, ((z j)^k : ℂ)‖ : EReal) )) = ⊤ := by
   generalize hC : atTop.limsup (fun k : ℕ ↦ atTop.limsup (fun n : ℕ ↦ (‖∑ j ∈ range n, ((z j)^k : ℂ)‖ : EReal) )) = C

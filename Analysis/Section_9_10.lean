@@ -17,6 +17,7 @@ namespace Chapter9
 theorem BddAbove.unbounded_iff (X : Set ℝ) : ¬ BddAbove X ↔ ∀ M, ∃ x ∈ X, x > M := by
   simp [bddAbove_def]
 
+-- Переформулировка неограниченности сверху через `EReal`: `sSup` образа `X` в `EReal` равен `⊤`
 theorem BddAbove.unbounded_iff' (X : Set ℝ) : ¬ BddAbove X ↔ sSup ((fun x : ℝ ↦ (x : EReal)) '' X) = ⊤ := by
   erw [sSup_eq_top, unbounded_iff]
   constructor
@@ -25,9 +26,11 @@ theorem BddAbove.unbounded_iff' (X : Set ℝ) : ¬ BddAbove X ↔ sSup ((fun x :
   intro h M; specialize h (M : EReal) (EReal.coe_lt_top M)
   obtain ⟨_, ⟨x, hx, rfl⟩, hMx⟩ := h; exact ⟨x, hx, EReal.coe_lt_coe_iff.mp hMx⟩
 
+-- `X` не ограничено снизу тогда и только тогда, когда для любого `M` найдётся элемент `X`, меньший `M`
 theorem BddBelow.unbounded_iff (X : Set ℝ) : ¬ BddBelow X ↔ ∀ M, ∃ x ∈ X, x < M := by
   simp [bddBelow_def]
 
+-- Переформулировка неограниченности снизу через `EReal`: `sInf` образа `X` в `EReal` равен `⊥`
 theorem BddBelow.unbounded_iff' (X : Set ℝ) : ¬ BddBelow X ↔ sInf ((fun x : ℝ ↦ (x : EReal)) '' X) = ⊥ := by
   simp [sInf_eq_bot, unbounded_iff]
   constructor

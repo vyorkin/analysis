@@ -69,8 +69,9 @@ instance OrderedPair.inst_coeObject : Coe OrderedPair Object where
 abbrev SetTheory.Set.slice (x : Object) (Y : Set) : Set :=
   Y.replace (P := fun y z ↦ z = (⟨x, y⟩ : OrderedPair)) (by grind)
 
+/-- `z ∈ slice x Y` тогда и только тогда, когда `z = ⟨x, y⟩` для некоторого `y ∈ Y`. -/
 @[simp]
-theorem SetTheory.Set.mem_slice (x z : Object) (Y : Set) : 
+theorem SetTheory.Set.mem_slice (x z : Object) (Y : Set) :
     z ∈ (SetTheory.Set.slice x Y) ↔ ∃ y : Y, z = (⟨x, y⟩ : OrderedPair) := replacement_axiom _ _
 
 /-- Definition 3.5.4 (Декартово произведение) -/
@@ -83,8 +84,9 @@ instance SetTheory.Set.inst_SProd : SProd Set Set Set where
 
 example (X Y : Set) : X ×ˢ Y = SetTheory.Set.cartesian X Y := rfl
 
+/-- Элемент декартова произведения `X ×ˢ Y` — это в точности упорядоченная пара `⟨x, y⟩` с `x ∈ X`, `y ∈ Y`. -/
 @[simp]
-theorem SetTheory.Set.mem_cartesian (z : Object) (X Y : Set) : 
+theorem SetTheory.Set.mem_cartesian (z : Object) (X Y : Set) :
     z ∈ X ×ˢ Y ↔ ∃ x : X, ∃ y : Y, z = (⟨x, y⟩ : OrderedPair) := by
   simp only [SProd.sprod, union_axiom]; constructor
   . intro ⟨ S, hz, hS ⟩; rw [replacement_axiom] at hS; obtain ⟨ x, hx ⟩ := hS
@@ -98,7 +100,8 @@ noncomputable abbrev SetTheory.Set.fst {X Y : Set} (z : X ×ˢ Y) : X :=
 noncomputable abbrev SetTheory.Set.snd {X Y : Set} (z : X ×ˢ Y) : Y :=
   (exists_comm.mp ((mem_cartesian _ _ _).mp z.property)).choose
 
-theorem SetTheory.Set.pair_eq_fst_snd {X Y : Set} (z : X ×ˢ Y) : 
+/-- Любой элемент `z ∈ X ×ˢ Y` восстанавливается из своих проекций: `z = ⟨fst z, snd z⟩`. -/
+theorem SetTheory.Set.pair_eq_fst_snd {X Y : Set} (z : X ×ˢ Y) :
     z.val = (⟨ fst z, snd z ⟩ : OrderedPair) := by
   have := (mem_cartesian _ _ _).mp z.property
   obtain ⟨ y, hy : z.val = (⟨ fst z, y ⟩ : OrderedPair)⟩ := this.choose_spec
@@ -109,22 +112,25 @@ theorem SetTheory.Set.pair_eq_fst_snd {X Y : Set} (z : X ×ˢ Y) :
 def SetTheory.Set.mk_cartesian {X Y : Set} (x : X) (y : Y) : X ×ˢ Y :=
   ⟨(⟨ x, y ⟩ : OrderedPair), by simp⟩
 
+/-- Первая проекция пары, построенной из `x` и `y`, возвращает `x`. -/
 @[simp]
-theorem SetTheory.Set.fst_of_mk_cartesian {X Y : Set} (x : X) (y : Y) : 
+theorem SetTheory.Set.fst_of_mk_cartesian {X Y : Set} (x : X) (y : Y) :
     fst (mk_cartesian x y) = x := by
   let z := mk_cartesian x y; have := (mem_cartesian _ _ _).mp z.property
   obtain ⟨ y', hy : z.val = (⟨ fst z, y' ⟩ : OrderedPair) ⟩ := this.choose_spec
   simp [z, mk_cartesian, Subtype.val_inj] at *; rw [←hy.1]
 
+/-- Вторая проекция пары, построенной из `x` и `y`, возвращает `y`. -/
 @[simp]
-theorem SetTheory.Set.snd_of_mk_cartesian {X Y : Set} (x : X) (y : Y) : 
+theorem SetTheory.Set.snd_of_mk_cartesian {X Y : Set} (x : X) (y : Y) :
     snd (mk_cartesian x y) = y := by
   let z := mk_cartesian x y; have := (mem_cartesian _ _ _).mp z.property
   obtain ⟨ x', hx : z.val = (⟨ x', snd z ⟩ : OrderedPair) ⟩ := (exists_comm.mp this).choose_spec
   simp [z, mk_cartesian, Subtype.val_inj] at *; rw [←hx.2]
 
+/-- Сборка пары из её же проекций возвращает исходный элемент: `mk_cartesian (fst z) (snd z) = z`. -/
 @[simp]
-theorem SetTheory.Set.mk_cartesian_fst_snd_eq {X Y : Set} (z : X ×ˢ Y) : 
+theorem SetTheory.Set.mk_cartesian_fst_snd_eq {X Y : Set} (z : X ×ˢ Y) :
     (mk_cartesian (fst z) (snd z)) = z := by
   rw [mk_cartesian, Subtype.mk.injEq, pair_eq_fst_snd]
 
@@ -184,11 +190,13 @@ theorem SetTheory.Set.mem_iProd {I : Set} {X : I → Set} (t : Object) :
   have h : t ∈ (I.iUnion X)^I := by simp [hx]
   use h, x
 
-theorem SetTheory.Set.tuple_mem_iProd {I : Set} {X : I → Set} (x : ∀ i, X i) : 
+/-- Любой кортеж `tuple x`, построенный из значений `x i ∈ X i`, лежит в индексированном произведении `iProd X`. -/
+theorem SetTheory.Set.tuple_mem_iProd {I : Set} {X : I → Set} (x : ∀ i, X i) :
     tuple x ∈ iProd X := by rw [mem_iProd]; use x
 
+/-- Построение кортежа инъективно: `tuple x = tuple y` тогда и только тогда, когда `x = y` покомпонентно. -/
 @[simp]
-theorem SetTheory.Set.tuple_inj {I : Set} {X : I → Set} (x y : ∀ i, X i) : 
+theorem SetTheory.Set.tuple_inj {I : Set} {X : I → Set} (x y : ∀ i, X i) :
     tuple x = tuple y ↔ x = y := by sorry
 
 /-- Example 3.5.8. Между {lean}`(X ×ˢ Y) ×ˢ Z` и {lean}`X ×ˢ (Y ×ˢ Z)` существует биекция. -/
@@ -265,6 +273,7 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_pi (I : Set) (X : I → Set) :
 -/
 abbrev SetTheory.Set.Fin (n : ℕ) : Set := nat.specify (fun m ↦ (m : ℕ) < n)
 
+/-- `x ∈ Fin n` тогда и только тогда, когда `x` — это некоторое натуральное `m < n`. -/
 theorem SetTheory.Set.mem_Fin (n : ℕ) (x : Object) : x ∈ Fin n ↔ ∃ m, m < n ∧ x = m := by
   rw [specification_axiom'']; constructor
   . intro ⟨ h1, h2 ⟩; use ↑(⟨ x, h1 ⟩ : nat); simp [h2]
@@ -274,6 +283,7 @@ theorem SetTheory.Set.mem_Fin (n : ℕ) (x : Object) : x ∈ Fin n ↔ ∃ m, m 
 
 abbrev SetTheory.Set.Fin_mk (n m : ℕ) (h : m < n) : Fin n := ⟨ m, by rw [mem_Fin]; use m ⟩
 
+/-- Любой элемент `x : Fin n` представим как `Fin_mk n m h` для некоторого `m < n`. -/
 theorem SetTheory.Set.mem_Fin' {n : ℕ} (x : Fin n) : ∃ m, ∃ h : m < n, x = Fin_mk n m h := by
   choose m hm this using (mem_Fin _ _).mp x.property; use m, hm
   simp [Fin_mk, ←Subtype.val_inj, this]
@@ -284,15 +294,19 @@ noncomputable abbrev SetTheory.Set.Fin.toNat {n : ℕ} (i : Fin n) : ℕ := (mem
 noncomputable instance SetTheory.Set.Fin.inst_coeNat {n : ℕ} : CoeOut (Fin n) ℕ where
   coe := toNat
 
-theorem SetTheory.Set.Fin.toNat_spec {n : ℕ} (i : Fin n) : 
+/-- `toNat` даёт то самое `m < n`, для которого `i = Fin_mk n m h` — обоснование корректности приведения `Fin n → ℕ`. -/
+theorem SetTheory.Set.Fin.toNat_spec {n : ℕ} (i : Fin n) :
     ∃ h : i < n, i = Fin_mk n i h := (mem_Fin' i).choose_spec
 
+/-- Приведение `i : Fin n` к `ℕ` действительно даёт число, меньшее `n`. -/
 theorem SetTheory.Set.Fin.toNat_lt {n : ℕ} (i : Fin n) : i < n := (toNat_spec i).choose
 
+/-- Приведение `i : Fin n` сначала к `ℕ`, а затем к `Object`, совпадает с прямым приведением `i` к `Object`. -/
 @[simp]
 theorem SetTheory.Set.Fin.coe_toNat {n : ℕ} (i : Fin n) : ((i : ℕ) : Object) = (i : Object) := by
   set j := (i : ℕ); obtain ⟨ h, h' : i = Fin_mk n j h ⟩ := toNat_spec i; rw [h']
 
+/-- Приведение `Fin n → ℕ` инъективно: элементы `Fin n` равны тогда и только тогда, когда равны их числовые значения. -/
 @[simp low]
 lemma SetTheory.Set.Fin.coe_inj {n : ℕ} {i j : Fin n} : i = j ↔ (i : ℕ) = (j : ℕ) := by
   constructor
@@ -301,6 +315,7 @@ lemma SetTheory.Set.Fin.coe_inj {n : ℕ} {i j : Fin n} : i = j ↔ (i : ℕ) = 
   obtain ⟨_, hj⟩ := toNat_spec j
   grind
 
+/-- `i : Fin n` совпадает как `Object` с числом `j : ℕ` тогда и только тогда, когда `i = j` в `Fin n`. -/
 @[simp]
 theorem SetTheory.Set.Fin.coe_eq_iff {n : ℕ} (i : Fin n) {j : ℕ} : (i : Object) = (j : Object) ↔ i = j := by
   constructor
@@ -310,6 +325,7 @@ theorem SetTheory.Set.Fin.coe_eq_iff {n : ℕ} (i : Fin n) {j : ℕ} : (i : Obje
     simp [←Object.natCast_inj]
   aesop
 
+/-- Если `i : Fin n` также лежит в `Fin m`, то его числовое значение не меняется при этом повторном вложении. -/
 @[simp]
 theorem SetTheory.Set.Fin.coe_eq_iff' {n m : ℕ} (i : Fin n) (hi : ↑i ∈ Fin m) : ((⟨i, hi⟩ : Fin m) : ℕ) = (i : ℕ) := by
   obtain ⟨val, property⟩ := i
@@ -321,6 +337,7 @@ theorem SetTheory.Set.Fin.coe_eq_iff' {n m : ℕ} (i : Fin n) (hi : ↑i ∈ Fin
   have := h2.choose_spec
   grind
 
+/-- Числовое значение `Fin_mk n m h` — это как раз `m`. -/
 @[simp]
 theorem SetTheory.Set.Fin.toNat_mk {n : ℕ} (m : ℕ) (h : m < n) : (Fin_mk n m h : ℕ) = m := by
   have := coe_toNat (Fin_mk n m h)
@@ -406,18 +423,23 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n : ℕ) (X : Fin n → S
 -/
 theorem OrderedPair.refl (p : OrderedPair) : p = p := by sorry
 
+/-- Равенство упорядоченных пар симметрично: `p = q` тогда и только тогда, когда `q = p`. -/
 theorem OrderedPair.symm (p q : OrderedPair) : p = q ↔ q = p := by sorry
 
+/-- Равенство упорядоченных пар транзитивно. -/
 theorem OrderedPair.trans {p q r : OrderedPair} (hpq : p=q) (hqr : q=r) : p=r := by sorry
 
-theorem SetTheory.Set.tuple_refl {I : Set} {X : I → Set} (a : ∀ i, X i) : 
+/-- Равенство кортежей рефлексивно. -/
+theorem SetTheory.Set.tuple_refl {I : Set} {X : I → Set} (a : ∀ i, X i) :
     tuple a = tuple a := by sorry
 
-theorem SetTheory.Set.tuple_symm {I : Set} {X : I → Set} (a b : ∀ i, X i) : 
+/-- Равенство кортежей симметрично: `tuple a = tuple b` тогда и только тогда, когда `tuple b = tuple a`. -/
+theorem SetTheory.Set.tuple_symm {I : Set} {X : I → Set} (a b : ∀ i, X i) :
     tuple a = tuple b ↔ tuple b = tuple a := by sorry
 
+/-- Равенство кортежей транзитивно. -/
 theorem SetTheory.Set.tuple_trans {I : Set} {X : I → Set} {a b c : ∀ i, X i}
-  (hab : tuple a = tuple b) (hbc : tuple b = tuple c) : 
+  (hab : tuple a = tuple b) (hbc : tuple b = tuple c) :
     tuple a = tuple c := by sorry
 
 /-- Exercise 3.5.4 (a) -/
@@ -486,8 +508,10 @@ abbrev SetTheory.Set.graph {X Y : Set} (f : X → Y) : Set :=
 theorem SetTheory.Set.graph_inj {X Y : Set} (f f' : X → Y) : 
     graph f = graph f' ↔ f = f' := by sorry
 
+/-- Множество `G ⊆ X ×ˢ Y`, для каждого `x` содержащее ровно одну пару `⟨x, y⟩`, — это в точности
+    график `graph f` некоторой единственной функции `f : X → Y`. -/
 theorem SetTheory.Set.is_graph {X Y G : Set} (hG : G ⊆ X ×ˢ Y)
-  (hvert : ∀ x : X, ∃! y : Y, ((⟨x,y⟩ : OrderedPair) : Object) ∈ G) : 
+  (hvert : ∀ x : X, ∃! y : Y, ((⟨x,y⟩ : OrderedPair) : Object) ∈ G) :
     ∃! f : X → Y, G = graph f := by sorry
 
 /--

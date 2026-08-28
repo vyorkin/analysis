@@ -48,12 +48,15 @@ noncomputable instance BoundedInterval.decidableEq : DecidableEq BoundedInterval
 @[simp]
 theorem BoundedInterval.set_Ioo (a b : ℝ) : (Ioo a b : Set ℝ) = .Ioo a b := by rfl
 
+-- Приведение `Icc a b : BoundedInterval` к множеству совпадает с `Set.Icc a b`
 @[simp]
 theorem BoundedInterval.set_Icc (a b : ℝ) : (Icc a b : Set ℝ) = .Icc a b := by rfl
 
+-- Приведение `Ioc a b : BoundedInterval` к множеству совпадает с `Set.Ioc a b`
 @[simp]
 theorem BoundedInterval.set_Ioc (a b : ℝ) : (Ioc a b : Set ℝ) = .Ioc a b := by rfl
 
+-- Приведение `Ico a b : BoundedInterval` к множеству совпадает с `Set.Ico a b`
 @[simp]
 theorem BoundedInterval.set_Ico (a b : ℝ) : (Ico a b : Set ℝ) = .Ico a b := by rfl
 
@@ -526,6 +529,7 @@ structure Box (d : ℕ) where
 def Box.toSet {d : ℕ} (B : Box d) : Set (EuclideanSpace' d) :=
   {x | ∀ i, x i ∈ (B.side i : Set ℝ)}
 
+-- Точка принадлежит боксу `B` тогда и только тогда, когда каждая её координата лежит в соответствующей стороне `B.side i`
 @[simp]
 theorem Box.mem_toSet {d : ℕ} {B : Box d} {x : EuclideanSpace' d} : 
     x ∈ B.toSet ↔ ∀ i, x i ∈ (B.side i : Set ℝ) := Iff.rfl
@@ -762,22 +766,27 @@ def BoundedInterval.uclosed : BoundedInterval → Bool
   | Ioo _ _ => false
   | Ico _ _ => false
 
+-- Левый конец интервала `mk' a b lclosed uclosed` равен `a`
 @[simp]
 theorem BoundedInterval.mk'_a (a b : ℝ) (lclosed uclosed : Bool) :
     (mk' a b lclosed uclosed).a = a := by cases lclosed <;> cases uclosed <;> rfl
 
+-- Правый конец интервала `mk' a b lclosed uclosed` равен `b`
 @[simp]
 theorem BoundedInterval.mk'_b (a b : ℝ) (lclosed uclosed : Bool) :
     (mk' a b lclosed uclosed).b = b := by cases lclosed <;> cases uclosed <;> rfl
 
+-- Замкнутость слева интервала `mk' a b lclosed uclosed` совпадает с параметром `lclosed`
 @[simp]
 theorem BoundedInterval.mk'_lclosed (a b : ℝ) (lclosed uclosed : Bool) :
     (mk' a b lclosed uclosed).lclosed = lclosed := by cases lclosed <;> cases uclosed <;> rfl
 
+-- Замкнутость справа интервала `mk' a b lclosed uclosed` совпадает с параметром `uclosed`
 @[simp]
 theorem BoundedInterval.mk'_uclosed (a b : ℝ) (lclosed uclosed : Bool) :
     (mk' a b lclosed uclosed).uclosed = uclosed := by cases lclosed <;> cases uclosed <;> rfl
 
+-- Точка `x` принадлежит `I` тогда и только тогда, когда она удовлетворяет неравенствам на обоих концах, причём строгость каждого неравенства определяется флагом `I.lclosed`/`I.uclosed`
 theorem BoundedInterval.mem_iff' (I: BoundedInterval) (x:ℝ) :
     x ∈ (I:Set ℝ) ↔
       ((if I.lclosed then I.a ≤ x else I.a < x) ∧ (if I.uclosed then x ≤ I.b else x < I.b)) := by

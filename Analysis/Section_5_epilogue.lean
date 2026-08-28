@@ -36,17 +36,22 @@ structure DedekindCut where
   lower : IsLowerSet E
   nomax : ∀ q ∈ E, ∃ r ∈ E, r > q
 
+-- множество `E` является нижним (замкнутым вниз) тогда и только тогда, когда вместе с любым `q` оно содержит все меньшие `r`
 theorem isLowerSet_iff (E : Set ℚ) : IsLowerSet E ↔ ∀ q r, r < q → q ∈ E → r ∈ E :=
   isLowerSet_iff_forall_lt
 
 abbrev Real.toSet_Rat (x : Real) : Set ℚ := { q | (q : Real) < x }
 
+-- множество рациональных чисел, меньших `x`, непусто
 lemma Real.toSet_Rat_nonempty (x : Real) : x.toSet_Rat.Nonempty := by sorry
 
+-- множество рациональных чисел, меньших `x`, ограничено сверху
 lemma Real.toSet_Rat_bounded (x : Real) : BddAbove x.toSet_Rat := by sorry
 
+-- множество рациональных чисел, меньших `x`, замкнуто вниз
 lemma Real.toSet_Rat_lower (x : Real) : IsLowerSet x.toSet_Rat := by sorry
 
+-- у множества рациональных чисел, меньших `x`, нет наибольшего элемента
 lemma Real.toSet_Rat_nomax {x : Real} : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
 
 abbrev Real.toCut (x : Real) : DedekindCut :=
@@ -60,12 +65,15 @@ abbrev Real.toCut (x : Real) : DedekindCut :=
 
 abbrev DedekindCut.toSet_Real (c : DedekindCut) : Set Real := (fun (q : ℚ) ↦ (q : Real)) '' c.E
 
+-- образ сечения `c.E` в `Real` непуст
 lemma DedekindCut.toSet_Real_nonempty (c : DedekindCut) : c.toSet_Real.Nonempty := by sorry
 
+-- образ сечения `c.E` в `Real` ограничен сверху
 lemma DedekindCut.toSet_Real_bounded (c : DedekindCut) : BddAbove c.toSet_Real := by sorry
 
 noncomputable abbrev DedekindCut.toReal (c : DedekindCut) : Real := sSup c.toSet_Real
 
+-- `c.toReal` — точная верхняя грань образа сечения `c` в `Real`
 lemma DedekindCut.toReal_isLUB (c : DedekindCut) : IsLUB c.toSet_Real c.toReal :=
   ExtendedReal.sSup_of_bounded c.toSet_Real_nonempty c.toSet_Real_bounded
 
@@ -83,12 +91,16 @@ end Chapter5
 
 abbrev Real.toSet_Rat (x : ℝ) : Set ℚ := { q | (q : ℝ) < x }
 
+-- множество рациональных чисел, меньших `x`, непусто (версия для стандартных `ℝ`)
 lemma Real.toSet_Rat_nonempty (x : ℝ) : x.toSet_Rat.Nonempty := by sorry
 
+-- множество рациональных чисел, меньших `x`, ограничено сверху (версия для `ℝ`)
 lemma Real.toSet_Rat_bounded (x : ℝ) : BddAbove x.toSet_Rat := by sorry
 
+-- множество рациональных чисел, меньших `x`, замкнуто вниз (версия для `ℝ`)
 lemma Real.toSet_Rat_lower (x : ℝ) : IsLowerSet x.toSet_Rat := by sorry
 
+-- у множества рациональных чисел, меньших `x`, нет наибольшего элемента (версия для `ℝ`)
 lemma Real.toSet_Rat_nomax (x : ℝ) : ∀ q ∈ x.toSet_Rat, ∃ r ∈ x.toSet_Rat, r > q := by sorry
 
 abbrev Real.toCut (x : ℝ) : Chapter5.DedekindCut :=
@@ -104,12 +116,15 @@ namespace Chapter5
 
 abbrev DedekindCut.toSet_R (c : DedekindCut) : Set ℝ := (fun (q : ℚ) ↦ (q : ℝ)) '' c.E
 
+-- образ сечения `c.E` в `ℝ` непуст
 lemma DedekindCut.toSet_R_nonempty (c : DedekindCut) : c.toSet_R.Nonempty := by sorry
 
+-- образ сечения `c.E` в `ℝ` ограничен сверху
 lemma DedekindCut.toSet_R_bounded (c : DedekindCut) : BddAbove c.toSet_R := by sorry
 
 noncomputable abbrev DedekindCut.toR (c : DedekindCut) : ℝ := sSup c.toSet_R
 
+-- `c.toR` — точная верхняя грань образа сечения `c` в `ℝ`
 lemma DedekindCut.toR_isLUB (c : DedekindCut) : IsLUB c.toSet_R c.toR :=
   isLUB_csSup c.toSet_R_nonempty c.toSet_R_bounded
 
@@ -128,6 +143,7 @@ namespace Chapter5
 /-- Изоморфизм между числами {name}`Chapter5.Real` и вещественными числами Mathlib. -/
 noncomputable abbrev Real.equivR : Real ≃ ℝ := Real.equivCut.trans _root_.Real.equivCut.symm
 
+-- `y` соответствует `x` при изоморфизме `equivR` тогда и только тогда, когда они задают одно и то же сечение Дедекинда
 lemma Real.equivR_iff (x : Real) (y : ℝ) : y = Real.equivR x ↔ y.toCut = x.toCut := by
   simp only [equivR, Equiv.trans_apply, ←Equiv.apply_eq_iff_eq_symm_apply]
   rfl
@@ -139,7 +155,9 @@ lemma Real.equivR_iff (x : Real) (y : ℝ) : y = Real.equivR x ↔ y.toCut = x.t
 theorem Real.equivR_ratCast {q : ℚ} : equivR q = (q : ℝ) := by
   sorry
 
+-- изоморфизм `equivR` переводит натуральное число `n` в его образ в `ℝ`
 lemma Real.equivR_nat {n : ℕ} : equivR n = (n : ℝ) := equivR_ratCast
+-- изоморфизм `equivR` переводит целое число `n` в его образ в `ℝ`
 lemma Real.equivR_int {n : ℤ} : equivR n = (n : ℝ) := equivR_ratCast
 
 ----
@@ -159,6 +177,7 @@ abbrev Sequence.IsCauchy.CauSeq {a : ℕ → ℚ} : (ha : IsCauchy a) → CauSeq
 -- это и есть отношение эквивалентности
 example {a b : CauSeq ℚ abs} : a ≈ b ↔ CauSeq.LimZero (a - b) := by rfl
 
+-- если последовательности `a` и `b` эквивалентны, их разность как `CauSeq` стремится к нулю
 theorem Sequence.Equiv.LimZero {a b : ℕ → ℚ} (ha : IsCauchy a) (hb : IsCauchy b) (h : Equiv a b)
   : CauSeq.LimZero (ha.CauSeq - hb.CauSeq) := by
     sorry
@@ -216,6 +235,7 @@ theorem Real.equivR_eq' {a : ℕ → ℚ} (ha : Sequence.IsCauchy a)
     intro M hM
     sorry
 
+-- любое `x : Real` представимо последовательностью Коши `a`, дающей одновременно `x = LIM a` и её образ `x.equivR = Real.mk` той же последовательности
 lemma Real.equivR_eq (x : Real) : ∃(a : ℕ → ℚ) (ha : Sequence.IsCauchy a),
   x = LIM a ∧ x.equivR = Real.mk ha.CauSeq := by
     obtain ⟨a, ha, rfl⟩ := x.eq_lim
@@ -232,11 +252,14 @@ noncomputable abbrev Real.equivR_ordered_ring : Real ≃+*o ℝ where
 lemma Real.equivR_map_mul {x y : Real} : equivR (x * y) = equivR x * equivR y :=
   equivR_ordered_ring.map_mul _ _
 
+-- изоморфизм `equivR` коммутирует с обращением: `equivR x⁻¹ = (equivR x)⁻¹`
 lemma Real.equivR_map_inv {x : Real} : equivR (x⁻¹) = (equivR x)⁻¹ :=
   map_inv₀ equivR_ordered_ring _
 
+-- изоморфизм `equivR` сохраняет положительность: `x` положительно тогда и только тогда, когда положителен его образ
 theorem Real.equivR_map_pos {x : Real} : 0 < x ↔ 0 < equivR x := by sorry
 
+-- изоморфизм `equivR` сохраняет неотрицательность: `x ≥ 0` тогда и только тогда, когда `equivR x ≥ 0`
 theorem Real.equivR_map_nonneg {x : Real} : 0 ≤ x ↔ 0 ≤ equivR x := by sorry
 
 
@@ -244,9 +267,11 @@ theorem Real.equivR_map_nonneg {x : Real} : 0 ≤ x ↔ 0 ≤ equivR x := by sor
 theorem Real.pow_of_equivR (x : Real) (n : ℕ) : equivR (x^n) = (equivR x)^n := by
   sorry
 
+-- изоморфизм `equivR` коммутирует с целой степенью: `equivR (x^n) = (equivR x)^n`
 theorem Real.zpow_of_equivR (x : Real) (n : ℤ) : equivR (x^n) = (equivR x)^n := by
   sorry
 
+-- изоморфизм `equivR` коммутирует с рациональной степенью: `equivR (x^q) = (equivR x)^(q : ℝ)`
 theorem Real.ratPow_of_equivR (x : Real) (q : ℚ) (hx : x > 0) : equivR (x^q) = (equivR x)^(q : ℝ) := by
   sorry
 

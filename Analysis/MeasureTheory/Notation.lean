@@ -14,11 +14,14 @@ import Mathlib.Tactic
 /-- Версия {name}`Set.indicator`, подходящая для этого текста. -/
 noncomputable abbrev Set.indicator' {X : Type*} (E : Set X) := indicator E (fun _ ↦ (1 : ℝ))
 
+-- Явная формула индикатора: `indicator' E x` равен 1, если `x ∈ E`, и 0 иначе
 theorem Set.indicator'_apply {X : Type*} (E : Set X) (x : X) [Decidable (x ∈ E)] : indicator' E x = if x ∈ E then 1 else 0 := indicator_apply _ _ _
 
+-- Индикатор множества `E` равен 1 в точках, принадлежащих `E`
 theorem Set.indicator'_of_mem {X : Type*} {E : Set X} {x : X} (h : x ∈ E) : indicator' E x = 1 :=
   indicator_of_mem h _
 
+-- Индикатор множества `E` равен 0 в точках, не принадлежащих `E`
 theorem Set.indicator'_of_notMem {X : Type*} {E : Set X} {x : X} (h : x ∉ E) : indicator' E x = 0 :=
   indicator_of_notMem h _
 
@@ -40,6 +43,7 @@ instance EuclideanSpace'.inst_coeReal : Coe ℝ (EuclideanSpace' 1) := ⟨Real.e
 abbrev EuclideanSpace'.toReal (x : EuclideanSpace' 1) : ℝ := EuclideanSpace'.equiv_Real x
 abbrev Real.toEuclideanSpace' (x : ℝ) : EuclideanSpace' 1 := Real.equiv_EuclideanSpace' x
 
+-- Норма вектора в `EuclideanSpace'` — это евклидова норма: корень из суммы квадратов координат
 theorem EuclideanSpace'.norm_eq {n : ℕ} (x : EuclideanSpace' n) : ‖x‖ = √(∑ i, (x i)^2) := by
   convert EuclideanSpace.norm_eq x using 3 with i
   simp
@@ -54,6 +58,7 @@ lemma EuclideanSpace'.coord_le_norm {d : ℕ} (x : EuclideanSpace' d) (i : Fin d
 
 infix:100 " ⬝ " => inner ℝ
 
+-- Скалярное произведение `x ⬝ y` в `EuclideanSpace'` вычисляется покоординатно: `∑ i, x i * y i`
 theorem EuclideanSpace'.dot_apply {n : ℕ} (x y : EuclideanSpace' n) : x ⬝ y = ∑ i, (x i)*(y i) := by
   convert PiLp.inner_apply x y using 2 with i
   simp [inner, mul_comm]
@@ -87,6 +92,7 @@ def EuclideanSpace'.prod {d₁ d₂ : ℕ} (E₁ : Set (EuclideanSpace' d₁)) (
 
 open Filter
 
+-- Если монотонные последовательности `x n` и `y n` в `ENNReal` сходятся к `x₀` и `y₀`, то их произведение `x n * y n` сходится к `x₀ * y₀`
 theorem ENNReal.upward_continuous {x y : ℕ → ENNReal} (hx : Monotone x) (hy : Monotone y)
  {x₀ y₀ : ENNReal} (hx_lim : atTop.Tendsto x (nhds x₀))
  (hy_lim : atTop.Tendsto y (nhds y₀)) : 

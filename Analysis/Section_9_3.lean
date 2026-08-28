@@ -99,6 +99,7 @@ theorem Convergesto.iff_conv {E : Set ℝ} (f : ℝ → ℝ) (L : ℝ) {x₀ : �
   Filter.atTop.Tendsto (fun n ↦ f (a n)) (nhds L) := by
   sorry
 
+-- Следствие `Convergesto.iff_conv`: если `f → L` в `x₀` по `E`, то `f(aₙ) → L` для любой последовательности `aₙ` в `E`, сходящейся к `x₀`
 theorem Convergesto.comp {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ} (hf : Convergesto E f L x₀) {a : ℕ → ℝ}
   (ha : ∀ n : ℕ, a n ∈ E) (hconv : Filter.atTop.Tendsto a (nhds x₀)) : 
   Filter.atTop.Tendsto (fun n ↦ f (a n)) (nhds L) := by
@@ -159,29 +160,36 @@ theorem Convergesto.div {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : �
   Convergesto E (f / g) (L / M) x₀ := by
     sorry
 
+-- Постоянная функция `x ↦ c` сходится к `c` в любой точке `x₀`
 theorem Convergesto.const (E : Set ℝ) (x₀ : ℝ) (c : ℝ)
   : Convergesto E (fun _ ↦ c) c x₀ := by
   sorry
 
+-- Тождественная функция `x ↦ x` сходится к `x₀` в точке `x₀`
 theorem Convergesto.id (E : Set ℝ) (x₀ : ℝ)
   : Convergesto E (fun x ↦ x) x₀ x₀ := by
   sorry
 
+-- Функция `x ↦ x²` сходится к `x₀²` в точке `x₀`
 theorem Convergesto.sq (E : Set ℝ) (x₀ : ℝ)
   : Convergesto E (fun x ↦ x^2) (x₀^2) x₀ := by
   sorry
 
+-- Линейная функция `x ↦ c*x` сходится к `c*x₀` в точке `x₀`
 theorem Convergesto.linear (E : Set ℝ) (x₀ : ℝ) (c : ℝ)
   : Convergesto E (fun x ↦ c * x) (c * x₀) x₀ := by
   sorry
 
+-- Квадратичная функция `x ↦ x² + c*x + d` сходится к `x₀² + c*x₀ + d` в точке `x₀`
 theorem Convergesto.quadratic (E : Set ℝ) (x₀ : ℝ) (c d : ℝ)
   : Convergesto E (fun x ↦ x^2 + c * x + d) (x₀^2 + c * x₀ + d) x₀ := by
   sorry
 
+-- Сходимость функции на множестве `X` влечёт сходимость к тому же пределу на любом подмножестве `Y ⊆ X`
 theorem Convergesto.restrict {X Y : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ} (hf : Convergesto X f L x₀) (hY : Y ⊆ X) : Convergesto Y f L x₀ := by
   sorry
 
+-- Явная формула для функции знака: `-1` при `x < 0`, `1` при `x > 0`, `0` при `x = 0`
 theorem Real.sign_def (x : ℝ) : Real.sign x = if x < 0 then -1 else if x > 0 then 1 else 0 := rfl
 
 /-- Example 9.3.16 (a) -/
@@ -195,8 +203,10 @@ theorem Convergesto.sign_all : ¬ ∃ L, Convergesto (.univ) Real.sign L 0 := by
 
 noncomputable abbrev f_9_3_17 : ℝ → ℝ := fun x ↦ if x = 0 then 1 else 0
 
+-- Функция `f_9_3_17` (равная `1` в нуле и `0` иначе) сходится к `0` в точке `0`, если исключить саму точку `0` из области
 theorem Convergesto.f_9_3_17_remove : Convergesto (.univ \ {0}) f_9_3_17 0 0 := by sorry
 
+-- На всей прямой (включая точку `0`) у `f_9_3_17` нет предела в `0`
 theorem Convergesto.f_9_3_17_all : ¬ ∃ L, Convergesto .univ f_9_3_17 L 0 := by sorry
 
 /-- Proposition 9.3.18 / Exercise 9.3.3 -/

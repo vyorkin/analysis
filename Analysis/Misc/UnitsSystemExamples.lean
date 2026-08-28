@@ -18,10 +18,12 @@ theorem UnitsSystem.Scalar.hMul_assoc {d₁ d₂ d₃ : Dimensions} (a : Scalar 
   a * (b * c) = ((a * b) * c).cast := by
   simp [←toFormal_inj]; ring
 
+/-- Левая дистрибутивность умножения скаляров относительно сложения: `a * (b + c) = a*b + a*c` -/
 theorem UnitsSystem.Scalar.left_distrib {d₁ d₂ : Dimensions} (a : Scalar d₁) (b c : Scalar d₂) : 
   a * (b + c) = (a * b) + (a * c) := by
   simp [←toFormal_inj]; ring
 
+/-- Правая дистрибутивность умножения скаляров относительно сложения: `(a + b) * c = a*c + b*c` -/
 theorem UnitsSystem.Scalar.right_distrib {d₁ d₂ : Dimensions} (a b : Scalar d₁) (c : Scalar d₂) : 
   (a + b) * c = (a * c) + (b * c) := by
   simp [←toFormal_inj]; ring

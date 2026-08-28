@@ -67,6 +67,7 @@ theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b
       _ = _ := by field_simp
   exact ContinuousOn.ofUniformContinuousOn F this
 
+/-- Theorem 11.9.1 (первая фундаментальная теорема анализа, дифференцируемость): если `f` непрерывна в точке `x₀`, то `F(x) = ∫ₐˣ f` дифференцируема в `x₀` с производной `f(x₀)`. -/
 theorem deriv_of_integ {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b))
   {x₀ : ℝ} (hx₀ : x₀ ∈ Set.Icc a b) (hcts : ContinuousWithinAt f (Icc a b) x₀) : 
   HasDerivWithinAt (fun x => integ f (Icc a x)) (f x₀) (.Icc a b) x₀ := by
@@ -93,9 +94,11 @@ theorem IntegrableOn.of_f_9_8_5 : IntegrableOn f_9_8_5 (Icc 0 1) :=
 
 noncomputable abbrev F_11_9_2 := fun x ↦ integ f_9_8_5 (Icc 0 x)
 
+/-- Следствие Theorem 11.9.1 для функции `f_9_8_5` из Example 11.9.2: `F_11_9_2` непрерывна на `[0,1]`. -/
 theorem ContinuousOn.of_F_11_9_2 : ContinuousOn F_11_9_2 (.Icc 0 1) := cts_of_integ IntegrableOn.of_f_9_8_5
 
-theorem DifferentiableOn.of_F_11_9_2 {x : ℝ} (hx : ¬ ∃ r : ℚ, x = r) (hx' : x ∈ Set.Icc 0 1) : 
+/-- Следствие `deriv_of_integ` для `F_11_9_2`: в любой иррациональной точке `x ∈ [0,1]` функция `F_11_9_2` дифференцируема. -/
+theorem DifferentiableOn.of_F_11_9_2 {x : ℝ} (hx : ¬ ∃ r : ℚ, x = r) (hx' : x ∈ Set.Icc 0 1) :
   DifferentiableWithinAt ℝ F_11_9_2 (.Icc 0 1) x := by
   have := deriv_of_integ (show 0 < 1 by norm_num) .of_f_9_8_5 hx' (ContinuousAt.of_f_9_8_5 hx).continuousWithinAt
   rw [hasDerivWithinAt_iff_hasFDerivWithinAt] at this
@@ -109,6 +112,7 @@ theorem DifferentiableOn.of_F_11_9_2' {q : ℚ} (hq : (q : ℝ) ∈ Set.Ioo 0 1)
 abbrev AntiderivOn (F f : ℝ → ℝ) (I : BoundedInterval) :=
   DifferentiableOn ℝ F I ∧ ∀ x ∈ I, HasDerivWithinAt F (f x) I x
 
+-- Если `F` — первообразная `f` на `I`, то `F` также является первообразной `f` на любом подынтервале `J ⊆ I`
 theorem AntiderivOn.mono {F f : ℝ → ℝ} {I J : BoundedInterval}
   (h : AntiderivOn F f I) (hIJ : J ⊆ I) : AntiderivOn F f J :=
   ⟨ h.1.mono hIJ, by intro x hx; rw [subset_iff] at hIJ; exact (h.2 x (hIJ hx)).mono hIJ ⟩
@@ -239,5 +243,6 @@ end Chapter11
 theorem Chapter7.Series.converges_qseries' (p : ℝ) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ p : Series).converges ↔ (p>1) := by
   sorry
 
+-- Ряд `∑ 1/n^p` (начиная с `n = 1`) абсолютно сходится тогда и только тогда, когда `p > 1`
 theorem Chapter7.Series.converges_qseries'' (p : ℝ) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ p : Series).absConverges ↔ (p>1) := by
   sorry

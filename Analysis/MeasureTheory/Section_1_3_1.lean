@@ -21,9 +21,11 @@ def Real.EReal_fun {X : Type*} (f : X → ℝ) : X → EReal := fun x ↦ Real.t
 
 noncomputable def EReal.indicator {X : Type*} (A : Set X) : X → EReal := Real.EReal_fun A.indicator'
 
+/-- Индикатор множества `A` в точке `x ∈ A` равен `1` -/
 theorem EReal.indicator_of_mem {X : Type*} {A : Set X} {x : X} (h : x ∈ A) : EReal.indicator A x = 1 := by
   simp [EReal.indicator, Real.EReal_fun, Set.indicator'_of_mem h]
 
+/-- Индикатор множества `A` в точке `x ∉ A` равен `0` -/
 theorem EReal.indicator_of_notMem {X : Type*} {A : Set X} {x : X} (h : x ∉ A) : EReal.indicator A x = 0 := by
   simp [EReal.indicator, Real.EReal_fun, Set.indicator'_of_notMem h]
 
@@ -62,6 +64,7 @@ instance RealSimpleFunction.coe_complex {d : ℕ} (f : EuclideanSpace' d → ℝ
 }
 
 
+/-- Сумма двух беззнаковых простых функций снова является беззнаковой простой функцией -/
 lemma UnsignedSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) (hg : UnsignedSimpleFunction g) : UnsignedSimpleFunction (f + g) := by
   obtain ⟨k₁, c₁, E₁, ⟨hmes₁, heq₁⟩⟩ := hf
   obtain ⟨k₂, c₂, E₂, ⟨hmes₂, heq₂⟩⟩ := hg
@@ -76,10 +79,12 @@ lemma UnsignedSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → EReal} (
     rw [heq₁, heq₂]
     simp [Fin.sum_univ_add]
 
+/-- Индикаторная функция неотрицательна -/
 private lemma EReal.indicator_nonneg' {X : Type*} (A : Set X) (x : X) : 0 ≤ EReal.indicator A x := by
   simp only [EReal.indicator, Real.EReal_fun]
   exact EReal.coe_nonneg.mpr (Set.indicator_nonneg (fun _ _ => zero_le_one) x)
 
+/-- Беззнаковая простая функция, умноженная на неотрицательный скаляр `a`, остаётся беззнаковой простой функцией -/
 lemma UnsignedSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) {a : EReal} (ha : a ≥ 0) : UnsignedSimpleFunction (a • f) := by
   obtain ⟨k, c, E, ⟨hmes, heq⟩⟩ := hf
   use k, fun i => a * (c i), E
@@ -95,6 +100,7 @@ lemma UnsignedSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → EReal} (h
     ext i
     rw [mul_assoc]
 
+/-- Сумма двух вещественнозначных простых функций снова является простой функцией -/
 lemma RealSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealSimpleFunction f) (hg : RealSimpleFunction g) : RealSimpleFunction (f + g) := by
   obtain ⟨k₁, c₁, E₁, ⟨hmes₁, heq₁⟩⟩ := hf
   obtain ⟨k₂, c₂, E₂, ⟨hmes₂, heq₂⟩⟩ := hg
@@ -109,6 +115,7 @@ lemma RealSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : R
     rw [heq₁, heq₂]
     simp [Fin.sum_univ_add]
 
+/-- Сумма двух комплекснозначных простых функций снова является простой функцией -/
 lemma ComplexSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) (hg : ComplexSimpleFunction g) : ComplexSimpleFunction (f + g) := by
   obtain ⟨k₁, c₁, E₁, ⟨hmes₁, heq₁⟩⟩ := hf
   obtain ⟨k₂, c₂, E₂, ⟨hmes₂, heq₂⟩⟩ := hg
@@ -123,6 +130,7 @@ lemma ComplexSimpleFunction.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf 
     rw [heq₁, heq₂]
     simp [Fin.sum_univ_add]
 
+/-- Вещественнозначная простая функция, умноженная на скаляр `a`, остаётся простой функцией -/
 lemma RealSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealSimpleFunction f) (a : ℝ)  : RealSimpleFunction (a • f) := by
   obtain ⟨k, c, E, ⟨hmes, heq⟩⟩ := hf
   use k, fun i => a * (c i), E
@@ -137,6 +145,7 @@ lemma RealSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : Re
     ext i
     rw [mul_assoc]
 
+/-- Комплекснозначная простая функция, умноженная на скаляр `a`, остаётся простой функцией -/
 lemma ComplexSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) (a : ℂ)  : ComplexSimpleFunction (a • f) := by
   obtain ⟨k, c, E, ⟨hmes, heq⟩⟩ := hf
   use k, fun i => a * (c i), E
@@ -151,11 +160,13 @@ lemma ComplexSimpleFunction.smul {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf :
     ext i
     rw [mul_assoc]
 
+/-- Индикаторная функция вещественнозначна, поэтому совпадает со своим комплексным сопряжением -/
 private lemma Complex.indicator_conj {X : Type*} (A : Set X) (x : X) : 
     starRingEnd ℂ (Complex.indicator A x) = Complex.indicator A x := by
   simp only [Complex.indicator, Real.complex_fun]
   exact Complex.conj_ofReal _
 
+/-- Комплексное сопряжение комплекснозначной простой функции снова является простой функцией -/
 lemma ComplexSimpleFunction.conj {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) : ComplexSimpleFunction (Complex.conj_fun f) := by
   obtain ⟨k, c, E, ⟨hmes, heq⟩⟩ := hf
   use k, fun i => starRingEnd ℂ (c i), E
@@ -188,6 +199,7 @@ open scoped Classical
     выбором «в» или «вне» для каждого множества. Мы кодируем это индексом {lean}`Fin (2^(k+k'))`. -/
 def atomMembership (_k _k' : ℕ) (n : ℕ) (i : ℕ) : Bool := (n / 2^i) % 2 = 1
 
+/-- `atomMembership k k' n i` совпадает с `i`-м битом числа `n` -/
 lemma atomMembership_eq_testBit (k k' n i : ℕ) : atomMembership k k' n i = n.testBit i := by
   simp only [atomMembership, Nat.testBit_eq_decide_div_mod_eq]
 
@@ -832,6 +844,7 @@ def AlmostEverywhereEqual {d:ℕ} {X: Type*} (f g: EuclideanSpace' d → X) : Pr
 /-- Definition 1.3.5 (support) -/
 def Support {X Y: Type*} [Zero Y] (f: X → Y) : Set X := { x | f x ≠ 0 }
 
+/-- Носитель беззнаковой простой функции измерим по Лебегу -/
 lemma UnsignedSimpleFunction.support_measurable {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) : LebesgueMeasurable (Support f) := by
   -- Извлекаем представление: f = ∑ i, c(i) • EReal.indicator(E_i)
   obtain ⟨k, c, E, hmes_nonneg, heq⟩ := hf
@@ -893,6 +906,7 @@ lemma UnsignedSimpleFunction.support_measurable {d : ℕ} {f : EuclideanSpace' d
   rw [h_eq]
   exact LebesgueMeasurable.finite_union hE'_meas
 
+/-- Свойство, выполненное всюду, выполнено и почти всюду -/
 lemma AlmostAlways.ofAlways {d : ℕ} {P : EuclideanSpace' d → Prop} (h : ∀ x, P x) : AlmostAlways P := by
   -- AlmostAlways P означает IsNull { x | ¬ P x }, т.е. Lebesgue_outer_measure { x | ¬ P x } = 0
   -- Если ∀ x, P x, то { x | ¬ P x } = ∅
@@ -904,6 +918,7 @@ lemma AlmostAlways.ofAlways {d : ℕ} {P : EuclideanSpace' d → Prop} (h : ∀ 
   rw [h_empty]
   exact Lebesgue_outer_measure.of_empty d
 
+/-- Если `P` выполнено почти всюду и влечёт `Q` всюду, то `Q` тоже выполнено почти всюду -/
 lemma AlmostAlways.mp {d : ℕ} {P Q : EuclideanSpace' d → Prop} (hP : AlmostAlways P) (himp : ∀ x, P x → Q x) : AlmostAlways Q := by
   -- AlmostAlways P означает IsNull { x | ¬ P x }, т.е. Lebesgue_outer_measure { x | ¬ P x } = 0
   -- Если P → Q всюду, то ¬Q → ¬P (по контрапозиции), значит { x | ¬ Q x } ⊆ { x | ¬ P x }
@@ -919,6 +934,7 @@ lemma AlmostAlways.mp {d : ℕ} {P Q : EuclideanSpace' d → Prop} (hP : AlmostA
   rw [hP] at h_le
   exact le_antisymm h_le (Lebesgue_outer_measure.nonneg _)
 
+/-- Счётное пересечение свойств, каждое из которых выполнено почти всюду, само выполнено почти всюду -/
 lemma AlmostAlways.countable {d : ℕ} {I : Type*} [Countable I] {P : I → EuclideanSpace' d → Prop} (hP : ∀ i, AlmostAlways (P i)) : AlmostAlways (fun x ↦ ∀ i, P i x) := by
   -- AlmostAlways (fun x ↦ ∀ i, P i x) означает IsNull { x | ¬ ∀ i, P i x }
   -- { x | ¬ ∀ i, P i x } = { x | ∃ i, ¬ P i x } = ⋃ᵢ { x | ¬ P i x }
@@ -1071,9 +1087,11 @@ lemma UnsignedSimpleFunction.integral_indicator {d:ℕ} {E: Set (EuclideanSpace'
   (UnsignedSimpleFunction.indicator hE).integ = Lebesgue_measure E := by
   sorry
 
+/-- Абсолютная величина вещественнозначной простой функции является беззнаковой простой функцией -/
 lemma RealSimpleFunction.abs {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealSimpleFunction f) : UnsignedSimpleFunction (EReal.abs_fun f) := by
   sorry
 
+/-- Модуль комплекснозначной простой функции является беззнаковой простой функцией -/
 lemma ComplexSimpleFunction.abs {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) : UnsignedSimpleFunction (EReal.abs_fun f) := by
   sorry
 
@@ -1253,30 +1271,38 @@ def ComplexSimpleFunction.im {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : Com
 noncomputable def ComplexSimpleFunction.integ {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) : ℂ :=
   hf.re.integ + Complex.I * hf.im.integ
 
+-- Вещественнозначная простая функция абсолютно интегрируема тогда и только тогда, когда мера её носителя конечна
 lemma RealSimpleFunction.absolutelyIntegrable_iff {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealSimpleFunction f) : hf.AbsolutelyIntegrable ↔ Lebesgue_measure (Support f) < ⊤ := by
   sorry
 
+-- Тот же критерий абсолютной интегрируемости через конечность меры носителя, для комплекснозначных простых функций
 lemma ComplexSimpleFunction.absolutelyIntegrable_iff {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexSimpleFunction f) : hf.AbsolutelyIntegrable ↔ Lebesgue_measure (Support f) < ⊤ := by
   sorry
 
+/-- Сумма двух абсолютно интегрируемых вещественнозначных простых функций абсолютно интегрируема -/
 lemma RealSimpleFunction.AbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} {hf : RealSimpleFunction f} {hg : RealSimpleFunction g} (hf_integ : hf.AbsolutelyIntegrable) (hg_integ : hg.AbsolutelyIntegrable) : 
   (hf.add hg).AbsolutelyIntegrable := by sorry
 
+/-- Сумма двух абсолютно интегрируемых комплекснозначных простых функций абсолютно интегрируема -/
 lemma ComplexSimpleFunction.AbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} {hg : ComplexSimpleFunction g} (hf_integ : hf.AbsolutelyIntegrable) (hg_integ : hg.AbsolutelyIntegrable) : 
   (hf.add hg).AbsolutelyIntegrable := by sorry
 
+/-- Абсолютно интегрируемая вещественнозначная простая функция, умноженная на скаляр, остаётся абсолютно интегрируемой -/
 lemma RealSimpleFunction.AbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → ℝ} {hf : RealSimpleFunction f} (hf_integ : hf.AbsolutelyIntegrable) (a : ℝ) : 
   (hf.smul a).AbsolutelyIntegrable := by sorry
 
+/-- Абсолютно интегрируемая комплекснозначная простая функция, умноженная на скаляр, остаётся абсолютно интегрируемой -/
 lemma ComplexSimpleFunction.AbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} (hf_integ : hf.AbsolutelyIntegrable) (a : ℂ) : 
   (hf.smul a).AbsolutelyIntegrable := by sorry
 
+/-- Комплексное сопряжение абсолютно интегрируемой простой функции абсолютно интегрируемо -/
 lemma ComplexSimpleFunction.AbsolutelyIntegrable.conj {d : ℕ} {f : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} (hf_integ : hf.AbsolutelyIntegrable) : 
   (hf.conj).AbsolutelyIntegrable := by sorry
 
 /-- Exercise 1.3.2 (i) ({lit}`*`-linearity, sum) -/
 lemma RealSimpleFunction.integ_add {d:ℕ} {f g: EuclideanSpace' d → ℝ} {hf: RealSimpleFunction f} {hg: RealSimpleFunction g} (hf_integ: hf.AbsolutelyIntegrable) (hg_integ: hg.AbsolutelyIntegrable) : (hf.add hg).integ = hf.integ + hg.integ := by sorry
 
+/-- Аддитивность интеграла для комплекснозначных простых функций -/
 lemma ComplexSimpleFunction.integ_add {d : ℕ} {f g : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} {hg : ComplexSimpleFunction g} (hf_integ : hf.AbsolutelyIntegrable) (hg_integ : hg.AbsolutelyIntegrable) : (hf.add hg).integ = hf.integ + hg.integ := by
   sorry
 
@@ -1284,6 +1310,7 @@ lemma ComplexSimpleFunction.integ_add {d : ℕ} {f g : EuclideanSpace' d → ℂ
 lemma RealSimpleFunction.integ_smul {d:ℕ} {f: EuclideanSpace' d → ℝ} {hf: RealSimpleFunction f} (hf_integ: hf.AbsolutelyIntegrable) (a: ℝ) : (hf.smul a).integ = a * hf.integ := by
   sorry
 
+/-- Однородность интеграла для комплекснозначных простых функций -/
 lemma ComplexSimpleFunction.integ_smul {d : ℕ} {f : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} (hf_integ : hf.AbsolutelyIntegrable) (a : ℂ) : (hf.smul a).integ = a * hf.integ := by
   sorry
 
@@ -1295,6 +1322,7 @@ lemma ComplexSimpleFunction.integral_conj {d:ℕ} {f: EuclideanSpace' d → ℂ}
 lemma RealSimpleFunction.integral_eq_integral_of_aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℝ} {hf : RealSimpleFunction f} {hg : RealSimpleFunction g} (hf_integ : hf.AbsolutelyIntegrable) (hg_integ : hg.AbsolutelyIntegrable) (h_ae : AlmostEverywhereEqual f g) : hf.integ = hg.integ := by
   sorry
 
+/-- Интегралы комплекснозначных простых функций, равных почти всюду, совпадают -/
 lemma ComplexSimpleFunction.integral_eq_integral_of_aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℂ} {hf : ComplexSimpleFunction f} {hg : ComplexSimpleFunction g} (hf_integ : hf.AbsolutelyIntegrable) (hg_integ : hg.AbsolutelyIntegrable) (h_ae : AlmostEverywhereEqual f g) : hf.integ = hg.integ := by
   sorry
 
@@ -1303,6 +1331,7 @@ lemma RealSimpleFunction.indicator {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: Leb
   RealSimpleFunction (E.indicator') := by
   sorry
 
+/-- Индикатор измеримого множества является комплекснозначной простой функцией -/
 lemma ComplexSimpleFunction.indicator {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : 
   ComplexSimpleFunction (Complex.indicator E) := by
   sorry
@@ -1311,5 +1340,6 @@ lemma ComplexSimpleFunction.indicator {d : ℕ} {E : Set (EuclideanSpace' d)} (h
 lemma RealSimpleFunction.integral_indicator {d:ℕ} {E: Set (EuclideanSpace' d)} (hE: LebesgueMeasurable E) (hfin: Lebesgue_measure E < ⊤): (RealSimpleFunction.indicator hE).integ = (Lebesgue_measure E).toReal := by
   sorry
 
+/-- Интеграл индикатора измеримого множества конечной меры равен этой мере -/
 lemma ComplexSimpleFunction.integral_indicator {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hfin : Lebesgue_measure E < ⊤) : (ComplexSimpleFunction.indicator hE).integ = (Lebesgue_measure E).toReal := by
   sorry

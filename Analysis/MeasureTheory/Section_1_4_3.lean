@@ -172,6 +172,7 @@ def FinitelyAdditiveMeasure.isCountablyAdditive.toCountablyAdditive {X : Type*} 
 theorem FinitelyAdditiveMeasure.lebesgue_isCountablyAdditive (d : ℕ) : (FinitelyAdditiveMeasure.lebesgue d).isCountablyAdditive :=
   by sorry
 
+-- Сужение счётно-аддитивной меры на меньшую сигма-алгебру `B' ≤ B` остаётся счётно-аддитивным
 theorem FinitelyAdditiveMeasure.isCountablyAdditive_restrict_alg {X : Type*} {B B' : ConcreteSigmaAlgebra X} (μ : CountablyAdditiveMeasure B) (hBB' : B' ≤ B) : (μ.toFinitelyAdditiveMeasure.restrict_alg hBB').isCountablyAdditive :=
   by sorry
 
@@ -292,6 +293,7 @@ theorem Measure.upwards_mono {X : Type*} [MeasurableSpace X] (μ : Measure X) {E
 theorem Measure.downwards_mono {X : Type*} [MeasurableSpace X] (μ : Measure X) {E : ℕ → Set X} (hE : ∀ n, Measurable (E n))
   (hmono : Antitone E) (hfin : ∃ n, μ (E n) < ⊤) : μ (⋂ n, E n) = ⨅ n, μ.measureOf (E n) := by sorry
 
+-- Контрпример: без предположения о конечности мера убывающего пересечения `⋂ n, E n` не обязана совпадать с инфимумом мер `⨅ n, μ (E n)` (нарушается непрерывность меры сверху)
 theorem Measure.downwards_mono_counter : ∃ (X : Type) (M : MeasurableSpace X) (μ : Measure X) (E : ℕ → Set X) (hE : ∀ n, Measurable (E n))
   (hmono : Antitone E), μ (⋂ n, E n) ≠ ⨅ n, μ.measureOf (E n) := by sorry
 

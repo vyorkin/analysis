@@ -20,6 +20,7 @@ deriving DecidableEq
 instance SI_dimensions.instZero : Zero SI_dimensions where
   zero := ⟨0, 0, 0, 0, 0, 0, 0⟩
 
+-- Нулевая размерность — это вектор с нулевыми компонентами по всем семи базовым величинам СИ
 theorem SI_dimensions.zero_eq : (0 : SI_dimensions) = ⟨ 0,0,0,0,0,0,0⟩ := rfl
 
 /-- {given -show (type := "SI_dimensions")}`d₁, d₂`Структура сложения здесь достаточно проста, чтобы
@@ -40,9 +41,11 @@ instance SI_dimensions.instNeg : Neg SI_dimensions where
   neg d := ⟨-d.units_length, -d.units_mass, -d.units_time, -d.units_current,
             -d.units_temperature, -d.units_amount, -d.units_intensity⟩
 
+-- Внутреннее поле `Rat.neg q` (реализация `Neg.neg` для `ℚ`) совпадает с обычным `-q`
 @[simp]
 theorem Rat.neg_eq (q : ℚ) : Rat.neg q = -q := rfl
 
+-- Внутреннее поле `Rat.add q r` (реализация `Add.add` для `ℚ`) совпадает с обычным `q + r`
 theorem Rat.add_eq (q r : ℚ) : Rat.add q r = q + r := rfl
 
 instance SI_dimensions.instAddGroup : AddGroup SI_dimensions :=

@@ -24,6 +24,7 @@ abbrev MajorizesOn (g f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∀ x ∈
 
 abbrev MinorizesOn (g f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∀ x ∈ (I : Set ℝ), g x ≤ f x
 
+-- `MinorizesOn g f I` — это то же самое, что `MajorizesOn f g I`, с переставленными местами `f` и `g`
 theorem MinorizesOn.iff (g f : ℝ → ℝ) (I : BoundedInterval) : MinorizesOn g f I ↔ MajorizesOn f g I := by rfl
 
 /-- Definition 11.3.2 (верхний и нижний интегралы Римана). -/
@@ -33,32 +34,39 @@ noncomputable abbrev upper_integral (f : ℝ → ℝ) (I : BoundedInterval) : �
 noncomputable abbrev lower_integral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ :=
   sSup ((PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
 
+-- Если `f` и `g` совпадают на `I`, их верхние интегралы Римана равны
 theorem upper_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   upper_integral f I = upper_integral g I := by
   simp [upper_integral]; congr! 2; ext; simp; grind
 
+-- Если `f` и `g` совпадают на `I`, их нижние интегралы Римана равны
 theorem lower_integral_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   lower_integral f I = lower_integral g I := by
   simp [lower_integral]; congr! 2; ext; simp; grind
 
+-- Постоянная мажоранта `M` функции `f` на `I` даёт интеграл `M * |I|ₗ` — значение из множества, по которому берётся инфимум в `upper_integral`
 lemma integral_bound_upper_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedInterval} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) : M * |I|ₗ ∈ (PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine' ⟨ fun _ ↦ M , ⟨ ⟨ _, _ ⟩, PiecewiseConstantOn.integ_const _ _ ⟩ ⟩
   . grind [abs_le']
   · apply (ConstantOn.of_const (c := M) _).piecewiseConstantOn; simp
 
+-- Постоянная миноранта `-M` функции `f` на `I` даёт интеграл `-M * |I|ₗ` — значение из множества, по которому берётся супремум в `lower_integral`
 lemma integral_bound_lower_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedInterval} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) : -M * |I|ₗ ∈ (PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp
   refine' ⟨ fun _ ↦ -M , ⟨ ⟨ _, _ ⟩, by convert PiecewiseConstantOn.integ_const _ _ using 1; simp ⟩ ⟩
   . grind [abs_le']
   · exact (ConstantOn.of_const (c := -M) (by simp)).piecewiseConstantOn
 
+-- Если `f` ограничена на `I`, множество интегралов кусочно-постоянных мажорант `f` непусто
 lemma integral_bound_upper_nonempty {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : ((PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty :=
   ⟨ _, integral_bound_upper_of_bounded h.choose_spec ⟩
 
+-- Если `f` ограничена на `I`, множество интегралов кусочно-постоянных минорант `f` непусто
 lemma integral_bound_lower_nonempty {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) : ((PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty :=
   ⟨ _, integral_bound_lower_of_bounded h.choose_spec ⟩
 
+-- Интеграл любой кусочно-постоянной миноранты `f` не превосходит интеграла любой кусочно-постоянной мажоранты `f`
 lemma integral_bound_lower_le_upper {f : ℝ → ℝ} {I : BoundedInterval} {a b : ℝ}
   (ha : a ∈ (PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I})
   (hb : b ∈ (PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
@@ -67,11 +75,13 @@ lemma integral_bound_lower_le_upper {f : ℝ → ℝ} {I : BoundedInterval} {a b
     obtain ⟨ h, ⟨ ⟨ hmin, hhp⟩, rfl ⟩ ⟩ := hb
     apply hhp.integ_mono _ hgp; intro x hx; linarith [hmin _ hx, hmaj _ hx]
 
+-- Множество интегралов кусочно-постоянных мажорант ограниченной на `I` функции `f` ограничено снизу
 lemma integral_bound_below {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   BddBelow ((PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
     rw [bddBelow_def]; use (integral_bound_lower_nonempty h).some
     intro a ha; exact integral_bound_lower_le_upper ha (integral_bound_lower_nonempty h).some_mem
 
+-- Множество интегралов кусочно-постоянных минорант ограниченной на `I` функции `f` ограничено сверху
 lemma integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   BddAbove ((PiecewiseConstantOn.integ · I) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}) := by
     rw [bddAbove_def]; use (integral_bound_upper_nonempty h).some
@@ -82,6 +92,7 @@ lemma le_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : �
   -M * |I|ₗ ≤ lower_integral f I :=
   le_csSup (integral_bound_above (BddOn.of_bounded h)) (integral_bound_lower_of_bounded h)
 
+-- Для ограниченной на `I` функции `f` нижний интеграл Римана не превосходит верхнего
 lemma lower_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I) :
   lower_integral f I ≤ upper_integral f I := by
   apply csSup_le (integral_bound_lower_nonempty h)
@@ -90,28 +101,33 @@ lemma lower_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn
   intros
   solve_by_elim [integral_bound_lower_le_upper]
 
+-- Если `|f x| ≤ M` на `I`, верхний интеграл `f` не превосходит `M * |I|ₗ`
 lemma upper_integral_le {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) :
   upper_integral f I ≤ M * |I|ₗ :=
   csInf_le (integral_bound_below (BddOn.of_bounded h)) (integral_bound_upper_of_bounded h)
 
+-- Верхний интеграл `f` не превосходит интеграла любой кусочно-постоянной мажоранты `g` функции `f` на `I`
 lemma upper_integral_le_integ {f g : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (hfg : MajorizesOn g f I) (hg : PiecewiseConstantOn g I) :
   upper_integral f I ≤ hg.integ' := by
   apply csInf_le (integral_bound_below hf) _
   use g; simpa [hg]
 
+-- Интеграл любой кусочно-постоянной миноранты `h` функции `f` на `I` не превосходит нижнего интеграла `f`
 lemma integ_le_lower_integral {f h : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (hfh : MinorizesOn h f I) (hg : PiecewiseConstantOn h I) :
   hg.integ' ≤ lower_integral f I := by
   apply le_csSup (integral_bound_above hf) _
   use h; simpa [hg]
 
+-- Если верхний интеграл `f` строго меньше `X`, найдётся кусочно-постоянная мажоранта `g` функции `f`, чей интеграл тоже строго меньше `X`
 lemma lt_of_gt_upper_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   {X : ℝ} (hX : upper_integral f I < X ) :
   ∃ g, MajorizesOn g f I ∧ PiecewiseConstantOn g I ∧ PiecewiseConstantOn.integ g I < X := by
   choose Y hY hYX using exists_lt_of_csInf_lt (integral_bound_upper_nonempty hf) hX
   simp at hY; peel hY; simp_all; tauto
 
+-- Если `X` строго меньше нижнего интеграла `f`, найдётся кусочно-постоянная миноранта `h` функции `f`, чей интеграл тоже строго больше `X`
 lemma gt_of_lt_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   {X : ℝ} (hX : X < lower_integral f I) :
   ∃ h, MinorizesOn h f I ∧ PiecewiseConstantOn h I ∧ X < PiecewiseConstantOn.integ h I := by
@@ -122,6 +138,7 @@ lemma gt_of_lt_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddO
 Поскольку мы допускаем бросовые значения, простейшее определение интеграла Римана — через верхний интеграл. -/
 noncomputable abbrev integ (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := upper_integral f I
 
+-- Если `f` и `g` совпадают на `I`, их интегралы Римана `integ` равны
 theorem integ_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g I) :
   integ f I = integ g I := upper_integral_congr h
 
@@ -154,6 +171,7 @@ theorem upper_riemann_sum_le {f g : ℝ → ℝ} {I : BoundedInterval} (P : Part
   upper_riemann_sum f P ≤ integ g I := by
    sorry
 
+-- Если кусочно-постоянная (относительно `P`) функция `h` минорирует `f` на `I`, её интеграл не превосходит нижней суммы Римана `f` по `P`
 theorem lower_riemann_sum_ge {f h : ℝ → ℝ} {I : BoundedInterval} (P : Partition I)
   (hfh : MinorizesOn h f I) (hg : PiecewiseConstantWith h P) :
   integ h I ≤ lower_riemann_sum f P := by
@@ -164,14 +182,17 @@ theorem upper_integ_le_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : B
   (P : Partition I) : upper_integral f I ≤ upper_riemann_sum f P := by
   sorry
 
+-- Верхний интеграл ограниченной на `I` функции `f` равен инфимуму верхних сумм Римана `f` по всем разбиениям `I`
 theorem upper_integ_eq_inf_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) :
   upper_integral f I = sInf (.range (fun P : Partition I ↦ upper_riemann_sum f P)) := by
   sorry
 
+-- Нижняя сумма Римана ограниченной на `I` функции `f` по любому разбиению `P` не превосходит нижнего интеграла `f`
 theorem lower_integ_ge_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (P : Partition I) : lower_riemann_sum f P ≤ lower_integral f I := by
   sorry
 
+-- Нижний интеграл ограниченной на `I` функции `f` равен супремуму нижних сумм Римана `f` по всем разбиениям `I`
 theorem lower_integ_eq_sup_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I) :
   lower_integral f I = sSup (.range (fun P : Partition I ↦ lower_riemann_sum f P)) := by
   sorry

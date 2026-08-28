@@ -73,16 +73,20 @@ abbrev Sequence.mk' (n₀ : ℤ) (a : { n // n ≥ n₀ } → ℚ) : Sequence wh
   seq n := if h : n ≥ n₀ then a ⟨n, h⟩ else 0
   vanish := by grind
 
+-- значение последовательности, построенной через `mk'`, в точке `n ≥ n₀` совпадает со значением исходной функции `a`
 lemma Sequence.eval_mk {n n₀ : ℤ} (a : { n // n ≥ n₀ } → ℚ) (h : n ≥ n₀) :
   (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by grind
 
+-- при приведении функции `a : ℕ → ℚ` к `Sequence` её значение в точке `n : ℕ` совпадает с `a n`
 @[simp]
 lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℚ) : (a : Sequence) n = a n :=
   by norm_cast
 
+-- то же приведение `a : ℕ → ℚ` к `Sequence`, но на целочисленном индексе `n`: значение равно `a n.toNat` при `n ≥ 0` и нулю иначе
 @[simp]
 lemma Sequence.eval_coe_at_int (n : ℤ) (a : ℕ → ℚ) : (a : Sequence) n = if n ≥ 0 then a n.toNat else 0 := by norm_cast
 
+-- последовательность, приведённая из функции `a : ℕ → ℚ`, начинается с индекса `n₀ = 0`
 @[simp]
 lemma Sequence.n0_coe (a : ℕ → ℚ) : (a : Sequence).n₀ = 0 := by norm_cast
 
@@ -116,6 +120,7 @@ end Chapter5
 abbrev Rat.Steady (ε : ℚ) (a : Chapter5.Sequence) : Prop :=
   ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m)
 
+-- разворачивает `Rat.Steady` в определение: любые два члена `a n`, `a m` с `n, m ≥ a.n₀` ε-близки
 lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) :
   ε.Steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m) := by rfl
 
@@ -219,6 +224,7 @@ example (ε : ℚ) (hε : ε<10) :  ¬ ε.Steady ((fun n : ℕ ↦ if n = 0 then
 abbrev Sequence.from (a : Sequence) (n₁ : ℤ) : Sequence :=
   mk' (max a.n₀ n₁) (fun n ↦ a (n : ℤ))
 
+-- при `n ≥ n₁` значение "обрезанной" последовательности `a.from n₁` в точке `n` совпадает со значением исходной `a`
 lemma Sequence.from_eval (a : Sequence) {n₁ n : ℤ} (hn : n ≥ n₁) :
   (a.from n₁) n = a n := by simp [hn]; intro h; exact (a.vanish _ h).symm
 
@@ -227,6 +233,7 @@ end Chapter5
 /-- Definition 5.1.6 (Финально ε-устойчива) -/
 abbrev Rat.EventuallySteady (ε : ℚ) (a : Chapter5.Sequence) : Prop := ∃ N ≥ a.n₀, ε.Steady (a.from N)
 
+-- разворачивает `Rat.EventuallySteady` в определение: найдётся `N ≥ a.n₀`, начиная с которого `a` становится ε-устойчивой
 lemma Rat.eventuallySteady_def (ε : ℚ) (a : Chapter5.Sequence) :
   ε.EventuallySteady a ↔ ∃ N ≥ a.n₀, ε.Steady (a.from N) := by rfl
 
@@ -273,6 +280,7 @@ lemma Sequence.ex_5_1_7_d {ε : ℚ} (hε : ε>0) :
 
 abbrev Sequence.IsCauchy (a : Sequence) : Prop := ∀ ε > (0 : ℚ), ε.EventuallySteady a
 
+-- разворачивает `Sequence.IsCauchy` в определение: `a` финально ε-устойчива для каждого `ε > 0`
 lemma Sequence.isCauchy_def (a : Sequence) :
   a.IsCauchy ↔ ∀ ε > (0 : ℚ), ε.EventuallySteady a := by rfl
 
@@ -296,6 +304,7 @@ lemma Sequence.IsCauchy.coe (a : ℕ → ℚ) :
   all_goals try omega
   norm_cast
 
+-- переформулировка условия Коши через `Section_4_3.dist` для последовательности `mk' n₀ a`: для каждого `ε > 0` найдётся `N ≥ n₀`, начиная с которого все члены попарно отстоят друг от друга не более чем на `ε`
 lemma Sequence.IsCauchy.mk {n₀ : ℤ} (a : {n // n ≥ n₀} → ℚ) :
     (mk' n₀ a).IsCauchy ↔ ∀ ε > (0 : ℚ), ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N,
     Section_4_3.dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by
@@ -321,6 +330,7 @@ theorem Sequence.ex_5_1_10_a : (1 : ℚ).Steady sqrt_two := by sorry
 -/
 theorem Sequence.ex_5_1_10_b : (0.1 : ℚ).Steady (sqrt_two.from 1) := by sorry
 
+-- Example 5.1.10: последовательность десятичных приближений `√2` финально 0.1-устойчива
 theorem Sequence.ex_5_1_10_c : (0.1 : ℚ).EventuallySteady sqrt_two := by sorry
 
 /-- Proposition 5.1.11. Гармоническая последовательность, определённая как a₁ = 1, a₂ = 1/2, ...,
@@ -422,9 +432,11 @@ lemma Sequence.isBounded_of_isCauchy {a : Sequence} (h : a.IsCauchy) : a.IsBound
 theorem Sequence.isBounded_add {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a + b : Sequence).IsBounded := by sorry
 
+-- разность двух ограниченных последовательностей ограничена
 theorem Sequence.isBounded_sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a - b : Sequence).IsBounded := by sorry
 
+-- произведение двух ограниченных последовательностей ограничено
 theorem Sequence.isBounded_mul {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hb : (b : Sequence).IsBounded) :
     (a * b : Sequence).IsBounded := by sorry
 

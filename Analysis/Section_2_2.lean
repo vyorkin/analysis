@@ -154,6 +154,7 @@ rfl более мощная тактика, чем может показатьс
 при помощи rfl, потому что обе стороны одинаковы с точки зрения определённого равенства.
 -/
 
+-- сложение `2` с `m` даёт двойного последователя `m`
 theorem Nat.two_add (m : Nat) : 2 + m = (m++)++ := by
   rw [show 2 = 1++ from rfl, succ_add, one_add]
 
@@ -185,6 +186,7 @@ lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
     rw [succ_add, ih]
     rw [succ_add]
 
+-- тот же результат, что и `add_succ`, но доказан через явный `calc`-блок вместо последовательных `rw`
 lemma Nat.add_succ' (n m : Nat) : n + (m++) = (n + m)++ := by
   revert n
   apply induction
@@ -313,6 +315,7 @@ example (a b c d e f : Nat)
 /-- Definition 2.2.7 (положительные натуральные числа). -/
 def Nat.IsPos (n : Nat) : Prop := n ≠ 0
 
+-- `n` положительно тогда и только тогда, когда `n ≠ 0` — прямое разворачивание определения `Nat.IsPos`
 theorem Nat.isPos_iff (n : Nat) : n.IsPos ↔ n ≠ 0 := by rfl
 
 /-- Proposition 2.2.8 (положительное плюс натуральное — положительно).
@@ -336,6 +339,7 @@ theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := b
 theorem Nat.add_pos_right {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
   grind [add_comm, add_pos_left]
 
+-- тот же результат, что и `add_pos_right`, но доказан вручную через `add_comm` и `add_pos_left`, без `grind`
 theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos := by
   rw [add_comm]
   apply add_pos_left -- (b : Nat) (ha : a.IsPos) : (a + b).IsPos
@@ -459,6 +463,7 @@ instance Nat.instLT : LT Nat where
 /-- Сравните с {name}`le_iff_exists_add` из Mathlib. -/
 lemma Nat.le_iff (n m : Nat) : n ≤ m ↔ ∃ a : Nat, m = n + a := by rfl
 
+-- `n < m` означает `n ≤ m` и `n ≠ m` — разворачивание определения строгого порядка `<`
 lemma Nat.lt_iff (n m : Nat) : n < m ↔ (∃ a : Nat, m = n + a) ∧ n ≠ m := by rfl
 
 /-- Сравните с {name}`ge_iff_le` из Mathlib. -/
@@ -564,6 +569,7 @@ theorem Nat.ge_refl (a : Nat) : a ≥ a := by
   use 0 -- exists 0
   rw [Nat.add_zero]
 
+-- рефлексивность `≤`, выводится из рефлексивности `≥` (`ge_refl`)
 @[refl]
 theorem Nat.le_refl (a : Nat) : a ≤ a := a.ge_refl
 
@@ -614,6 +620,7 @@ theorem Nat.ge_antisymm {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := b
   rw [hx, add_zero] at ha
   exact ha
 
+-- тот же результат, что и `ge_antisymm`, но вместо `add_eq_zero` явно разбирает `x` через `match x with | 0 | x++`, получая противоречие сразу в случае `x++`
 theorem Nat.ge_antisymm₁ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   -- rw [Nat.ge_iff_le, Nat.le_iff] at hab
   -- rw [Nat.ge_iff_le, Nat.le_iff] at hba
@@ -634,6 +641,7 @@ theorem Nat.ge_antisymm₁ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b :
     have hbn' := (Nat.succ_ne (x + y)).symm
     contradiction
 
+-- тот же результат, что и `ge_antisymm`, но через `cases x`, выделяя случай `x = 0` отдельно от `x = x'++`
 theorem Nat.ge_antisymm₂ {a b : Nat} (hab : a ≥ b) (hba : b ≥ a) : a = b := by
   obtain ⟨x, ha⟩ := hab
   cases x with
@@ -847,6 +855,7 @@ theorem Nat.not_lt_of_gt (a b : Nat) : a < b ∧ a > b → False := by
   have hab₁ := ne_of_lt a b h.1
   contradiction
 
+-- никакое `a` не может быть строго меньше самого себя — иррефлексивность `<`
 theorem Nat.not_lt_self {a : Nat} (h : a < a) : False := by
   apply not_lt_of_gt a a -- a < b ∧ a > b → False
   -- simp [h]
@@ -854,6 +863,7 @@ theorem Nat.not_lt_self {a : Nat} (h : a < a) : False := by
   · exact h
   · assumption
 
+-- из `a ≤ b` и `b < c` следует `a < c` — совместная транзитивность `≤` и `<`
 theorem Nat.lt_of_le_of_lt {a b c : Nat} (hab : a ≤ b) (hbc : b < c) : a < c := by
   rw [lt_iff_add_pos] at * -- : a < b ↔ ∃ d, d.IsPos ∧ b = a + d
   rw [le_iff] at hab
@@ -1178,6 +1188,7 @@ theorem Nat.backwards_induction {n : Nat} {P : Nat → Prop}
     · rw [← h₁] at hn
       exact hn
 
+-- вспомогательный пример (не из учебника), иллюстрирующий работу тактики `observe` при индукции по `n`
 theorem whatever {a n : Nat} {P Q : Nat → Prop} (hn : Q n) : P a → P n := by
   intro ha
   induction n with
@@ -1186,6 +1197,7 @@ theorem whatever {a n : Nat} {P Q : Nat → Prop} (hn : Q n) : P a → P n := by
     observe hn : Q (n'++) -- Заметь как меняется гипотеза
     sorry
 
+-- тот же результат, что и `backwards_induction`, но доказан компактнее: `rcases ... rfl` сразу даёт нужную подстановку без повторного вывода `m ≤ n'`
 theorem Nat.backwards_induction₁ {n : Nat} {P : Nat → Prop}
     (hind : ∀ m, P (m++) → P m) (hn : P n) : ∀ m, m ≤ n → P m := by
   induction n with
@@ -1225,6 +1237,7 @@ theorem Nat.induction_from {n : Nat} {P : Nat → Prop}
     have goal := hind (n + k') ih
     exact goal
 
+-- тот же результат, что и `induction_from`, но базовый случай `n + 0 = n` закрывается через `convert hn using 1` вместо явного `rw`
 theorem Nat.induction_from₁ {n : Nat} {P : Nat → Prop}
   (hind : ∀ m, P m → P (m++)) : P n → ∀ m, m ≥ n → P m := by
   intro hn m ⟨k, hk⟩

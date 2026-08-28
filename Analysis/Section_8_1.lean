@@ -37,17 +37,21 @@ theorem EqualCard.iff {X Y : Type} : EqualCard X Y ↔ Nonempty (X ≃ Y) := by
 theorem EqualCard.iff' {X Y : Type} : EqualCard X Y ↔ Cardinal.mk X = Cardinal.mk Y := by
   simp [Cardinal.eq, iff]
 
+/-- Равномощность рефлексивна: любое множество равномощно самому себе. -/
 theorem EqualCard.refl (X : Type) : EqualCard X X := sorry
 
+/-- Равномощность симметрична. -/
 theorem EqualCard.symm {X Y : Type} (hXY : EqualCard X Y) : EqualCard Y X := by
   sorry
 
+/-- Равномощность транзитивна. -/
 theorem EqualCard.trans {X Y Z : Type} (hXY : EqualCard X Y) (hYZ : EqualCard Y Z) : 
   EqualCard X Z := by
   sorry
 
 instance EqualCard.instSetoid : Setoid Type := ⟨ EqualCard, ⟨ refl, symm, trans ⟩ ⟩
 
+/-- Множество `Set.univ` равномощно самому типу `X`. -/
 theorem EqualCard.univ (X : Type) : EqualCard (.univ : Set X) X :=
   ⟨ Subtype.val, Subtype.val_injective, by intro _; aesop ⟩
 
@@ -55,12 +59,15 @@ abbrev CountablyInfinite (X : Type) : Prop := EqualCard X ℕ
 
 abbrev AtMostCountable (X : Type) : Prop := CountablyInfinite X ∨ Finite X
 
+/-- Счётная бесконечность — инвариант равномощности. -/
 theorem CountablyInfinite.equiv {X Y : Type} (hXY : EqualCard X Y) : 
   CountablyInfinite X ↔ CountablyInfinite Y := ⟨ hXY.symm.trans, hXY.trans ⟩
 
+/-- Конечность — инвариант равномощности. -/
 theorem Finite.equiv {X Y : Type} (hXY : EqualCard X Y) : 
   Finite X ↔ Finite Y := by obtain ⟨ f, hf ⟩ := hXY; exact (Equiv.ofBijective f hf).finite_iff
 
+/-- Свойство «не более чем счётно» — инвариант равномощности. -/
 theorem AtMostCountable.equiv {X Y : Type} (hXY : EqualCard X Y) : 
   AtMostCountable X ↔ AtMostCountable Y := by
   simp [AtMostCountable, CountablyInfinite.equiv hXY, Finite.equiv hXY]
@@ -75,18 +82,22 @@ theorem CountablyInfinite.iff (X : Type) : CountablyInfinite X ↔ Nonempty (Den
 theorem CountablyInfinite.iff' (X : Type) : CountablyInfinite X ↔ Countable X ∧ Infinite X := by
   rw [iff, nonempty_denumerable_iff]
 
+/-- Счётно-бесконечное множество счётно (в смысле Mathlib). -/
 theorem CountablyInfinite.toCountable {X : Type} (hX : CountablyInfinite X) : Countable X := by
   simp_all [iff']
 
+/-- Счётно-бесконечное множество бесконечно. -/
 theorem CountablyInfinite.toInfinite {X : Type} (hX : CountablyInfinite X) : Infinite X := by
   simp_all [iff']
 
+/-- Свойство «не более чем счётно» совпадает с typeclass `Countable` из Mathlib. -/
 theorem AtMostCountable.iff (X : Type) : AtMostCountable X ↔ Countable X := by
   observe h1 : CountablyInfinite X ↔ Countable X ∧ Infinite X
   observe h2 : Finite X ∨ Infinite X
   observe h3 : Finite X → Countable X
   tauto
 
+/-- Множество счётно-бесконечно тогда и только тогда, когда оно является образом инъекции `ℕ ↪ A`. -/
 theorem CountablyInfinite.iff_image_inj {A : Type} (X : Set A) : CountablyInfinite X ↔ ∃ f : ℕ ↪ A, X = f '' .univ := by
   constructor
   . intro ⟨ g, hg ⟩
@@ -127,17 +138,21 @@ def NNRat.exists_unique_min : Decidable (∀ (X : Set NNRat) (hX : X.Nonempty), 
 open Classical in
 noncomputable abbrev Nat.min (X : Set ℕ) : ℕ := if hX : X.Nonempty then (exists_unique_min hX).exists.choose else 0
 
+/-- `Nat.min` действительно возвращает наименьший элемент непустого множества. -/
 theorem Nat.min_spec {X : Set ℕ} (hX : X.Nonempty) : min X ∈ X ∧ ∀ n ∈ X, min X ≤ n := by
   simp [hX, min]; exact (exists_unique_min hX).exists.choose_spec
 
+/-- Наименьший элемент непустого множества определён однозначно и совпадает с `Nat.min`. -/
 theorem Nat.min_eq {X : Set ℕ} (hX : X.Nonempty) {a : ℕ} (ha : a ∈ X ∧ ∀ n ∈ X, a ≤ n) : min X = a :=
   (exists_unique_min hX).unique (min_spec hX) ha
 
+/-- По соглашению минимум пустого множества равен `0`. -/
 @[simp]
 theorem Nat.min_empty : min ∅ = 0 := by simp [Nat.min]
 
 example : Nat.min ((fun n ↦ 2*n) '' (.Ici 1)) = 2 := by sorry
 
+/-- `Nat.min` согласован с инфимумом `sInf` из Mathlib. -/
 theorem Nat.min_eq_sInf {X : Set ℕ} (hX : X.Nonempty) : min X = sInf X := by
   sorry
 
@@ -185,6 +200,7 @@ theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ 
     sorry
   rw [←ha m] at hgm; contrapose! hm; exact Subtype.val_injective hgm
 
+/-- Всякое бесконечное подмножество `ℕ` счётно-бесконечно. -/
 theorem Nat.countable_of_infinite (X : Set ℕ) [Infinite X] : CountablyInfinite X := by
   have := (monotone_enum_of_infinite X).exists
   exact EqualCard.symm ⟨ this.choose, this.choose_spec.1 ⟩
@@ -205,6 +221,7 @@ theorem AtMostCountable.subset {X : Type} (hX : AtMostCountable X) (Y : Set X) :
     rw [equiv ⟨ _, hf' ⟩ ]; apply Nat.atMostCountable_subset
   simp [AtMostCountable, show Finite Y by infer_instance]
 
+/-- Подмножество не более чем счётного множества также не более чем счётно (случай подмножеств одного объемлющего `A`). -/
 theorem AtMostCountable.subset' {A : Type} {X Y : Set A} (hX : AtMostCountable X) (hY : Y ⊆ X) : AtMostCountable Y := by
   refine' (equiv ⟨ fun y ↦ ⟨ ↑↑y, y.property ⟩, _, _ ⟩).mp (subset hX { x : X | ↑x ∈ Y })
   . intro ⟨ ⟨ _, _ ⟩, _ ⟩ ⟨ ⟨ _, _ ⟩, _ ⟩ _; simp_all
@@ -323,6 +340,7 @@ example {I X : Type} (hI : AtMostCountable I) (A : I → Set X) (hA : ∀ i, AtM
 /-- Exercise 8.1.10. Обратите внимание на отсутствие ключевого слова `noncomputable` перед {lit}`abbrev`. -/
 abbrev explicit_bijection : ℕ → ℚ := sorry
 
+/-- Явно построенное отображение `explicit_bijection` действительно является биекцией `ℕ → ℚ`. -/
 theorem explicit_bijection_spec : Function.Bijective explicit_bijection := by sorry
 
 end Chapter8

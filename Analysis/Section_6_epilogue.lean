@@ -44,16 +44,19 @@ theorem Chapter6.Sequence.tendsto_iff_Tendsto (a : ℕ → ℝ) (L : ℝ) :
   rw [ge_iff_le, ←Int.le_toNat hpos] at hn
   simp [hpos, ←Real.dist_eq, le_of_lt (hN n.toNat hn)]
 
+-- тот же результат, что и `tendsto_iff_Tendsto`, но сформулирован для произвольной `a : Sequence`, а не только для приведённой из `ℕ → ℝ`
 theorem Chapter6.Sequence.tendsto_iff_Tendsto' (a : Sequence) (L : ℝ) : a.TendsTo L ↔ atTop.Tendsto a.seq (nhds L) := by
   rw [Metric.tendsto_atTop, tendsTo_iff]
   constructor <;> intro h ε hε
   . have ⟨ N, hN ⟩ := h _ (half_pos hε); use N; peel 2 hN; rw [Real.dist_eq]; linarith
   have ⟨ N, hN ⟩ := h _ hε; use N; peel 2 hN; rw [←Real.dist_eq]; linarith
 
-theorem Chapter6.Sequence.converges_iff_Tendsto (a : ℕ → ℝ) : 
+-- Последовательность `a` сходится в нашем смысле тогда и только тогда, когда она сходится в смысле Mathlib-фильтров: `∃ L, atTop.Tendsto a (nhds L)`.
+theorem Chapter6.Sequence.converges_iff_Tendsto (a : ℕ → ℝ) :
     (a : Sequence).Convergent ↔ ∃ L, atTop.Tendsto a (nhds L) := by simp_rw [←tendsto_iff_Tendsto]
 
-theorem Chapter6.Sequence.converges_iff_Tendsto' (a : Sequence) : 
+-- тот же результат, что и `converges_iff_Tendsto`, но сформулирован для произвольной `a : Sequence`
+theorem Chapter6.Sequence.converges_iff_Tendsto' (a : Sequence) :
     a.Convergent ↔ ∃ L, atTop.Tendsto a.seq (nhds L) := by simp_rw [←tendsto_iff_Tendsto']
 
 /-- Техническая деталь: {name}`CauSeq.IsComplete` для {lean}`ℝ` было установлено для {name}`_root_.abs`, но не для {name}`norm`. -/
@@ -92,20 +95,26 @@ theorem Chapter6.Sequence.isBounded_iff_isBounded_range (a : ℕ → ℝ) :
       _ ≤ C + |a 0| := by gcongr; rw [←Real.dist_eq]; convert h n.toNat 0
   positivity
 
-theorem Chapter6.Sequence.sup_eq_sSup (a : ℕ → ℝ) : 
+-- Супремум последовательности `a` (в нашем смысле) совпадает с супремумом множества значений `{a n}` в смысле Mathlib.
+theorem Chapter6.Sequence.sup_eq_sSup (a : ℕ → ℝ) :
     (a : Sequence).sup = sSup (Set.range (fun n ↦ (a n : EReal))) := by sorry
 
-theorem Chapter6.Sequence.inf_eq_sInf (a : ℕ → ℝ) : 
+-- Инфимум последовательности `a` совпадает с инфимумом множества значений `{a n}` в смысле Mathlib.
+theorem Chapter6.Sequence.inf_eq_sInf (a : ℕ → ℝ) :
     (a : Sequence).inf = sInf (Set.range (fun n ↦ (a n : EReal))) := by sorry
 
-theorem Chapter6.Sequence.bddAbove_iff (a : ℕ → ℝ) : 
+-- Ограниченность последовательности `a` сверху (в нашем смысле) эквивалентна ограниченности сверху множества значений `Set.range a` в смысле Mathlib.
+theorem Chapter6.Sequence.bddAbove_iff (a : ℕ → ℝ) :
     (a : Sequence).BddAbove ↔ _root_.BddAbove (Set.range a) := by sorry
 
-theorem Chapter6.Sequence.bddBelow_iff (a : ℕ → ℝ) : 
+-- Аналогично для ограниченности снизу: `a.BddBelow` эквивалентно `BddBelow (Set.range a)`.
+theorem Chapter6.Sequence.bddBelow_iff (a : ℕ → ℝ) :
     (a : Sequence).BddBelow ↔ _root_.BddBelow (Set.range a) := by sorry
 
+-- Монотонность последовательности `a` в нашем смысле (`IsMonotone`) эквивалентна `Monotone a` из Mathlib.
 theorem Chapter6.Sequence.Monotone_iff (a : ℕ → ℝ) : (a : Sequence).IsMonotone ↔ Monotone a := by sorry
 
+-- Аналогично для антитонности: `IsAntitone` эквивалентно `Antitone a` из Mathlib.
 theorem Chapter6.Sequence.Antitone_iff (a : ℕ → ℝ) : (a : Sequence).IsAntitone ↔ Antitone a := by sorry
 
 /-- Отождествление с {name}`MapClusterPt` -/

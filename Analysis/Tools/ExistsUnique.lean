@@ -18,16 +18,20 @@ Mathlib.)
 /-- Это реализует аксиому единственного выбора. -/
 noncomputable def ExistsUnique.choose {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : α := h.exists.choose
 
+-- выбранный аксиомой элемент `h.choose` удовлетворяет свойству `p`
 theorem ExistsUnique.choose_spec {α : Sort*} {p : α → Prop} (h : ∃! x, p x) :
   p h.choose := h.exists.choose_spec
 
+-- любой элемент `x`, удовлетворяющий `p`, совпадает с выбранным `h.choose`
 theorem ExistsUnique.choose_eq {α : Sort*} {p : α → Prop} (h : ∃! x, p x) {x : α} (hx : p x) :
   h.choose = x := h.unique h.choose_spec hx
 
+-- `p x` равносильно тому, что `x` совпадает с выбранным элементом `h.choose`
 theorem ExistsUnique.choose_iff {α : Sort*} {p : α → Prop} (h : ∃! x, p x) (x : α) :
   p x ↔ x = h.choose :=
   ⟨ by intro hx; exact (h.choose_eq hx).symm, by rintro rfl; exact h.choose_spec ⟩
 
+-- выбор через классическую аксиому выбора (`Exists.choose`) и через `ExistsUnique.choose` дают один и тот же элемент
 theorem ExistsUnique.choose_eq_choose {α : Sort*} {p : α → Prop} (h : ∃! x, p x) : Exists.choose h = h.choose := by
   rw [←choose_iff]; exact (Exists.choose_spec h).1
 
@@ -35,6 +39,7 @@ theorem ExistsUnique.choose_eq_choose {α : Sort*} {p : α → Prop} (h : ∃! x
 /-- Альтернативная форма аксиомы единственного выбора.   -/
 noncomputable def Subsingleton.choose {α : Sort*} [Subsingleton α] [hn : Nonempty α] : α := hn.some
 
+-- в подсинглтоне любой элемент `x` совпадает с выбранным `hs.choose`
 theorem Subsingleton.choose_spec {α : Sort*} [hs : Subsingleton α] [Nonempty α] (x : α) : x = hs.choose := Subsingleton.elim _ _
 
 /-- Эквивалентность между {name}`ExistsUnique` и {name}`Subsingleton`/{name}`Nonempty` не требует аксиомы выбора. -/

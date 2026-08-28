@@ -67,10 +67,12 @@ LinearOrder.mk (by
   sorry
   )
 
+/-- Тотальность порядка на `X` наследуется любым подмножеством `A`. -/
 theorem IsTotal.subtype {X : Type} [PartialOrder X] {A : Set X} (hA : IsTotal X) : IsTotal A := by
   intro ⟨ x, hx ⟩ ⟨ y, hy ⟩
   specialize hA x y; simp_all
 
+/-- Тотальность порядка на `A` передаётся любому подмножеству `B ⊆ A`. -/
 theorem IsTotal.subset {X : Type} [PartialOrder X] {A B : Set X} (hA : IsTotal A) (hAB : B ⊆ A) : IsTotal B := by
   intro ⟨ x, hx ⟩ ⟨ y, hy ⟩
   specialize hA ⟨ x, hAB hx ⟩ ⟨ y, hAB hy ⟩; simp_all
@@ -82,6 +84,7 @@ example : ¬ IsTotal X_8_5_4 := by sorry
 theorem IsMax.iff {X : Type} [PartialOrder X] (x : X) : 
   IsMax x ↔ ¬ ∃ y, x < y := by rw [isMax_iff_forall_not_lt]; grind
 
+/-- `x` минимален тогда и только тогда, когда не существует элемента, строго меньшего `x`. -/
 theorem IsMin.iff {X : Type} [PartialOrder X] (x : X) : 
   IsMin x ↔ ¬ ∃ y, x > y := by rw [isMin_iff_forall_not_lt]; grind
 
@@ -108,6 +111,7 @@ theorem WellFoundedLT.iff (X : Type) [LinearOrder X] :
   intro ⟨ ⟨ x, hx ⟩, h ⟩; refine ⟨ _, hx, ?_ ⟩; intro y hy; specialize h (b := ⟨ _, hy ⟩)
   simp at h; contrapose! h; simp [h]; order
 
+-- тот же результат, что и `WellFoundedLT.iff`, но для `PartialOrder X` со свидетельством тотальности `h` вместо инстанса `LinearOrder X`
 theorem WellFoundedLT.iff' {X : Type} [PartialOrder X] (h : IsTotal X) : 
   WellFoundedLT X ↔ ∀ A : Set X, A.Nonempty → ∃ x : A, IsMin x := @iff X (LinearOrder.mk h)
 
@@ -133,6 +137,7 @@ theorem WellFoundedLT.ofFinite {X : Type} [LinearOrder X] [Finite X] : WellFound
 
 example {X : Type} [LinearOrder X] [WellFoundedLT X] (A : Set X) : WellFoundedLT A := by sorry
 
+/-- Фундированность порядка на `A` наследуется любым подмножеством `B ⊆ A`. -/
 theorem WellFoundedLT.subset {X : Type} [PartialOrder X] {A B : Set X} (hA : IsTotal A) [hwell : WellFoundedLT A] (hAB : B ⊆ A) : WellFoundedLT B := by
   set hAlin : LinearOrder A := LinearOrder.mk hA
   set hBlin : LinearOrder B := LinearOrder.mk (hA.subset hAB)
@@ -159,9 +164,11 @@ theorem IsUpperBound.iff {X : Type} [PartialOrder X] (A : Set X) (x : X) :
 abbrev IsStrictUpperBound {X : Type} [PartialOrder X] (A : Set X) (x : X) : Prop :=
   IsUpperBound A x ∧ x ∉ A
 
+-- `x` — строгая верхняя граница `A` тогда и только тогда, когда `x` строго больше каждого элемента `A`
 theorem IsStrictUpperBound.iff {X : Type} [PartialOrder X] (A : Set X) (x : X) : 
   IsStrictUpperBound A x ↔ ∀ y ∈ A, y < x := by sorry
 
+-- тот же результат, что и `IsStrictUpperBound.iff`, но выражен через `upperBounds A \ A` из Mathlib
 theorem IsStrictUpperBound.iff' {X : Type} [PartialOrder X] (A : Set X) (x : X) : 
   IsStrictUpperBound A x ↔ x ∈ upperBounds A \ A := by
   simp [IsStrictUpperBound, IsUpperBound.iff]
@@ -179,6 +186,7 @@ theorem IsMin.iff_lowerbound {X : Type} [PartialOrder X] {Y : Set X} (hY : IsTot
     peel hmin with x hx _; specialize hY ⟨ _, hx ⟩ ⟨ _, hx₀ ⟩; aesop
   intro h; use h.1; simp [IsMin]; aesop
 
+-- тот же результат, что и `IsMin.iff_lowerbound`, но `x₀` квантифицируется экзистенциально по обе стороны эквивалентности
 theorem IsMin.iff_lowerbound' {X : Type} [PartialOrder X] {Y : Set X} (hY : IsTotal Y) : (∃ x₀ : Y, IsMin x₀) ↔ ∃ x₀, x₀ ∈ Y ∧ ∀ x ∈ Y, x₀ ≤ x := by
   constructor
   . intro ⟨ ⟨ x₀, hx₀ ⟩, hmin ⟩
@@ -337,10 +345,12 @@ example : ∃ (X : Type) (h₀ : LE X), (∀ x y : X, x ≤ y → y ≤ x → x 
   le_trans := by sorry
   lt_iff_le_not_ge := fun _ _ ↦ Iff.rfl
 
+/-- `PNat.divOrder` действительно задаёт частичный порядок с отношением делимости `x ≤ y ↔ ∃ n, y = n * x`. -/
 theorem PNat.divOrder_exists : 
     ∃ (h₀ : PartialOrder PNat), h₀.le = (fun x y ↦ ∃ n, y = n * x) :=
   ⟨PNat.divOrder, rfl⟩
 
+/-- Отношение делимости на `PNat` не продолжается до линейного порядка: например, 2 и 3 несравнимы. -/
 theorem PNat.divOrder_not_linear : 
     ¬∃ (h₀ : LinearOrder PNat), h₀.le = (fun x y ↦ ∃ n, y = n * x) := by
   sorry
@@ -423,13 +433,16 @@ example : PNat.divOrder ≤ (inferInstance : PartialOrder PNat) := by
   le_antisymm := fun _ _ h _ ↦ h
   le_trans := fun _ _ _ h1 h2 ↦ h1.trans h2
 
+/-- Дискретный порядок — наименьший элемент в порядке "грубее чем" на всех частичных порядках `X`. -/
 theorem PartialOrder.discrete_isBot (X : Type) (p : PartialOrder X) : 
     PartialOrder.discrete X ≤ p := by sorry
 
+/-- Дискретный порядок минимален в порядке "грубее чем" на частичных порядках `X`. -/
 theorem PartialOrder.discrete_isMin (X : Type) : 
     @IsMin (PartialOrder X) (coarserOrder X).toPreorder.toLE
       (PartialOrder.discrete X) := by sorry
 
+/-- Дискретный порядок — единственный минимальный элемент в порядке "грубее чем". -/
 theorem PartialOrder.discrete_unique_min (X : Type) (p : PartialOrder X)
     (h : @IsMin (PartialOrder X) (coarserOrder X).toPreorder.toLE p) : 
     p = discrete X := by sorry
@@ -452,6 +465,7 @@ theorem exists_set_singleton_intersect' {I U : Type} {X : I → Set U}
 theorem hausdorff_of_zorns_lemma {X : Type} [PartialOrder X] : 
     ∃ M : Set X, Maximal (fun (S : Set X) => IsTotal S) M := by sorry
 
+/-- Принцип Хаусдорфа о максимальной цепи вместе с условием на верхние границы цепей влечёт лемму Цорна. -/
 theorem zorns_lemma_of_hausdorff {X : Type} [PartialOrder X] [Nonempty X]
     (hhausdorff : ∃ M : Set X, Maximal (fun (S : Set X) => IsTotal S) M)
     (hchain : ∀ Y : Set X, IsTotal Y ∧ Y.Nonempty → ∃ x, IsUpperBound Y x) : 
@@ -473,6 +487,7 @@ def WellOrderedSubset.IsInitialSegment {X : Type}
     ∀ (a b : W.carrier) (ha : a.1 ∈ W'.carrier) (hb : b.1 ∈ W'.carrier),
       W.ord.le a b ↔ W'.ord.le ⟨a, ha⟩ ⟨b, hb⟩
 
+/-- Начальный отрезок является собственным подмножеством большего вполне упорядоченного множества. -/
 theorem WellOrderedSubset.IsInitialSegment.subset {X : Type}
     {W W' : WellOrderedSubset X} (h : W.IsInitialSegment W') : 
     W.carrier ⊂ W'.carrier := by sorry
@@ -499,6 +514,7 @@ def WellOrderedSubset.empty (X : Type) : WellOrderedSubset X where
     toDecidableLE := fun ⟨_, h⟩ ↦ h.elim }
   wf := ⟨⟨fun ⟨_, h⟩ ↦ h.elim⟩⟩
 
+/-- Пустое вполне упорядоченное подмножество минимально в порядке "начальный отрезок или равенство". -/
 theorem WellOrderedSubset.empty_isMin (X : Type) : 
     @IsMin (WellOrderedSubset X) (instPartialOrder X).toPreorder.toLE
       (empty X) := by sorry

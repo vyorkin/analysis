@@ -115,6 +115,7 @@ example : ∃ x : ℝ, 0 ≤ x ∧ x ≤ 2 ∧ x^2 = 2 := by sorry
 theorem continuous_image_Icc {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) {y : ℝ} (hy : sInf (f '' .Icc a b) ≤ y ∧ y ≤ sSup (f '' .Icc a b)) : ∃ c ∈ Set.Icc a b, f c = y := by
   sorry
 
+-- Образ отрезка `[a,b]` при непрерывном отображении — это в точности отрезок `[inf, sup]` значений функции
 theorem continuous_image_Icc' {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : f '' .Icc a b = .Icc (sInf (f '' .Icc a b)) (sSup (f '' .Icc a b)) := by
   sorry
 

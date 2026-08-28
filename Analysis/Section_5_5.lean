@@ -29,6 +29,7 @@ namespace Chapter5
 theorem Real.upperBound_def (E : Set Real) (M : Real) : M ∈ upperBounds E ↔ ∀ x ∈ E, x ≤ M :=
   mem_upperBounds
 
+-- `M` — нижняя грань `E`, если `M ≤ x` для всех `x ∈ E`
 theorem Real.lowerBound_def (E : Set Real) (M : Real) : M ∈ lowerBounds E ↔ ∀ x ∈ E, x ≥ M :=
   mem_lowerBounds
 
@@ -50,14 +51,16 @@ example : ¬ ∃ M : Real, M ∈ upperBounds (.Ioi 0) := by sorry
 /-- Example 5.5.4 -/
 example : ∀ M, M ∈ upperBounds (∅ : Set Real) := by sorry
 
-theorem Real.upperBound_upper {M M' : Real} (h : M ≤ M') {E : Set Real} (hb : M ∈ upperBounds E) : 
+-- любая величина `M' ≥ M`, где `M` — верхняя грань `E`, тоже является верхней гранью `E`
+theorem Real.upperBound_upper {M M' : Real} (h : M ≤ M') {E : Set Real} (hb : M ∈ upperBounds E) :
     M' ∈ upperBounds E := by sorry
 
 /-- Definition 5.5.5 (точная верхняя грань). Здесь мы используем предикат {name}`IsLUB`, определённый в Mathlib. -/
 theorem Real.isLUB_def (E : Set Real) (M : Real) : 
     IsLUB E M ↔ M ∈ upperBounds E ∧ ∀ M' ∈ upperBounds E, M' ≥ M := by rfl
 
-theorem Real.isGLB_def (E : Set Real) (M : Real) : 
+-- разворачивает `IsGLB` в определение: `M` — нижняя грань `E`, и любая другая нижняя грань `M'` не превосходит `M`
+theorem Real.isGLB_def (E : Set Real) (M : Real) :
     IsGLB E M ↔ M ∈ lowerBounds E ∧ ∀ M' ∈ lowerBounds E, M' ≤ M := by rfl
 
 /-- Example 5.5.6 -/
@@ -73,6 +76,7 @@ theorem Real.LUB_unique {E : Set Real} {M M' : Real} (h1 : IsLUB E M) (h2 : IsLU
 /-- Определение "ограничено сверху" с использованием нотации Mathlib -/
 theorem Real.bddAbove_def (E : Set Real) : BddAbove E ↔ ∃ M, M ∈ upperBounds E := Set.nonempty_def
 
+-- множество `E` ограничено снизу, если у него есть нижняя грань
 theorem Real.bddBelow_def (E : Set Real) : BddBelow E ↔ ∃ M, M ∈ lowerBounds E := Set.nonempty_def
 
 /-- Exercise 5.5.2 -/
@@ -95,14 +99,18 @@ theorem Real.upperBound_discrete_unique {E : Set Real} {n : ℕ} {m m' : ℤ}
 theorem Sequence.IsCauchy.abs {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : 
   ((|a| : ℕ → ℚ) : Sequence).IsCauchy := by sorry
 
+-- если `LIM` двух последовательностей Коши совпадают, то и `LIM` их модулей совпадают
 theorem Real.LIM.abs_eq {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy)
     (hb : (b : Sequence).IsCauchy) (h : LIM a = LIM b) : LIM |a| = LIM |b| := by sorry
 
-theorem Real.LIM.abs_eq_pos {a : ℕ → ℚ} (h : LIM a > 0) (ha : (a : Sequence).IsCauchy) : 
+-- если `LIM a` положителен, то он совпадает с `LIM` последовательности модулей `|a|`
+theorem Real.LIM.abs_eq_pos {a : ℕ → ℚ} (h : LIM a > 0) (ha : (a : Sequence).IsCauchy) :
     LIM a = LIM |a| := by sorry
 
+-- модуль `LIM a` равен `LIM` последовательности модулей `|a|`
 theorem Real.LIM_abs {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : |LIM a| = LIM |a| := by sorry
 
+-- вариант `Real.LIM_of_le`: достаточно, чтобы `a n ≤ x` выполнялось лишь начиная с некоторого `N`
 theorem Real.LIM_of_le' {x : Real} {a : ℕ → ℚ} (hcauchy : (a : Sequence).IsCauchy)
     (h : ∃ N, ∀ n ≥ N, a n ≤ x) : LIM a ≤ x := by sorry
 
@@ -144,6 +152,7 @@ lemma Real.LUB_claim1 (n : ℕ) {E : Set Real} (hE : Set.Nonempty E) (hbound : B
     exact ⟨ by convert hm, by convert hm'; simp [this, sub_mul, ε] ⟩
   grind [upperBound_discrete_unique]
 
+-- вспомогательное утверждение для `Real.LUB_exist`: члены последовательности `a` (числители минимальных верхних граней с шагом `1/(n+1)`) попарно отличаются не более чем на `1/(N+1)` начиная с `N`
 lemma Real.LUB_claim2 {E : Set Real} (N : ℕ) {a b : ℕ → ℚ}
   (hb : ∀ n, b n = 1 / (↑n + 1))
   (hm1 : ∀ (n : ℕ), ↑(a n) ∈ upperBounds E)
@@ -216,7 +225,8 @@ abbrev ExtendedReal.IsFinite (X : ExtendedReal) : Prop := match X with
   | real _ => True
   | infty => False
 
-theorem ExtendedReal.finite_eq_coe {X : ExtendedReal} (hX : X.IsFinite) : 
+-- конечный элемент `ExtendedReal` совпадает с приведением своего вещественного значения обратно в `ExtendedReal`
+theorem ExtendedReal.finite_eq_coe {X : ExtendedReal} (hX : X.IsFinite) :
     X = ((X : Real) : ExtendedReal) := by
   cases X <;> try simp [IsFinite] at hX
   simp
@@ -239,7 +249,8 @@ theorem ExtendedReal.sup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : Bdd
     IsLUB E (sup E) := by
   simp [hnon, hb, sup]; exact (Real.LUB_exist hnon hb).choose_spec
 
-theorem ExtendedReal.sup_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) : 
+-- супремум непустого ограниченного сверху множества конечен
+theorem ExtendedReal.sup_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) :
     (sup E).IsFinite := by simp [sup, hnon, hb, IsFinite]
 
 /-- Proposition 5.5.12 -/
@@ -307,6 +318,7 @@ theorem Real.mem_neg (E : Set Real) (x : Real) : x ∈ -E ↔ -x ∈ E := Set.me
 /-- Exercise 5.5.1 -/
 theorem Real.inf_neg {E : Set Real} {M : Real} (h : IsLUB E M) : IsGLB (-E) (-M) := by sorry
 
+-- у любого непустого ограниченного снизу множества существует точная нижняя грань
 theorem Real.GLB_exist {E : Set Real} (hE : Set.Nonempty E) (hbound : BddBelow E) : ∃ S, IsGLB E S := by
   sorry
 
@@ -314,16 +326,20 @@ open Classical in
 noncomputable abbrev ExtendedReal.inf (E : Set Real) : ExtendedReal :=
   if h1 : E.Nonempty then (if h2 : BddBelow E then ((Real.GLB_exist h1 h2).choose : Real) else ⊥) else ⊤
 
+-- инфимум пустого множества по соглашению равен `+∞`
 theorem ExtendedReal.inf_of_empty : inf ∅ = ⊤ := by simp [inf]
 
+-- инфимум неограниченного снизу множества равен `-∞`
 theorem ExtendedReal.inf_of_unbounded {E : Set Real} (hb : ¬ BddBelow E) : inf E = ⊥ := by
   have hE : E.Nonempty := by contrapose! hb; simp [hb]
   simp [inf, hE, hb]
 
-theorem ExtendedReal.inf_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddBelow E) : 
+-- для непустого ограниченного снизу множества `inf E` действительно является его точной нижней гранью
+theorem ExtendedReal.inf_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddBelow E) :
     IsGLB E (inf E) := by simp [hnon, hb, inf]; exact (Real.GLB_exist hnon hb).choose_spec
 
-theorem ExtendedReal.inf_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddBelow E) : 
+-- инфимум непустого ограниченного снизу множества конечен
+theorem ExtendedReal.inf_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddBelow E) :
     (inf E).IsFinite := by simp [inf, hnon, hb, IsFinite]
 
 /-- Exercise 5.5.5 -/
@@ -340,7 +356,8 @@ noncomputable instance Real.inst_conditionallyCompleteLattice :
   conditionallyCompleteLatticeOfLatticeOfsSup Real
   (by intros; solve_by_elim [ExtendedReal.sup_of_bounded])
 
-theorem ExtendedReal.sSup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) : 
+-- `sSup` из Mathlib для непустого ограниченного сверху множества совпадает с точной верхней гранью
+theorem ExtendedReal.sSup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) :
     IsLUB E (sSup E) := sup_of_bounded hnon hb
 
 end Chapter5

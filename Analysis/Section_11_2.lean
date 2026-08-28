@@ -27,17 +27,21 @@ noncomputable abbrev constant_value {X Y : Type} [hY : Nonempty Y] (f : X → Y)
   then h.choose
   else hY.some
 
+-- Значение постоянной функции `f` в любой точке `x` совпадает с её значением `constant_value f`
 theorem Constant.eq {X Y : Type} {f : X → Y} [Nonempty Y] (h : Constant f) (x : X) :
   f x = constant_value f := by simp [constant_value, h]; apply h.choose_spec
 
+-- Функция, принимающая одно и то же значение `c` во всех точках, постоянна (`Constant f`)
 theorem Constant.of_const {X Y : Type} {f : X → Y} {c : Y} (h : ∀ x, f x = c) :
   Constant f := by use c
 
+-- Если `f x = c` для всех `x`, то `constant_value f = c`
 theorem Constant.const_eq {X Y : Type} {f : X → Y} [hX : Nonempty X] [Nonempty Y] {c : Y}
   (h : ∀ x, f x = c) :
     constant_value f = c := by
       rw [←eq (of_const h) hX.some, h hX.some]
 
+-- Любая функция на не более чем одноэлементной области определения (`Subsingleton X`) постоянна
 theorem Constant.of_subsingleton {X Y : Type} [hs : Subsingleton X] [hY : Nonempty Y] {f : X → Y} :
   Constant f := by
   by_cases h : Nonempty X
@@ -54,36 +58,44 @@ abbrev ConstantOn (f : ℝ → ℝ) (X : Set ℝ) : Prop :=
 noncomputable abbrev constant_value_on (f : ℝ → ℝ) (X : Set ℝ) : ℝ :=
   constant_value (fun x : X ↦ f ↑x)
 
+-- Значение функции `f`, постоянной на `X` (`ConstantOn f X`), в любой точке `x ∈ X` совпадает с `constant_value_on f X`
 theorem ConstantOn.eq
   {f : ℝ → ℝ} {X : Set ℝ} (h : ConstantOn f X) {x : ℝ} (hx : x ∈ X) :
     f x = constant_value_on f X := by
     convert Constant.eq h ⟨ _, hx ⟩
 
+-- Если `f x = c` для всех `x ∈ X`, то `f` постоянна на `X`
 theorem ConstantOn.of_const
   {f : ℝ → ℝ} {X : Set ℝ} {c : ℝ} (h : ∀ x ∈ X, f x = c) :
     ConstantOn f X := ⟨ c, by grind ⟩
 
+-- Постоянная функция `fun _ ↦ c` постоянна на любом множестве `X`
 theorem ConstantOn.of_const' (c : ℝ) (X : Set ℝ) : ConstantOn (fun _ ↦ c) X :=
   of_const (c := c) (by simp)
 
+-- Если `X` непусто и `f x = c` для всех `x ∈ X`, то `constant_value_on f X = c`
 theorem ConstantOn.const_eq
   {f : ℝ → ℝ} {X : Set ℝ} (hX : X.Nonempty) {c : ℝ} (h : ∀ x ∈ X, f x = c) :
     constant_value_on f X = c := by
       rw [←eq (of_const h) hX.some_mem, h _ hX.some_mem]
 
+-- Если `f` и `g` совпадают на `X`, то `ConstantOn f X` равносильно `ConstantOn g X`
 theorem ConstantOn.congr {f g : ℝ → ℝ} {X : Set ℝ}
   (h : ∀ x ∈ X, f x = g x) : ConstantOn f X ↔ ConstantOn g X := by
     simp_rw [ConstantOn, iff_iff_eq]
     congr
     grind
 
+-- Если `f` постоянна на `X` и совпадает с `g` на `X`, то `g` тоже постоянна на `X`
 theorem ConstantOn.congr' {f g : ℝ → ℝ} {X : Set ℝ}
   (hf : ConstantOn f X) (h : ∀ x ∈ X, f x = g x) : ConstantOn g X :=
     (congr h).mp hf
 
+-- Любая функция постоянна на не более чем одноэлементном множестве `X`
 theorem ConstantOn.of_subsingleton {f : ℝ → ℝ} {X : Set ℝ} [Subsingleton X] :
   ConstantOn f X := Constant.of_subsingleton
 
+-- Если `f` и `g` совпадают на `X`, их постоянные значения на `X` (`constant_value_on`) равны
 theorem constant_value_on_congr {f g : ℝ → ℝ} {X : Set ℝ} (h : ∀ x ∈ X, f x = g x) :
   constant_value_on f X = constant_value_on g X := by
   simp [constant_value_on]; congr; grind
@@ -91,10 +103,12 @@ theorem constant_value_on_congr {f g : ℝ → ℝ} {X : Set ℝ} (h : ∀ x ∈
 /-- Definition 11.2.3 (кусочно-постоянные функции I) -/
 abbrev PiecewiseConstantWith (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I) : Prop := ∀ J ∈ P, ConstantOn f (J : Set ℝ)
 
+-- Разворачивает определение `PiecewiseConstantWith f P`: на каждом интервале `J` разбиения `P` функция `f` принимает единственное значение `c`
 theorem PiecewiseConstantWith.def (f : ℝ → ℝ) {I : BoundedInterval} {P : Partition I} :
   PiecewiseConstantWith f P ↔ ∀ J ∈ P, ∃ c, ∀ x ∈ J, f x = c := by
     simp [PiecewiseConstantWith, ConstantOn, Constant, mem_iff]
 
+-- Если `f` и `g` совпадают на `I`, то `PiecewiseConstantWith f P` равносильно `PiecewiseConstantWith g P`
 theorem PiecewiseConstantWith.congr {f g : ℝ → ℝ} {I : BoundedInterval} {P : Partition I}
   (h : ∀ x ∈ (I : Set ℝ), f x = g x) :
   PiecewiseConstantWith f P ↔ PiecewiseConstantWith g P := by
@@ -104,13 +118,16 @@ theorem PiecewiseConstantWith.congr {f g : ℝ → ℝ} {I : BoundedInterval} {P
 /-- Definition 11.2.5 (кусочно-постоянные функции I) -/
 abbrev PiecewiseConstantOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∃ P : Partition I, PiecewiseConstantWith f P
 
+-- Разворачивает определение `PiecewiseConstantOn f I`: существует разбиение `I`, на каждом элементе которого `f` постоянна
 theorem PiecewiseConstantOn.def (f : ℝ → ℝ) (I : BoundedInterval) :
   PiecewiseConstantOn f I ↔ ∃ P : Partition I, ∀ J ∈ P, ConstantOn f (J : Set ℝ) := by rfl
 
+-- Если `f` и `g` совпадают на `I`, то `PiecewiseConstantOn f I` равносильно `PiecewiseConstantOn g I`
 theorem PiecewiseConstantOn.congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : ∀ x ∈ (I : Set ℝ), f x = g x) :
   PiecewiseConstantOn f I ↔ PiecewiseConstantOn g I := by
   simp_rw [PiecewiseConstantOn, PiecewiseConstantWith.congr h]
 
+-- Если `f` кусочно-постоянна на `I` и совпадает с `g` на `I`, то `g` тоже кусочно-постоянна на `I`
 theorem PiecewiseConstantOn.congr' {f g : ℝ → ℝ} {I : BoundedInterval} (hf : PiecewiseConstantOn f I) (h : ∀ x ∈ (I : Set ℝ), f x = g x) : PiecewiseConstantOn g I := (congr h).mp hf
 
 /-- Example 11.2.4 / Example 11.2.6 -/
@@ -183,6 +200,7 @@ theorem PiecewiseConstantOn.div {f g : ℝ → ℝ} {I : BoundedInterval}
 noncomputable abbrev PiecewiseConstantWith.integ (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I)  :
   ℝ := ∑ J ∈ P.intervals, constant_value_on f (J : Set ℝ) * |J|ₗ
 
+-- Если `f` и `g` совпадают на `I`, их кусочно-постоянные интегралы по разбиению `P` равны
 theorem PiecewiseConstantWith.integ_congr {f g : ℝ → ℝ} {I : BoundedInterval} {P : Partition I}
   (h : ∀ x ∈ (I : Set ℝ), f x = g x) : integ f P = integ g P := by
   apply Finset.sum_congr rfl; intro J hJ; congr 1; apply constant_value_on_congr
@@ -232,11 +250,13 @@ noncomputable abbrev PiecewiseConstantOn.integ (f : ℝ → ℝ) (I : BoundedInt
 
 noncomputable abbrev PiecewiseConstantOn.integ' {f : ℝ → ℝ} {I : BoundedInterval} (_ : PiecewiseConstantOn f I) := integ f I
 
+-- Если `f` кусочно-постоянна относительно разбиения `P`, то интеграл `integ f I` (Definition 11.2.14) совпадает с `PiecewiseConstantWith.integ f P`
 theorem PiecewiseConstantOn.integ_def {f : ℝ → ℝ} {I : BoundedInterval} {P : Partition I}
   (h : PiecewiseConstantWith f P) : integ f I = PiecewiseConstantWith.integ f P := by
   have h' : PiecewiseConstantOn f I := by use P
   simp [integ, h']; exact PiecewiseConstantWith.integ_eq h'.choose_spec h
 
+-- Если `f` и `g` совпадают на `I`, их интегралы `integ f I` и `integ g I` равны
 theorem PiecewiseConstantOn.integ_congr {f g : ℝ → ℝ} {I : BoundedInterval}
   (h : ∀ x ∈ (I : Set ℝ), f x = g x) : integ f I = integ g I := by
   by_cases hf : PiecewiseConstantOn f I

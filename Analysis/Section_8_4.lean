@@ -97,7 +97,8 @@ def product_three_equiv {X : Fin 3 → Type} : (∀ i : Fin 3, X i) ≃ (X 0 × 
 theorem axiom_of_choice {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) : 
   Nonempty (∀ i, X i) := by use fun i ↦ (h i).some
 
-theorem axiom_of_countable_choice {I : Type} {X : I → Type} [Countable I] (h : ∀ i, Nonempty (X i)) : 
+/-- Счётная аксиома выбора — частный случай `axiom_of_choice` для счётного индексного множества `I`. -/
+theorem axiom_of_countable_choice {I : Type} {X : I → Type} [Countable I] (h : ∀ i, Nonempty (X i)) :
   Nonempty (∀ i, X i) := axiom_of_choice h
 
 /-- Lemma 8.4.5 -/

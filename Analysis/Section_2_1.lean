@@ -87,9 +87,11 @@ instance Nat.instOfNat {n : _root_.Nat} : OfNat Nat n where
 
 instance Nat.instOne : One Nat := ⟨ 1 ⟩
 
+-- числительное `1` — это последователь `0`
 lemma Nat.zero_succ : 0++ = 1 := by rfl
 #check (1 : Nat)
 
+-- числительное `2` — это последователь `1`
 lemma Nat.one_succ : 1++ = 2 := by rfl
 #check (2 : Nat)
 

@@ -25,6 +25,8 @@ lemma PSet.ofNat_mem_ofNat_of_lt (m n : ℕ) : n < m → ofNat n ∈ ofNat m := 
   | refl => rw [ofNat]; apply mem_insert
   | step _ ih => rw [ofNat]; exact mem_insert_of_mem _ ih
 
+-- отношение принадлежности между `PSet`-натуральными числами `ofNat n` и `ofNat m`
+-- в точности соответствует порядку: `ofNat n ∈ ofNat m ↔ n < m`
 lemma PSet.mem_ofNat_iff (n m : ℕ) : ofNat n ∈ ofNat m ↔ n < m := by
   refine ⟨ ?_, ofNat_mem_ofNat_of_lt m n ⟩
   contrapose!; rw [le_iff_lt_or_eq]; rintro (h|rfl)

@@ -41,6 +41,7 @@ instance BoundedInterval.inst_coeSet : Coe BoundedInterval (Set ℝ) where
 instance BoundedInterval.instEmpty : EmptyCollection BoundedInterval where
   emptyCollection := Ioo 0 0
 
+-- Пустой `BoundedInterval` как множество — это пустое множество
 @[simp]
 theorem BoundedInterval.coe_empty : ((∅ : BoundedInterval) : Set ℝ) = ∅ := by
   simp [toSet]
@@ -49,15 +50,19 @@ open Classical in
 /-- Это нужно, чтобы {name}`Finset`-ы из {name}`BoundedInterval` работали корректно -/
 noncomputable instance BoundedInterval.decidableEq : DecidableEq BoundedInterval := instDecidableEqOfLawfulBEq
 
+-- `Ioo a b : BoundedInterval` как множество — это `Set.Ioo a b`
 @[simp]
 theorem BoundedInterval.set_Ioo (a b : ℝ) : (Ioo a b : Set ℝ) = .Ioo a b := by rfl
 
+-- `Icc a b : BoundedInterval` как множество — это `Set.Icc a b`
 @[simp]
 theorem BoundedInterval.set_Icc (a b : ℝ) : (Icc a b : Set ℝ) = .Icc a b := by rfl
 
+-- `Ioc a b : BoundedInterval` как множество — это `Set.Ioc a b`
 @[simp]
 theorem BoundedInterval.set_Ioc (a b : ℝ) : (Ioc a b : Set ℝ) = .Ioc a b := by rfl
 
+-- `Ico a b : BoundedInterval` как множество — это `Set.Ico a b`
 @[simp]
 theorem BoundedInterval.set_Ico (a b : ℝ) : (Ico a b : Set ℝ) = .Ico a b := by rfl
 
@@ -79,6 +84,7 @@ example (x : ℝ) : ({x} : Set ℝ).OrdConnected := by sorry
 theorem Bornology.IsBounded.of_boundedInterval (I : BoundedInterval) : Bornology.IsBounded (I : Set ℝ) := by
   sorry
 
+-- Ограниченное упорядоченно-связное подмножество `ℝ` — это в точности множество вида `(I : Set ℝ)` для некоторого `BoundedInterval`
 theorem BoundedInterval.ordConnected_iff (X : Set ℝ) : Bornology.IsBounded X ∧ X.OrdConnected ↔ ∃ I : BoundedInterval, X = I := by
   sorry
 
@@ -89,6 +95,7 @@ theorem BoundedInterval.inter (I J : BoundedInterval) : ∃ K : BoundedInterval,
 noncomputable instance BoundedInterval.instInter : Inter BoundedInterval where
   inter I J := (inter I J).choose
 
+-- Пересечение `I ∩ J` как `BoundedInterval` соответствует пересечению множеств `(I : Set ℝ) ∩ (J : Set ℝ)`
 @[simp]
 theorem BoundedInterval.inter_eq (I J : BoundedInterval) : (I ∩ J : BoundedInterval) = (I : Set ℝ) ∩ (J : Set ℝ)  :=
   (BoundedInterval.inter I J).choose_spec.symm
@@ -100,12 +107,14 @@ example :
 instance BoundedInterval.instMembership : Membership ℝ BoundedInterval where
   mem I x := x ∈ (I : Set ℝ)
 
+-- Принадлежность `x ∈ I` для `BoundedInterval` совпадает с принадлежностью `x` соответствующему множеству `(I : Set ℝ)`
 theorem BoundedInterval.mem_iff (I : BoundedInterval) (x : ℝ) : 
   x ∈ I ↔ x ∈ (I : Set ℝ) := by rfl
 
 instance BoundedInterval.instSubset : HasSubset BoundedInterval where
   Subset I J := ∀ x, x ∈ I → x ∈ J
 
+-- Включение `I ⊆ J` для `BoundedInterval` совпадает с включением соответствующих множеств
 theorem BoundedInterval.subset_iff (I J : BoundedInterval) : 
   I ⊆ J ↔ (I : Set ℝ) ⊆ (J : Set ℝ) := by rfl
 
@@ -121,12 +130,14 @@ abbrev BoundedInterval.b (I : BoundedInterval) : ℝ := match I with
   | Ioc _ b => b
   | Ico _ b => b
 
+-- Любой `BoundedInterval` содержится в замкнутом интервале `Icc I.a I.b` с теми же концами
 theorem BoundedInterval.subset_Icc (I : BoundedInterval) : I ⊆ Icc I.a I.b := match I with
   | Ioo _ _ => by simp [subset_iff, Set.Ioo_subset_Icc_self]
   | Icc _ _ => by simp [subset_iff]
   | Ioc _ _ => by simp [subset_iff, Set.Ioc_subset_Icc_self]
   | Ico _ _ => by simp [subset_iff, Set.Ico_subset_Icc_self]
 
+-- Открытый интервал `Ioo I.a I.b` содержится в самом `I`
 theorem BoundedInterval.Ioo_subset (I : BoundedInterval) : Ioo I.a I.b ⊆ I := match I with
   | Ioo _ _ => by simp [subset_iff]
   | Icc _ _ => by simp [subset_iff, Set.Ioo_subset_Icc_self]
@@ -136,6 +147,7 @@ theorem BoundedInterval.Ioo_subset (I : BoundedInterval) : Ioo I.a I.b ⊆ I := 
 instance BoundedInterval.instTrans : IsTrans BoundedInterval (· ⊆ ·) where
   trans I J K hIJ hJK := by grind [subset_iff]
 
+-- `x` принадлежит пересечению `I ∩ J` тогда и только тогда, когда принадлежит и `I`, и `J`
 @[simp]
 theorem BoundedInterval.mem_inter (I J : BoundedInterval) (x : ℝ) : 
   x ∈ (I ∩ J : BoundedInterval) ↔ x ∈ I ∧ x ∈ J := by simp [mem_iff]
@@ -154,9 +166,11 @@ example : |Ioo 3 5|ₗ = 2 := by
 example : |Icc 5 5|ₗ = 0 := by
   sorry
 
+-- Длина любого `BoundedInterval` неотрицательна
 theorem BoundedInterval.length_nonneg (I : BoundedInterval) : 0 ≤ |I|ₗ := by
   simp
 
+-- Если правый конец `I.b` меньше левого `I.a`, то `I` как множество пусто
 theorem BoundedInterval.empty_of_lt {I : BoundedInterval} (h : I.b < I.a) : (I : Set ℝ) = ∅ := by
   cases I with
   | Ioo _ _ => simp [le_of_lt h]
@@ -164,39 +178,50 @@ theorem BoundedInterval.empty_of_lt {I : BoundedInterval} (h : I.b < I.a) : (I :
   | Ioc _ _ => simp [le_of_lt h]
   | Ico _ _ => simp [le_of_lt h]
 
+-- Если `I` как множество пусто, то его длина равна нулю
 theorem BoundedInterval.length_of_empty {I : BoundedInterval} (hI : (I : Set ℝ) = ∅) : |I|ₗ = 0 := by
   sorry
 
+-- `I` содержит не более одной точки тогда и только тогда, когда его длина равна нулю
 theorem BoundedInterval.length_of_subsingleton {I : BoundedInterval} : Subsingleton (I : Set ℝ) ↔ |I|ₗ = 0 := by
   sorry
 
+-- Расстояние между любыми двумя точками `I` не превосходит длины `I`
 theorem BoundedInterval.dist_le_length {I : BoundedInterval} {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : |x - y| ≤ |I|ₗ := by
   apply subset_Icc I at hx; apply subset_Icc I at hy; simp_all [mem_iff, abs_le']; grind
 
 abbrev BoundedInterval.joins (K I J : BoundedInterval) : Prop := (I : Set ℝ) ∩ (J : Set ℝ) = ∅
   ∧ (K : Set ℝ) = (I : Set ℝ) ∪ (J : Set ℝ) ∧ |K|ₗ = |I|ₗ + |J|ₗ
 
+-- Интервалы `Icc a b` и `Ioc b c` соединяются (`joins`) в `Icc a c`
 theorem BoundedInterval.join_Icc_Ioc {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Icc a c).joins (Icc a b) (Ioc b c) := by
   simp_all [joins]; grind
 
+-- Интервалы `Icc a b` и `Ioo b c` соединяются в `Ico a c`
 theorem BoundedInterval.join_Icc_Ioo {a b c : ℝ} (hab : a ≤ b) (hbc : b < c) : (Ico a c).joins (Icc a b) (Ioo b c) := by
   simp_all [joins, le_of_lt hbc]; grind
 
+-- Интервалы `Ioc a b` и `Ioc b c` соединяются в `Ioc a c`
 theorem BoundedInterval.join_Ioc_Ioc {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Ioc a c).joins (Ioc a b) (Ioc b c) := by
   simp_all [joins]; grind
 
+-- Интервалы `Ioc a b` и `Ioo b c` соединяются в `Ioo a c`
 theorem BoundedInterval.join_Ioc_Ioo {a b c : ℝ} (hab : a ≤ b) (hbc : b < c) : (Ioo a c).joins (Ioc a b) (Ioo b c) := by
   simp_all [joins, le_of_lt hbc]; grind
 
+-- Интервалы `Ico a b` и `Icc b c` соединяются в `Icc a c`
 theorem BoundedInterval.join_Ico_Icc {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Icc a c).joins (Ico a b) (Icc b c) := by
   simp_all [joins]; grind
 
+-- Интервалы `Ico a b` и `Ico b c` соединяются в `Ico a c`
 theorem BoundedInterval.join_Ico_Ico {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Ico a c).joins (Ico a b) (Ico b c) := by
   simp_all [joins]; grind
 
+-- Интервалы `Ioo a b` и `Icc b c` соединяются в `Ioc a c`
 theorem BoundedInterval.join_Ioo_Icc {a b c : ℝ} (hab : a < b) (hbc : b ≤ c) : (Ioc a c).joins (Ioo a b) (Icc b c) := by
   simp_all [joins, le_of_lt hab]; grind
 
+-- Интервалы `Ioo a b` и `Ico b c` соединяются в `Ioo a c`
 theorem BoundedInterval.join_Ioo_Ico {a b c : ℝ} (hab : a < b) (hbc : b ≤ c) : (Ioo a c).joins (Ioo a b) (Ico b c) := by
   simp_all [joins, le_of_lt hab]; grind
 
@@ -218,6 +243,7 @@ instance Partition.instBot (I : BoundedInterval) : Bot (Partition I) where
     contains := by grind [subset_iff]
     }
 
+-- Тривиальное разбиение `⊥ : Partition I` состоит из единственного интервала `I`
 @[simp]
 theorem Partition.intervals_of_bot (I : BoundedInterval) : (⊥ : Partition I).intervals = {I} := by
   rfl
@@ -245,6 +271,7 @@ noncomputable abbrev Partition.join {I J K : BoundedInterval} (P : Partition I) 
     apply (Q.contains _ hLQ).trans; simp [h, subset_iff]
 }
 
+-- Множество интервалов объединённого разбиения `P.join Q h` — это объединение интервалов `P` и `Q`
 @[simp]
 theorem Partition.intervals_of_join {I J K : BoundedInterval} {h : K.joins I J} (P : Partition I) (Q : Partition J) : (P.join Q h).intervals = P.intervals ∪ Q.intervals := by
   simp
@@ -274,6 +301,7 @@ noncomputable abbrev Partition.remove_empty {I : BoundedInterval} (P : Partition
   contains _ _ := P.contains _ (by grind)
 }
 
+-- Добавление пустого интервала к разбиению `P` добавляет `∅` в множество его интервалов
 @[simp]
 theorem Partition.intervals_of_add_empty (I : BoundedInterval) (P : Partition I) : (P.add_empty).intervals = P.intervals ∪ {∅} := by
   simp

@@ -35,8 +35,10 @@ abbrev Chapter2.Nat.toNat (n : Chapter2.Nat) : ℕ := match n with
   | zero => 0
   | succ n' => n'.toNat + 1
 
+-- преобразование `toNat` переводит `0` из `Chapter2.Nat` в `0` из `ℕ`
 lemma Chapter2.Nat.zero_toNat : (0 : Chapter2.Nat).toNat = 0 := rfl
 
+-- преобразование `toNat` переводит последователя `n++` в `n.toNat + 1`
 lemma Chapter2.Nat.succ_toNat (n : Chapter2.Nat) : (n++).toNat = n.toNat + 1 := rfl
 
 /-- Это преобразование — биекция. Здесь мы используем уже имеющуюся возможность (из раздела 2.1)

@@ -29,9 +29,11 @@ abbrev BddOn (f : ℝ → ℝ) (X : Set ℝ) : Prop := ∃ M, ∀ x ∈ X, |f x|
 theorem BddOn.iff (f : ℝ → ℝ) (X : Set ℝ) : BddOn f X ↔ BddAboveOn f X ∧ BddBelowOn f X := by
   sorry
 
+-- Ограниченность функции на `X` эквивалентна ограниченности множества значений `f '' X`
 theorem BddOn.iff' (f : ℝ → ℝ) (X : Set ℝ) :  BddOn f X ↔ Bornology.IsBounded (f '' X) := by
   sorry
 
+-- Оценка `|f x| ≤ M` на всём `X` даёт ограниченность `f` на `X`
 theorem BddOn.of_bounded {f : ℝ → ℝ} {X : Set ℝ} {M : ℝ} (h : ∀ x ∈ X, |f x| ≤ M) : BddOn f X := by use M
 
 example : Continuous (fun x : ℝ ↦ x) := by sorry
@@ -44,6 +46,7 @@ example : ContinuousOn (fun x : ℝ ↦ 1/x) (.Ioo 0 1) := by sorry
 
 example : ¬ BddOn (fun x : ℝ ↦ 1/x) (.Ioo 0 1) := by sorry
 
+-- Для строго монотонной `n : ℕ → ℕ` (например, индексов подпоследовательности) верно `n j ≥ j`
 theorem why_7_6_3 {n : ℕ → ℕ} (hn : StrictMono n) (j : ℕ) : n j ≥ j := by sorry
 
 /-- Lemma 9.6.3 -/
@@ -79,6 +82,7 @@ theorem BddOn.of_continuous_on_compact {a b : ℝ} (_h : a < b) {f : ℝ → ℝ
 /-- Remark 9.6.6 -/
 theorem BddAboveOn.isMaxOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsMaxOn f X x₀) : BddAboveOn f X := by sorry
 
+-- Если `f` достигает минимума в `x₀` на `X`, то `f` ограничена снизу на `X`
 theorem BddBelowOn.isMinOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsMinOn f X x₀) : BddBelowOn f X := by sorry
 
 /-- Proposition 9.6.7 (Принцип максимума) -/
@@ -125,6 +129,7 @@ theorem IsMaxOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → �
 
 
 
+-- Аналог принципа максимума (Proposition 9.6.7) для минимума: непрерывная на `[a,b]` функция достигает наименьшего значения
 theorem IsMinOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : 
   ∃ xmin ∈ Set.Icc a b, IsMinOn f (.Icc a b) xmin := by
   sorry
@@ -133,22 +138,26 @@ example : IsMaxOn (fun x ↦ x^2) (.Icc (-2) 2) 2 := by sorry
 
 example : IsMaxOn (fun x ↦ x^2) (.Icc (-2) 2) (-2) := by sorry
 
+-- Если `f` достигает максимума на `X` в точке `x₀`, то `sSup (f '' X) = f x₀`
 theorem sSup.of_isMaxOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (hx₀ : x₀ ∈ X) (h : IsMaxOn f X x₀) : 
   sSup (f '' X) = f x₀ := by
   apply IsGreatest.csSup_eq
   simp [IsGreatest, mem_upperBounds]
   refine ⟨ ⟨x₀, hx₀, rfl ⟩, h ⟩
 
+-- Если `f` достигает минимума на `X` в точке `x₀`, то `sInf (f '' X) = f x₀`
 theorem sInf.of_isMinOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (hx₀ : x₀ ∈ X) (h : IsMinOn f X x₀) : 
   sInf (f '' X) = f x₀ := by
   apply IsLeast.csInf_eq
   simp [IsLeast, mem_lowerBounds]
   refine ⟨ ⟨x₀, hx₀, rfl ⟩, h ⟩
 
+-- Непрерывная на `[a,b]` функция достигает значения `sSup (f '' [a,b])` в некоторой точке отрезка
 theorem sSup.of_continuous_on_compact {a b : ℝ} (h : a < b) (f : ℝ → ℝ) (hf : ContinuousOn f (.Icc a b)) : ∃ xmax ∈ Set.Icc a b, sSup (f '' .Icc a b) = f xmax := by
   choose x hx h' using IsMaxOn.of_continuous_on_compact h hf
   grind [sSup.of_isMaxOn]
 
+-- Непрерывная на `[a,b]` функция достигает значения `sInf (f '' [a,b])` в некоторой точке отрезка
 theorem sInf.of_continuous_on_compact {a b : ℝ} (h : a < b) (f : ℝ → ℝ) (hf : ContinuousOn f (.Icc a b)) : ∃ xmin ∈ Set.Icc a b, sInf (f '' .Icc a b) = f xmin := by
   choose x hx h' using IsMinOn.of_continuous_on_compact h hf
   grind [sInf.of_isMinOn]
@@ -178,9 +187,11 @@ example : ∃ f : ℝ → ℝ, ¬ BddAboveOn f (.Icc (-1) 1) ∧ ¬ BddBelowOn f
 theorem BddOn.add (f g : ℝ → ℝ) (X : Set ℝ) (hf : BddOn f X) (hg : BddOn g X) : 
     BddOn (f + g) X := by sorry
 
+-- Разность ограниченных на `X` функций ограничена на `X`
 theorem BddOn.sub (f g : ℝ → ℝ) (X : Set ℝ) (hf : BddOn f X) (hg : BddOn g X) : 
     BddOn (f - g) X := by sorry
 
+-- Произведение ограниченных на `X` функций ограничено на `X`
 theorem BddOn.mul (f g : ℝ → ℝ) (X : Set ℝ) (hf : BddOn f X) (hg : BddOn g X) : 
     BddOn (f * g) X := by sorry
 

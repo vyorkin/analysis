@@ -30,7 +30,8 @@ open EReal
 abbrev Sequence.LimitPoint (a : Sequence) (x : ℝ) : Prop :=
   ∀ ε > (0 : ℝ), ε.ContinuallyAdherent a x
 
-theorem Sequence.limit_point_def (a : Sequence) (x : ℝ) : 
+-- `a.LimitPoint x` означает, что для любого `ε > 0` и любого `N ≥ a.m` найдётся `n ≥ N`, для которого `a n` отстоит от `x` не более чем на `ε` — то есть `x` является предельной точкой последовательности `a`.
+theorem Sequence.limit_point_def (a : Sequence) (x : ℝ) :
   a.LimitPoint x ↔ ∀ ε > 0, ∀ N ≥ a.m, ∃ n ≥ N, |a n - x| ≤ ε := by
     unfold LimitPoint Real.ContinuallyAdherent Real.Adherent
     sorry
@@ -322,8 +323,10 @@ theorem Sequence.extended_limit_point_of_limsup (a : Sequence) : a.ExtendedLimit
 /-- Exercise 6.4.8 (ii) -/
 theorem Sequence.extended_limit_point_of_liminf (a : Sequence) : a.ExtendedLimitPoint a.liminf := by sorry
 
+-- Если `L` — предельная точка последовательности `a` в расширенном смысле, то `L ≤ a.limsup`.
 theorem Sequence.extended_limit_point_le_limsup {a : Sequence} {L : EReal} (h : a.ExtendedLimitPoint L) : L ≤ a.limsup := by sorry
 
+-- Если `L` — предельная точка последовательности `a` в расширенном смысле, то `L ≥ a.liminf`.
 theorem Sequence.extended_limit_point_ge_liminf {a : Sequence} {L : EReal} (h : a.ExtendedLimitPoint L) : L ≥ a.liminf := by sorry
 
 /-- Exercise 6.4.9 -/

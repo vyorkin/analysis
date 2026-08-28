@@ -1059,8 +1059,11 @@ noncomputable def subdivide_iter {d : ℕ} (B : Box d) : ℕ → Finset (Box d)
   | 0 => {B}
   | k+1 => (subdivide_iter B k).biUnion Box.subdivide
 
+/-- После нуля итераций подразбиения набор прямоугольников состоит из одного исходного {name}`Box`. -/
 lemma subdivide_iter_zero {d : ℕ} (B : Box d) : subdivide_iter B 0 = {B} := rfl
 
+/-- Раскрывает рекурсивное определение {name}`subdivide_iter`: `k+1`-я итерация получается из `k`-й
+    подразбиением каждого прямоугольника. -/
 lemma subdivide_iter_succ {d : ℕ} (B : Box d) (k : ℕ) : 
     subdivide_iter B (k+1) = (subdivide_iter B k).biUnion Box.subdivide := rfl
 
@@ -3297,6 +3300,7 @@ lemma rationals_unit_interval_nonempty : (Set.Icc (0 : ℝ) 1 ∩ Set.range (fun
   · simp
   · use 0; simp
 
+/-- Множество рациональных чисел в \[0,1\] счётно. -/
 lemma rationals_unit_interval_countable : (Set.Icc (0 : ℝ) 1 ∩ Set.range (fun q : ℚ ↦ (q : ℝ))).Countable :=
   Set.Countable.mono Set.inter_subset_right (Set.countable_range _)
 
@@ -3304,17 +3308,22 @@ lemma rationals_unit_interval_countable : (Set.Icc (0 : ℝ) 1 ∩ Set.range (fu
 noncomputable def q_enum : ℕ → { x : ℝ // x ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun q : ℚ ↦ (q : ℝ)) } :=
   (rationals_unit_interval_countable.exists_surjective rationals_unit_interval_nonempty).choose
 
+/-- {name}`q_enum` перечисляет все рациональные числа отрезка \[0,1\] (сюръективно). -/
 lemma q_enum_surj : Function.Surjective q_enum :=
   (rationals_unit_interval_countable.exists_surjective rationals_unit_interval_nonempty).choose_spec
 
 /-- Перечисление рациональных чисел в \[0,1\] как вещественных чисел -/
 noncomputable def q (n : ℕ) : ℝ := (q_enum n).val
 
+/-- `q n` — рациональное число, лежащее в отрезке \[0,1\]. -/
 lemma q_mem (n : ℕ) : q n ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun r : ℚ ↦ (r : ℝ)) :=
   (q_enum n).property
 
+/-- `q n` лежит в отрезке \[0,1\]. -/
 lemma q_in_unit_interval (n : ℕ) : q n ∈ Set.Icc (0 : ℝ) 1 := (q_mem n).1
 
+/-- Перечисление {name}`q` сюръективно на рациональные числа отрезка \[0,1\]: каждое такое
+    рациональное число равно `q n` для некоторого `n`. -/
 lemma q_surj : ∀ x ∈ Set.Icc (0 : ℝ) 1 ∩ Set.range (fun r : ℚ ↦ (r : ℝ)), ∃ n, q n = x := by
   intro x hx
   obtain ⟨n, hn⟩ := q_enum_surj ⟨x, hx⟩
@@ -3993,6 +4002,8 @@ lemma interior_iUnion_Box_frontier_eq_empty {d n : ℕ} (B : Fin n → Box d) :
     · exact Box.interior_frontier_eq_empty (B (Fin.last m))
     · exact ih (fun i => B (Fin.castSucc i))
 
+/-- Если элементарное множество E представлено как объединение конечного семейства попарно
+    почти непересекающихся прямоугольников (box), то его элементарная мера равна сумме их объёмов. -/
 theorem IsElementary.almost_disjoint {d k : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsElementary E) (B : Fin k → Box d) (hEB : E = ⋃ i, (B i).toSet) (hdisj : Pairwise (Function.onFun AlmostDisjoint B)) : hE.measure = ∑ i, |B i|ᵥ := by
   induction k generalizing E with
   | zero =>
@@ -4228,6 +4239,8 @@ theorem Lebesgue_outer_measure.union_of_almost_disjoint {d : ℕ} {B : ℕ → B
     -- Шаг 3: применяем EReal.tsum_le_of_sum_range_le
     exact EReal.tsum_le_of_sum_range_le (fun n => Box.volume_nonneg (B n)) h_range_le
 
+/-- Внешняя мера Лебега всего пространства {name}`EuclideanSpace'` (положительной размерности)
+    бесконечна. -/
 theorem Lebesgue_outer_measure.univ {d : ℕ} {hd : 0 < d} : Lebesgue_outer_measure (Set.univ : Set (EuclideanSpace' d)) = ⊤ := by
   -- Стратегия: покажем m*(univ) ≥ N для любого N, взяв N непересекающихся единичных
   -- прямоугольников, откуда m*(univ) = ⊤
@@ -4394,6 +4407,8 @@ def IsCube {d : ℕ} (B : Box d) : Prop := ∃ r, ∀ i, |B.side i|ₗ = r
 
 noncomputable def DyadicCube {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : Box d := { side := fun i ↦ Icc (a i/2^n) ((a i + 1)/2^n) }
 
+/-- Диадический куб {name}`DyadicCube` действительно является кубом: все его стороны имеют
+    одинаковую длину `1/2^n`. -/
 lemma DyadicCube.isCube {d : ℕ} (n : ℤ) (a : Fin d → ℤ) : IsCube (DyadicCube n a) := by
   -- У всех сторон длина 1/2^n
   use |2^(-n : ℤ)|
@@ -4828,6 +4843,7 @@ lemma dyadicCubeInteriorNonempty {d : ℕ} (n : ℤ) (a : Fin d → ℤ) :
     exact Set.nonempty_Ioo.mpr (div_lt_div_of_pos_right (by linarith) (zpow_pos (by norm_num) _))
   )).preimage (PiLp.homeomorph 2 (fun _ : Fin d => ℝ)).surjective
 
+/-- Любой диадический прямоугольник (box) непуст. -/
 lemma Box.toSet_nonempty_of_IsDyadic {d : ℕ} {B : Box d} (hB : B.IsDyadic) : B.toSet.Nonempty := by
   obtain ⟨n, ⟨a, rfl⟩⟩ := hB
   exact (dyadicCubeInteriorNonempty n a).mono (interior_subset (s := (DyadicCube n a).toSet))
@@ -5172,6 +5188,7 @@ theorem IsOpen.eq_union_boxes {d : ℕ} (hd : 0 < d) (E : Set (EuclideanSpace' d
         have h_scale_lt : (↑(B_idx j).1 : ℤ) < ↑(B_idx i).1 := by exact_mod_cast hij_gt
         exact dyadicCubeLargerNotInSmaller hd h_scale_lt h_ji
 
+/-- Для открытого множества внешняя мера Лебега совпадает с внутренней мерой Жордана. -/
 theorem Lebesgue_outer_measure.of_open {d : ℕ} (E : Set (EuclideanSpace' d)) (hE : IsOpen E) : Lebesgue_outer_measure E = Jordan_inner_measure E := by
   by_cases hd : d = 0
   · -- Размерность 0 : в размерности 0 открытые множества — это либо ∅, либо Set.univ

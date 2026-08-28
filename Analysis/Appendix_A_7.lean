@@ -95,6 +95,7 @@ example : ((12 : ℤ) : NewInt) = ((2 : ℤ) : NewInt) := by
   apply Quot.sound
   simp [make_twelve_equal_two]
 
+-- коэрция `ℤ → NewInt` сюръективна: любой элемент `NewInt` — образ некоторого целого числа
 theorem NewInt.is_coe (N : NewInt) : ∃ n : ℤ, N = (n : NewInt) := by
   apply Quot.ind (q := N); intro n
   use n

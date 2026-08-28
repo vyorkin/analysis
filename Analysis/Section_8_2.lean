@@ -34,6 +34,7 @@ open Chapter7 Chapter7.Series Finset Function Filter
 использовать {lit}`AbsConvergent'`. -/
 abbrev AbsConvergent {X : Type} (f : X → ℝ) : Prop := ∃ g : ℕ → X, Bijective g ∧ (f ∘ g : Series).absConverges
 
+/-- Конструктор `AbsConvergent`: если перестановка `f` через биекцию `g : ℕ → X` даёт абсолютно сходящийся ряд, то `f` абсолютно сходится. -/
 theorem AbsConvergent.mk {X : Type} {f : X → ℝ} {g : ℕ → X} (h : Bijective g) (hfg : (f ∘ g : Series).absConverges) : AbsConvergent f := by use g
 
 open Classical in
@@ -42,12 +43,14 @@ open Classical in
 noncomputable abbrev Sum {X : Type} (f : X → ℝ) : ℝ := if h : AbsConvergent f then (f ∘ h.choose : Series).sum else
   if _hX : Finite X then (∑ x ∈ @univ X (Fintype.ofFinite X), f x) else 0
 
+/-- На конечном множестве обобщённая сумма `Sum f` совпадает с обычной конечной суммой. -/
 theorem Sum.of_finite {X : Type} [hX : Finite X] (f : X → ℝ) : Sum f = ∑ x ∈ @Finset.univ X (Fintype.ofFinite X), f x := by
   have : ¬ AbsConvergent f := by
     by_contra!; choose g hg _ using this
     rw [←hg.finite_iff, ←not_infinite_iff_finite] at hX; apply hX; infer_instance
   simp [Sum, this, hX]
 
+/-- Если `f` абсолютно сходится, то и любая её перестановка `f ∘ g` через биекцию `g` абсолютно сходится как ряд. -/
 theorem AbsConvergent.comp {X : Type} {f : X → ℝ} {g : ℕ → X} (h : Bijective g) (hf : AbsConvergent f) : (f ∘ g : Series).absConverges := by
   choose g' hbij hconv using hf
   choose g'_inv hleft hright using bijective_iff_has_inverse.mp hbij
@@ -55,6 +58,7 @@ theorem AbsConvergent.comp {X : Type} {f : X → ℝ} {g : ℕ → X} (h : Bijec
   convert (absConverges_of_permute hconv hG).1 using 4 with n
   simp [hright (g n.toNat)]
 
+/-- Частичные суммы любой перестановки `f ∘ g` (по биекции `g`) сходятся именно к `Sum f`. -/
 theorem Sum.eq {X : Type} {f : X → ℝ} {g : ℕ → X} (h : Bijective g) (hfg : (f ∘ g : Series).absConverges) : (f ∘ g : Series).convergesTo (Sum f) := by
   have : AbsConvergent f := .mk h hfg
   simp [Sum, this]
@@ -66,6 +70,7 @@ theorem Sum.eq {X : Type} {f : X → ℝ} {g : ℕ → X} (h : Bijective g) (hfg
   convert (absConverges_of_permute hconv hG).2 using 4 with _ n
   by_cases hn : n ≥ 0 <;> simp [hn, hright (g n.toNat)]
 
+/-- Абсолютная сходимость и сумма не меняются при перестановке индексов биекцией `g`. -/
 theorem Sum.of_comp {X Y : Type} {f : X → ℝ} (h : AbsConvergent f) {g : Y → X} (hbij : Bijective g) : AbsConvergent (f ∘ g) ∧ Sum f = Sum (f ∘ g) := by
   choose g' hbij' hconv' using h
   choose g_inv hleft hright using bijective_iff_has_inverse.mp hbij
@@ -76,12 +81,14 @@ theorem Sum.of_comp {X Y : Type} {f : X → ℝ} (h : AbsConvergent f) {g : Y �
   rw [hident] at h
   solve_by_elim [convergesTo_uniq, eq]
 
+/-- Целочисленный отрезок `Icc 0 (N : ℤ)` — это образ натурального отрезка `Icc 0 N` при вложении `ℕ → ℤ`. -/
 @[simp]
 theorem Finset.Icc_eq_cast (N : ℕ) : Icc 0 (N : ℤ) = map Nat.castEmbedding (.Icc 0 N) := by
   ext n; simp; constructor
   . intro ⟨ hn, _ ⟩; lift n to ℕ using hn; use n; simp_all
   rintro ⟨ _, ⟨ _, rfl ⟩ ⟩; simp_all
 
+/-- Целочисленный отрезок `Icc 0 N` пуст, если `N` отрицательно. -/
 theorem Finset.Icc_empty {N : ℤ} (h : ¬ N ≥ 0) : Icc 0 N = ∅ := by
   ext; simp; intros; contrapose! h; linarith
 
@@ -213,6 +220,7 @@ theorem AbsConvergent.iff {X : Type} (hX : CountablyInfinite X) (f : X → ℝ) 
 
 abbrev AbsConvergent' {X : Type} (f : X → ℝ) : Prop := BddAbove ( (fun A ↦ ∑ x ∈ A, |f x|) '' .univ )
 
+/-- На конечном множестве всякая функция абсолютно сходится в смысле `AbsConvergent'`. -/
 theorem AbsConvergent'.of_finite {X : Type} [Finite X] (f : X → ℝ) : AbsConvergent' f := by
   have _ := Fintype.ofFinite X
   simp [bddAbove_def]; use ∑ x, |f x|; intro A; apply Finset.sum_le_univ_sum_of_nonneg; simp
@@ -365,8 +373,11 @@ theorem AbsConvergent'.iff_Summable {X : Type} (f : X → ℝ) : AbsConvergent' 
       . exact inter_subset_right
       apply le_of_lt (lt_of_abs_lt (hS _ disjoint_sdiff_self_left))
 
-/-- Возможно, подойдёт для переноса в Mathlib? -/
-theorem Filter.Eventually.int_natCast_atTop (p : ℤ → Prop) : 
+/--
+  Свойство, выполненное для всех достаточно больших целых чисел, эквивалентно тому же свойству для всех достаточно больших натуральных чисел (при вложении `ℕ → ℤ`).
+  Возможно, подойдёт для переноса в Mathlib?
+-/
+theorem Filter.Eventually.int_natCast_atTop (p : ℤ → Prop) :
   (∀ᶠ n in .atTop, p n) ↔ ∀ᶠ n : ℕ in .atTop, p ↑n := by
   refine ⟨ Eventually.natCast_atTop, ?_ ⟩
   simp [eventually_atTop]
@@ -374,6 +385,7 @@ theorem Filter.Eventually.int_natCast_atTop (p : ℤ → Prop) :
   lift n to ℕ using (by omega)
   simp at hn; solve_by_elim
 
+/-- Предел функции на `ℤ` при стремлении аргумента к `+∞` эквивалентен пределу её ограничения на `ℕ`. -/
 theorem Filter.Tendsto.int_natCast_atTop {R : Type} (f : ℤ → R) (l : Filter R) : 
 atTop.Tendsto f l ↔ atTop.Tendsto (f ∘ Nat.cast) l := by
   simp [tendsto_iff_eventually]
@@ -439,6 +451,7 @@ theorem Sum'.of_univ {X : Type} {f : X → ℝ} (hf : AbsConvergent' f) :
   Sum' (fun x : (.univ : Set X) ↦ f x) = Sum' f := by
   sorry
 
+/-- Абсолютная сходимость (в смысле `AbsConvergent'`) и сумма `Sum'` инвариантны относительно перестановки индексов биекцией `φ`. -/
 theorem Sum'.of_comp {X Y : Type} {f : X → ℝ} (hf : AbsConvergent' f) {φ : Y → X}
   (hφ : Function.Bijective φ) : 
   AbsConvergent' (f ∘ φ) ∧ Sum' f = Sum' (f ∘ φ) := by
@@ -496,6 +509,7 @@ theorem permute_diverges_of_divergent {a : ℕ → ℝ} (ha : (a : Series).conve
   ∃ f : ℕ → ℕ,  Bijective f ∧ atTop.Tendsto (fun N ↦ ((a ∘ f : Series).partial N : EReal)) (nhds ⊤) := by
   sorry
 
+/-- Симметричный вариант `permute_diverges_of_divergent`: перестановкой можно также добиться расходимости частичных сумм к `-∞`. -/
 theorem permute_diverges_of_divergent' {a : ℕ → ℝ} (ha : (a : Series).converges)
   (ha' : ¬ (a : Series).absConverges)  : 
   ∃ f : ℕ → ℕ,  Bijective f ∧ atTop.Tendsto (fun N ↦ ((a ∘ f : Series).partial N : EReal)) (nhds ⊥) := by

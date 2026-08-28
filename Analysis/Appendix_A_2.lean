@@ -23,6 +23,7 @@ example {X Y : Prop} (hXY : X → Y) (hY : ¬ Y) : ¬ X := by
   exact hXY hY
 
 
+-- если `x = 2`, то `x^2 = 4`
 theorem example_A_2_1 (x : ℤ) : x = 2 → x^2 = 4 := by
   intro h
   rw [h]
@@ -111,17 +112,20 @@ example : ∃ (X Y : Prop), (X → Y) ≠ (Y → X) := by
   use x = 2, x^2 = 4
   simp [x]
 
+-- закон контрапозиции: из `X → Y` следует `¬Y → ¬X`
 theorem contrapositive {X Y : Prop} (hXY : X → Y) : ¬ Y → ¬ X := by
   intro hY
   by_contra hX
   have := hXY hX
   contradiction
 
+-- вещественный аналог `example_A_2_1`: если `x = 2`, то `x^2 = 4`
 theorem imp_example (x : ℝ) : (x = 2) → (x^2 = 4) := by
   intro h
   rw [h]
   norm_num
 
+-- контрапозиция `imp_example`: если `x^2 ≠ 4`, то `x ≠ 2`
 theorem imp_contrapositive (x : ℝ) : (x^2 ≠ 4) → (x ≠ 2) := by
   convert contrapositive (imp_example x)
 

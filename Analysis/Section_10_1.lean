@@ -30,17 +30,20 @@ theorem _root_.HasDerivWithinAt.iff (X : Set ℝ) (x₀ : ℝ) (f : ℝ → ℝ)
    (nhds L) :=  by
   rw [hasDerivWithinAt_iff_tendsto_slope, iff_iff_eq, slope_fun_def_field]
 
+-- `f` дифференцируема в точке `x₀` относительно `X` тогда и только тогда, когда у неё существует производная в этой точке
 theorem _root_.DifferentiableWithinAt.iff (X : Set ℝ) (x₀ : ℝ) (f : ℝ → ℝ) : 
   DifferentiableWithinAt ℝ f X x₀ ↔ ∃ L, HasDerivWithinAt f L X x₀ := by
   constructor
   . intro h; use derivWithin f X x₀; exact h.hasDerivWithinAt
   intro ⟨ L, h ⟩; exact h.differentiableWithinAt
 
+-- Если `f` имеет производную `L` в точке `x₀` относительно `X`, то `f` дифференцируема в этой точке
 theorem _root_.DifferentiableWithinAt.of_hasDeriv {X : Set ℝ} {x₀ : ℝ} {f : ℝ → ℝ} {L : ℝ}
   (hL : HasDerivWithinAt f L X x₀) : DifferentiableWithinAt ℝ f X x₀ := by
   rw [DifferentiableWithinAt.iff]; use L
 
 
+-- В предельной точке `x₀` множества `X` значение производной функции `f` (в смысле `HasDerivWithinAt`) определено однозначно
 theorem derivative_unique {X : Set ℝ} {x₀ : ℝ}
   (hx₀ : ClusterPt x₀ (.principal (X \ {x₀}))) {f : ℝ → ℝ} {L L' : ℝ}
   (hL : HasDerivWithinAt f L X x₀) (hL' : HasDerivWithinAt f L' X x₀) : 
@@ -51,6 +54,7 @@ theorem derivative_unique {X : Set ℝ} {x₀ : ℝ}
 
 #check DifferentiableWithinAt.hasDerivWithinAt
 
+-- Если `f` дифференцируема в `x₀` относительно `X`, то любое значение производной `L` совпадает с `derivWithin f X x₀`
 theorem derivative_unique' (X : Set ℝ) {x₀ : ℝ}
   (hx₀ : ClusterPt x₀ (.principal (X \ {x₀}))) {f : ℝ → ℝ} {L : ℝ}
   (hL : HasDerivWithinAt f L X x₀)

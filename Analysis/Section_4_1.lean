@@ -55,6 +55,7 @@ instance PreInt.instSetoid : Setoid PreInt where
       exact Nat.add_right_cancel this
     }
 
+-- Эквивалентность формальных разностей `PreInt` в явном арифметическом виде: `(a,b) ≈ (c,d) ↔ a + d = c + b`
 @[simp]
 theorem PreInt.eq (a b c d : ℕ) : (⟨ a,b ⟩ : PreInt) ≈ ⟨ c,d ⟩ ↔ a + d = c + b := by rfl
 
@@ -129,17 +130,22 @@ instance Int.instOfNat {n : ℕ} : OfNat Int n where
 instance Int.instNatCast : NatCast Int where
   natCast n := n —— 0
 
+-- Числовой литерал `n : Int` — это формальная разность `n —— 0`
 theorem Int.ofNat_eq (n : ℕ) : ofNat(n) = n —— 0 := rfl
 
+-- Вложение натурального `n` в `Int` — это формальная разность `n —— 0`
 theorem Int.natCast_eq (n : ℕ) : (n : Int) = n —— 0 := rfl
 
+-- Вложение `ℕ → Int` согласовано с числовыми литералами: приведение литерала из `ℕ` в `Int` даёт тот же литерал
 @[simp]
 theorem Int.natCast_ofNat (n : ℕ) : ((ofNat(n) : ℕ) : Int) = ofNat(n) := by rfl
 
+-- Числовые литералы `n` и `m` совпадают как `Int` тогда и только тогда, когда совпадают как `ℕ`
 @[simp]
 theorem Int.ofNat_inj (n m : ℕ) : (ofNat(n) : Int) = (ofNat(m) : Int) ↔ ofNat(n) = ofNat(m) := by
   simp only [ofNat_eq, eq, add_zero]; rfl
 
+-- Вложение `ℕ → Int` инъективно
 @[simp]
 theorem Int.natCast_inj (n m : ℕ) : (n : Int) = (m : Int) ↔ n = m := by
   simp only [natCast_eq, eq, add_zero]
@@ -155,6 +161,7 @@ lemma Int.cast_eq_0_iff_eq_0 (n : ℕ) : (n : Int) = 0 ↔ n = 0 := by sorry
 instance Int.instNeg : Neg Int where
   neg := Quotient.lift (fun ⟨ a, b ⟩ ↦ b —— a) (by sorry)
 
+-- Отрицание формальной разности переставляет её компоненты: `-(a —— b) = b —— a`
 theorem Int.neg_eq (a b : ℕ) : -(a —— b) = b —— a := rfl
 
 example : -(3 —— 5) = 5 —— 3 := rfl
@@ -220,6 +227,7 @@ instance Int.instCommRing : CommRing Int where
 /-- Определение вычитания (целых чисел). -/
 theorem Int.sub_eq (a b : Int) : a - b = a + (-b) := by rfl
 
+-- Разность образов двух натуральных чисел в `Int` совпадает с их формальной разностью `a —— b`
 theorem Int.sub_eq_formal_sub (a b : ℕ) : (a : Int) - (b : Int) = a —— b := by sorry
 
 /-- Proposition 4.1.8 (Отсутствие делителей нуля) / Exercise 4.1.5 -/
@@ -236,8 +244,10 @@ instance Int.instLE : LE Int where
 instance Int.instLT : LT Int where
   lt n m := n ≤ m ∧ n ≠ m
 
+-- Разворачивает `≤` в определение (Definition 4.1.10): `a ≤ b` означает, что `b` получается из `a` прибавлением некоторого натурального `t`
 theorem Int.le_iff (a b : Int) : a ≤ b ↔ ∃ t : ℕ, b = a + t := by rfl
 
+-- Разворачивает `<` в определение: `a < b` — это `a ≤ b` вместе с `a ≠ b`
 theorem Int.lt_iff (a b : Int) : a < b ↔ (∃ t : ℕ, b = a + t) ∧ a ≠ b := by rfl
 
 /-- Lemma 4.1.11(a) (Свойства порядка) / Exercise 4.1.7 -/

@@ -32,6 +32,7 @@ theorem _root_.HasDerivWithinAt.of_inverse {X Y : Set ℝ} {f : ℝ → ℝ} {g 
   observe h2 : HasDerivWithinAt id 1 X x₀
   solve_by_elim [derivative_unique]
 
+-- Та же теорема об обратной производной, что и `of_inverse`, но в форме `g'y₀ = 1/f'x₀`
 theorem _root_.HasDerivWithinAt.of_inverse' {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → ℝ}
   (hfXY : ∀ x ∈ X, f x ∈ Y) (hgf : ∀ x ∈ X, g (f x) = x)
   {x₀ y₀ f'x₀ g'y₀ : ℝ} (hx₀ : x₀ ∈ X) (hfx₀ : f x₀ = y₀)
@@ -40,6 +41,7 @@ theorem _root_.HasDerivWithinAt.of_inverse' {X Y : Set ℝ} {f : ℝ → ℝ} {g
   g'y₀ = 1/f'x₀ :=
     eq_one_div_of_mul_eq_one_left (hf.of_inverse hfXY hgf hx₀ hfx₀ hcluster hg)
 
+-- Если производная `f` в точке `x₀` равна нулю, то обратная функция `g` не может быть дифференцируема в соответствующей точке `y₀`
 theorem _root_.HasDerivWithinAt.of_inverse_of_zero_deriv {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → ℝ}
   (hfXY : ∀ x ∈ X, f x ∈ Y) (hgf : ∀ x ∈ X, g (f x) = x)
   {x₀ y₀ : ℝ} (hx₀ : x₀ ∈ X) (hfx₀ : f x₀ = y₀)

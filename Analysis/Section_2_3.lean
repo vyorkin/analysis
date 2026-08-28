@@ -65,6 +65,7 @@ theorem Nat.zero_mul (m : Nat) : 0 * m = 0 :=
 theorem Nat.succ_mul (n m : Nat) : (n++) * m = n * m + m :=
   recurse_succ (fun _ prod ↦ prod + m) _ _
 
+-- вспомогательный шаг: `1 * m` разворачивается в `0 + m` по определению умножения через `succ_mul`
 theorem Nat.one_mul' (m : Nat) : 1 * m = 0 + m := by
   rw [←zero_succ, succ_mul, zero_mul]
 
@@ -72,6 +73,7 @@ theorem Nat.one_mul' (m : Nat) : 1 * m = 0 + m := by
 theorem Nat.one_mul (m : Nat) : 1 * m = m := by
   rw [one_mul', zero_add]
 
+-- `2 * m` разворачивается в `0 + m + m` по определению умножения через `succ_mul`
 theorem Nat.two_mul (m : Nat) : 2 * m = 0 + m + m := by
   rw [←one_succ, succ_mul, one_mul']
 
@@ -101,6 +103,7 @@ lemma Nat.mul_succ (n m : Nat) : n * m++ = n * m + n := by
     repeat rw [Nat.add_assoc]
     rw [Nat.add_comm m n']
 
+-- тот же результат, что и `mul_succ`, но доказан через явный `calc`-блок вместо серии `repeat rw`
 lemma Nat.mul_succ' (n m : Nat) : n * m++ = n * m + n := by
   induction n with
   | zero => rfl
@@ -357,6 +360,7 @@ theorem Nat.exists_div_mod (n : Nat) {q : Nat} (hq : q.IsPos) :
       have hrs : r++ ≤ q := (lt_iff_succ_le r q).mp h₁
       exact not_lt_self (lt_of_le_of_lt hrs h)
 
+-- тот же результат, что и `exists_div_mod`, но с отдельно вынесенным `h0q : 0 < q` и явно поименованными случаями трихотомии (`hlt`/`heq`/`hgt`)
 theorem Nat.exists_div_mod' (n : Nat) {q : Nat} (hq : q.IsPos) : 
     ∃ m r : Nat, 0 ≤ r ∧ r < q ∧ n = m * q + r := by
   have h0q : 0 < q := by

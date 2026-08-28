@@ -32,11 +32,13 @@ theorem EqualCard.power_set_false (X : Type) : ¬ EqualCard X (Set X) := by
   have : x ∈ A := by simp [A, h']
   contradiction
 
+/-- Несчётность равносильна тому, что множество не является не более чем счётным. -/
 theorem Uncountable.iff (X : Type) : Uncountable X ↔ ¬ AtMostCountable X := by
   rw [AtMostCountable.iff, uncountable_iff_not_countable]
 
 
-theorem Uncountable.equiv {X Y : Type} (hXY : EqualCard X Y) : 
+/-- Несчётность — инвариант равномощности. -/
+theorem Uncountable.equiv {X Y : Type} (hXY : EqualCard X Y) :
   Uncountable X ↔ Uncountable Y := by
     simp [Uncountable.iff, AtMostCountable.equiv hXY]
 

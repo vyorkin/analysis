@@ -19,6 +19,7 @@ def MeasurableSpace.toConcreteSigmaAlgebra {X : Type*} (M : MeasurableSpace X) :
 
 def ConcreteBooleanAlgebra.isSigmaAlgebra {X : Type*} (B : ConcreteBooleanAlgebra X) : Prop := ∀ E : ℕ → Set X, (∀ n, measurable (E n)) → measurable (⋃ n, E n)
 
+-- Любая `ConcreteSigmaAlgebra` удовлетворяет предикату `isSigmaAlgebra`: она замкнута относительно счётных объединений измеримых множеств
 theorem ConcreteSigmaAlgebra.isSigmaAlgebra {X : Type*} (B : ConcreteSigmaAlgebra X) : B.isSigmaAlgebra := by sorry
 
 def ConcreteBooleanAlgebra.isSigmaAlgebra.toSigmaAlgebra {X : Type*} {B : ConcreteBooleanAlgebra X} (h : B.isSigmaAlgebra) : ConcreteSigmaAlgebra X :=
@@ -35,12 +36,14 @@ theorem LebesgueMeasurable.boolean_algebra.isSigmaAlgebra (d : ℕ) : (LebesgueM
 def LebesgueMeasurable.sigmaAlgebra (d : ℕ) : ConcreteSigmaAlgebra (EuclideanSpace' d) :=
   (LebesgueMeasurable.boolean_algebra.isSigmaAlgebra d).toSigmaAlgebra
 
+-- Алгебра нуль-множеств `IsNull.boolean_algebra` является сигма-алгеброй
 theorem IsNull.boolean_algebra.isSigmaAlgebra (d : ℕ) : (IsNull.boolean_algebra d).isSigmaAlgebra :=
   by sorry
 
 def IsNull.sigmaAlgebra (d : ℕ) : ConcreteSigmaAlgebra (EuclideanSpace' d) :=
   (IsNull.boolean_algebra.isSigmaAlgebra d).toSigmaAlgebra
 
+-- Алгебра множеств, измеримых по Жордану, не является сигма-алгеброй: не замкнута относительно счётных объединений
 theorem JordanMeasurable.boolean_algebra.not_isSigmaAlgebra (d:ℕ) (hd: d ≥ 1) :
   ¬ (JordanMeasurable.boolean_algebra d).isSigmaAlgebra :=
   by sorry
@@ -122,6 +125,7 @@ instance ConcreteSigmaAlgebra.instCompleteLattice {X : Type*} : CompleteLattice 
     isGLB_sInf := sorry
   }
 
+-- Булева алгебра, порождённая семейством `F`, содержится в сигма-алгебре, порождённой тем же `F`
 theorem ConcreteSigmaAlgebra.generated_by_le {X : Type*} (F : Set (Set X)) : ConcreteBooleanAlgebra.generated_by F ≤ (ConcreteSigmaAlgebra.generated_by F).toConcreteBooleanAlgebra := by sorry
 
 example : ∃ (X : Type*) (F : Set (Set X)), ConcreteBooleanAlgebra.generated_by F ≠ (ConcreteSigmaAlgebra.generated_by F).toConcreteBooleanAlgebra := by sorry
@@ -168,9 +172,11 @@ theorem ConcreteSigmaAlgebra.card_of_generated_by {X : Type*} {F : Set (Set X)} 
   by sorry
 
 open Cardinal in
+-- Число борелевских подмножеств `EuclideanSpace' d` не превосходит мощности континуума `2 ^ ℵ₀`
 theorem BorelSigmaAlgebra.card (d : ℕ) : Cardinal.mk (BorelSigmaAlgebra (EuclideanSpace' d)).measurableSets ≤ 2 ^ ℵ₀ :=
   by sorry
 
+-- Существует множество, измеримое по Жордану, но не борелевское
 theorem JordanMeasurable.not_borel {d : ℕ} (hd : d ≥ 1) : ∃ E : Set (EuclideanSpace' d), JordanMeasurable E ∧ ¬ (BorelSigmaAlgebra (EuclideanSpace' d)).measurable E :=
   by sorry
 
@@ -223,4 +229,5 @@ def MeasurableSpace.sigmaAlgebra {X : Type*} (M : MeasurableSpace X) : ConcreteS
   countable_union_mem := M.measurableSet_iUnion
 }
 
+-- Борелевская сигма-алгебра содержится в лебеговской: каждое борелевское множество измеримо по Лебегу
 theorem BorelSigmaAlgebra.le_LebesgueSigmaAlgebra (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) ≤ LebesgueMeasurable.sigmaAlgebra d := by sorry

@@ -28,7 +28,8 @@ theorem IntegrableOn.smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (hf 
   IntegrableOn (c • f) I ∧ integ (c • f) I = c * integ f I := by
   sorry
 
-theorem IntegrableOn.neg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
+/-- Следствие Theorem 11.4.1(b) при `c = -1`: интегрируемость и значение интеграла сохраняются при переходе к `-f`. -/
+theorem IntegrableOn.neg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) :
   IntegrableOn (-f) I ∧ integ (-f) I = -integ f I := by have := IntegrableOn.smul (-1) hf; aesop
 
 /-- Theorem 11.4.1(c) / Exercise 11.4.1 -/
@@ -259,6 +260,7 @@ theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : Inte
   exact ⟨ hmul_bound, by linarith [nonneg_of_le_const_mul_eps this] ⟩
 
 
+/-- Theorem 11.4.5 (общий случай): произведение `f * g` двух интегрируемых по Риману функций тоже интегрируемо, без предположения о неотрицательности. -/
 theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) :
   IntegrableOn (f * g) I := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.

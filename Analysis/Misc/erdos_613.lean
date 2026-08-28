@@ -380,6 +380,7 @@ lemma degree_B2 (j : Fin 5) : G.degree (B2 j) = 4 := by
 # Подсчёт рёбер через лемму о рукопожатиях
 Теперь суммируем степени и делим на 2.
 -/
+-- Граф `G`, построенный выше, содержит ровно `44` ребра.
 theorem edge_count_44 : G.edgeSet.ncard = 44 := by
   classical
   -- Лемма о рукопожатиях для мощности *множества* рёбер.
@@ -410,7 +411,8 @@ open V
 namespace Finset
 variable {α : Type*}
 
-lemma exists_subset_card_eq (s : Finset α) {k : ℕ} (hk : k ≤ s.card) : 
+-- у finset `s` есть подмножество `t` с ровно `k` элементами, если `k ≤ s.card`
+lemma exists_subset_card_eq (s : Finset α) {k : ℕ} (hk : k ≤ s.card) :
   ∃ t ⊆ s, t.card = k := by
   exact Finset.le_card_iff_exists_subset_card.mp hk
 
@@ -733,6 +735,7 @@ lemma redBlock1_card_eq_sum (color : Sym2 V → Fin 2) :
   have := by simpa [hU, hI, add_comm] using this
   exact this
 
+-- Аналогично для второго блока: `redBlock2` раскладывается как сумма мощностей частей `A2` и `B2`.
 lemma redBlock2_card_eq_sum (color : Sym2 V → Fin 2) : 
   (redBlock2 color).card
     = (redBlock2A2 color).card + (redBlock2B2 color).card := by
@@ -758,6 +761,7 @@ def B1Set : Finset V := (Finset.univ.image fun j : Fin 5 => B1 j)
 /-- Все вершины {name}`B2` как finset (образ {lean}`Fin 5`). -/
 def B2Set : Finset V := (Finset.univ.image fun j : Fin 5 => B2 j)
 
+-- Красные соседи `apex`, лежащие в части `B1`, содержатся во всём множестве вершин `B1`.
 lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) : 
   redBlock1B1 color ⊆ B1Set := by
   classical
@@ -772,6 +776,7 @@ lemma redBlock1B1_subset_B1Set (color : Sym2 V → Fin 2) :
   | B2 _ => cases hB1
   | apex => cases hB1
 
+-- Красные соседи `apex`, лежащие в части `B2`, содержатся во всём множестве вершин `B2`.
 lemma redBlock2B2_subset_B2Set (color : Sym2 V → Fin 2) : 
   redBlock2B2 color ⊆ B2Set := by
   classical
@@ -785,21 +790,25 @@ lemma redBlock2B2_subset_B2Set (color : Sym2 V → Fin 2) :
   | A2 _ => cases hB2
   | apex => cases hB2
 
+-- Мощность `B1Set` не превосходит `5`, поскольку `B1` — образ `Fin 5`.
 lemma card_B1Set_le_5 : (B1Set).card ≤ 5 := by
   classical
   -- мощность образа ≤ мощности области определения
   simpa [B1Set, Fintype.card_fin] using
     (Finset.card_image_le : (Finset.univ.image (fun j : Fin 5 => B1 j)).card ≤ (Finset.univ : Finset (Fin 5)).card)
 
+-- Мощность `B2Set` не превосходит `5`, поскольку `B2` — образ `Fin 5`.
 lemma card_B2Set_le_5 : (B2Set).card ≤ 5 := by
   classical
   simpa [B2Set, Fintype.card_fin] using
     (Finset.card_image_le : (Finset.univ.image (fun j : Fin 5 => B2 j)).card ≤ (Finset.univ : Finset (Fin 5)).card)
 
+-- Красных соседей `apex` в части `B1` не больше `5`.
 lemma redBlock1B1_card_le_5 (color : Sym2 V → Fin 2) : 
   (redBlock1B1 color).card ≤ 5 :=
   (Finset.card_le_card (redBlock1B1_subset_B1Set color)).trans card_B1Set_le_5
 
+-- Красных соседей `apex` в части `B2` не больше `5`.
 lemma redBlock2B2_card_le_5 (color : Sym2 V → Fin 2) : 
   (redBlock2B2 color).card ≤ 5 :=
   (Finset.card_le_card (redBlock2B2_subset_B2Set color)).trans card_B2Set_le_5
@@ -888,6 +897,7 @@ open V
 
 /-! # Вспомогательные утверждения: выбранная вершина клики лежит в соответствующем красном блоке -/
 
+-- Если ребро `apex — A1 i` красное, то `A1 i` лежит в `redBlock1`.
 lemma A1_mem_redBlock1_of_red
     (color : Sym2 V → Fin 2) (i : Fin 2)
     (_hAdj : G.Adj apex (A1 i))
@@ -904,6 +914,7 @@ lemma A1_mem_redBlock1_of_red
   -- Ещё раз фильтруем.
   simpa [redBlock1] using Finset.mem_filter.mpr ⟨hRN, hB⟩
 
+-- Если ребро `apex — A2 i` красное, то `A2 i` лежит в `redBlock2`.
 lemma A2_mem_redBlock2_of_red
     (color : Sym2 V → Fin 2) (i : Fin 3)
     (_hAdj : G.Adj apex (A2 i))
@@ -1018,6 +1029,9 @@ lemma triangle_or_blueStar_from_block1
 
 /-! # Треугольник или звезда из блока 2 (тот же шаблон доказательства) -/
 
+-- Симметричный факт для блока 2: если у него не менее `6` красных соседей `apex`, и один из них
+-- `A2 i` с красным ребром от `apex`, то либо есть красный треугольник, либо синяя `K_{1,5}`
+-- с центром в `A2 i`.
 lemma triangle_or_blueStar_from_block2
     (color : Sym2 V → Fin 2)
     (h6 : 6 ≤ (redBlock2 color).card)
@@ -1123,6 +1137,8 @@ end PikhurkoN5
 
 namespace PikhurkoN5
 
+-- Граф `G` — контрпример Пихурко для `n = 5`: у него `44` ребра, и в любой 2-раскраске рёбер
+-- либо есть монохроматическая звезда `K_{1,5}` цвета `0`, либо монохроматический треугольник цвета `1`.
 theorem main : Pikhurko_n5_statement := by
   use V, G
   split_ands

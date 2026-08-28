@@ -77,6 +77,7 @@ lemma ratPow_continuous {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
     _ = ε := by rw [mul_comm, mul_assoc, ←rpow_add]; simp; positivity
 
 
+-- Предел `x^(q n)` не зависит от выбора рациональной последовательности `q`, сходящейся к `α`: если `q` и `q'` обе стремятся к `α`, то пределы `x^(q n)` и `x^(q' n)` совпадают.
 lemma ratPow_lim_uniq {x α : ℝ} (hx : x > 0) {q q' : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α)
  (hq' : ((fun n ↦ (q' n : ℝ)) : Sequence).TendsTo α) :
@@ -120,6 +121,7 @@ lemma ratPow_lim_uniq {x α : ℝ} (hx : x > 0) {q q' : ℕ → ℚ}
     simp [r]; linarith
   split_ands <;> linarith
 
+-- Любое вещественное число `α` является пределом некоторой последовательности рациональных чисел `q : ℕ → ℚ`.
 theorem Real.eq_lim_of_rat (α : ℝ) : ∃ q : ℕ → ℚ, ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α := by
   choose q hcauchy hLIM using (Chapter5.Real.equivR.symm α).eq_lim; use q
   apply lim_eq_LIM at hcauchy
@@ -129,17 +131,20 @@ theorem Real.eq_lim_of_rat (α : ℝ) : ∃ q : ℕ → ℚ, ((fun n ↦ (q n : 
 /-- Definition 6.7.2 (возведение в вещественную степень) -/
 noncomputable abbrev Real.rpow (x : ℝ) (α : ℝ) : ℝ := lim ((fun n ↦ x^((eq_lim_of_rat α).choose n : ℝ)) : Sequence)
 
+-- Значение `rpow x α` совпадает с пределом `x^(q n)` для любой рациональной последовательности `q`, сходящейся к `α`.
 lemma Real.rpow_eq_lim_ratPow {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  rpow x α = lim ((fun n ↦ x^(q n : ℝ)) : Sequence) :=
    ratPow_lim_uniq hx (eq_lim_of_rat α).choose_spec hq
 
+-- Последовательность `x^(q n)` сходится к `rpow x α`, если рациональная последовательность `q` сходится к `α`.
 lemma Real.ratPow_tendsto_rpow {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  ((fun n ↦ x^(q n : ℝ)) : Sequence).TendsTo (rpow x α) := by
   rw [lim_eq]
   exact ⟨ ratPow_continuous hx hq, (rpow_eq_lim_ratPow hx hq).symm ⟩
 
+-- Для рационального показателя `q` определение `rpow x q` совпадает с обычным возведением `x^(q : ℝ)`.
 lemma Real.rpow_of_rat_eq_ratPow {x : ℝ} (hx : x > 0) {q : ℚ} :
   rpow x (q : ℝ) = x^(q : ℝ) := by
   convert rpow_eq_lim_ratPow hx (α := q) (lim_of_const _)

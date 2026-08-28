@@ -905,6 +905,7 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
                   (∑ j ∈ S, (↑(|v j|) * Lebesgue_outer_measure (symmDiff (A j) (F j)))) :=
                   add_le_add h_single ih.2
 
+/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (вещественный случай) -/
 theorem RealAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
     (ε : ℝ) (hε : 0 < ε) : 
     ∃ (g : EuclideanSpace' d → ℝ), RealStepFunction g ∧ RealAbsolutelyIntegrable g ∧
@@ -918,6 +919,7 @@ theorem RealAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d
   calc PreL1.norm (f - g₂) ≤ ↑(ε / 2) + ↑(ε / 2) := h_combined
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
+/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), ComplexStepFunction g ∧ ComplexAbsolutelyIntegrable g ∧
@@ -1380,6 +1382,7 @@ theorem RealAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : Euc
   calc PreL1.norm (f - g) ≤ ↑(ε / 2) + ↑(ε / 2) := h_combined
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
+/-- Theorem 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), Continuous g ∧ CompactlySupported g ∧
@@ -1580,6 +1583,7 @@ theorem LocallyComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d
       Lebesgue_measure E ≤ ε ∧
       ∀ x ∉ E, g x = f x := by sorry
 
+-- Теорема Лузина для произвольной измеримой функции `f` (без требования абсолютной интегрируемости даже локально): вне множества сколь угодно малой меры `f` совпадает с некоторой функцией `g`, непрерывной на дополнении
 theorem ComplexMeasurable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexMeasurable f)
   (ε : ℝ) (hε : 0 < ε) : 

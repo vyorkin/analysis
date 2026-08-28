@@ -36,6 +36,7 @@ example : (¬ ∀ x, (0 < x ∧ x < Real.pi/2) → Real.cos x ≥ 0) = (∃ x, (
 example : (¬ ∃ x : ℝ, x^2 + x + 1 = 0) = (∀ x : ℝ, x^2 + x + 1 ≠ 0) := by
   simp
 
+-- тождество `(x+1)^2 = x^2 + 2x + 1` для произвольного вещественного `x`
 theorem square_expand : ∀ (x : ℝ), (x + 1)^2 = x^2 + 2 * x + 1 := by
   intro x
   ring
@@ -47,6 +48,7 @@ example : ∀ (y : ℝ), (Real.cos y + 1)^2 = Real.cos y^2 + 2 * Real.cos y + 1 
   intro y
   apply square_expand
 
+-- уравнение `x^2 + 2x - 8 = 0` имеет вещественный корень
 theorem solve_quadratic : ∃ (x : ℝ), x^2 + 2 * x - 8 = 0 := by
   use 2
   norm_num

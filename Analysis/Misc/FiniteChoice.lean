@@ -2,6 +2,8 @@ import Mathlib.Tactic
 
 /-! Реализация конечного выбора, см. https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Theorem.20for.20.22finite.20choice.22.3F/with/529925010 -/
 
+-- Конечный выбор: если для каждого `n < N` существует прообраз `f x = n`, то существует единая
+-- функция выбора `g : Fin N → X`, дающая `f (g n) = n` сразу для всех `n`
 theorem finite_choice {X : Type*} {f : X → ℕ} {N : ℕ} (h : ∀ n < N, ∃ x, f x = n) : 
   ∃ g : Fin N → X, ∀ n, f (g n) = n := by
   induction' N with N ih
@@ -18,6 +20,8 @@ theorem finite_choice {X : Type*} {f : X → ℕ} {N : ℕ} (h : ∀ n < N, ∃ 
   . simp only [g', dif_neg h]
   exact Nat.eq_of_lt_succ_of_not_lt n.isLt h
 
+-- Из сюръективности `f : α → β` на конечное `β` следует существование сечения `s : β → α`
+-- (правого обратного к `f`), удовлетворяющего `f ∘ s = id`
 lemma sec_ex {α β : Type*} [Fintype β] [DecidableEq β] (f : α → β) (h : ∀ b : β, ∃ a : α, f a = b) : ∃ s : β → α, f ∘ s = id := by
   set N := Fintype.card β
   have : Fintype.card β = N := rfl

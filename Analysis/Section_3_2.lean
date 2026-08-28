@@ -35,6 +35,8 @@ variable [SetTheory]
 abbrev axiom_of_universal_specification : Prop :=
   ∀ P : Object → Prop, ∃ A : Set, ∀ x : Object, x ∈ A ↔ P x
 
+-- аксиома универсальной спецификации противоречива: не существует объекта,
+-- задающего множество всех `x`, для которых верно произвольное `P x`
 theorem Russells_paradox : ¬ axiom_of_universal_specification := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   intro hus

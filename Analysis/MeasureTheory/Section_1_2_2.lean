@@ -524,6 +524,7 @@ theorem LebesgueMeasurable.empty {d : ℕ} : LebesgueMeasurable (∅ : Set (Eucl
 -- используем (i) напрямую
   IsOpen.measurable isOpen_empty
 
+/-- Тот же результат, что и `LebesgueMeasurable.empty`, но доказанный напрямую по определению измеримости по Лебегу, минуя `IsOpen.measurable`. -/
 theorem LebesgueMeasurable.empty' {d : ℕ} : LebesgueMeasurable (∅ : Set (EuclideanSpace' d)) := by
 -- используем определение измеримости по Лебегу
   intro ε hε
@@ -731,6 +732,7 @@ theorem LebesgueMeasurable.complement {d : ℕ} {E : Set (EuclideanSpace' d)} (h
   rw [h_eq]
   exact LebesgueMeasurable.countable_union hS_meas
 
+/-- Конечное объединение измеримых по Лебегу множеств измеримо (аналог Lemma 1.2.13(vi) для конечных объединений). -/
 theorem LebesgueMeasurable.finite_union {d n : ℕ} {E : Fin n → Set (EuclideanSpace' d)} (hE : ∀ i, LebesgueMeasurable (E i)) : LebesgueMeasurable (⋃ i, E i) := by
   -- Расширяем E до семейства, индексированного ℕ, дополняя пустыми множествами
   let E' : ℕ → Set (EuclideanSpace' d) := fun k => if h : k < n then E ⟨k, h⟩ else ∅
@@ -754,6 +756,7 @@ theorem LebesgueMeasurable.finite_union {d n : ℕ} {E : Fin n → Set (Euclidea
   rw [h_eq]
   exact LebesgueMeasurable.countable_union hE'_meas
 
+/-- Объединение двух измеримых по Лебегу множеств измеримо. -/
 theorem LebesgueMeasurable.union {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) : LebesgueMeasurable (E ∪ F) := by
   -- Представим E ∪ F как объединение по Fin 2
   let S : Fin 2 → Set (EuclideanSpace' d) := ![E, F]
@@ -784,6 +787,7 @@ theorem LebesgueMeasurable.countable_inter {d : ℕ} {E : ℕ → Set (Euclidean
   -- (⋃ Eₙᶜ)ᶜ измеримо снова по (v)
   exact h_union.complement
 
+/-- Конечное пересечение измеримых по Лебегу множеств измеримо (аналог Lemma 1.2.13(vii) для конечных пересечений). -/
 theorem LebesgueMeasurable.finite_inter {d n : ℕ} {E : Fin n → Set (EuclideanSpace' d)} (hE : ∀ i, LebesgueMeasurable (E i)) : LebesgueMeasurable (⋂ i, E i) := by
   -- Расширяем семейство, индексированное Fin n, до семейства, индексированного ℕ, полагая univ при k ≥ n
   let E' : ℕ → Set (EuclideanSpace' d) := fun k => if h : k < n then E ⟨k, h⟩ else Set.univ
@@ -809,6 +813,7 @@ theorem LebesgueMeasurable.finite_inter {d n : ℕ} {E : Fin n → Set (Euclidea
   rw [h_eq]
   exact LebesgueMeasurable.countable_inter hE'_meas
 
+/-- Пересечение двух измеримых по Лебегу множеств измеримо. -/
 theorem LebesgueMeasurable.inter {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) : LebesgueMeasurable (E ∩ F) := by
   -- Представим E ∩ F как пересечение по Fin 2
   let S : Fin 2 → Set (EuclideanSpace' d) := ![E, F]
@@ -928,9 +933,11 @@ abbrev CantorSet : Set ℝ := ⋂ n : ℕ, CantorInterval n
 theorem CantorSet.compact : IsCompact CantorSet := by
   sorry
 
+/-- Канторово множество несчётно. -/
 theorem CantorSet.uncountable : Uncountable CantorSet := by
   sorry
 
+/-- Образ канторова множества в `EuclideanSpace' 1` — нуль-множество, то есть имеет лебегову меру нуль. -/
 theorem CantorSet.null : IsNull (Real.equiv_EuclideanSpace' '' CantorSet) := by sorry
 
 /-- Exercise 1.2.10 (\[0,1) не является счётным объединением попарно непересекающихся замкнутых интервалов). -/
@@ -941,6 +948,7 @@ example : ¬ ∃ (I : ℕ → BoundedInterval), (∀ n, IsClosed (I n).toSet) �
 example : ¬ ∃ (E : ℕ → Set ℝ), (∀ n, IsClosed (E n)) ∧ (Set.univ.PairwiseDisjoint (fun n ↦ (E n)) ) ∧ (⋃ n, (E n) = Set.Ico 0 1) := by
   sorry
 
+/-- Мера Лебега множества, измеримого по Жордану, совпадает с его жордановой мерой. -/
 theorem Jordan_measurable.Lebesgue_measure {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : JordanMeasurable E) : Lebesgue_measure E = hE.measure := by
   sorry
 
@@ -1523,6 +1531,7 @@ theorem Lebesgue_measure.countable_union {d : ℕ} {E : ℕ → Set (EuclideanSp
         _ ≤ Lebesgue_measure (⋃ n, E n) := le_refl _
   exact le_antisymm h_le h_ge
 
+/-- Конечная аддитивность меры Лебега: мера объединения конечного числа попарно непересекающихся измеримых множеств равна сумме их мер. -/
 theorem Lebesgue_measure.finite_union {d n : ℕ} {E : Fin n → Set (EuclideanSpace' d)} (hmes : ∀ n, LebesgueMeasurable (E n)) (hdisj : Set.univ.PairwiseDisjoint E) : Lebesgue_measure (⋃ n, E n) = ∑' n, Lebesgue_measure (E n) := by
   -- Стратегия: расширим E до семейства, индексированного ℕ, дополнив пустыми множествами,
   -- и применим countable_union
@@ -1613,6 +1622,7 @@ theorem Lebesgue_measure.finite_union {d n : ℕ} {E : Fin n → Set (EuclideanS
   simp only [e, Equiv.coe_fn_mk]
   exact h_eq_terms ⟨k, Set.mem_Iio.mp hk⟩
 
+/-- Аддитивность меры Лебега: мера объединения двух непересекающихся измеримых множеств равна сумме их мер. -/
 theorem Lebesgue_measure.union {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) (hdisj : E ∩ F = ∅) : Lebesgue_measure (E ∪ F) = Lebesgue_measure E + Lebesgue_measure F := by
   -- Применяем finite_union с n=2
   let S : Fin 2 → Set (EuclideanSpace' d) := ![E, F]
@@ -1708,6 +1718,7 @@ theorem LebesgueMeasurable.caratheodory {d : ℕ} (E : Set (EuclideanSpace' d)) 
     ].TFAE
   := by sorry
 
+/-- Всякое ограниченное множество содержится в некотором элементарном множестве. -/
 theorem Bornology.IsBounded.inElementary {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E) : ∃ (A : Set (EuclideanSpace' d)), IsElementary A ∧ E ⊆ A := by sorry
 
 noncomputable def inner_measure {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E) : ℝ := (Lebesgue_measure hE.inElementary.choose).toReal - (Lebesgue_measure (hE.inElementary.choose \ E)).toReal
@@ -1746,6 +1757,7 @@ theorem LebesgueMeasurable.translate {d : ℕ} (E : Set (EuclideanSpace' d)) (x 
     LebesgueMeasurable E ↔ LebesgueMeasurable (E + {x}) := by
   sorry
 
+/-- Мера Лебега инвариантна относительно сдвигов: мера `E + {x}` равна мере `E`. -/
 theorem Lebesgue_measure.translate {d : ℕ} {E : Set (EuclideanSpace' d)} (x : EuclideanSpace' d)
    (hE : LebesgueMeasurable E) : Lebesgue_measure (E + {x}) = Lebesgue_measure E := by
   sorry

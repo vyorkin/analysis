@@ -12,6 +12,8 @@ def IsPerfectDifferenceSet.map {N : ℕ} (B : Finset (ZMod N)) (p : (B × B) ⊕
 | Sum.inl p => if p.1 = p.2 then Sum.inr p.1 else Sum.inl (p.1.val - p.2.val)
 | Sum.inr _ => Sum.inl 0
 
+/-- Основное числовое тождество для совершенного разностного множества: `|B|² + 1 = N + |B|`
+(эквивалентно `|B|·(|B|-1) = N-1`). -/
 lemma IsPerfectDifferenceSet.card {N : ℕ} [NeZero N] {B : Finset (ZMod N)} (hdiff : IsPerfectDifferenceSet B) : B.card * B.card + 1 = N + B.card := by
   have he : Function.Bijective (IsPerfectDifferenceSet.map B) := by
     constructor
@@ -56,22 +58,27 @@ export Hypotheses (p hp N  hN B hdiff embed h_embed h_inj)
 
 variable [Hypotheses]
 
+-- Элемент `1` лежит в `B`, так как он входит в образ вложения `{1,2,4,8} → B`
 lemma h1 : 1 ∈ B := by
   convert (embed ⟨ 1, by grind ⟩).property
   simp [h_embed]
 
+-- Элемент `2` лежит в `B`, так как он входит в образ вложения `{1,2,4,8} → B`
 lemma h2 : 2 ∈ B := by
   convert (embed ⟨ 2, by grind ⟩).property
   simp [h_embed]
 
+-- Элемент `4` лежит в `B`, так как он входит в образ вложения `{1,2,4,8} → B`
 lemma h4 : 4 ∈ B := by
   convert (embed ⟨ 4, by grind ⟩).property
   simp [h_embed]
 
+-- Элемент `8` лежит в `B`, так как он входит в образ вложения `{1,2,4,8} → B`
 lemma h8 : 8 ∈ B := by
   convert (embed ⟨ 8, by grind ⟩).property
   simp [h_embed]
 
+-- `2` и `1` различны в `ZMod N`, так как вложение `{1,2,4,8} → B` инъективно
 lemma h2_ne_1 : (2 : ZMod N) ≠ (1 : ZMod N) := by
   have : (embed ⟨ 2, by grind ⟩).val ≠ (embed ⟨ 1, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
@@ -80,6 +87,7 @@ lemma h2_ne_1 : (2 : ZMod N) ≠ (1 : ZMod N) := by
     grind
   convert this <;> simp [h_embed]
 
+-- `4` и `1` различны в `ZMod N`, так как вложение `{1,2,4,8} → B` инъективно
 lemma h4_ne_1 : (4 : ZMod N) ≠ (1 : ZMod N) := by
   have : (embed ⟨ 4, by grind ⟩).val ≠ (embed ⟨ 1, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
@@ -88,6 +96,7 @@ lemma h4_ne_1 : (4 : ZMod N) ≠ (1 : ZMod N) := by
     grind
   convert this <;> simp [h_embed]
 
+-- `4` и `8` различны в `ZMod N`, так как вложение `{1,2,4,8} → B` инъективно
 lemma h4_ne_8 : (4 : ZMod N) ≠ (8 : ZMod N) := by
   have : (embed ⟨ 4, by grind ⟩).val ≠ (embed ⟨ 8, by grind ⟩).val := by
     rw [Subtype.coe_ne_coe]
@@ -96,10 +105,12 @@ lemma h4_ne_8 : (4 : ZMod N) ≠ (8 : ZMod N) := by
     grind
   convert this <;> simp [h_embed]
 
+-- `N = p² + p + 1` всегда нечётно, так как `p² + p = p·(p+1)` чётно
 lemma hodd : Odd N := by
   rw [hN]
   grind
 
+-- Размер `B` в точности равен `p + 1` — следует из тождества `IsPerfectDifferenceSet.card` при `N = p²+p+1`
 lemma card_B : B.card = p + 1 := by
   have hnon : NeZero N := by rw [neZero_iff, hN]; grind
   have := hdiff.card
@@ -111,6 +122,7 @@ lemma card_B : B.card = p + 1 := by
   rw [mul_eq_zero] at this
   grind
 
+-- Простое число `p` из гипотез нечётно (случай `p = 2` невозможен)
 lemma odd_P : Odd p := by
   apply Nat.Prime.odd_of_ne_two hp
   by_contra!
@@ -119,15 +131,18 @@ lemma odd_P : Odd p := by
   simp at h1
   grind
 
+-- `|B| = p+1` чётно, так как `p` нечётно
 lemma heven : Even B.card := by
   rw [card_B]
   grind [odd_P]
 
+-- Умножение на `2` в `ZMod N` инъективно, так как `N` нечётно и потому `2` обратимо по модулю `N`
 lemma mul_two_inj {x y : ZMod N} (h : 2 * x = 2 * y) : x = y := by
   apply IsUnit.mul_left_cancel _ h
   convert (ZMod.isUnit_prime_iff_not_dvd (n := N) Nat.prime_two).mpr _
   exact Odd.not_two_dvd_nat hodd
 
+-- Единственность представления разности в `B`: если `a ≠ b` и `a - b = c - d`, то `a = c` и `b = d`
 lemma diff_uniq {a b c d : B} (ha : a ≠ b) (hsub : a.val-b.val = c.val-d.val) : a=c ∧ b=d := by
   have := hdiff (a-b) (by grind)
   replace : (⟨ a, b ⟩ : B × B) = ⟨ c, d ⟩ := by apply this.unique <;> grind
@@ -150,9 +165,11 @@ noncomputable def f {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
 noncomputable def g {a : ZMod N} (ha : a ∉ B) (b : B) : B :=
     (hdiff (a-b.val) (by grind)).choose.2
 
+-- Определяющее свойство `f` и `g`: `a - b = f a b - g a b`
 lemma f_def {a : ZMod N} (ha : a ∉ B) (b : B) : a - b = f ha b - g ha b := by
   convert (hdiff (a - b.val) (by grind)).choose_spec.1.symm
 
+-- Обращение `f_def`: `a - b = c - d` тогда и только тогда, когда `c = f a b` и `d = g a b`
 lemma f_def' {a : ZMod N} (ha : a ∉ B) (b c d : B) : a - b = c - d ↔ c = f ha b ∧ d = g ha b := by
   constructor
   . intro h
@@ -225,25 +242,30 @@ lemma f_second_fixed {a : ZMod N} {ha : a ∉ B} {b : B} (hb : f ha b = b) : ∃
   change (if (1 : ZMod 2) = 1 then f ha c else c) = c at hc
   simp_all
 
+-- Для `x ∈ B` с `x ≠ 2` элемент `2*(x-1)` не лежит в `B` — это позволяет применить `f`, `g` при `a := 2*(x-1)`
 lemma two_mul_sub_one_notin {x : B} (hx : x.val ≠ 2) : 2 * (x.val - 1) ∉ B := by
   by_contra! this
   replace := diff_uniq (a:= x) (b := ⟨ 2,h2 ⟩) (c := ⟨_,this⟩) (d:=x) (by grind) (by grind)
   grind
 
+-- При `a := 2*(x-1)` элемент `x` — неподвижная точка `f`
 lemma first_fixed {x : B} (hx : x.val ≠ 2) : f (two_mul_sub_one_notin hx) x = x := by
   convert ((f_def' (two_mul_sub_one_notin hx) x x ⟨ 2, h2⟩).mp ?_).1.symm
   grind
 
+-- Помимо `x`, у `f` при `a := 2*(x-1)` есть ещё одна неподвижная точка
 lemma second_fixed {x : B} (hx : x.val ≠ 2) : ∃ b, b ≠ x ∧ f (two_mul_sub_one_notin hx) b = b :=  f_second_fixed (first_fixed hx)
 
 noncomputable def b (x : B) := if hx : x.val = 2 then ⟨ 2, h2 ⟩ else (second_fixed hx).choose
 
 noncomputable def d (x : B) := if hx : x.val = 2 then ⟨ 2, h2 ⟩ else g (two_mul_sub_one_notin hx) (second_fixed hx).choose
 
+-- Выбранная вторая неподвижная точка `b x` отличается от самого `x`
 lemma b_neq {x : B} (hx : x.val ≠ 2) : b x ≠ x := by
   simp [b, hx]
   convert (second_fixed hx).choose_spec.1
 
+-- Ключевое тождество, связывающее `b x` и `d x`: `2*(b x) = 2*(x-1) + d x`
 lemma bd_ident (x : B) : 2 * (b x).val = 2 * (x.val - 1) + (d x).val := by
   by_cases hx : x.val = 2
   · simp [b,d,hx]; ring
@@ -251,6 +273,7 @@ lemma bd_ident (x : B) : 2 * (b x).val = 2 * (x.val - 1) + (d x).val := by
     convert f_fixed _ using 2
     convert (second_fixed hx).choose_spec.2
 
+-- Функция `d` инъективна
 lemma d_injective : Function.Injective d := by
   intro x x' h
   have h1 := bd_ident x
@@ -263,8 +286,10 @@ lemma d_injective : Function.Injective d := by
   have h5 := b_neq (x := x')
   grind
 
+-- `d` инъективна на конечном множестве `B`, значит и сюръективна
 lemma d_surjective : Function.Surjective d := Finite.surjective_of_injective d_injective
 
+-- Значение `d` в точке `1` равно `4`
 lemma d1_eq_4 : d ⟨ 1, h1 ⟩ = ⟨ 4, h4 ⟩ := by
   obtain ⟨ x, hx ⟩ := d_surjective ⟨ 4, h4 ⟩
   have := bd_ident x
@@ -276,6 +301,7 @@ lemma d1_eq_4 : d ⟨ 1, h1 ⟩ = ⟨ 4, h4 ⟩ := by
   . simp; convert h2_ne_1
   grind
 
+-- Значение `d` в точке `1` равно `8`
 lemma d1_eq_8 : d ⟨ 1, h1 ⟩ = ⟨ 8, h8 ⟩ := by
   obtain ⟨ x, hx ⟩ := d_surjective ⟨ 8, h8 ⟩
   have := bd_ident x
@@ -287,6 +313,8 @@ lemma d1_eq_8 : d ⟨ 1, h1 ⟩ = ⟨ 8, h8 ⟩ := by
   . simp; convert h4_ne_1
   grind
 
+-- Итоговое противоречие: `d1_eq_4` и `d1_eq_8` дают `4 = 8` в `ZMod N`, что противоречит `h4_ne_8`;
+-- значит, гипотезы `Hypotheses` несовместны
 lemma contradiction : False := by
   have := d1_eq_8
   rw [d1_eq_4] at this

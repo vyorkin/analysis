@@ -68,6 +68,7 @@ theorem UniformContinuousOn.iff (f : ℝ → ℝ) (X : Set ℝ) : UniformContinu
   simp_rw [Metric.uniformContinuousOn_iff_le, Real.Close]
   grind
 
+-- Равномерная непрерывность влечёт обычную непрерывность
 theorem ContinuousOn.ofUniformContinuousOn {X : Set ℝ} (f : ℝ → ℝ) (hf : UniformContinuousOn f X) : 
   ContinuousOn f X := by
   sorry

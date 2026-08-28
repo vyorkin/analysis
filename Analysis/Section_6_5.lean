@@ -17,6 +17,7 @@ import Analysis.Section_6_4
 
 namespace Chapter6
 
+-- Постоянная последовательность `c` сходится к `c`.
 theorem Sequence.lim_of_const (c : ℝ) :  ((fun (_ : ℕ) ↦ c) : Sequence).TendsTo c := by sorry
 
 instance Sequence.inst_pow : Pow Sequence ℕ where
@@ -26,15 +27,18 @@ instance Sequence.inst_pow : Pow Sequence ℕ where
     vanish := by grind
   }
 
+-- Возведение последовательности в степень `k` вычисляется поточечно: `(a^k) n = (a n)^k` для `n ≥ a.m`.
 @[simp]
 lemma Sequence.pow_eval {a : Sequence} {k : ℕ} {n : ℤ} (hn : n ≥ a.m) : (a ^ k) n = a n ^ k := by
   rw [HPow.hPow, instHPow, Pow.pow, inst_pow]
   grind
 
+-- Возведение последовательности в первую степень не меняет её: `a^1 = a`.
 @[simp]
 lemma Sequence.pow_one (a : Sequence) : a^1 = a := by
   ext n; rfl; simp only [HPow.hPow, Pow.pow]; split_ifs with h; simp; simp [a.vanish n (by grind)]
 
+-- Рекуррентное соотношение для степеней последовательности: `a^(k+1) = a^k * a`.
 lemma Sequence.pow_succ (a : Sequence) (k : ℕ) : a^(k+1) = a^k * a := by
   ext x
   . symm; exact Int.min_self a.m

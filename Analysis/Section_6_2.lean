@@ -24,16 +24,20 @@ theorem EReal.def (x : EReal) : (∃ (y : Real), y = x) ∨ x = ⊤ ∨ x = ⊥ 
   revert x
   simp [EReal.forall]
 
+-- Вещественное число, вложенное в `EReal`, никогда не равно `+∞`.
 theorem EReal.real_neq_infty (x : ℝ) : (x : EReal) ≠ ⊤ := coe_ne_top _
 
+-- Вещественное число, вложенное в `EReal`, никогда не равно `-∞`.
 theorem EReal.real_neq_neg_infty (x : ℝ) : (x : EReal) ≠ ⊥ := coe_ne_bot _
 
+-- `+∞` и `-∞` — различные элементы `EReal`.
 theorem EReal.infty_neq_neg_infty : (⊤ : EReal) ≠ (⊥ : EReal) := add_top_iff_ne_bot.mp rfl
 
 abbrev EReal.IsFinite (x : EReal) : Prop := ∃ (y : Real), y = x
 
 abbrev EReal.IsInfinite (x : EReal) : Prop := x = ⊤ ∨ x = ⊥
 
+-- Расширенное вещественное число бесконечно тогда и только тогда, когда оно не является конечным.
 theorem EReal.infinite_iff_not_finite (x : EReal) : x.IsInfinite ↔ ¬ x.IsFinite := by
   obtain ⟨ y, rfl ⟩ | rfl | rfl := EReal.def x <;> simp [IsFinite, IsInfinite]
 
@@ -126,6 +130,7 @@ theorem EReal.sup_of_infty_mem {E : Set EReal} (hE : ⊤ ∈ E) : sSup E = ⊤ :
 /-- Definition 6.2.6 -/
 theorem EReal.sup_of_neg_infty_mem {E : Set EReal} : sSup E = sSup (E \ {⊥}) := (sSup_diff_singleton_bot _).symm
 
+-- Инфимум множества `E` выражается через супремум противоположного множества: `sInf E = -sSup (-E)`.
 theorem EReal.inf_eq_neg_sup (E : Set EReal) : sInf E = - sSup (-E) := by
   simp_rw [←isGLB_iff_sInf_eq, isGLB_iff_le_iff, EReal.le_neg]
   intro b
@@ -182,8 +187,10 @@ noncomputable abbrev Chapter5.ExtendedReal.toEReal (x : ExtendedReal) : EReal :=
   | infty => ⊤
   | neg_infty => ⊥
 
+-- Отображение `toEReal`, отождествляющее расширенные вещественные числа Главы 5 с `EReal`, инъективно.
 theorem Chapter5.ExtendedReal.coe_inj : Function.Injective toEReal := by sorry
 
+-- Отображение `toEReal` сюръективно — каждый элемент `EReal` достижим из Главы 5.
 theorem Chapter5.ExtendedReal.coe_surj : Function.Surjective toEReal := by sorry
 
 noncomputable abbrev Chapter5.ExtendedReal.equivEReal : Chapter5.ExtendedReal ≃ EReal where

@@ -479,15 +479,18 @@ abbrev SetTheory.Set.coe_nonzero (n : ℕ) (h : n ≠ 0) : (Nat \ {(0 : Object)}
     exact Subtype.property (n : Nat)
   ⟩
 
+-- Прямая форма `f_3_3_3c_eval` для функции «вычитание единицы»: `f_3_3_3c (n+1) = n`.
 theorem SetTheory.Set.f_3_3_3c_eval' (n : ℕ) :
   f_3_3_3c (coe_nonzero (n+1) (by positivity)) = n := by
     symm
     simp [f_3_3_3c_eval]
 
+-- Конкретный числовой пример: `f_3_3_3c 4 = 3` (предшественник четырёх — тройка).
 theorem SetTheory.Set.f_3_3_3c_eval'' :
   f_3_3_3c (coe_nonzero 4 (by positivity)) = 3 := by
     exact f_3_3_3c_eval' 3
 
+-- Тот же пример, но с произвольным алгебраическим выражением вместо числового литерала.
 theorem SetTheory.Set.f_3_3_3c_eval''' (n : ℕ) :
     f_3_3_3c (coe_nonzero (2*n+3) (by positivity)) = (2*n+2 : ℕ) := by
       exact f_3_3_3c_eval' (2*n+2)
@@ -618,12 +621,14 @@ example : ∃ f : NNReal → NNReal, ∀ x y, y = f x ↔ y^2 = x := by
  -/
 abbrev SetTheory.Set.P_3_3_5 : Nat → Nat → Prop := fun _x y ↦ y = 7
 
+-- Условие `P_3_3_5` (константа 7) удовлетворяет `∃!`: для любого `x` единственный подходящий `y` — это `7`.
 theorem SetTheory.Set.P_3_3_5_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_5 x y := by
   apply ExistsUnique.intro 7 <;> simp [P_3_3_5]
 
 abbrev SetTheory.Set.f_3_3_5 : Function Nat Nat :=
   Function.mk P_3_3_5 P_3_3_5_existsUnique
 
+-- Частный случай `Function.eval` для `f_3_3_5`: значение функции всегда равно `7`.
 theorem SetTheory.Set.f_3_3_5_eval (x : Nat) : f_3_3_5 x = 7 := by
   symm
   rw [Function.eval]
@@ -661,6 +666,7 @@ abbrev SetTheory.Set.f_3_3_10a : Function Nat Nat :=
 abbrev SetTheory.Set.f_3_3_10b : Function Nat Nat :=
   Function.mk_fn (fun x ↦ ((x+1)^2 : ℕ))
 
+-- `f_3_3_10a` и `f_3_3_10b` — одна и та же функция: `x²+2x+1` и `(x+1)²` совпадают как многочлены.
 theorem SetTheory.Set.f_3_3_10_eq : f_3_3_10a = f_3_3_10b := by
   rw [Function.eq_iff]
   unfold f_3_3_10a f_3_3_10b
@@ -770,6 +776,7 @@ abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat :=
 abbrev SetTheory.Set.g_3_3_14 : Function Nat Nat :=
   Function.mk_fn (fun x ↦ (x+3 : ℕ))
 
+-- Вычисляет композицию `g ○ f`: сначала удваиваем, затем прибавляем 3, получаем `2x+3`.
 theorem SetTheory.Set.g_circ_f_3_3_14 :
   g_3_3_14 ○ f_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+3 : ℕ) : Nat)) := by
     -- simp [Function.eq_iff, Function.eval_of]
@@ -778,6 +785,8 @@ theorem SetTheory.Set.g_circ_f_3_3_14 :
     repeat rw [Function.eval_of] -- (Function.mk_fn f).to_fn x = f x
     rw [nat_equiv_coe_of_coe] -- nat_equiv.symm ↑n = n
 
+-- Вычисляет композицию в другом порядке, `f ○ g`, получая `2x+6` — не то же самое, что
+-- `g ○ f = 2x+3` выше, то есть композиция функций некоммутативна.
 theorem SetTheory.Set.f_circ_g_3_3_14 :
   f_3_3_14 ○ g_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+6 : ℕ) : Nat)) := by
     simp [Function.eq_iff, Function.eval_of]
@@ -1285,6 +1294,7 @@ theorem Function.refl {X Y : Set} (f : Function X Y) : f = f := by
   rfl
   -- exact Eq.refl (f x)
 
+-- равенство функций симметрично: `f = g` тогда и только тогда, когда `g = f`
 theorem Function.symm {X Y : Set} (f g : Function X Y) : f = g ↔ g = f := by
   rw [Function.eq_iff, Function.eq_iff]
   constructor <;>
@@ -1292,12 +1302,14 @@ theorem Function.symm {X Y : Set} (f g : Function X Y) : f = g ↔ g = f := by
     symm
     rw [h]
 
+-- равенство функций транзитивно: из `f = g` и `g = h` следует `f = h`
 theorem Function.trans {X Y : Set} {f g h : Function X Y}
   (hfg : f = g) (hgh : g = h) : f = h := by
     rw [Function.eq_iff] at *
     intro x
     rw [hfg, hgh]
 
+-- композиция корректно определена относительно равенства функций: равные сомножители дают равные композиции
 theorem Function.comp_congr {X Y Z : Set} {f f' : Function X Y}
   (hff' : f = f') {g g' : Function Y Z} (hgg' : g = g') :
     g ○ f = g' ○ f' := by
@@ -1319,6 +1331,7 @@ theorem Function.comp_of_inj {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
     apply hg
     exact h
 
+-- композиция двух сюръективных функций сюръективна
 theorem Function.comp_of_surj
   {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.onto)
     (hg : g.onto) : (g ○ f).onto := by
@@ -1449,6 +1462,7 @@ theorem Function.comp_cancel_left'
       specialize heq x
       exact hg (f x) (f' x) heq
 
+-- закон сокращения справа: если `g ○ f = g' ○ f` и `f` сюръективна, то `g = g'`
 theorem Function.comp_cancel_right
   {X Y Z : Set} {f : Function X Y} {g g' : Function Y Z}
     (heq : g ○ f = g' ○ f) (hf : f.onto) : g = g' := by

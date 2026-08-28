@@ -38,6 +38,7 @@ instance Series.instCoe : Coe (ℕ → ℝ) Series where
     vanish := by grind
   }
 
+-- Вложение `ℕ → ℝ` в `Series` сохраняет значения на натуральных индексах
 @[simp]
 theorem Series.eval_coe (a : ℕ → ℝ) (n : ℕ) : (a : Series).seq n = a n := by simp
 
@@ -46,18 +47,21 @@ abbrev Series.mk' {m : ℤ} (a : { n // n ≥ m } → ℝ) : Series where
   seq n := if h : n ≥ m then a ⟨n, h⟩ else 0
   vanish := by grind
 
-theorem Series.eval_mk' {m : ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h : n ≥ m) : 
+-- Ряд, построенный через `mk'`, на индексах `n ≥ m` совпадает с исходной функцией `a`
+theorem Series.eval_mk' {m : ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h : n ≥ m) :
     (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
 
 /-- Definition 7.2.2 (сходимость ряда) -/
 noncomputable abbrev Series.partial (s : Series) (N : ℤ) : ℝ := ∑ n ∈ Finset.Icc s.m N, s.seq n
 
+-- Частичная сумма ряда при увеличении верхней границы на 1 растёт на очередной член: `s.partial (N+1) = s.partial N + s.seq (N+1)`
 theorem Series.partial_succ (s : Series) {N : ℤ} (h : N ≥ s.m-1) : s.partial (N+1) = s.partial N + s.seq (N+1) := by
   unfold Series.partial
   rw [add_comm (s.partial N) _]
   convert Finset.sum_insert (show N+1 ∉ Finset.Icc s.m N by simp)
   symm; apply Finset.insert_Icc_right_eq_Icc_add_one; linarith
 
+-- Частичная сумма ряда до индекса, меньшего `s.m`, равна нулю
 theorem Series.partial_of_lt {s : Series} {N : ℤ} (h : N < s.m) : s.partial N = 0 := by
   unfold Series.partial
   rw [Finset.sum_eq_zero]
@@ -72,7 +76,8 @@ abbrev Series.diverges (s : Series) : Prop := ¬s.converges
 open Classical in
 noncomputable abbrev Series.sum (s : Series) : ℝ := if h : s.converges then h.choose else 0
 
-theorem Series.converges_of_convergesTo {s : Series} {L : ℝ} (h : s.convergesTo L) : 
+-- Если частичные суммы ряда сходятся к конкретному `L`, то ряд сходится
+theorem Series.converges_of_convergesTo {s : Series} {L : ℝ} (h : s.convergesTo L) :
     s.converges := by use L
 
 /-- Remark 7.2.3 -/
@@ -80,27 +85,34 @@ theorem Series.sum_of_converges {s : Series} {L : ℝ} (h : s.convergesTo L) : s
   simp [sum, converges_of_convergesTo h]
   exact tendsto_nhds_unique ((converges_of_convergesTo h).choose_spec) h
 
-theorem Series.convergesTo_uniq {s : Series} {L L' : ℝ} (h : s.convergesTo L) (h' : s.convergesTo L') : 
+-- Предел ряда единственен: если ряд сходится и к `L`, и к `L'`, то `L = L'`
+theorem Series.convergesTo_uniq {s : Series} {L L' : ℝ} (h : s.convergesTo L) (h' : s.convergesTo L') :
     L = L' := tendsto_nhds_unique h h'
 
+-- Если ряд сходится, то он сходится именно к `s.sum`
 theorem Series.convergesTo_sum {s : Series} (h : s.converges) : s.convergesTo s.sum := by
   simp [sum, h]; exact h.choose_spec
 
 /-- Example 7.2.4 -/
 noncomputable abbrev Series.example_7_2_4 := mk' (m := 1) (fun n ↦ (2 : ℝ)^(-n : ℤ))
 
+-- Пример 7.2.4: частичная сумма ряда `∑ 2⁻ⁿ` равна `1 - 2⁻ᴺ`
 theorem Series.example_7_2_4a {N : ℤ} (hN : N ≥ 1) : example_7_2_4.partial N = 1 - (2 : ℝ)^(-N) := by
   sorry
 
+-- Пример 7.2.4: ряд `∑ 2⁻ⁿ` сходится к `1`
 theorem Series.example_7_2_4b : example_7_2_4.convergesTo 1 := by sorry
 
+-- Пример 7.2.4: сумма ряда `∑ 2⁻ⁿ` равна `1`
 theorem Series.example_7_2_4c : example_7_2_4.sum = 1 := by sorry
 
 noncomputable abbrev Series.example_7_2_4' := mk' (m := 1) (fun n ↦ (2 : ℝ)^(n : ℤ))
 
+-- Частичная сумма ряда `∑ 2ⁿ` равна `2^(N+1) - 2`
 theorem Series.example_7_2_4'a {N : ℤ} (hN : N ≥ 1) : example_7_2_4'.partial N = (2 : ℝ)^(N+1) - 2 := by
   sorry
 
+-- Ряд `∑ 2ⁿ` расходится
 theorem Series.example_7_2_4'b : example_7_2_4'.diverges := by sorry
 
 /-- Proposition 7.2.5 / Exercise 7.2.2 -/
@@ -113,7 +125,8 @@ theorem Series.decay_of_converges {s : Series} (h : s.converges) :
     Filter.atTop.Tendsto s.seq (nhds 0) := by
   sorry
 
-theorem Series.diverges_of_nodecay {s : Series} (h : ¬ Filter.atTop.Tendsto s.seq (nhds 0)) : 
+-- Если члены ряда не стремятся к нулю, ряд расходится (следствие признака стремления к нулю)
+theorem Series.diverges_of_nodecay {s : Series} (h : ¬ Filter.atTop.Tendsto s.seq (nhds 0)) :
     s.diverges := by
   sorry
 
@@ -122,6 +135,7 @@ theorem Series.example_7_2_7 : ((fun _ : ℕ ↦ (1 : ℝ)) : Series).diverges :
   apply diverges_of_nodecay
   sorry
 
+-- Ряд `∑ (-1)ⁿ` расходится, так как его члены не стремятся к нулю
 theorem Series.example_7_2_7' : ((fun n : ℕ ↦ (-1 : ℝ)^n) : Series).diverges := by
   apply diverges_of_nodecay
   sorry
@@ -137,6 +151,7 @@ abbrev Series.condConverges (s : Series) : Prop := s.converges ∧ ¬ s.absConve
 theorem Series.converges_of_absConverges {s : Series} (h : s.absConverges) : s.converges := by
   sorry
 
+-- Для абсолютно сходящегося ряда модуль суммы не превосходит суммы модулей членов
 theorem Series.abs_le {s : Series} (h : s.absConverges) : |s.sum| ≤ s.abs.sum := by
   sorry
 
@@ -184,12 +199,15 @@ theorem Series.converges_of_alternating {m : ℤ} {a : { n // n ≥ m} → ℝ} 
 /-- Example 7.2.13 -/
 noncomputable abbrev Series.example_7_2_13 : Series := (mk' (m:=1) (fun n ↦ (-1 : ℝ)^(n : ℤ) / (n : ℤ)))
 
+-- Пример 7.2.13: знакочередующийся ряд `∑ (-1)ⁿ/n` сходится
 theorem Series.example_7_2_13a : example_7_2_13.converges := by
   sorry
 
+-- Пример 7.2.13: ряд `∑ (-1)ⁿ/n` не сходится абсолютно
 theorem Series.example_7_2_13b : ¬ example_7_2_13.absConverges := by
   sorry
 
+-- Пример 7.2.13: ряд `∑ (-1)ⁿ/n` сходится условно
 theorem Series.example_7_2_13c :  example_7_2_13.condConverges := by
   sorry
 
@@ -200,6 +218,7 @@ instance Series.inst_add : Add Series where
     vanish n hn := by simp [a.vanish n (by omega), b.vanish n (by omega)]
   }
 
+-- Сумма рядов, полученных из последовательностей `a` и `b`, — это ряд их поточечной суммы
 theorem Series.add_coe (a b : ℕ → ℝ) : (a : Series) + (b : Series) = (fun n ↦ a n + b n) := by
   ext n; rfl
   change (a : Series).seq n + (b : Series).seq n = _
@@ -210,7 +229,8 @@ theorem Series.convergesTo.add {s t : Series} {L M : ℝ} (hs : s.convergesTo L)
     (s + t).convergesTo (L + M) := by
   sorry
 
-theorem Series.add {s t : Series} (hs : s.converges) (ht : t.converges) : 
+-- Сумма двух сходящихся рядов сходится, и её сумма равна сумме сумм слагаемых
+theorem Series.add {s t : Series} (hs : s.converges) (ht : t.converges) :
     (s + t).converges ∧ (s+t).sum = s.sum + t.sum := by sorry
 
 instance Series.inst.smul : SMul ℝ Series where
@@ -220,6 +240,7 @@ instance Series.inst.smul : SMul ℝ Series where
     vanish := by grind
   }
 
+-- Умножение ряда, полученного из последовательности `a`, на константу `c` — это ряд `c * a n`
 theorem Series.smul_coe (a : ℕ → ℝ) (c : ℝ) : (c • a : Series) = (fun n ↦ c * a n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h, HSMul.hSMul, SMul.smul]
@@ -229,7 +250,8 @@ theorem Series.convergesTo.smul {s : Series} {L c : ℝ} (hs : s.convergesTo L) 
     (c • s).convergesTo (c * L) := by
   sorry
 
-theorem Series.smul {c : ℝ} {s : Series} (hs : s.converges) : 
+-- Умножение сходящегося ряда на константу `c` сохраняет сходимость и умножает сумму на `c`
+theorem Series.smul {c : ℝ} {s : Series} (hs : s.converges) :
     (c • s).converges ∧ (c • s).sum = c * s.sum := by sorry
 
 /-- Соответствующее API для вычитания отсутствовало в учебнике, но полезно в последующих разделах, поэтому включено здесь. -/
@@ -240,16 +262,19 @@ instance Series.inst_sub : Sub Series where
     vanish n hn := by simp [a.vanish n (by omega), b.vanish n (by omega)]
   }
 
+-- Разность рядов, полученных из последовательностей `a` и `b`, — это ряд их поточечной разности
 theorem Series.sub_coe (a b : ℕ → ℝ) : (a : Series) - (b : Series) = (fun n ↦ a n - b n) := by
   ext n; rfl
   change (a : Series).seq n - (b : Series).seq n = _
   by_cases h : n ≥ 0 <;> simp [h]
 
-theorem Series.convergesTo.sub {s t : Series} {L M : ℝ} (hs : s.convergesTo L) (ht : t.convergesTo M) : 
+-- Если `s` сходится к `L`, а `t` — к `M`, то `s - t` сходится к `L - M`
+theorem Series.convergesTo.sub {s t : Series} {L M : ℝ} (hs : s.convergesTo L) (ht : t.convergesTo M) :
     (s - t).convergesTo (L - M) := by
   sorry
 
-theorem Series.sub {s t : Series} (hs : s.converges) (ht : t.converges) : 
+-- Разность двух сходящихся рядов сходится, и её сумма равна разности сумм
+theorem Series.sub {s t : Series} (hs : s.converges) (ht : t.converges) :
     (s - t).converges ∧ (s-t).sum = s.sum - t.sum := by sorry
 
 abbrev Series.from (s : Series) (m₁ : ℤ) : Series := mk' (m := max s.m m₁) (fun n ↦ s.seq (n : ℤ))
@@ -258,7 +283,8 @@ abbrev Series.from (s : Series) (m₁ : ℤ) : Series := mk' (m := max s.m m₁)
 theorem Series.converges_from (s : Series) (k : ℕ) : s.converges ↔ (s.from (s.m+k)).converges := by
   sorry
 
-theorem Series.sum_from {s : Series} (k : ℕ) (h : s.converges) : 
+-- Сумма сходящегося ряда равна сумме первых `k` членов плюс сумма хвоста ряда, начинающегося с `s.m + k`
+theorem Series.sum_from {s : Series} (k : ℕ) (h : s.converges) :
     s.sum = ∑ n ∈ Finset.Ico s.m (s.m+k), s.seq n + (s.from (s.m+k)).sum := by
   sorry
 

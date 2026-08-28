@@ -65,9 +65,11 @@ abbrev Sequence.mk' (m : ℤ) (a : { n // n ≥ m } → ℝ) : Sequence where
   seq n := if h : n ≥ m then a ⟨n, h⟩ else 0
   vanish := by simp_all
 
+-- Значение последовательности, построенной через `mk'`, в точке `n ≥ m` совпадает со значением исходной функции `a` в этой точке.
 lemma Sequence.eval_mk {n m : ℤ} (a : { n // n ≥ m } → ℝ) (h : n ≥ m) : 
     (Sequence.mk' m a) n = a ⟨ n, h ⟩ := by simp [h]
 
+-- Последовательность, полученная приведением функции `a : ℕ → ℝ`, в точке `n` принимает значение `a n`.
 @[simp]
 lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℝ) : (a : Sequence) n = a n := by simp
 
@@ -79,6 +81,7 @@ lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℝ) : (a : Sequence) n = a n := 
 -/
 abbrev Sequence.from (a : Sequence) (m₁ : ℤ) : Sequence := mk' (max a.m m₁) (a ↑·)
 
+-- Сдвиг начала последовательности через `a.from m₁` не меняет значений `a` в точках `n ≥ m₁`.
 lemma Sequence.from_eval (a : Sequence) {m₁ n : ℤ} (hn : n ≥ m₁) : 
   (a.from m₁) n = a n := by
   simp [hn]; intros; symm; solve_by_elim [a.vanish]
@@ -139,6 +142,7 @@ lemma Sequence.IsCauchy.coe (a : ℕ → ℝ) :
   lift m to ℕ using mpos
   specialize h' n ?_ m ?_ <;> try grind
 
+-- Последовательность `mk' n₀ a` является последовательностью Коши тогда и только тогда, когда для любого `ε > 0` найдётся `N`, начиная с которого любые два члена отстоят друг от друга не более чем на `ε`.
 lemma Sequence.IsCauchy.mk {n₀ : ℤ} (a : {n // n ≥ n₀} → ℝ) : 
     (mk' n₀ a).IsCauchy
     ↔ ∀ ε > 0, ∃ N ≥ n₀, ∀ j ≥ N, ∀ k ≥ N, dist (mk' n₀ a j) (mk' n₀ a k) ≤ ε := by
@@ -163,12 +167,15 @@ abbrev Sequence.ofChapter5Sequence (a : Chapter5.Sequence) : Sequence :=
 instance Chapter5.Sequence.inst_coe_sequence : Coe Chapter5.Sequence Sequence where
   coe := Sequence.ofChapter5Sequence
 
+-- Приведение рациональной последовательности `a` из Главы 5 к вещественной сохраняет значения: `(a : Sequence) n = (a n : ℝ)`.
 @[simp]
 theorem Chapter5.coe_sequence_eval (a : Chapter5.Sequence) (n : ℤ) : (a : Sequence) n = (a n : ℝ) := rfl
 
+-- Рациональная `ε`-устойчивость последовательности `a` эквивалентна вещественной `ε`-устойчивости её приведения к `Sequence`.
 theorem Sequence.is_steady_of_rat (ε : ℚ) (a : Chapter5.Sequence) : 
     ε.Steady a ↔ (ε : ℝ).Steady (a : Sequence) := by sorry
 
+-- Аналогично для «в конце концов ε-устойчивости»: рациональная версия эквивалентна вещественной для приведённой последовательности.
 theorem Sequence.is_eventuallySteady_of_rat (ε : ℚ) (a : Chapter5.Sequence) : 
     ε.EventuallySteady a ↔ (ε : ℝ).EventuallySteady (a : Sequence) := by sorry
 
@@ -208,16 +215,19 @@ abbrev Real.EventuallyClose (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) : Prop 
 theorem Real.eventuallyClose_def (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) : 
   ε.EventuallyClose a L ↔ ∃ N, (N ≥ a.m) ∧ ε.CloseSeq (a.from N) L := by rfl
 
+-- Для последовательности, приведённой из функции `a : ℕ → ℝ`, `ε`-близость к `L` означает `dist (a n) L ≤ ε` для всех `n`.
 theorem Real.CloseSeq.coe (ε : ℝ) (a : ℕ → ℝ) (L : ℝ) : 
   (ε.CloseSeq a L) ↔ ∀ n, dist (a n) L ≤ ε := by
   constructor
   . intro h n; specialize h n; grind
   . intro h n hn; lift n to ℕ using (by omega); specialize h n; grind
 
+-- Если `a` является `ε₁`-близкой к `L` и `ε₁ ≤ ε₂`, то она и `ε₂`-близка к `L`.
 theorem Real.CloseSeq.mono {a : Chapter6.Sequence} {ε₁ ε₂ L : ℝ} (hε : ε₁ ≤ ε₂)
   (hclose : ε₁.CloseSeq a L) : 
     ε₂.CloseSeq a L := by peel 2 hclose; rw [Real.Close, Real.dist_eq] at *; linarith
 
+-- Аналогичная монотонность по `ε` для «в конце концов `ε`-близка».
 theorem Real.EventuallyClose.mono {a : Chapter6.Sequence} {ε₁ ε₂ L : ℝ} (hε : ε₁ ≤ ε₂)
   (hclose : ε₁.EventuallyClose a L) : 
     ε₂.EventuallyClose a L := by peel 2 hclose; grind [CloseSeq.mono]
@@ -226,6 +236,7 @@ namespace Chapter6
 abbrev Sequence.TendsTo (a : Sequence) (L : ℝ) : Prop :=
   ∀ ε > (0 : ℝ), ε.EventuallyClose a L
 
+-- `a.TendsTo L` означает, что для любого `ε > 0` последовательность `a` в конце концов `ε`-близка к `L`.
 theorem Sequence.tendsTo_def (a : Sequence) (L : ℝ) : 
   a.TendsTo L ↔ ∀ ε > (0 : ℝ), ε.EventuallyClose a L := by rfl
 
@@ -371,6 +382,7 @@ abbrev Sequence.IsBounded (a : Sequence) : Prop := ∃ M ≥ 0, a.BoundedBy M
 lemma Sequence.isBounded_def (a : Sequence) : 
   a.IsBounded ↔ ∃ M ≥ 0, a.BoundedBy M := by rfl
 
+-- Всякая последовательность Коши ограничена.
 theorem Sequence.bounded_of_cauchy {a : Sequence} (h : a.IsCauchy) : a.IsBounded := by
   sorry
 
@@ -391,9 +403,11 @@ instance Sequence.inst_add : Add Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Сумма последовательностей `a + b` в точке `n` равна сумме их значений `a n + b n`.
 @[simp]
 theorem Sequence.add_eval {a b : Sequence} (n : ℤ) : (a + b) n = a n + b n := rfl
 
+-- Сложение последовательностей, приведённых из функций `ℕ → ℝ`, совпадает с приведением их поточечной суммы.
 theorem Sequence.add_coe (a b : ℕ → ℝ) : (a : Sequence) + (b : Sequence) = (fun n ↦ a n + b n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -404,6 +418,7 @@ theorem Sequence.tendsTo_add {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
   (a+b).TendsTo (L+M) := by
   sorry
 
+-- Сумма сходящихся последовательностей сходится, и её предел равен сумме пределов.
 theorem Sequence.lim_add {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) : 
   (a + b).Convergent ∧ lim (a + b) = lim a + lim b := by
   sorry
@@ -415,9 +430,11 @@ instance Sequence.inst_mul : Mul Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Произведение последовательностей `a * b` в точке `n` равно произведению их значений `a n * b n`.
 @[simp]
 theorem Sequence.mul_eval {a b : Sequence} (n : ℤ) : (a * b) n = a n * b n := rfl
 
+-- Умножение приведённых последовательностей совпадает с приведением их поточечного произведения.
 theorem Sequence.mul_coe (a b : ℕ → ℝ) : (a : Sequence) * (b : Sequence) = (fun n ↦ a n * b n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -428,6 +445,7 @@ theorem Sequence.tendsTo_mul {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
     (a * b).TendsTo (L * M) := by
   sorry
 
+-- Произведение сходящихся последовательностей сходится, и его предел равен произведению пределов.
 theorem Sequence.lim_mul {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) : 
     (a * b).Convergent ∧ lim (a * b) = lim a * lim b := by
   sorry
@@ -440,9 +458,11 @@ instance Sequence.inst_smul : SMul ℝ Sequence where
     vanish n hn := by simp [a.vanish n hn]
   }
 
+-- Скалярное умножение `c • a` в точке `n` равно `c * a n`.
 @[simp]
 theorem Sequence.smul_eval {a : Sequence} (c : ℝ) (n : ℤ) : (c • a) n = c * a n := rfl
 
+-- Скалярное умножение приведённой последовательности совпадает с приведением поточечного умножения на `c`.
 theorem Sequence.smul_coe (c : ℝ) (a : ℕ → ℝ) : (c • (a : Sequence)) = (fun n ↦ c * a n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h, HSMul.hSMul, SMul.smul]
@@ -453,6 +473,7 @@ theorem Sequence.tendsTo_smul (c : ℝ) {a : Sequence} {L : ℝ} (ha : a.TendsTo
     (c • a).TendsTo (c * L) := by
   sorry
 
+-- Скалярное умножение сходящейся последовательности на `c` сохраняет сходимость, а предел умножается на `c`.
 theorem Sequence.lim_smul (c : ℝ) {a : Sequence} (ha : a.Convergent) : 
     (c • a).Convergent ∧ lim (c • a) = c * lim a := by
   sorry
@@ -464,9 +485,11 @@ instance Sequence.inst_sub : Sub Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Разность последовательностей `a - b` в точке `n` равна `a n - b n`.
 @[simp]
 theorem Sequence.sub_eval {a b : Sequence} (n : ℤ) : (a - b) n = a n - b n := rfl
 
+-- Вычитание приведённых последовательностей совпадает с приведением их поточечной разности.
 theorem Sequence.sub_coe (a b : ℕ → ℝ) : (a : Sequence) - (b : Sequence) = (fun n ↦ a n - b n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -477,6 +500,7 @@ theorem Sequence.tendsTo_sub {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
     (a - b).TendsTo (L - M) := by
   sorry
 
+-- Разность сходящихся последовательностей сходится, и её предел равен разности пределов.
 theorem Sequence.LIM_sub {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) : 
     (a - b).Convergent ∧ lim (a - b) = lim a - lim b := by
   sorry
@@ -488,9 +512,11 @@ noncomputable instance Sequence.inst_inv : Inv Sequence where
     vanish n hn := by simp [a.vanish n hn]
   }
 
+-- Обратная последовательность `a⁻¹` в точке `n` равна `(a n)⁻¹`.
 @[simp]
 theorem Sequence.inv_eval {a : Sequence} (n : ℤ) : (a⁻¹) n = (a n)⁻¹ := rfl
 
+-- Обращение приведённой последовательности совпадает с приведением поточечного обращения.
 theorem Sequence.inv_coe (a : ℕ → ℝ) : (a : Sequence)⁻¹ = (fun n ↦ (a n)⁻¹) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -501,6 +527,7 @@ theorem Sequence.tendsTo_inv {a : Sequence} {L : ℝ} (ha : a.TendsTo L) (hnon :
     (a⁻¹).TendsTo (L⁻¹) := by
   sorry
 
+-- Если предел `a` не равен нулю, то `a⁻¹` сходится, и её предел равен обратному к пределу `a`.
 theorem Sequence.lim_inv {a : Sequence} (ha : a.Convergent) (hnon : lim a ≠ 0) : 
   (a⁻¹).Convergent ∧ lim (a⁻¹) = (lim a)⁻¹ := by
   sorry
@@ -512,9 +539,11 @@ noncomputable instance Sequence.inst_div : Div Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Частное последовательностей `a / b` в точке `n` равно `a n / b n`.
 @[simp]
 theorem Sequence.div_eval {a b : Sequence} (n : ℤ) : (a / b) n = a n / b n := rfl
 
+-- Деление приведённых последовательностей совпадает с приведением их поточечного деления.
 theorem Sequence.div_coe (a b : ℕ → ℝ) : (a : Sequence) / (b : Sequence) = (fun n ↦ a n / b n) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -525,6 +554,7 @@ theorem Sequence.tendsTo_div {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
     (a / b).TendsTo (L / M) := by
   sorry
 
+-- Если `b` сходится к ненулевому пределу, то `a / b` сходится, и её предел равен частному пределов.
 theorem Sequence.lim_div {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) (hnon : lim b ≠ 0) : 
   (a / b).Convergent ∧ lim (a / b) = lim a / lim b := by
   sorry
@@ -536,9 +566,11 @@ instance Sequence.inst_max : Max Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Последовательность `a ⊔ b` в точке `n` равна `max (a n) (b n)`.
 @[simp]
 theorem Sequence.max_eval {a b : Sequence} (n : ℤ) : (a ⊔ b) n = (a n) ⊔ (b n) := rfl
 
+-- Максимум приведённых последовательностей совпадает с приведением поточечного максимума.
 theorem Sequence.max_coe (a b : ℕ → ℝ) : (a : Sequence) ⊔ (b : Sequence) = (fun n ↦ max (a n) (b n)) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -549,6 +581,7 @@ theorem Sequence.tendsTo_max {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
     (max a b).TendsTo (max L M) := by
   sorry
 
+-- Максимум сходящихся последовательностей сходится, и его предел равен максимуму пределов.
 theorem Sequence.lim_max {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) : 
     (max a b).Convergent ∧ lim (max a b) = max (lim a) (lim b) := by
   sorry
@@ -560,9 +593,11 @@ instance Sequence.inst_min : Min Sequence where
     vanish n hn := by simp [a.vanish n (by grind), b.vanish n (by grind)]
   }
 
+-- Последовательность `a ⊓ b` в точке `n` равна `min (a n) (b n)`.
 @[simp]
 theorem Sequence.min_eval {a b : Sequence} (n : ℤ) : (a ⊓ b) n = (a n) ⊓ (b n) := rfl
 
+-- Минимум приведённых последовательностей совпадает с приведением поточечного минимума.
 theorem Sequence.min_coe (a b : ℕ → ℝ) : (a : Sequence) ⊓ (b : Sequence) = (fun n ↦ min (a n) (b n)) := by
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
@@ -572,6 +607,7 @@ theorem Sequence.tendsTo_min {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb
     (min a b).TendsTo (min L M) := by
   sorry
 
+-- Минимум сходящихся последовательностей сходится, и его предел равен минимуму пределов.
 theorem Sequence.lim_min {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent) : 
     (min a b).Convergent ∧ lim (min a b) = min (lim a) (lim b) := by
   sorry
@@ -603,6 +639,7 @@ theorem Sequence.lim_div_fail :
     ∧ ¬ ((a / b).Convergent ∧ lim (a / b) = lim a / lim b) := by
   sorry
 
+-- Последовательность Коши из Главы 5 эквивалентна вещественной формулировке: для любого `ε > 0` найдётся `N`, начиная с которого любые два члена отстоят друг от друга не более чем на `ε`.
 theorem Chapter5.Sequence.IsCauchy_iff (a : Chapter5.Sequence) : 
     a.IsCauchy ↔ ∀ ε > (0 : ℝ), ∃ N ≥ a.n₀, ∀ n ≥ N, ∀ m ≥ N, |a n - a m| ≤ ε := by
   sorry

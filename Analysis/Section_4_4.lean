@@ -28,6 +28,7 @@ import Mathlib.Tactic
 theorem Rat.between_int (x : ℚ) : ∃! n : ℤ, n ≤ x ∧ x < n+1 := by
   sorry
 
+-- Для любого рационального `x` найдётся натуральное число, строго его превосходящее (архимедово свойство)
 theorem Nat.exists_gt (x : ℚ) : ∃ n : ℕ, n > x := by
   sorry
 
@@ -62,9 +63,11 @@ def Rat.pos_infinite_descent : Decidable (∃ a : ℕ → {x : ℚ // 0 < x}, �
 #check even_iff_exists_two_mul
 #check odd_iff_exists_bit1
 
+-- Каждое натуральное число либо чётно, либо нечётно
 theorem Nat.even_or_odd'' (n : ℕ) : Even n ∨ Odd n := by
   sorry
 
+-- Натуральное число не может быть одновременно чётным и нечётным
 theorem Nat.not_even_and_odd (n : ℕ) : ¬ (Even n ∧ Odd n) := by
   sorry
 

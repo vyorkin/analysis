@@ -56,6 +56,7 @@ abbrev Formal := AddMonoidAlgebra ℝ Dimensions
 structure Scalar (d : Dimensions) where
   val : ℝ
 
+-- Скаляр однозначно определяется своим числовым значением: отображение `Scalar.val` инъективно
 theorem Scalar.val_injective (d : Dimensions) : Function.Injective (Scalar.val (d := d)) :=
   fun x y h => by aesop
 
@@ -83,9 +84,11 @@ def Scalar.cast {d d' : Dimensions}  (q : Scalar d) (_ : d' = d := by module) : 
 theorem Scalar.cast_eq {d d' : Dimensions} (q : Scalar d) (q' : Scalar d') (h : d = d' := by module)
   : q.val = q'.val ↔ q = q'.cast h := by aesop
 
+-- Равенство скаляра приведённому симметрично: `q = q'.cast h` тогда и только тогда, когда `q' = q.cast h.symm`
 theorem Scalar.cast_eq_symm {d d' : Dimensions} (q : Scalar d) (q' : Scalar d') (h : d = d' := by module)
   : q = q'.cast h ↔ q' = q.cast h.symm := by aesop
 
+-- Приведение `Scalar.cast` не меняет числовое значение скаляра
 @[simp]
 theorem Scalar.cast_val {d d' : Dimensions} (q : Scalar d) (h : d' = d := by module)
   : (q.cast h).val = q.val := by aesop
@@ -124,6 +127,7 @@ theorem Scalar.toFormal_cast {d d' : Dimensions} (q : Scalar d) (h : d' = d := b
 instance Scalar.instZero {d : Dimensions} : Zero (Scalar d) where
   zero := ⟨ 0 ⟩
 
+-- Нулевой скаляр размерности `d` имеет числовое значение `0`
 @[simp]
 theorem Scalar.val_zero {d : Dimensions} : (0 : Scalar d).val = 0 := rfl
 
@@ -132,6 +136,7 @@ theorem Scalar.val_zero {d : Dimensions} : (0 : Scalar d).val = 0 := rfl
 также ввести API для пометки некоторых скаляров как положительных, но пока мы этого не реализуем. -/
 theorem Scalar.neZero_iff {d : Dimensions} (q : Scalar d) : NeZero q ↔ q.val ≠ 0 := by simp [_root_.neZero_iff, ←val_inj]
 
+-- Вложение нулевого скаляра в `Formal` даёт ноль этого кольца
 @[simp, norm_cast]
 theorem Scalar.toFormal_zero {d : Dimensions} : ((0 : Scalar d) : Formal) = 0 := by
   simp only [toFormal, AddMonoidAlgebra.single, val_zero, Finsupp.single_zero]
@@ -143,6 +148,7 @@ theorem Scalar.toFormal_zero {d : Dimensions} : ((0 : Scalar d) : Formal) = 0 :=
 instance Scalar.instAdd {d : Dimensions} : Add (Scalar d) where
   add q₁ q₂ := ⟨q₁.val + q₂.val⟩
 
+-- Сложение скаляров одной размерности складывает их числовые значения
 @[simp]
 theorem Scalar.val_add {d : Dimensions} (q₁ q₂ : Scalar d) : (q₁ + q₂).val = q₁.val + q₂.val := rfl
 
@@ -155,6 +161,7 @@ theorem Scalar.toFormal_add {d : Dimensions} (q₁ q₂ : Scalar d) : ((q₁ + q
 instance Scalar.instNeg {d : Dimensions} : Neg (Scalar d) where
   neg q := ⟨-q.val⟩
 
+-- Отрицание скаляра меняет знак его числового значения
 @[simp]
 theorem Scalar.val_neg {d : Dimensions} (q : Scalar d) : (-q).val = -q.val := rfl
 
@@ -162,6 +169,7 @@ instance Scalar.instNeZero_neg {d : Dimensions} (q : Scalar d) [h : NeZero q] : 
   rw [neZero_iff] at h ⊢
   simp [h]
 
+-- Вложение в `Formal` согласовано с отрицанием скаляра
 @[simp,norm_cast]
 theorem Scalar.toFormal_neg {d : Dimensions} (q : Scalar d) : ((-q : Scalar d) : Formal) = -(q : Formal) := by
   simp only [toFormal, val_neg, Finsupp.single_neg]; rfl
@@ -169,9 +177,11 @@ theorem Scalar.toFormal_neg {d : Dimensions} (q : Scalar d) : ((-q : Scalar d) :
 instance Scalar.instSub {d : Dimensions} : Sub (Scalar d) where
   sub q₁ q₂ := ⟨q₁.val - q₂.val⟩
 
+-- Вычитание скаляров одной размерности вычитает их числовые значения
 @[simp]
 theorem Scalar.val_sub {d : Dimensions} (q₁ q₂ : Scalar d) : (q₁ - q₂).val = q₁.val - q₂.val := rfl
 
+-- Вложение в `Formal` согласовано с вычитанием скаляров
 @[simp,norm_cast]
 theorem Scalar.toFormal_sub {d : Dimensions} (q₁ q₂ : Scalar d) : ((q₁ - q₂ : Scalar d) : Formal) = (q₁ : Formal) - q₂ := by
   simp only [toFormal, val_sub, Finsupp.single_sub]; rfl
@@ -179,6 +189,7 @@ theorem Scalar.toFormal_sub {d : Dimensions} (q₁ q₂ : Scalar d) : ((q₁ - q
 instance Scalar.instSMul {α} {d : Dimensions} [SMul α ℝ] : SMul α (Scalar d) where
   smul c q := ⟨c • q.val⟩
 
+-- Скалярное умножение на элемент `α` действует на числовое значение так же
 @[simp]
 theorem Scalar.val_smul {α} {d : Dimensions} [SMul α ℝ] (a : α) (q : Scalar d) : (a • q).val = a • q.val := rfl
 
@@ -195,25 +206,32 @@ def Scalar.ofReal (r : ℝ) : Scalar 0 := ⟨ r ⟩
 instance Scalar.instCoeReal : Coe ℝ (Scalar 0) where
   coe := ofReal
 
+-- Значение безразмерного скаляра, полученного из вещественного числа `r`, равно самому `r`
 @[simp]
 theorem Scalar.coe_val (r : ℝ) : (r : Scalar 0).val = r := rfl
 
+-- Вложение `ℝ → Scalar 0` переводит `0` в `0`
 @[norm_cast,simp]
 theorem Scalar.coe_zero : ((0 : ℝ) : Scalar 0) = 0 := rfl
 
+-- Безразмерный скаляр, полученный из `r`, ненулевой тогда и только тогда, когда `r ≠ 0`
 theorem Scalar.neZero_coe_iff {r : ℝ} : NeZero (r : Scalar 0) ↔ r ≠ 0 := by
   simp [neZero_iff]
 
+-- Вложение `ℝ → Scalar 0` инъективно
 @[simp]
 theorem Scalar.coe_inj {r s : ℝ} : (r : Scalar 0) = (s : Scalar 0) ↔ r = s := by
   simp [ofReal]
 
+-- Вложение `ℝ → Scalar 0` согласовано со сложением
 @[norm_cast,simp]
 theorem Scalar.coe_add (r s : ℝ) : ((r+s : ℝ) : Scalar 0) = (r : Scalar 0) + (s : Scalar 0) := rfl
 
+-- Вложение `ℝ → Scalar 0` согласовано с отрицанием
 @[norm_cast,simp]
 theorem Scalar.coe_neg (r : ℝ) : ((-r : ℝ) : Scalar 0) = -(r : Scalar 0) := rfl
 
+-- Вложение `ℝ → Scalar 0` согласовано с вычитанием
 @[norm_cast,simp]
 theorem Scalar.coe_sub (r s : ℝ) : ((r-s : ℝ) : Scalar 0) = (r : Scalar 0) - (s : Scalar 0) := by
   simp [ofReal]; rfl
@@ -223,41 +241,50 @@ theorem Scalar.coe_sub (r s : ℝ) : ((r-s : ℝ) : Scalar 0) = (r : Scalar 0) -
 noncomputable instance Formal.instCoeReal : Coe ℝ Formal where
   coe r := ((r : Scalar 0) : Formal)
 
+-- Вложение `ℝ → Formal` переводит `0` в `0`
 @[norm_cast,simp]
 theorem Formal.coe_zero : ((0 : ℝ) : Formal) = 0 := by
   simp
 
+-- Вложение `ℝ → Formal` переводит `1` в `1`
 @[norm_cast,simp]
 theorem Formal.coe_one : ((1 : ℝ) : Formal) = 1 := by
   rfl
 
+-- Вложение натурального `n` в `Formal` не зависит от того, идём ли мы напрямую или через `ℝ`
 @[norm_cast,simp]
 theorem Formal.coe_nat (n : ℕ) : ((n : ℝ) : Formal) = (n : Formal) := by
   rfl
 
+-- Вложение целого `n` в `Formal` не зависит от того, идём ли мы напрямую или через `ℝ`
 @[norm_cast,simp]
 theorem Formal.coe_int (n : ℤ) : ((n : ℝ) : Formal) = (n : Formal) := by
   rfl
 
+-- Вложение в `Formal` переводит скалярное умножение на вещественное `c` в обычное умножение на `(c : Formal)`
 @[norm_cast,simp]
 theorem Scalar.toFormal_smul {d : Dimensions} (c : ℝ) (q : Scalar d)
   : ((c • q : Scalar d) : Formal) = (c : Formal) * (q : Formal) := by
   simp [toFormal, AddMonoidAlgebra.single_mul_single]
 
 
+-- Скалярное умножение вещественного `c` на элемент `Formal` совпадает с умножением на его образ `(c : Formal)`
 @[simp]
 theorem Formal.smul_eq_mul (c : ℝ) (x : Formal) : c • x = (c : Formal) * x := by
   ext n
   simp [Scalar.toFormal]
 
+-- Тот же факт, что и `Formal.smul_eq_mul`, но для скаляра `c : ℕ`
 @[simp]
 theorem Formal.smul_eq_mul' (c : ℕ) (x : Formal) : c • x = (c : Formal) * x := by
   simp
 
+-- Тот же факт, что и `Formal.smul_eq_mul`, но для скаляра `c : ℤ`
 @[simp]
 theorem Formal.smul_eq_mul'' (c : ℤ) (x : Formal) : c • x = (c : Formal) * x := by
   exact zsmul_eq_mul x c
 
+-- Вложение `ℝ → Scalar 0` переводит произведение `r*s` в скалярное умножение `r • (s : Scalar 0)`
 @[norm_cast,simp]
 theorem Scalar.coe_mul (r s : ℝ) : ((r*s : ℝ) : Scalar 0) = r • (s : Scalar 0) := by
   ext; simp [ofReal]
@@ -272,17 +299,21 @@ instance Scalar.instModule {d : Dimensions} : Module ℝ (Scalar d) where
   mul_smul c1 c2 q := by simp [←toFormal_inj]; ring
   smul_zero c := by simp [←toFormal_inj]
 
+-- Умножение скаляра на натуральное `c` домножает его числовое значение на `c`
 @[simp]
 theorem Scalar.val_smul' {d : Dimensions} (c : ℕ) (q : Scalar d) : (c • q).val = c * q.val := by simp [←Nat.cast_smul_eq_nsmul ℝ]
 
+-- Умножение скаляра на целое `c` домножает его числовое значение на `c`
 @[simp]
 theorem Scalar.val_smul'' {d : Dimensions} (c : ℤ) (q : Scalar d) : (c • q).val = c * q.val := by simp [←Int.cast_smul_eq_zsmul ℝ]
 
+-- Вложение в `Formal` переводит умножение на натуральное `c` в обычное умножение на `(c : Formal)`
 @[norm_cast,simp]
 theorem Scalar.toFormal_smul' {d : Dimensions} (c : ℕ) (q : Scalar d)
   : ((c • q : Scalar d) : Formal) = (c : Formal) * (q : Formal) := by
   simp [←Nat.cast_smul_eq_nsmul ℝ]
 
+-- Вложение в `Formal` переводит умножение на целое `c` в обычное умножение на `(c : Formal)`
 @[norm_cast,simp]
 theorem Scalar.toFormal_smul'' {d : Dimensions} (c : ℤ) (q : Scalar d)
   : ((c • q : Scalar d) : Formal) = (c : Formal) * (q : Formal) := by
@@ -293,10 +324,12 @@ theorem Scalar.toFormal_smul'' {d : Dimensions} (c : ℤ) (q : Scalar d)
 instance Scalar.instHMul {d₁ d₂ : Dimensions} : HMul (Scalar d₁) (Scalar d₂) (Scalar (d₁ + d₂)) where
   hMul q₁ q₂ := ⟨q₁.val * q₂.val⟩
 
+-- Умножение скаляров разных размерностей перемножает их числовые значения
 @[simp]
 theorem Scalar.val_hMul {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Scalar d₂) : 
   (q₁ * q₂).val = q₁.val * q₂.val := rfl
 
+-- Вложение в `Formal` согласовано с умножением скаляров
 @[norm_cast,simp]
 theorem Scalar.toFormal_hMul {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Scalar d₂) : 
   ((q₁ * q₂ : Scalar _) : Formal) = (q₁ : Formal) * (q₂ : Formal) := by
@@ -312,10 +345,12 @@ noncomputable def Scalar.pow {d : Dimensions} (q : Scalar d) (n : ℕ) : Scalar 
 {kw (of := «term_^_»)}`^` зарезервирован для таких классов, мы вместо этого используем символ `**`. -/
 infix:80 "**" => Scalar.pow
 
+-- Возведение скаляра в степень `n` возводит в степень его числовое значение
 @[simp]
 theorem Scalar.val_pow {d : Dimensions} (q : Scalar d) (n : ℕ) : 
   (q ** n).val = q.val ^ n := rfl
 
+-- Вложение в `Formal` согласовано с возведением скаляра в степень
 @[norm_cast,simp]
 theorem Scalar.toFormal_pow {d : Dimensions} (q : Scalar d) (n : ℕ) : 
   ((q ** n) : Formal) = (q : Formal) ^ n := by
@@ -326,6 +361,7 @@ theorem Scalar.toFormal_pow {d : Dimensions} (q : Scalar d) (n : ℕ) :
 вход. -/
 noncomputable def Scalar.inv {d : Dimensions} (q : Scalar d) : Scalar (-d) := ⟨ q.val⁻¹ ⟩
 
+-- Обращение скаляра обращает его числовое значение
 @[simp]
 theorem Scalar.val_inv {d : Dimensions} (q : Scalar d) : 
   q.inv.val = q.val⁻¹ := rfl
@@ -334,6 +370,7 @@ instance Scalar.instNeg_inv {d : Dimensions} (q : Scalar d) [h : NeZero q] : NeZ
   rw [neZero_iff] at h ⊢
   simp [h]
 
+-- В кольце `Formal` ненулевой скаляр `q`, умноженный на обратный к нему `q.inv`, даёт `1`
 @[simp]
 theorem Scalar.mul_inv_self {d : Dimensions} (q : Scalar d) [h : NeZero q] : (q : Formal) * (q.inv : Formal) = 1 := by
   obtain ⟨ v ⟩ := q
@@ -341,18 +378,22 @@ theorem Scalar.mul_inv_self {d : Dimensions} (q : Scalar d) [h : NeZero q] : (q 
   simp [inv, toFormal, AddMonoidAlgebra.single_mul_single,← Formal.coe_one]
   congr; field_simp
 
+-- То же самое, что `Scalar.mul_inv_self`, но с обратным порядком сомножителей
 @[simp]
 theorem Scalar.inv_mul_self {d : Dimensions} (q : Scalar d) [h : NeZero q] :  (q.inv : Formal) * (q : Formal) = 1 := by
   rw [mul_comm, mul_inv_self]
 
+-- Обращение безразмерного скаляра, полученного из `r`, совпадает с вложением `r⁻¹`
 @[simp]
 theorem Scalar.inv_coe (r : ℝ) :  ((r : Scalar 0).inv : Formal) = ((r⁻¹ : ℝ) : Scalar 0) := by
   rw [←toFormal_cast _ (show 0 = -0 by module)]; congr
 
+-- Обращение произведения скаляров равно произведению обращений (с точностью до приведения размерностей)
 @[simp]
 theorem Scalar.mul_inv {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Scalar d₂) : (q₁ * q₂).inv = ((q₁.inv) * (q₂.inv)).cast := by
   simp [←toFormal_inj, toFormal]; congr 1; ring
 
+-- Обращение степени скаляра равно степени обращения (с точностью до приведения размерностей)
 @[simp]
 theorem Scalar.pow_inv {d : Dimensions} (q : Scalar d) (n : ℕ) : (q ** n).inv = (q.inv ** n).cast := by
   simp [←toFormal_inj, toFormal]
@@ -361,10 +402,12 @@ theorem Scalar.pow_inv {d : Dimensions} (q : Scalar d) (n : ℕ) : (q ** n).inv 
 noncomputable instance Scalar.instHDiv {d₁ d₂ : Dimensions} : HDiv (Scalar d₁) (Scalar d₂) (Scalar (d₁ - d₂)) where
   hDiv q₁ q₂ := ⟨q₁.val / q₂.val⟩
 
+-- Деление скаляров разных размерностей делит их числовые значения
 @[simp]
 theorem Scalar.val_hDiv {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Scalar d₂) : 
   (q₁ / q₂).val = q₁.val / q₂.val := rfl
 
+-- Вложение в `Formal` согласовано с делением скаляров
 @[norm_cast,simp]
 theorem Scalar.toFormal_hDiv {d₁ d₂ : Dimensions} (q₁ : Scalar d₁) (q₂ : Scalar d₂) : 
   ((q₁ / q₂ : Scalar _) : Formal) = (q₁ : Formal) * (q₂.inv : Formal) := by
@@ -380,29 +423,35 @@ noncomputable instance Scalar.instHDiv'' {d : Dimensions} : HDiv (Scalar d) ℕ 
 noncomputable instance Scalar.instHDiv''' {d : Dimensions} : HDiv (Scalar d) ℤ (Scalar d) where
   hDiv q n := q / (n : ℝ)
 
+-- Деление скаляра на вещественное число `r` делит его числовое значение на `r`
 @[simp]
 theorem Scalar.val_hDiv' {d : Dimensions} (q : Scalar d) (r : ℝ) : 
   (q / r).val = q.val / r := rfl
 
+-- То же самое, что `Scalar.val_hDiv'`, но для деления на натуральное `n`
 @[simp]
 theorem Scalar.val_hDiv'' {d : Dimensions} (q : Scalar d) (n : ℕ) : 
   (q / n).val = q.val / n := rfl
 
+-- То же самое, что `Scalar.val_hDiv'`, но для деления на целое `n`
 @[simp]
 theorem Scalar.val_hDiv''' {d : Dimensions} (q : Scalar d) (n : ℤ) : 
   (q / n).val = q.val / n := rfl
 
 
+-- Вложение в `Formal` согласовано с делением скаляра на вещественное число
 @[norm_cast,simp]
 theorem Scalar.toFormal_hDiv' {d : Dimensions} (q : Scalar d) (r : ℝ) : 
   ((q / r : Scalar _) : Formal) = (q : Formal) * ((r⁻¹ : ℝ) : Formal) := by
   simp [toFormal, AddMonoidAlgebra.single_mul_single]
   congr
 
+-- То же самое, что `Scalar.toFormal_hDiv'`, но для деления на натуральное `n`
 @[norm_cast,simp]
 theorem Scalar.toFormal_hDiv'' {d : Dimensions} (q : Scalar d) (n : ℕ) : 
   ((q / n : Scalar _) : Formal) = (q : Formal) * (((n : ℝ)⁻¹ : ℝ) : Formal) := toFormal_hDiv' _ _
 
+-- То же самое, что `Scalar.toFormal_hDiv'`, но для деления на целое `n`
 @[norm_cast,simp]
 theorem Scalar.toFormal_hDiv''' {d : Dimensions} (q : Scalar d) (n : ℤ) : 
   ((q / n : Scalar _) : Formal) = (q : Formal) * (((n : ℝ)⁻¹ : ℝ) : Formal) := toFormal_hDiv' _ _
@@ -411,6 +460,7 @@ theorem Scalar.toFormal_hDiv''' {d : Dimensions} (q : Scalar d) (n : ℤ) :
 instance Scalar.instLE (d : Dimensions) : LE (Scalar d) where
   le x y := x.val ≤ y.val
 
+-- Порядок на скалярах одной размерности задаётся порядком их числовых значений
 theorem Scalar.val_le {d : Dimensions} (x y : Scalar d) : 
   x ≤ y ↔ x.val ≤ y.val := by rfl
 
@@ -422,6 +472,7 @@ noncomputable instance Scalar.instLinearOrder (d : Dimensions) : LinearOrder (Sc
   le_total := by simp [val_le]; intros; apply LinearOrder.le_total
   toDecidableLE := Classical.decRel _
 
+-- Строгий порядок на скалярах одной размерности задаётся строгим порядком их числовых значений
 theorem Scalar.val_lt {d : Dimensions} (x y : Scalar d) : 
   x < y ↔ x.val < y.val := by simp only [lt_iff_not_ge, val_le]
 
@@ -441,32 +492,39 @@ noncomputable instance Scalar.instIsStrictOrderedModule (d : Dimensions) : IsStr
 равны {lean (type := "ℝ")}`1`. -/
 def StandardUnit (d : Dimensions) : Scalar d := ⟨ 1 ⟩
 
+-- Стандартная единица измерения размерности `d` имеет числовое значение `1`
 @[simp]
 theorem StandardUnit.val_eq (d : Dimensions) : (StandardUnit d).val = 1 := rfl
 
 instance StandardUnit.inst_NeZero (d : Dimensions) : NeZero (StandardUnit d) := by
   simp [Scalar.neZero_iff]
 
+-- Произведение стандартных единиц измерения — снова стандартная единица, для суммарной размерности
 @[simp]
 theorem StandardUnit.mul (d₁ d₂ : Dimensions) : StandardUnit d₁ * StandardUnit d₂ = StandardUnit (d₁+d₂) := by
   simp [←Scalar.val_inj]
 
+-- То же самое, что `StandardUnit.mul`, но записанное в кольце `Formal`
 @[simp]
 theorem StandardUnit.mul' (d₁ d₂ : Dimensions) : (StandardUnit d₁ : Formal) * (StandardUnit d₂ : Formal) = StandardUnit (d₁+d₂) := by
   rw [←Scalar.toFormal_hMul, mul]
 
+-- Степень стандартной единицы измерения — снова стандартная единица, для размерности `n • d`
 @[simp]
 theorem StandardUnit.pow (d : Dimensions) (n : ℕ) : StandardUnit d ** n = StandardUnit (n • d) := by
   simp [←Scalar.val_inj]
 
+-- То же самое, что `StandardUnit.pow`, но записанное в кольце `Formal`
 @[simp]
 theorem StandardUnit.pow' (d : Dimensions) (n : ℕ) : (StandardUnit d : Formal)^n = StandardUnit (n • d) := by
   rw [←Scalar.toFormal_pow, pow]
 
+-- Обратная к стандартной единице измерения — снова стандартная единица, для противоположной размерности
 @[simp]
 theorem StandardUnit.inv (d : Dimensions) : (StandardUnit d).inv = StandardUnit (-d) := by
   simp [←Scalar.val_inj]
 
+-- Частное стандартных единиц измерения — снова стандартная единица, для разностной размерности
 @[simp]
 theorem StandardUnit.div (d₁ d₂ : Dimensions) : StandardUnit d₁ / StandardUnit d₂ = StandardUnit (d₁-d₂) := by
   simp [←Scalar.val_inj]
@@ -474,18 +532,22 @@ theorem StandardUnit.div (d₁ d₂ : Dimensions) : StandardUnit d₁ / Standard
 /-- {lean}`unit.in q` — это {lean}`q : Scalar d`, измеренное в единицах {lean}`unit : Scalar d`. -/
 noncomputable def Scalar.in {d : Dimensions} (unit q : Scalar d) : ℝ := q.val / unit.val
 
+-- Раскрывает определение `Scalar.in`: значение `q` в единицах `unit` равно отношению их числовых значений
 @[simp]
 theorem Scalar.val_in (d : Dimensions) (unit q : Scalar d) : unit.in q = q.val / unit.val := rfl
 
+-- Любой скаляр `q` восстанавливается из своего значения в единицах `unit`: `q = (unit.in q) • unit`
 theorem Scalar.in_def {d : Dimensions} (unit q : Scalar d) [h : NeZero unit] : q = (unit.in q) • unit := by
   simp [neZero_iff] at h
   simp [←val_inj]
   field_simp
 
+-- Значение в единицах `unit` линейно по скалярному умножению: `unit.in (c • q) = c * unit.in q`
 @[simp]
 theorem Scalar.in_smul {d : Dimensions} (c : ℝ) (unit q : Scalar d) : unit.in (c • q) = c * unit.in q := by
   simp; ring
 
+-- Значение в фиксированных ненулевых единицах `unit` однозначно определяет скаляр
 theorem Scalar.in_inj {d : Dimensions} (unit q₁ q₂ : Scalar d) [h : NeZero unit] : unit.in q₁ = unit.in q₂ ↔ q₁ = q₂ := by
   simp [neZero_iff] at h
   simp [←val_inj]

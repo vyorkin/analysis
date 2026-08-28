@@ -23,9 +23,11 @@ theorem MonotoneOn.iff {X : Set ℝ} (f : ℝ → ℝ) : MonotoneOn f X  ↔ ∀
   . solve_by_elim
   simp
 
+-- Характеризация строгой монотонности `f` на `X` через явное неравенство `f y > f x` при `y > x`
 theorem StrictMono.iff {X : Set ℝ} (f : ℝ → ℝ) : StrictMonoOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y > f x := by
   constructor <;> intros <;> solve_by_elim
 
+-- Характеризация убывания `f` на `X` через явное неравенство `f y ≤ f x` при `y > x`
 theorem AntitoneOn.iff {X : Set ℝ} (f : ℝ → ℝ) : AntitoneOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y ≤ f x := by
   constructor
   . intros; solve_by_elim [le_of_lt]
@@ -33,6 +35,7 @@ theorem AntitoneOn.iff {X : Set ℝ} (f : ℝ → ℝ) : AntitoneOn f X  ↔ ∀
   . solve_by_elim
   simp
 
+-- Характеризация строгого убывания `f` на `X` через явное неравенство `f y < f x` при `y > x`
 theorem StrictAntitone.iff {X : Set ℝ} (f : ℝ → ℝ) : StrictAntiOn f X  ↔ ∀ x ∈ X, ∀ y ∈ X, y > x → f y < f x := by
   constructor <;> intros <;> solve_by_elim
 
@@ -85,20 +88,25 @@ example {R : ℝ} (hR : R > 0) {n : ℕ} (hn : n > 0) : ∃ g : ℝ → ℝ, ∀
 theorem IsMaxOn.of_monotone_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : MonotoneOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by sorry
 
+-- Строго возрастающая на `[a,b]` функция достигает максимума на этом отрезке
 theorem IsMaxOn.of_strictmono_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : StrictMonoOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by sorry
 
+-- Убывающая на `[a,b]` функция достигает максимума на этом отрезке
 theorem IsMaxOn.of_antitone_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : AntitoneOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by sorry
 
+-- Строго убывающая на `[a,b]` функция достигает максимума на этом отрезке
 theorem IsMaxOn.of_strictantitone_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : StrictAntiOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by
   sorry
 
+-- Монотонная на `[a,b]` функция ограничена на этом отрезке
 theorem BddOn.of_monotone {a b : ℝ} {f : ℝ → ℝ} (hf : MonotoneOn f (.Icc a b)) : 
   BddOn f (.Icc a b) := by
   sorry
 
+-- Убывающая на `[a,b]` функция ограничена на этом отрезке
 theorem BddOn.of_antitone {a b : ℝ} {f : ℝ → ℝ} (hf : AntitoneOn f (.Icc a b)) : 
   BddOn f (.Icc a b) := by
   sorry
@@ -111,16 +119,19 @@ theorem no_strictmono_intermediate_value :
       ∃ y, (y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) ∧
       ¬ ∃ c ∈ Set.Icc a b, f c = y := by sorry
 
+-- Контрпример: теорема о промежуточном значении не выполняется в общем случае для (не обязательно строго) монотонных функций
 theorem no_monotone_intermediate_value : 
     ∃ (a b : ℝ) (hab : a < b) (f : ℝ → ℝ) (hf : MonotoneOn f (.Icc a b)),
       ∃ y, (y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) ∧
       ¬ ∃ c ∈ Set.Icc a b, f c = y := by sorry
 
+-- Контрпример: теорема о промежуточном значении не выполняется в общем случае для строго убывающих функций
 theorem no_strictanti_intermediate_value : 
     ∃ (a b : ℝ) (hab : a < b) (f : ℝ → ℝ) (hf : StrictAntiOn f (.Icc a b)),
       ∃ y, (y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) ∧
       ¬ ∃ c ∈ Set.Icc a b, f c = y := by sorry
 
+-- Контрпример: теорема о промежуточном значении не выполняется в общем случае для убывающих функций
 theorem no_antitone_intermediate_value : 
     ∃ (a b : ℝ) (hab : a < b) (f : ℝ → ℝ) (hf : AntitoneOn f (.Icc a b)),
       ∃ y, (y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) ∧

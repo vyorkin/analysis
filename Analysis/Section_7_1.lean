@@ -282,7 +282,8 @@ theorem finite_series_refl {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : 
   nth_rewrite 2 [finite_series_of_fintype]
   convert map_finite_series _ hh with z
 
-theorem finite_series_comm {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : XX × YY → ℝ) : 
+-- Теорема Фубини для конечных сумм: порядок суммирования по `X` и `Y` можно менять местами
+theorem finite_series_comm {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : XX × YY → ℝ) :
     ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ y ∈ Y, ∑ x ∈ X, f (x, y) := by
   rw [finite_series_of_finite_series, finite_series_refl,
       finite_series_of_finite_series _ _ (fun z ↦ f (z.2, z.1))]

@@ -32,8 +32,10 @@ namespace Chapter5
 
 lemma Real.pow_zero (x : Real) : x ^ 0 = 1 := rfl
 
+/-- Индуктивный шаг определения натуральной степени: `x^(n+1) = x^n * x`. -/
 lemma Real.pow_succ (x : Real) (n : ℕ) : x ^ (n+1) = (x ^ n) * x := rfl
 
+/-- Степень образа рационального числа `q` в `Real` совпадает с образом рациональной степени: `(q : Real)^n = (q^n : ℚ)`. -/
 lemma Real.pow_of_coe (q : ℚ) (n : ℕ) : (q : Real) ^ n = (q ^ n : ℚ) := by induction' n with n hn <;> simp
 
 /- Утверждения ниже легко доказываются с помощью существующего API Mathlib (так как `Real` уже
@@ -70,9 +72,11 @@ theorem Real.pow_abs (x : Real) (n : ℕ) : |x|^n = |x^n| := by sorry
 /-- Definition 5.6.2 (возведение вещественного числа в целую степень). Здесь мы используем определение из Mathlib, происходящее от {name}`DivInvMonoid`. -/
 lemma Real.pow_eq_pow (x : Real) (n : ℕ) : x ^ (n : ℤ) = x ^ n := by rfl
 
+/-- Любое вещественное число в нулевой целой степени равно единице. -/
 @[simp]
 lemma Real.zpow_zero (x : Real) : x ^ (0 : ℤ) = 1 := by rfl
 
+/-- Отрицательная целая степень — обратная величина от степени с противоположным натуральным показателем: `x^(-n) = 1/x^n`. -/
 lemma Real.zpow_neg {x : Real} (n : ℕ) : x^(-n : ℤ) = 1 / (x^n) := by simp
 
 /-- Аналог Proposition 4.3.12(a) (сумма показателей) -/
@@ -90,6 +94,7 @@ theorem Real.zpow_pos {x : Real} (n : ℤ) (hx : x > 0) : x^n > 0 := by sorry
 /-- Аналог Proposition 4.3.12(b) (монотонность) -/
 theorem Real.zpow_ge_zpow {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n > 0) : x^n ≥ y^n := by sorry
 
+/-- Аналог Proposition 4.3.12(b) (монотонность для отрицательного показателя): при отрицательном `n` неравенство между основаниями обращается. -/
 theorem Real.zpow_ge_zpow_ofneg {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n < 0) : x^n ≤ y^n := by
   sorry
 
@@ -110,6 +115,7 @@ theorem Real.rootset_nonempty {x : Real} (hx : x ≥ 0) (n : ℕ) (hn : n ≥ 1)
   use 0
   sorry
 
+/-- Множество кандидатов `{y ≥ 0 | y^n ≤ x}` на корень n-й степени ограничено сверху. -/
 theorem Real.rootset_bddAbove {x : Real} (n : ℕ) (hn : n ≥ 1) : BddAbove { y : Real | y ≥ 0 ∧ y^n ≤ x } := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [_root_.bddAbove_def]
@@ -135,10 +141,12 @@ theorem Real.root_nonneg {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.
 /-- Lemma 5.6.6 (c) (положительность) / Exercise 5.6.1 -/
 theorem Real.root_pos {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.root n > 0 ↔ x > 0 := by sorry
 
-theorem Real.pow_of_root {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : 
+/-- Корень n-й степени из `x`, возведённый в n-ю степень, снова даёт `x`: `(x.root n)^n = x`. -/
+theorem Real.pow_of_root {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) :
   (x.root n)^n = x := by sorry
 
-theorem Real.root_of_pow {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : 
+/-- Корень n-й степени из `x^n` равен `x` (для неотрицательного `x`). -/
+theorem Real.root_of_pow {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) :
   (x^n).root n = x := by sorry
 
 /-- Lemma 5.6.6 (d) / Exercise 5.6.1 -/
@@ -159,8 +167,10 @@ theorem Real.root_mul {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn :
 /-- Lemma 5.6.6 (g) / Exercise 5.6.1 -/
 theorem Real.root_root {x : Real} (hx : x ≥ 0) {n m : ℕ} (hn : n ≥ 1) (hm : m ≥ 1) : (x.root n).root m = x.root (n*m) := by sorry
 
+/-- Корень первой степени из положительного `x` равен самому `x`. -/
 theorem Real.root_one {x : Real} (hx : x > 0) : x.root 1 = x := by sorry
 
+/-- На положительных числах возведение в n-ю степень (при `n ≥ 1`) инъективно. -/
 theorem Real.pow_cancel {y z : Real} (hy : y > 0) (hz : z > 0) {n : ℕ} (hn : n ≥ 1)
   (h : y^n = z^n) : y = z := by sorry
 
@@ -173,6 +183,7 @@ noncomputable abbrev Real.ratPow (x : Real) (q : ℚ) : Real := (x.root q.den)^(
 noncomputable instance Real.instRatPow : Pow Real ℚ where
   pow x q := x.ratPow q
 
+/-- Любое рациональное число `q` представимо как отношение целого числителя `a` к положительному натуральному знаменателю `b`. -/
 theorem Rat.eq_quot (q : ℚ) : ∃ a : ℤ, ∃ b : ℕ, b > 0 ∧ q = a / b := by
   use q.num, q.den; have := q.den_nz
   refine ⟨ by omega, (Rat.num_div_den q).symm ⟩
@@ -203,14 +214,17 @@ theorem Real.pow_root_eq_pow_root {a a' : ℤ} {b b' : ℕ} (hb : b > 0) (hb' : 
   have h4 : y^a' = x.root b := by rw [h2]; apply pow_of_root (root_nonneg _ _) <;> linarith
   rw [←h3, pow_mul, mul_comm, ←pow_mul, h4]
 
+/-- Явная формула для рациональной степени: `x^(a/b) = (x.root b)^a`. -/
 theorem Real.ratPow_def {x : Real} (hx : x > 0) (a : ℤ) {b : ℕ} (hb : b > 0) : x^(a/b : ℚ) = (x.root b)^a := by
   set q := (a/b : ℚ)
   convert pow_root_eq_pow_root hb _ _ hx
   . have := q.den_nz; omega
   rw [Rat.num_div_den q]
 
+/-- Частный случай рациональной степени: `x^(1/n) = x.root n`. -/
 theorem Real.ratPow_eq_root {x : Real} (hx : x > 0) {n : ℕ} (hn : n ≥ 1) : x^(1/n : ℚ) = x.root n := by sorry
 
+/-- Рациональная степень с целочисленным показателем `n` совпадает с обычной целой степенью `x^n`. -/
 theorem Real.ratPow_eq_pow {x : Real} (hx : x > 0) (n : ℤ) : x^(n : ℚ) = x^n := by sorry
 
 /-- Lemma 5.6.9(a) / Exercise 5.6.2 -/

@@ -45,11 +45,13 @@ noncomputable abbrev right_lim (f : ℝ → ℝ) (x₀ : ℝ) : ℝ := Filter.li
 
 noncomputable abbrev left_lim (f : ℝ → ℝ) (x₀ : ℝ) : ℝ := Filter.lim ((nhdsWithin x₀ (.Iio x₀)).map f)
 
+-- Если `f` сходится к `L` справа от `x₀`, то `right_lim f x₀ = L`
 theorem right_lim_def {f : ℝ → ℝ} {x₀ L : ℝ} (h : Convergesto (.Ioi x₀) f L x₀) : 
   right_lim f x₀ = L := by
   show Filter.lim _ = L
   apply lim_eq; rwa [Convergesto.iff, Filter.Tendsto.eq_1] at h
 
+-- Если `f` сходится к `L` слева от `x₀`, то `left_lim f x₀ = L`
 theorem left_lim_def {f : ℝ → ℝ} {x₀ L : ℝ} (h : Convergesto (.Iio x₀) f L x₀) : 
   left_lim f x₀ = L := by
   show Filter.lim _ = L
@@ -112,6 +114,7 @@ theorem right_lim_of_monotone {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) :
   apply (hf.monotoneOn _).tendsto_nhdsGT
   rw [bddBelow_def]; use f x₀; intro y hy; simp at hy; obtain ⟨ x, hx, rfl ⟩ := hy; apply hf; grind
 
+-- Явная формула правого предела монотонной `f`: `right_lim f x₀ = sInf (f '' Ioi x₀)`
 theorem right_lim_of_monotone' {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) : 
   right_lim f x₀ = sInf (f '' .Ioi x₀) := right_lim_def (right_lim_of_monotone x₀ hf)
 
@@ -122,9 +125,11 @@ theorem left_lim_of_monotone {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) :
   apply (hf.monotoneOn _).tendsto_nhdsLT
   rw [bddAbove_def]; use f x₀; intro y hy; simp at hy; obtain ⟨ x, hx, rfl ⟩ := hy; apply hf; grind
 
+-- Явная формула левого предела монотонной `f`: `left_lim f x₀ = sSup (f '' Iio x₀)`
 theorem left_lim_of_monotone' {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) : 
   left_lim f x₀ = sSup (f '' .Iio x₀) := left_lim_def (left_lim_of_monotone x₀ hf)
 
+-- Скачок `jump f x₀` монотонной функции всегда неотрицателен
 theorem jump_of_monotone {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) : 
   0 ≤ jump f x₀  := by
   simp [jump, left_lim_of_monotone' x₀ hf, right_lim_of_monotone' x₀ hf]
@@ -133,6 +138,7 @@ theorem jump_of_monotone {f : ℝ → ℝ} (x₀ : ℝ) (hf : Monotone f) :
   obtain ⟨ x, hx, rfl ⟩ := ha; obtain ⟨ y, hy, rfl ⟩ := hb
   apply hf; grind
 
+-- Для монотонной `f` и `a < b` правый предел в `a` не превосходит левого предела в `b`
 theorem right_lim_le_left_lim_of_monotone {f : ℝ → ℝ} {a b : ℝ} (hab : a < b)
   (hf : Monotone f) : 
   right_lim f a ≤ left_lim f b := by
@@ -157,6 +163,7 @@ noncomputable abbrev α_length (α : ℝ → ℝ) (I : BoundedInterval) : ℝ :=
 syntax:max term "[" term "]ₗ" : term
 macro_rules | `($α[$I]ₗ) => `(α_length $α $I)
 
+-- Длина по `α` пустого интервала равна нулю
 theorem α_length_of_empty (α : ℝ → ℝ) {I : BoundedInterval} (hI : (I : Set ℝ) = ∅) : α[I]ₗ = 0 :=
   match I with
   | Icc _ _ => by simp [Set.Icc_eq_empty_iff] at *; simp [*]
@@ -164,9 +171,11 @@ theorem α_length_of_empty (α : ℝ → ℝ) {I : BoundedInterval} (hI : (I : S
   | Ioc a b => by simp [Set.Ioc_eq_empty_iff] at *; intro h; have := le_antisymm hI h; subst this; simp
   | Ioo _ _ => by simp [Set.Ioo_eq_empty_iff] at *; simp [*]
 
+-- Длина по `α` вырожденного отрезка `{a}` равна скачку `jump α a`
 @[simp]
 theorem α_length_of_pt {α : ℝ → ℝ} (a : ℝ) : α[Icc a a]ₗ = jump α a := by simp [α_length, jump]
 
+-- Если `α` непрерывна на охватывающем `(a,b)`, длина `α[I]ₗ` сводится к разности значений `α I.b - α I.a`
 theorem α_length_of_cts {α : ℝ → ℝ} {I : BoundedInterval} {a b : ℝ}
   (haa : a < I.a) (hab : I.a ≤ I.b) (hbb : I.b < b)
   (hI : I ⊆ Ioo a b) (hα : ContinuousOn α (Ioo a b)) : 
@@ -207,28 +216,36 @@ theorem α_len_of_id (I : BoundedInterval) : (fun x ↦ x)[I]ₗ = |I|ₗ := by
 /-- Улучшенная версия {name}`BoundedInterval.joins`, которая также контролирует {name}`α_length`. -/
 abbrev BoundedInterval.joins' (K I J : BoundedInterval) : Prop :=  K.joins I J ∧ ∀ α : ℝ → ℝ, α[K]ₗ = α[I]ₗ + α[J]ₗ
 
+-- Усиленная версия `join_Icc_Ioc`: разбиение `Icc a c = Icc a b ∪ Ioc b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Icc_Ioc' {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Icc a c).joins' (Icc a b) (Ioc b c) := ⟨ join_Icc_Ioc hab hbc,
   by simp [α_length, show a ≤ b by grind, show b ≤ c by grind, show a ≤ c by grind] ⟩
 
 
+-- Усиленная версия `join_Icc_Ioo`: разбиение `Ico a c = Icc a b ∪ Ioo b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Icc_Ioo' {a b c : ℝ} (hab : a ≤ b) (hbc : b < c) : (Ico a c).joins' (Icc a b) (Ioo b c) := ⟨ join_Icc_Ioo hab hbc,
   by simp [α_length, show a ≤ b by grind, show b < c by grind, show a ≤ c by grind] ⟩
 
+-- Усиленная версия `join_Ioc_Ioc`: разбиение `Ioc a c = Ioc a b ∪ Ioc b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ioc_Ioc' {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Ioc a c).joins' (Ioc a b) (Ioc b c) := ⟨ join_Ioc_Ioc hab hbc,
   by simp [α_length, show a ≤ b by grind, show b ≤ c by grind, show a ≤ c by grind] ⟩
 
+-- Усиленная версия `join_Ioc_Ioo`: разбиение `Ioo a c = Ioc a b ∪ Ioo b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ioc_Ioo' {a b c : ℝ} (hab : a ≤ b) (hbc : b < c) : (Ioo a c).joins' (Ioc a b) (Ioo b c) := ⟨ join_Ioc_Ioo hab hbc,
   by simp [α_length, show a ≤ b by grind, show b < c by grind, show a < c by grind] ⟩
 
+-- Усиленная версия `join_Ico_Icc`: разбиение `Icc a c = Ico a b ∪ Icc b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ico_Icc' {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Icc a c).joins' (Ico a b) (Icc b c) := ⟨ join_Ico_Icc hab hbc,
   by simp [α_length, show a ≤ b by grind, show b ≤ c by grind, show a ≤ c by grind] ⟩
 
+-- Усиленная версия `join_Ico_Ico`: разбиение `Ico a c = Ico a b ∪ Ico b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ico_Ico' {a b c : ℝ} (hab : a ≤ b) (hbc : b ≤ c) : (Ico a c).joins' (Ico a b) (Ico b c) := ⟨ join_Ico_Ico hab hbc,
   by simp [α_length, show a ≤ b by grind, show b ≤ c by grind, show a ≤ c by grind] ⟩
 
+-- Усиленная версия `join_Ioo_Icc`: разбиение `Ioc a c = Ioo a b ∪ Icc b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ioo_Icc' {a b c : ℝ} (hab : a < b) (hbc : b ≤ c) : (Ioc a c).joins' (Ioo a b) (Icc b c) := ⟨ join_Ioo_Icc hab hbc,
   by simp [α_length, show a < b by grind, show b ≤ c by grind, show a ≤ c by grind] ⟩
 
+-- Усиленная версия `join_Ioo_Ico`: разбиение `Ioo a c = Ioo a b ∪ Ico b c` аддитивно и по `α_length`
 theorem BoundedInterval.join_Ioo_Ico' {a b c : ℝ} (hab : a < b) (hbc : b ≤ c) : (Ioo a c).joins' (Ioo a b) (Ico b c) := ⟨ join_Ioo_Ico hab hbc,
   by simp [α_length, show a < b by grind, show b ≤ c by grind, show a < c by grind] ⟩
 
@@ -248,6 +265,7 @@ noncomputable abbrev P_11_8_6 : Partition (Icc 1 3) :=
   (⊥ : Partition (Ico 1 2)).join (⊥ : Partition (Icc 2 3))
   (join_Ico_Icc (by norm_num) (by norm_num) )
 
+-- Проверка формулы RS-интеграла на конкретном примере 11.8.6
 theorem f_11_8_6_RS_integ : PiecewiseConstantWith.RS_integ f_11_8_6 P_11_8_6 (fun x ↦ x^2) = 22 := by
   sorry
 
@@ -264,6 +282,7 @@ open Classical in
 noncomputable abbrev PiecewiseConstantOn.RS_integ (f : ℝ → ℝ) (I : BoundedInterval) (α : ℝ → ℝ) : 
   ℝ := if h : PiecewiseConstantOn f I then PiecewiseConstantWith.RS_integ f h.choose α else 0
 
+-- RS-интеграл, определённый через инфимум/супремум, совпадает с явной формулой по разбиению `P`
 theorem PiecewiseConstantOn.RS_integ_def {f : ℝ → ℝ} {I : BoundedInterval} {P : Partition I}
   (h : PiecewiseConstantWith f P) (α : ℝ → ℝ) : RS_integ f I α = PiecewiseConstantWith.RS_integ f P α := by
   have h' : PiecewiseConstantOn f I := by use P
@@ -346,6 +365,7 @@ noncomputable abbrev upper_RS_integral (f : ℝ → ℝ) (I : BoundedInterval) (
 noncomputable abbrev lower_RS_integral (f : ℝ → ℝ) (I : BoundedInterval) (α : ℝ → ℝ) : ℝ :=
   sSup ((PiecewiseConstantOn.RS_integ · I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I})
 
+-- Постоянная мажоранта `M` даёт значение `M * α[I]ₗ` среди RS-интегралов кусочно-постоянных мажорант `f`
 lemma RS_integral_bound_upper_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedInterval}
   (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) {α : ℝ → ℝ} (hα : Monotone α)
   : M * α[I]ₗ ∈ (PiecewiseConstantOn.RS_integ · I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I} := by
@@ -354,6 +374,7 @@ lemma RS_integral_bound_upper_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : Bounde
   exact (ConstantOn.of_const (c := M) (by simp)).piecewiseConstantOn
 
 
+-- Постоянная миноранта `-M` даёт значение `-M * α[I]ₗ` среди RS-интегралов кусочно-постоянных минорант `f`
 lemma RS_integral_bound_lower_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : BoundedInterval} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) {α : ℝ → ℝ} (hα : Monotone α)
   : -M * α[I]ₗ ∈ (PiecewiseConstantOn.RS_integ · I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I} := by
   simp; refine ⟨ fun _ ↦ -M, ⟨ ⟨ ?_, ?_ ⟩, by convert PiecewiseConstantOn.RS_integ_const _ _ hα using 1; simp ⟩ ⟩
@@ -361,16 +382,19 @@ lemma RS_integral_bound_lower_of_bounded {f : ℝ → ℝ} {M : ℝ} {I : Bounde
   exact (ConstantOn.of_const (c := -M) (by simp)).piecewiseConstantOn
 
 
+-- Множество RS-интегралов кусочно-постоянных мажорант ограниченной `f` непусто
 lemma RS_integral_bound_upper_nonempty {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   ((PiecewiseConstantOn.RS_integ · I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
   choose M h using h; exact Set.nonempty_of_mem (RS_integral_bound_upper_of_bounded h hα)
 
+-- Множество RS-интегралов кусочно-постоянных минорант ограниченной `f` непусто
 lemma RS_integral_bound_lower_nonempty {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   ((PiecewiseConstantOn.RS_integ · I α) '' {g | MinorizesOn g f I ∧ PiecewiseConstantOn g I}).Nonempty := by
   choose M h using h; exact Set.nonempty_of_mem (RS_integral_bound_lower_of_bounded h hα)
 
+-- RS-интеграл любой кусочно-постоянной миноранты `f` не превосходит RS-интеграла любой мажоранты
 lemma RS_integral_bound_lower_le_upper {f : ℝ → ℝ} {I : BoundedInterval} {a b : ℝ}
   {α : ℝ → ℝ} (hα : Monotone α)
   (ha : a ∈ (PiecewiseConstantOn.RS_integ · I α) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I})
@@ -380,6 +404,7 @@ lemma RS_integral_bound_lower_le_upper {f : ℝ → ℝ} {I : BoundedInterval} {
     have ⟨ h, ⟨ ⟨ hmin, hhp⟩, hhi ⟩ ⟩ := hb
     rw [←hgi, ←hhi]; apply hhp.RS_integ_mono hα _ hgp; intro _ hx; linarith [hmin _ hx, hmaj _ hx]
 
+-- Множество RS-интегралов кусочно-постоянных мажорант `f` ограничено снизу
 lemma RS_integral_bound_below {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   BddBelow ((PiecewiseConstantOn.RS_integ · I α) ''
@@ -387,6 +412,7 @@ lemma RS_integral_bound_below {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn
     rw [bddBelow_def]; use (RS_integral_bound_lower_nonempty h hα).some
     intro a ha; exact RS_integral_bound_lower_le_upper hα ha (RS_integral_bound_lower_nonempty h hα).some_mem
 
+-- Множество RS-интегралов кусочно-постоянных минорант `f` ограничено сверху
 lemma RS_integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   BddAbove ((PiecewiseConstantOn.RS_integ · I α) ''
@@ -394,11 +420,13 @@ lemma RS_integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn
     rw [bddAbove_def]; use (RS_integral_bound_upper_nonempty h hα).some
     intro b hb; exact RS_integral_bound_lower_le_upper hα (RS_integral_bound_upper_nonempty h hα).some_mem hb
 
+-- Равномерная оценка `|f| ≤ M` даёт нижнюю границу `-M * α[I]ₗ` для нижнего RS-интеграла
 lemma le_lower_RS_integral {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   -M * α[I]ₗ ≤ lower_RS_integral f I α :=
   le_csSup (RS_integral_bound_above (BddOn.of_bounded h) hα) (RS_integral_bound_lower_of_bounded h hα)
 
+-- Нижний RS-интеграл не превосходит верхнего
 lemma lower_RS_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   lower_RS_integral f I α ≤ upper_RS_integral f I α := by
@@ -407,29 +435,34 @@ lemma lower_RS_integral_le_upper {f : ℝ → ℝ} {I : BoundedInterval} (h : Bd
   apply le_csInf (RS_integral_bound_upper_nonempty h hα)
   intros; solve_by_elim [RS_integral_bound_lower_le_upper]
 
+-- Равномерная оценка `|f| ≤ M` даёт верхнюю границу `M * α[I]ₗ` для верхнего RS-интеграла
 lemma RS_upper_integral_le {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   upper_RS_integral f I α ≤ M * α[I]ₗ :=
   csInf_le (RS_integral_bound_below (.of_bounded h) hα) (RS_integral_bound_upper_of_bounded h hα)
 
+-- Верхний RS-интеграл `f` не превосходит RS-интеграла любой её кусочно-постоянной мажоранты `g`
 lemma upper_RS_integral_le_integ {f g : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (hfg : MajorizesOn g f I) (hg : PiecewiseConstantOn g I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   upper_RS_integral f I α ≤ PiecewiseConstantOn.RS_integ g I α :=
   csInf_le (RS_integral_bound_below hf hα) ⟨ g, by simpa [hg] ⟩
 
+-- RS-интеграл любой кусочно-постоянной миноранты `h` функции `f` не превосходит нижнего RS-интеграла `f`
 lemma integ_le_lower_RS_integral {f h : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (hfh : MinorizesOn h f I) (hg : PiecewiseConstantOn h I)
   {α : ℝ → ℝ} (hα : Monotone α) : 
   PiecewiseConstantOn.RS_integ h I α ≤ lower_RS_integral f I α :=
   le_csSup (RS_integral_bound_above hf hα) ⟨ h, by simpa [hg] ⟩
 
+-- Если `X` больше верхнего RS-интеграла `f`, найдётся мажорирующая кусочно-постоянная `g` с RS-интегралом меньше `X`
 lemma lt_of_gt_upper_RS_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) {X : ℝ} (hX : upper_RS_integral f I α < X ) : 
   ∃ g, MajorizesOn g f I ∧ PiecewiseConstantOn g I ∧ PiecewiseConstantOn.RS_integ g I α < X := by
   have ⟨ Y, hY, hYX ⟩ := exists_lt_of_csInf_lt (RS_integral_bound_upper_nonempty hf hα) hX
   simp at hY; have ⟨ g, ⟨ hmaj, hgp ⟩, hgi ⟩ := hY; exact ⟨ g, hmaj, hgp, by rwa [hgi] ⟩
 
+-- Если `X` меньше нижнего RS-интеграла `f`, найдётся минорирующая кусочно-постоянная `h` с RS-интегралом больше `X`
 lemma gt_of_lt_lower_RS_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   {α : ℝ → ℝ} (hα : Monotone α) {X : ℝ} (hX : X < lower_RS_integral f I α) : 
   ∃ h, MinorizesOn h f I ∧ PiecewiseConstantOn h I ∧ X < PiecewiseConstantOn.RS_integ h I α := by
@@ -447,14 +480,17 @@ theorem upper_RS_integral_eq_upper_integral (f : ℝ → ℝ) (I : BoundedInterv
   upper_RS_integral f I (fun x ↦ x) = upper_integral f I := by
   sorry
 
+-- Нижний RS-интеграл с весом `α(x) = x` совпадает с обычным нижним интегралом Римана
 theorem lower_RS_integral_eq_lower_integral (f : ℝ → ℝ) (I : BoundedInterval) : 
   lower_RS_integral f I (fun x ↦ x) = lower_integral f I := by
   sorry
 
+-- RS-интеграл с весом `α(x) = x` совпадает с обычным интегралом Римана
 theorem RS_integ_eq_integ (f : ℝ → ℝ) (I : BoundedInterval) : 
   RS_integ f I (fun x ↦ x) = integ f I := by
   sorry
 
+-- Интегрируемость по Риману–Стилтьесу с весом `α(x) = x` равносильна обычной интегрируемости по Риману
 theorem RS_IntegrableOn_iff_IntegrableOn (f : ℝ → ℝ) (I : BoundedInterval) : 
   RS_IntegrableOn f I (fun x ↦ x) ↔ IntegrableOn f I := by
   sorry

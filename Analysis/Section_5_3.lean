@@ -34,6 +34,7 @@ class CauchySequence extends Sequence where
   zero : n₀ = 0
   cauchy : toSequence.IsCauchy
 
+-- две последовательности Коши с одинаковой функцией `seq` равны как `CauchySequence` (поле `zero` фиксирует `n₀ = 0` у обеих)
 theorem CauchySequence.ext' {a b : CauchySequence} (h : a.seq = b.seq) : a = b := by
   apply CauchySequence.ext _ h
   rw [a.zero, b.zero]
@@ -47,20 +48,23 @@ abbrev CauchySequence.mk' {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : Cau
   zero := rfl
   cauchy := ha
 
+-- Sequence, лежащая внутри `CauchySequence.mk' ha`, совпадает с приведением `a : ℕ → ℚ` к `Sequence`
 @[simp]
-theorem CauchySequence.coe_eq {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : 
+theorem CauchySequence.coe_eq {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) :
     (mk' ha).toSequence = (a : Sequence) := rfl
 
 instance CauchySequence.instCoeFun : CoeFun CauchySequence (fun _ ↦ ℕ → ℚ) where
   coe a n := a.toSequence (n : ℤ)
 
+-- если `CauchySequence a` сначала привести к функции `ℕ → ℚ`, а затем обратно к `Sequence`, получится исходная `a.toSequence`
 @[simp]
-theorem CauchySequence.coe_to_sequence (a : CauchySequence) : 
+theorem CauchySequence.coe_to_sequence (a : CauchySequence) :
     ((a : ℕ → ℚ) : Sequence) = a.toSequence := by
   apply Sequence.ext (by simp [Sequence.n0_coe, a.zero])
   ext n; by_cases h : n ≥ 0 <;> simp_all
   rw [a.vanish]; rwa [a.zero]
 
+-- `CauchySequence.mk' ha`, если рассматривать её как функцию (через `CoeFun`), совпадает с исходной `a`
 @[simp]
 theorem CauchySequence.coe_coe {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : mk' ha = a := by rfl
 
@@ -77,6 +81,7 @@ instance CauchySequence.instSetoid : Setoid CauchySequence where
      trans := sorry
   }
 
+-- отношение эквивалентности `≈` на `CauchySequence` (из `instSetoid`) совпадает с `Sequence.Equiv`
 theorem CauchySequence.equiv_iff (a b : CauchySequence) : a ≈ b ↔ Sequence.Equiv a b := by rfl
 
 /-- Каждая постоянная последовательность является последовательностью Коши. -/
@@ -96,7 +101,8 @@ open Classical in
 noncomputable abbrev LIM (a : ℕ → ℚ) : Real :=
   Quotient.mk _ (if h : (a : Sequence).IsCauchy then CauchySequence.mk' h else (0 : CauchySequence))
 
-theorem LIM_def {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : 
+-- для последовательности Коши `a`, `LIM a` вычисляется как класс `CauchySequence.mk' ha`
+theorem LIM_def {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) :
     LIM a = Quotient.mk _ (CauchySequence.mk' ha) := by
   rw [LIM, dif_pos ha]
 
@@ -210,7 +216,8 @@ noncomputable instance Real.mul_inst : Mul Real where
       all_goals apply Sequence.IsCauchy.mul <;> rw [CauchySequence.coe_to_sequence] <;> convert @CauchySequence.cauchy ?_
       )
 
-theorem Real.LIM_mul {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) : 
+-- умножение вещественных чисел согласовано с `LIM`: предел произведения последовательностей равен произведению пределов
+theorem Real.LIM_mul {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) :
   LIM a * LIM b = LIM (a * b) := by
   simp_rw [LIM_def ha, LIM_def hb, LIM_def (Sequence.IsCauchy.mul ha hb)]
   convert Quotient.liftOn₂_mk _ _ _ _ using 1
@@ -220,6 +227,7 @@ instance Real.instRatCast : RatCast Real where
   ratCast := fun q ↦
     Quotient.mk _ (CauchySequence.mk' (a := fun _ ↦ q) (Sequence.IsCauchy.const q))
 
+-- приведение рационального `q` к `Real` совпадает с `LIM` постоянной последовательности `q`
 theorem Real.ratCast_def (q : ℚ) : (q : Real) = LIM (fun _ ↦ q) := by rw [LIM_def]; rfl
 
 /-- Exercise 5.3.3 -/
@@ -233,6 +241,7 @@ instance Real.instOfNat {n : ℕ} : OfNat Real n where
 instance Real.instNatCast : NatCast Real where
   natCast n := ((n : ℚ) : Real)
 
+-- `LIM` нулевой (постоянной) последовательности равен нулю вещественных чисел
 @[simp]
 theorem Real.LIM.zero : LIM (fun _ ↦ (0 : ℚ)) = 0 := by rw [←ratCast_def 0]; rfl
 
@@ -254,16 +263,19 @@ theorem Real.neg_ratCast (a : ℚ) : -(a : Real) = (-a : ℚ) := by sorry
 /-- Возможно, здесь гипотезу {name (full := Sequence.IsCauchy)}`IsCauchy` можно опустить. -/
 theorem Real.neg_LIM (a : ℕ → ℚ) (ha : (a : Sequence).IsCauchy) : -LIM a = LIM (-a) := by sorry
 
-theorem Sequence.IsCauchy.neg (a : ℕ → ℚ) (ha : (a : Sequence).IsCauchy) : 
+-- отрицание последовательности Коши снова является последовательностью Коши
+theorem Sequence.IsCauchy.neg (a : ℕ → ℚ) (ha : (a : Sequence).IsCauchy) :
     ((-a : ℕ → ℚ) : Sequence).IsCauchy := by sorry
 
 /-- Proposition 5.3.11 (законы алгебры) -/
 noncomputable instance Real.addGroup_inst : AddGroup Real :=
   AddGroup.ofLeftAxioms (by sorry) (by sorry) (by sorry)
 
+-- вычитание вещественных чисел по определению есть сложение с противоположным
 theorem Real.sub_eq_add_neg (x y : Real) : x - y = x + (-y) := rfl
 
-theorem Sequence.IsCauchy.sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) : 
+-- разность двух последовательностей Коши снова является последовательностью Коши
+theorem Sequence.IsCauchy.sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) :
     ((a-b : ℕ → ℚ) : Sequence).IsCauchy := by sorry
 
 /-- {name}`LIM` дистрибутивен относительно вычитания -/
@@ -308,6 +320,7 @@ abbrev Real.ratCast_hom : ℚ →+* Real where
 abbrev BoundedAwayZero (a : ℕ → ℚ) : Prop :=
   ∃ (c : ℚ), c > 0 ∧ ∀ n, |a n| ≥ c
 
+-- разворачивает `BoundedAwayZero` в определение: последовательность ограничена по модулю снизу некоторой положительной константой `c`
 theorem bounded_away_zero_def (a : ℕ → ℚ) : BoundedAwayZero a ↔
   ∃ (c : ℚ), c > 0 ∧ ∀ n, |a n| ≥ c := by rfl
 
@@ -359,6 +372,7 @@ theorem Real.lim_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAwayZero a)
   (ha_cauchy : (a : Sequence).IsCauchy) : 
     LIM a ≠ 0 := by sorry
 
+-- члены последовательности, отделённой от нуля, сами не равны нулю
 theorem Real.nonzero_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAwayZero a) (n : ℕ) : a n ≠ 0 := by
    choose c hc ha using ha; specialize ha n; contrapose! ha; simp [ha, hc]
 
@@ -408,7 +422,8 @@ open Classical in
 noncomputable instance Real.instInv : Inv Real where
   inv x := if h : x ≠ 0 then LIM (boundedAwayZero_of_nonzero h).choose⁻¹ else 0
 
-theorem Real.inv_def {a : ℕ → ℚ} (h : BoundedAwayZero a) (hc : (a : Sequence).IsCauchy) : 
+-- обращение `LIM a` (при `a`, отделённой от нуля и являющейся последовательностью Коши) вычисляется как `LIM` обратной последовательности `a⁻¹`
+theorem Real.inv_def {a : ℕ → ℚ} (h : BoundedAwayZero a) (hc : (a : Sequence).IsCauchy) :
     (LIM a)⁻¹ = LIM a⁻¹ := by
   observe hx : LIM a ≠ 0
   set x := LIM a
@@ -416,18 +431,23 @@ theorem Real.inv_def {a : ℕ → ℚ} (h : BoundedAwayZero a) (hc : (a : Sequen
   simp [Inv.inv, hx]
   exact inv_of_equiv h2 h1 h hc h3.symm
 
+-- обратное к нулю вещественное число снова равно нулю (по соглашению)
 @[simp]
 theorem Real.inv_zero : (0 : Real)⁻¹ = 0 := by simp [Inv.inv]
 
+-- произведение ненулевого вещественного числа `x` на своё обратное `x⁻¹` равно единице
 theorem Real.self_mul_inv {x : Real} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
   sorry
 
+-- то же, что и `Real.self_mul_inv`, но множители переставлены местами: `x⁻¹ * x = 1`
 theorem Real.inv_mul_self {x : Real} (hx : x ≠ 0) : x⁻¹ * x = 1 := by
   sorry
 
+-- постоянная последовательность ненулевого рационального `q` отделена от нуля
 lemma BoundedAwayZero.const {q : ℚ} (hq : q ≠ 0) : BoundedAwayZero fun _ ↦ q := by
   use |q|; simp [hq]
 
+-- приведение к `Real` коммутирует с обращением: `(q : Real)⁻¹ = (q⁻¹ : ℚ)`
 theorem Real.inv_ratCast (q : ℚ) : (q : Real)⁻¹ = (q⁻¹ : ℚ) := by
   by_cases h : q = 0
   . rw [h, ← show (0 : Real) = (0 : ℚ) by norm_cast]; norm_num; norm_cast
@@ -436,6 +456,7 @@ theorem Real.inv_ratCast (q : ℚ) : (q : Real)⁻¹ = (q⁻¹ : ℚ) := by
 /-- Определение деления по умолчанию. -/
 noncomputable instance Real.instDivInvMonoid : DivInvMonoid Real where
 
+-- деление вещественных чисел по определению есть умножение на обратное
 theorem Real.div_eq (x y : Real) : x/y = x * y⁻¹ := rfl
 
 noncomputable instance Real.instField : Field Real where
@@ -446,8 +467,10 @@ noncomputable instance Real.instField : Field Real where
   qsmul := _
   nnqsmul := _
 
+-- на ненулевой множитель можно сокращать: из `x*z = y*z` при `z ≠ 0` следует `x = y`
 theorem Real.mul_right_cancel₀ {x y z : Real} (hz : z ≠ 0) (h : x * z = y * z) : x = y := by sorry
 
+-- при `z = 0` сокращение уже не выполняется: неверно, что `x*z = y*z` всегда влечёт `x = y`
 theorem Real.mul_right_nocancel : ¬ ∀ (x y z : Real), (hz : z = 0) → (x * z = y * z) → x = y := by
   sorry
 

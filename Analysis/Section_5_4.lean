@@ -61,12 +61,15 @@ example : ¬ BoundedAwayNeg (fun n ↦ (-1)^n) := by
 /-- Examples 5.4.2 -/
 example : BoundedAwayZero (fun n ↦ (-1)^n) := ⟨ 1, by norm_num, by intros; simp ⟩
 
+-- последовательность, отделённая от нуля положительной константой, отделена от нуля и в обычном смысле
 theorem BoundedAwayZero.boundedAwayPos {a : ℕ → ℚ} (ha : BoundedAwayPos a) : BoundedAwayZero a := by
   peel 3 ha with c h1 n h2; rwa [abs_of_nonneg (by linarith)]
 
+-- последовательность, отделённая от нуля отрицательной константой, отделена от нуля и в обычном смысле
 theorem BoundedAwayZero.boundedAwayNeg {a : ℕ → ℚ} (ha : BoundedAwayNeg a) : BoundedAwayZero a := by
   peel 3 ha with c h1 n h2; rw [abs_of_neg (by linarith)]; linarith
 
+-- последовательность не может быть одновременно отделена от нуля и сверху, и снизу
 theorem not_boundedAwayPos_boundedAwayNeg {a : ℕ → ℚ} : ¬ (BoundedAwayPos a ∧ BoundedAwayNeg a) := by
   intro ⟨ ⟨ _, _, h2⟩ , ⟨ _, _, h4 ⟩ ⟩; linarith [h2 0, h4 0]
 
@@ -76,10 +79,12 @@ abbrev Real.IsPos (x : Real) : Prop :=
 abbrev Real.IsNeg (x : Real) : Prop :=
   ∃ a : ℕ → ℚ, BoundedAwayNeg a ∧ (a : Sequence).IsCauchy ∧ x = LIM a
 
-theorem Real.isPos_def (x : Real) : 
+-- разворачивает `Real.IsPos` в определение: `x` положительно, если `x = LIM a` для некоторой последовательности Коши `a`, отделённой от нуля положительной константой
+theorem Real.isPos_def (x : Real) :
     IsPos x ↔ ∃ a : ℕ → ℚ, BoundedAwayPos a ∧ (a : Sequence).IsCauchy ∧ x = LIM a := by rfl
 
-theorem Real.isNeg_def (x : Real) : 
+-- разворачивает `Real.IsNeg` в определение: `x` отрицательно, если `x = LIM a` для некоторой последовательности Коши `a`, отделённой от нуля отрицательной константой
+theorem Real.isNeg_def (x : Real) :
     IsNeg x ↔ ∃ a : ℕ → ℚ, BoundedAwayNeg a ∧ (a : Sequence).IsCauchy ∧ x = LIM a := by rfl
 
 /-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
@@ -88,6 +93,7 @@ theorem Real.trichotomous (x : Real) : x = 0 ∨ x.IsPos ∨ x.IsNeg := by sorry
 /-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.not_zero_pos (x : Real) : ¬(x = 0 ∧ x.IsPos) := by sorry
 
+-- положительное вещественное число не равно нулю
 theorem Real.nonzero_of_pos {x : Real} (hx : x.IsPos) : x ≠ 0 := by
   have := not_zero_pos x
   simpa [hx] using this
@@ -95,6 +101,7 @@ theorem Real.nonzero_of_pos {x : Real} (hx : x.IsPos) : x ≠ 0 := by
 /-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.not_zero_neg (x : Real) : ¬(x = 0 ∧ x.IsNeg) := by sorry
 
+-- отрицательное вещественное число не равно нулю
 theorem Real.nonzero_of_neg {x : Real} (hx : x.IsNeg) : x ≠ 0 := by
   have := not_zero_neg x
   simpa [hx] using this
@@ -112,8 +119,10 @@ theorem Real.pos_add {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (x+y).IsPos :=
 /-- Proposition 5.4.4 (базовые свойства положительных вещественных чисел) / Exercise 5.4.1 -/
 theorem Real.pos_mul {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (x*y).IsPos := by sorry
 
+-- приведённое к `Real` рациональное число `q` положительно тогда и только тогда, когда `q > 0`
 theorem Real.pos_of_coe (q : ℚ) : (q : Real).IsPos ↔ q > 0 := by sorry
 
+-- приведённое к `Real` рациональное число `q` отрицательно тогда и только тогда, когда `q < 0`
 theorem Real.neg_of_coe (q : ℚ) : (q : Real).IsNeg ↔ q < 0 := by sorry
 
 open Classical in
@@ -146,17 +155,25 @@ instance Real.instLT : LT Real where
 instance Real.instLE : LE Real where
   le x y := (x < y) ∨ (x = y)
 
+-- разворачивает `<` в определение: `x < y` означает, что разность `x - y` отрицательна
 theorem Real.lt_iff (x y : Real) : x < y ↔ (x-y).IsNeg := by rfl
+-- разворачивает `≤` в определение: `x ≤ y` означает `x < y` или `x = y`
 theorem Real.le_iff (x y : Real) : x ≤ y ↔ (x < y) ∨ (x = y) := by rfl
 
+-- разворачивает `>` в определение: `x > y` означает, что разность `x - y` положительна
 theorem Real.gt_iff (x y : Real) : x > y ↔ (x-y).IsPos := by sorry
+-- разворачивает `≥` в определение: `x ≥ y` означает `x > y` или `x = y`
 theorem Real.ge_iff (x y : Real) : x ≥ y ↔ (x > y) ∨ (x = y) := by sorry
 
+-- порядок на `ℚ` согласован с порядком на `Real`: `q < q'` тогда и только тогда, когда `(q : Real) < (q' : Real)`
 theorem Real.lt_of_coe (q q' : ℚ) : q < q' ↔ (q : Real) < (q' : Real) := by sorry
 
+-- то же для `>`: `q > q'` тогда и только тогда, когда `(q : Real) > (q' : Real)`
 theorem Real.gt_of_coe (q q' : ℚ) : q > q' ↔ (q : Real) > (q' : Real) := Real.lt_of_coe _ _
 
+-- `x` положительно (`IsPos`) тогда и только тогда, когда `x > 0` в смысле порядка
 theorem Real.isPos_iff (x : Real) : x.IsPos ↔ x > 0 := by sorry
+-- `x` отрицательно (`IsNeg`) тогда и только тогда, когда `x < 0` в смысле порядка
 theorem Real.isNeg_iff (x : Real) : x.IsNeg ↔ x < 0 := by sorry
 
 /-- Proposition 5.4.7(a) (трихотомия порядка) / Exercise 5.4.2 -/
@@ -187,6 +204,7 @@ theorem Real.mul_lt_mul_right {x y z : Real} (hxy : x < y) (hz : z.IsPos) : x * 
 /-- Proposition 5.4.7(e) (умножение на положительное число сохраняет порядок) / Exercise 5.4.2 -/
 theorem Real.mul_le_mul_left {x y z : Real} (hxy : x ≤ y) (hz : z.IsPos) : z * x ≤ z * y := by sorry
 
+-- произведение положительного и отрицательного вещественных чисел отрицательно
 theorem Real.mul_pos_neg {x y : Real} (hx : x.IsPos) (hy : y.IsNeg) : (x * y).IsNeg := by
   sorry
 
@@ -224,8 +242,10 @@ theorem Real.inv_of_pos {x : Real} (hx : x.IsPos) : x⁻¹.IsPos := by
   have trich := trichotomous x⁻¹
   simpa [hinv_non, hnonneg] using trich
 
+-- частное двух положительных вещественных чисел положительно
 theorem Real.div_of_pos {x y : Real} (hx : x.IsPos) (hy : y.IsPos) : (x/y).IsPos := by sorry
 
+-- обращение положительных чисел меняет порядок на противоположный: из `x > y` следует `x⁻¹ < y⁻¹`
 theorem Real.inv_of_gt {x y : Real} (hx : x.IsPos) (hy : y.IsPos) (hxy : x > y) : x⁻¹ < y⁻¹ := by
   observe hxnon : x ≠ 0
   observe hynon : y ≠ 0
@@ -350,8 +370,10 @@ theorem Real.LIM_of_le {x : Real} {a : ℕ → ℚ} (hcauchy : (a : Sequence).Is
 theorem Real.LIM_of_ge {x : Real} {a : ℕ → ℚ} (hcauchy : (a : Sequence).IsCauchy) (h : ∀ n, a n ≥ x) : 
     LIM a ≥ x := by sorry
 
+-- максимум двух вещественных чисел равен `x`, если `x ≥ y`, и `y` иначе
 theorem Real.max_eq (x y : Real) : max x y = if x ≥ y then x else y := max_def' x y
 
+-- минимум двух вещественных чисел равен `x`, если `x ≤ y`, и `y` иначе
 theorem Real.min_eq (x y : Real) : min x y = if x ≤ y then x else y := rfl
 
 /-- Exercise 5.4.9 (a) -/

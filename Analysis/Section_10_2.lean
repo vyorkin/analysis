@@ -27,6 +27,7 @@ theorem IsLocalMaxOn.iff (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) :
         Metric.eventually_nhds_iff, Real.dist_eq, abs_sub_lt_iff]
   peel 3; constructor <;> intro h _ _ _ <;> apply h <;> grind
 
+-- `f` имеет локальный минимум на `X` в точке `x₀` тогда и только тогда, когда `x₀` — точка минимума `f` на пересечении `X` с некоторой δ-окрестностью точки `x₀`
 theorem IsLocalMinOn.iff (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : 
   IsLocalMinOn f X x₀ ↔
   ∃ δ > 0, IsMinOn f (X ∩ .Ioo (x₀ - δ) (x₀ + δ)) x₀ := by
@@ -57,6 +58,7 @@ theorem IsLocalMaxOn.of_restrict {X Y : Set ℝ} (hXY : Y ⊆ X) (f : ℝ → �
   (h : IsLocalMaxOn f X x₀) : IsLocalMaxOn f Y x₀ := by
   sorry
 
+-- Если `f` имеет локальный минимум на `X` в точке `x₀`, то это же верно на любом подмножестве `Y ⊆ X`
 theorem IsLocalMinOn.of_restrict {X Y : Set ℝ} (hXY : Y ⊆ X) (f : ℝ → ℝ) (x₀ : ℝ)
   (h : IsLocalMinOn f X x₀) : IsLocalMinOn f Y x₀ := by
   sorry
@@ -73,6 +75,7 @@ theorem IsLocalMinOn.deriv_eq_zero {a b : ℝ} {f : ℝ → ℝ} {x₀ : ℝ}
   (hderiv : HasDerivWithinAt f L (.Ioo a b) x₀) : L = 0 := by
   sorry
 
+-- Контрпример: на отрезке `[a,b]` (в отличие от открытого интервала) точка максимума может иметь ненулевую производную, например на конце отрезка
 theorem IsMaxOn.deriv_eq_zero_counter : ∃ (a b : ℝ) (f : ℝ → ℝ)
   (x₀ : ℝ) (hx₀ : x₀ ∈ Set.Icc a b) (h : IsMaxOn f (.Icc a b) x₀) (L : ℝ)
   (hderiv : HasDerivWithinAt f L (.Icc a b) x₀), L ≠ 0 := by

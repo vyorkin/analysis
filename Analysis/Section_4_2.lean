@@ -53,6 +53,7 @@ instance PreRat.instSetoid : Setoid PreRat where
     trans := by sorry
     }
 
+-- Эквивалентность формальных частных `PreRat` в явном арифметическом виде: `(a,b) ≈ (c,d) ↔ a * d = c * b`
 @[simp]
 theorem PreRat.eq (a b c d : ℤ) (hb : b ≠ 0) (hd : d ≠ 0) :
     (⟨ a,b,hb ⟩ : PreRat) ≈ ⟨ c,d,hd ⟩ ↔ a * d = c * b := by rfl
@@ -125,10 +126,13 @@ instance Rat.instNatCast : NatCast Rat where
 instance Rat.instOfNat {n : ℕ} : OfNat Rat n where
   ofNat := (n : ℤ) // 1
 
+-- Вложение целого числа `a` в `Rat` — это формальное частное `a // 1`
 theorem Rat.coe_Int_eq (a : ℤ) : (a : Rat) = a // 1 := rfl
 
+-- Вложение натурального числа `n` в `Rat` — это формальное частное `n // 1`
 theorem Rat.coe_Nat_eq (n : ℕ) : (n : Rat) = n // 1 := rfl
 
+-- Числовой литерал `n : Rat` — это формальное частное `n // 1` натурального литерала `n`
 theorem Rat.of_Nat_eq (n : ℕ) : (ofNat(n) : Rat) = (ofNat(n) : Nat) // 1 := rfl
 
 /-- natCast дистрибутивен относительно следующего элемента -/
@@ -143,6 +147,7 @@ lemma Rat.intCast_mul (a b : ℤ) : (a : Rat) * (b : Rat) = (a*b : ℤ) := by so
 /-- intCast коммутирует с отрицанием -/
 lemma Rat.intCast_neg (a : ℤ) : - (a : Rat) = (-a : ℤ) := rfl
 
+-- Вложение `ℤ → Rat` инъективно
 theorem Rat.coe_Int_inj : Function.Injective (fun n : ℤ ↦ (n : Rat)) := by sorry
 
 /--
@@ -155,9 +160,11 @@ instance Rat.instInv : Inv Rat where
     sorry -- подсказка: разберите случаи `a=0` и `a≠0`
 )
 
+-- Обратный элемент формального частного переставляет числитель и знаменатель: `(a // b)⁻¹ = b // a`
 lemma Rat.inv_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a // b)⁻¹ = b // a := by
   convert Quotient.lift_mk _ _ _ <;> simp [hb]
 
+-- Обратный элемент нуля по соглашению равен нулю — это мусорное значение, так как настоящего обратного не существует
 @[simp]
 theorem Rat.inv_zero : (0 : Rat)⁻¹ = 0 := rfl
 
@@ -204,8 +211,10 @@ instance Rat.instCommRing : CommRing Rat where
 instance Rat.instRatCast : RatCast Rat where
   ratCast q := q.num // q.den
 
+-- Вложение `ℚ → Rat` инъективно
 theorem Rat.ratCast_inj : Function.Injective (fun n : ℚ ↦ (n : Rat)) := by sorry
 
+-- Частное `a/b`, вычисленное в `ℚ` и вложенное в `Rat`, совпадает с формальным частным `a // b`
 theorem Rat.coe_Rat_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a/b : ℚ) = a // b := by
   set q := (a/b : ℚ)
   set num : ℤ := q.num
@@ -220,6 +229,7 @@ theorem Rat.coe_Rat_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a/b : ℚ) = a // b
 /-- Определение деления по умолчанию -/
 instance Rat.instDivInvMonoid : DivInvMonoid Rat where
 
+-- Разворачивает деление `Rat`: `q / r` определено как `q * r⁻¹`
 theorem Rat.div_eq (q r : Rat) : q/r = q * r⁻¹ := by rfl
 
 /-- Proposition 4.2.4 (законы алгебры, поле) / Exercise 4.2.3 -/
@@ -276,10 +286,14 @@ instance Rat.instLT : LT Rat where
 instance Rat.instLE : LE Rat where
   le x y := (x < y) ∨ (x = y)
 
+-- Разворачивает `<` в определение (Definition 4.2.8): `x < y` означает, что разность `x - y` отрицательна
 theorem Rat.lt_iff (x y : Rat) : x < y ↔ (x-y).isNeg := by rfl
+-- Разворачивает `≤` в определение: `x ≤ y` — это `x < y` или `x = y`
 theorem Rat.le_iff (x y : Rat) : x ≤ y ↔ (x < y) ∨ (x = y) := by rfl
 
+-- `x > y` означает, что разность `x - y` положительна
 theorem Rat.gt_iff (x y : Rat) : x > y ↔ (x-y).isPos := by sorry
+-- `x ≥ y` — это `x > y` или `x = y`
 theorem Rat.ge_iff (x y : Rat) : x ≥ y ↔ (x > y) ∨ (x = y) := by sorry
 
 /-- Proposition 4.2.9(a) (трихотомия порядка, утверждение) / Exercise 4.2.5 -/

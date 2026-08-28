@@ -19,6 +19,7 @@ def ComplexAbsolutelyIntegrable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop
 
 def RealAbsolutelyIntegrable {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop := RealMeasurable f ∧ UnsignedLebesgueIntegral (EReal.abs_fun f) < ⊤
 
+-- Если `f` комплексно абсолютно интегрируема, то `|f|` (как неотрицательная функция) тоже абсолютно интегрируема
 lemma ComplexAbsolutelyIntegrable.abs {d : ℕ} (f : EuclideanSpace' d → ℂ) (hf : ComplexAbsolutelyIntegrable f) : UnsignedAbsolutelyIntegrable (EReal.abs_fun f) := by
   constructor
   · -- UnsignedMeasurable (EReal.abs_fun f)
@@ -37,6 +38,7 @@ lemma ComplexAbsolutelyIntegrable.abs {d : ℕ} (f : EuclideanSpace' d → ℂ) 
         exact (continuous_coe_real_ereal.comp continuous_norm).continuousAt.tendsto.comp (hg_conv x)
   · exact hf.2
 
+-- Вещественный аналог: если `f` вещественная абсолютно интегрируема, то `|f|` тоже абсолютно интегрируема
 lemma RealAbsolutelyIntegrable.abs {d : ℕ} (f : EuclideanSpace' d → ℝ) (hf : RealAbsolutelyIntegrable f) : UnsignedAbsolutelyIntegrable (EReal.abs_fun f) := by
   constructor
   · -- UnsignedMeasurable (EReal.abs_fun f)
@@ -55,6 +57,7 @@ lemma RealAbsolutelyIntegrable.abs {d : ℕ} (f : EuclideanSpace' d → ℝ) (hf
 
 
 
+-- Вещественная функция абсолютно интегрируема тогда и только тогда, когда её образ в `ℂ` под вложением `ℝ → ℂ` абсолютно интегрируем
 lemma RealAbsolutelyIntegrable.iff {d : ℕ} (f : EuclideanSpace' d → ℝ) : RealAbsolutelyIntegrable f ↔ ComplexAbsolutelyIntegrable (fun x ↦ (f x : ℂ)) := by
   constructor
   · intro ⟨hf_meas, hf_integ⟩
@@ -74,6 +77,7 @@ lemma RealAbsolutelyIntegrable.iff {d : ℕ} (f : EuclideanSpace' d → ℝ) : R
       congr 1
       rw [Complex.norm_real, Real.norm_eq_abs]
 
+-- Действительная часть абсолютно интегрируемой комплексной функции сама абсолютно интегрируема
 lemma ComplexAbsolutelyIntegrable.re {d : ℕ} (f : EuclideanSpace' d → ℂ) (hf : ComplexAbsolutelyIntegrable f) : RealAbsolutelyIntegrable (Complex.re_fun f) := by
   have h_re_meas : RealMeasurable (Complex.re_fun f) := ComplexMeasurable.iff.mp hf.1 |>.1
   constructor
@@ -102,6 +106,7 @@ lemma ComplexAbsolutelyIntegrable.re {d : ℕ} (f : EuclideanSpace' d → ℂ) (
       · exact AlmostAlways.ofAlways h_le
     exact lt_of_le_of_lt h_mono hf.2
 
+-- Мнимая часть абсолютно интегрируемой комплексной функции сама абсолютно интегрируема
 lemma ComplexAbsolutelyIntegrable.im {d : ℕ} (f : EuclideanSpace' d → ℂ) (hf : ComplexAbsolutelyIntegrable f) : RealAbsolutelyIntegrable (Complex.im_fun f) := by
   have h_im_meas : RealMeasurable (Complex.im_fun f) := ComplexMeasurable.iff.mp hf.1 |>.2
   constructor
@@ -130,6 +135,7 @@ lemma ComplexAbsolutelyIntegrable.im {d : ℕ} (f : EuclideanSpace' d → ℂ) (
       · exact AlmostAlways.ofAlways h_le
     exact lt_of_le_of_lt h_mono hf.2
 
+-- Комплексная функция абсолютно интегрируема тогда и только тогда, когда абсолютно интегрируемы обе её вещественная и мнимая части
 lemma ComplexAbsolutelyIntegrable.iff {d : ℕ} (f : EuclideanSpace' d → ℂ) : ComplexAbsolutelyIntegrable f ↔ RealAbsolutelyIntegrable (Complex.re_fun f) ∧ RealAbsolutelyIntegrable (Complex.im_fun f) := by
   constructor
   · intro hf
@@ -332,6 +338,7 @@ def ComplexSimpleFunction.AbsolutelyIntegrable.integ_eq {d : ℕ} {f : Euclidean
     have heq := RealSimpleFunction.AbsolutelyIntegrable.integ_eq hf_im him_fi
     simp only [heq]
 
+-- Сумма двух вещественных абсолютно интегрируемых функций абсолютно интегрируема
 theorem RealAbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (hg : RealAbsolutelyIntegrable g) : RealAbsolutelyIntegrable (f + g) := by
   constructor
   · exact RealMeasurable.add hf.1 hg.1
@@ -369,6 +376,7 @@ theorem RealAbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ}
           rw [← h_add]; exact h_mono
       _ < ⊤ := EReal.add_lt_top hf.2.ne_top hg.2.ne_top
 
+-- Сумма двух комплексных абсолютно интегрируемых функций абсолютно интегрируема
 theorem ComplexAbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (hg : ComplexAbsolutelyIntegrable g) : ComplexAbsolutelyIntegrable (f + g) := by
   constructor
   · exact ComplexMeasurable.add hf.1 hg.1
@@ -405,6 +413,7 @@ theorem ComplexAbsolutelyIntegrable.add {d : ℕ} {f g : EuclideanSpace' d → �
           rw [← h_add]; exact h_mono
       _ < ⊤ := EReal.add_lt_top hf.2.ne_top hg.2.ne_top
 
+-- Разность двух вещественных абсолютно интегрируемых функций абсолютно интегрируема
 theorem RealAbsolutelyIntegrable.sub {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (hg : RealAbsolutelyIntegrable g) : RealAbsolutelyIntegrable (f - g) := by
   constructor
   · exact RealMeasurable.sub hf.1 hg.1
@@ -447,6 +456,7 @@ theorem RealAbsolutelyIntegrable.sub {d : ℕ} {f g : EuclideanSpace' d → ℝ}
           rw [← h_add]; exact h_mono
       _ < ⊤ := EReal.add_lt_top hf.2.ne_top hg.2.ne_top
 
+-- Разность двух комплексных абсолютно интегрируемых функций абсолютно интегрируема
 theorem ComplexAbsolutelyIntegrable.sub {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (hg : ComplexAbsolutelyIntegrable g) : ComplexAbsolutelyIntegrable (f - g) := by
   constructor
   · exact ComplexMeasurable.sub hf.1 hg.1
@@ -489,6 +499,7 @@ theorem ComplexAbsolutelyIntegrable.sub {d : ℕ} {f g : EuclideanSpace' d → �
           rw [← h_add]; exact h_mono
       _ < ⊤ := EReal.add_lt_top hf.2.ne_top hg.2.ne_top
 
+-- Скалярное произведение `c • f` вещественной абсолютно интегрируемой функции на константу `c` абсолютно интегрируемо
 theorem RealAbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (c : ℝ) : RealAbsolutelyIntegrable (c • f) := by
   constructor
   · -- RealMeasurable (c • f)
@@ -533,6 +544,7 @@ theorem RealAbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → ℝ} 
         · right; exact hf.2.ne_top
       exact Ne.lt_top h_ne_top
 
+-- Скалярное произведение `c • f` комплексной абсолютно интегрируемой функции на константу `c` абсолютно интегрируемо
 theorem ComplexAbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (c : ℂ) : ComplexAbsolutelyIntegrable (c • f) := by
   constructor
   · -- ComplexMeasurable (c • f)
@@ -577,16 +589,19 @@ theorem ComplexAbsolutelyIntegrable.smul {d : ℕ} {f : EuclideanSpace' d → �
         · right; exact hf.2.ne_top
       exact Ne.lt_top h_ne_top
 
+-- `-f` абсолютно интегрируема, если `f` вещественная абсолютно интегрируема
 theorem RealAbsolutelyIntegrable.of_neg {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) : RealAbsolutelyIntegrable (-f) := by
   have h : -f = (-1 : ℝ) • f := by funext x; simp [Pi.neg_apply, Pi.smul_apply, smul_eq_mul]
   rw [h]
   exact hf.smul (-1)
 
+-- `-f` абсолютно интегрируема, если `f` комплексная абсолютно интегрируема
 theorem ComplexAbsolutelyIntegrable.of_neg {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) : ComplexAbsolutelyIntegrable (-f) := by
   have h : -f = (-1 : ℂ) • f := by funext x; simp [Pi.neg_apply, Pi.smul_apply, smul_eq_mul]
   rw [h]
   exact hf.smul (-1)
 
+-- Комплексное сопряжение абсолютно интегрируемой функции абсолютно интегрируемо
 theorem ComplexAbsolutelyIntegrable.conj {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) : ComplexAbsolutelyIntegrable (Complex.conj_fun f) := by
   constructor
   · -- ComplexMeasurable (Complex.conj_fun f)
@@ -616,6 +631,7 @@ def ComplexAbsolutelyIntegrable.to_PreL1 {d : ℕ} {f : EuclideanSpace' d → �
 
 def PreL1.conj {d : ℕ} (F : PreL1 d) : PreL1 d := ⟨ Complex.conj_fun F.f, F.integrable.conj ⟩
 
+-- Нулевая функция абсолютно интегрируема
 lemma ComplexAbsolutelyIntegrable.zero {d : ℕ} : ComplexAbsolutelyIntegrable (0 : EuclideanSpace' d → ℂ) := by
   constructor
   · -- ComplexMeasurable 0
@@ -933,6 +949,7 @@ instance PreL1.inst_normedSpace {d : ℕ} : NormedSpace ℂ (PreL1 d) := {
     simp only [EReal.toReal_coe, le_refl]
 }
 
+-- Расстояние между `F` и `G` в `PreL1` равно норме их разности, как в любой нормированной группе
 theorem PreL1.dist_eq {d : ℕ} (F G : PreL1 d) : dist F G = ‖F-G‖ :=
   dist_eq_norm F G
 
@@ -945,11 +962,13 @@ noncomputable instance PreL1.inst_coeL1 {d : ℕ} : Coe (PreL1 d) (L1 d) := ⟨ 
 
 noncomputable def ComplexAbsolutelyIntegrable.toL1 {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) : L1 d := SeparationQuotient.mk hf.to_PreL1
 
+-- Расстояние между классами `f` и `g` в `L¹` равно норме (интегралу модуля) их разности `f - g`
 theorem L1.dist_eq {d : ℕ} (f g : EuclideanSpace' d → ℂ) (hf : ComplexAbsolutelyIntegrable f) (hg : ComplexAbsolutelyIntegrable g) : dist hf.toL1 hg.toL1 = (hf.sub hg).norm := by
   simp only [ComplexAbsolutelyIntegrable.toL1]
   rw [SeparationQuotient.dist_mk, dist_eq_norm]
   simp only [ComplexAbsolutelyIntegrable.norm, UnsignedAbsolutelyIntegrable.integ, Norm.norm]; rfl
 
+-- Классы `f` и `g` находятся на нулевом расстоянии в `L¹` тогда и только тогда, когда `f` и `g` равны почти всюду — именно это отождествление реализует фактор-пространство `L¹`
 theorem L1.dist_eq_zero {d : ℕ} (f g : EuclideanSpace' d → ℂ) (hf : ComplexAbsolutelyIntegrable f) (hg : ComplexAbsolutelyIntegrable g) : dist hf.toL1 hg.toL1 = 0 ↔ AlmostEverywhereEqual f g := by
   rw [L1.dist_eq]
   simp only [ComplexAbsolutelyIntegrable.norm, UnsignedAbsolutelyIntegrable.integ]
@@ -997,39 +1016,48 @@ noncomputable def L1.integ {d : ℕ} : L1 d →ₗ[ℂ] ℂ := {
 
 noncomputable def L1.conj {d : ℕ} : L1 d → L1 d := Quotient.lift (fun F ↦ (F.conj : L1 d)) (by sorry)
 
+-- Интеграл от комплексно сопряжённой функции равен сопряжённому значению интеграла
 theorem L1.integ_conj {d : ℕ} (F : L1 d) : L1.integ (L1.conj F) = starRingEnd ℂ (L1.integ F) := by sorry
 
 /-- Exercise 1.3.20(i) (инвариантность относительно сдвига). -/
 theorem RealAbsolutelyIntegrable.trans {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (a : EuclideanSpace' d) : RealAbsolutelyIntegrable (fun x ↦ f (x + a)) := by sorry
 
+-- Значение интеграла инвариантно относительно сдвига области интегрирования (вещественный случай)
 theorem RealAbsolutelyIntegrable.integ_trans {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (a : EuclideanSpace' d) : (hf.trans a).integ = hf.integ  := by sorry
 
+-- Сдвинутая функция `x ↦ f (x + a)` абсолютно интегрируема, если `f` абсолютно интегрируема (комплексный случай)
 theorem ComplexAbsolutelyIntegrable.trans {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (a : EuclideanSpace' d) : ComplexAbsolutelyIntegrable (fun x ↦ f (x + a)) := by sorry
 
+-- Значение интеграла инвариантно относительно сдвига области интегрирования (комплексный случай)
 theorem ComplexAbsolutelyIntegrable.integ_trans {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (a : EuclideanSpace' d) : (hf.trans a).integ = hf.integ  := by sorry
 
 /-- Exercise 1.3.20(ii) (линейная замена переменных). -/
 theorem RealAbsolutelyIntegrable.comp_linear {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) : 
     RealAbsolutelyIntegrable (fun x ↦ f (A x)) := by sorry
 
-theorem RealAbsolutelyIntegrable.integ_comp_linear {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) : 
+-- Формула замены переменной для линейной невырожденной замены `A` (вещественный случай): интеграл от `f∘A` равен `|det A|⁻¹`, умноженному на интеграл от `f`
+theorem RealAbsolutelyIntegrable.integ_comp_linear {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) :
     (hf.comp_linear hA).integ = |A.det|⁻¹ * hf.integ := by sorry
 
-theorem ComplexAbsolutelyIntegrable.comp_linear {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) : 
+-- Композиция `f∘A` с линейным невырожденным `A` абсолютно интегрируема (комплексный случай)
+theorem ComplexAbsolutelyIntegrable.comp_linear {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) :
     ComplexAbsolutelyIntegrable (fun x ↦ f (A x)) := by sorry
 
-theorem ComplexAbsolutelyIntegrable.integ_comp_linear {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) : 
+-- Формула замены переменной для линейной невырожденной замены `A` (комплексный случай)
+theorem ComplexAbsolutelyIntegrable.integ_comp_linear {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) :
     (hf.comp_linear hA).integ = |A.det|⁻¹ * hf.integ := by sorry
 
 /-- Exercise 1.3.20(iii) (согласованность с интегралом Римана). -/
 theorem RiemannIntegrableOn.realAbsolutelyIntegrable {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) : RealAbsolutelyIntegrable ((fun x ↦ (f x) * (I.toSet.indicator' x)) ∘ EuclideanSpace'.equiv_Real) := by sorry
 
-theorem RiemannIntegral.eq_integ {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) : 
+-- Значение интеграла Римана совпадает со значением интеграла Лебега от того же продолжения `f`, отождествляемого по `RiemannIntegrableOn.realAbsolutelyIntegrable`
+theorem RiemannIntegral.eq_integ {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) :
     riemannIntegral f I  = hf.realAbsolutelyIntegrable.integ := by sorry
 
 /-- Exercise 1.3.21 (абсолютная суммируемость — частный случай абсолютной интегрируемости) -/
 theorem AbsolutelySummable.realAbsolutelyIntegrable_iff {a : ℤ → ℝ} : ∑' n, |a n|.toEReal < ⊤ ↔ RealAbsolutelyIntegrable (fun x ↦ a ⌊EuclideanSpace'.equiv_Real x⌋) := by sorry
 
+-- Абсолютная суммируемость эквивалентна абсолютной интегрируемости кусочно-постоянного продолжения (комплексный случай)
 theorem AbsolutelySummable.complexAbsolutelyIntegrable_iff {a : ℤ → ℂ} : ∑' n, ‖a n‖.toEReal < ⊤ ↔ ComplexAbsolutelyIntegrable (fun x ↦ a ⌊EuclideanSpace'.equiv_Real x⌋) := by sorry
 
 def ComplexAbsolutelyIntegrableOn {d : ℕ} (f : EuclideanSpace' d → ℂ) (E : Set (EuclideanSpace' d)) : Prop := ComplexAbsolutelyIntegrable (f * Complex.indicator E)
@@ -1047,6 +1075,7 @@ def ComplexAbsolutelyIntegrableOn.restrict {d : ℕ} {f : EuclideanSpace' d → 
 
 def ComplexAbsolutelyIntegrableOn.mono {d : ℕ} {f : EuclideanSpace' d → ℂ} {E F : Set (EuclideanSpace' d)} (hf : ComplexAbsolutelyIntegrableOn f E) (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) (hsub : F ⊆ E) : ComplexAbsolutelyIntegrableOn f F := by sorry
 
+-- Интеграл `f` по подмножеству `F ⊆ E` совпадает с интегралом `f`, обнулённой вне `F`, по всему `E`
 theorem ComplexAbsolutelyIntegrableOn.integ_restrict {d : ℕ} {f : EuclideanSpace' d → ℂ} {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) (hsub : F ⊆ E) (hf : ComplexAbsolutelyIntegrableOn f E) : (hf.mono hE hF hsub).integ = (hf.restrict hF).integ:= by sorry
 
 /-- Lemma 1.3.19 (неравенство треугольника) -/
@@ -1131,7 +1160,8 @@ lemma Real.pos_neg_add_identity (a b : ℝ) :
         max_eq_right (neg_nonpos.mpr (le_of_lt hab))]
     ring
 
-lemma EReal.pos_neg_add_identity {X : Type*} (f g : X → ℝ) : 
+-- Тот же результат, что и `Real.pos_neg_add_identity`, но для EReal-функций `EReal.pos_fun`/`EReal.neg_fun`, поточечно
+lemma EReal.pos_neg_add_identity {X : Type*} (f g : X → ℝ) :
     EReal.pos_fun (f + g) + EReal.neg_fun f + EReal.neg_fun g =
     EReal.pos_fun f + EReal.pos_fun g + EReal.neg_fun (f + g) := by
   funext x
@@ -1147,7 +1177,8 @@ lemma EReal.pos_fun_smul_nonneg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : 0 �
   congr 1
   rw [← mul_zero c, (mul_max_of_nonneg (f x) 0 hc).symm, mul_zero]
 
-lemma EReal.neg_fun_smul_nonneg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : 0 ≤ c) : 
+-- Отрицательная часть коммутирует с умножением на неотрицательный скаляр: `neg_fun (c • f) = c • neg_fun f` при `c ≥ 0`
+lemma EReal.neg_fun_smul_nonneg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : 0 ≤ c) :
     EReal.neg_fun (c • f) = (c : EReal) • EReal.neg_fun f := by
   funext x
   simp only [EReal.neg_fun, Pi.smul_apply, smul_eq_mul]
@@ -1155,7 +1186,8 @@ lemma EReal.neg_fun_smul_nonneg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : 0 �
   rw [show -(c * f x) = c * (-f x) from by ring]
   rw [← mul_zero c, (mul_max_of_nonneg (-f x) 0 hc).symm, mul_zero]
 
-lemma EReal.pos_fun_smul_neg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : c < 0) : 
+-- Умножение на отрицательный скаляр меняет положительную часть на отрицательную: `pos_fun (c • f) = (-c) • neg_fun f` при `c < 0`
+lemma EReal.pos_fun_smul_neg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : c < 0) :
     EReal.pos_fun (c • f) = ((-c) : EReal) • EReal.neg_fun f := by
   funext x
   simp only [EReal.pos_fun, EReal.neg_fun, Pi.smul_apply, smul_eq_mul]
@@ -1164,7 +1196,8 @@ lemma EReal.pos_fun_smul_neg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : c < 0) 
   rw [show c * f x = (-c) * (-f x) from by ring]
   rw [← mul_zero (-c), (mul_max_of_nonneg (-f x) 0 hnc).symm, mul_zero]
 
-lemma EReal.neg_fun_smul_neg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : c < 0) : 
+-- Умножение на отрицательный скаляр меняет отрицательную часть на положительную: `neg_fun (c • f) = (-c) • pos_fun f` при `c < 0`
+lemma EReal.neg_fun_smul_neg {X : Type*} (f : X → ℝ) (c : ℝ) (hc : c < 0) :
     EReal.neg_fun (c • f) = ((-c) : EReal) • EReal.pos_fun f := by
   funext x
   simp only [EReal.pos_fun, EReal.neg_fun, Pi.smul_apply, smul_eq_mul]

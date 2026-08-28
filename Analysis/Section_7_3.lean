@@ -46,12 +46,14 @@ theorem Series.converges_of_nonneg_iff {s : Series} (h : s.nonneg) : s.converges
     grind
   assumption
 
+-- Если все частичные суммы неотрицательного ряда ограничены сверху числом `M`, то и сумма ряда не превосходит `M`
 theorem Series.sum_of_nonneg_lt {s : Series} (h : s.nonneg) {M : ℝ} (hM : ∀ N, s.partial N ≤ M) : s.sum ≤ M := by
   have : ∃ M, ∀ N, s.partial N ≤ M  := by use M
   rw [←converges_of_nonneg_iff h] at this; simp [sum, this]
   have hconv := this.choose_spec; simp [convergesTo] at hconv; exact le_of_tendsto' hconv hM
 
-theorem Series.partial_le_sum_of_nonneg {s : Series} (hnon : s.nonneg) (hconv : s.converges) (N : ℤ) : 
+-- Для сходящегося неотрицательного ряда любая частичная сумма не превосходит полной суммы
+theorem Series.partial_le_sum_of_nonneg {s : Series} (hnon : s.nonneg) (hconv : s.converges) (N : ℤ) :
   s.partial N ≤ s.sum := by
   apply (partial_of_nonneg hnon).ge_of_tendsto
   simp [sum, hconv]; exact hconv.choose_spec
@@ -60,6 +62,7 @@ theorem Series.partial_le_sum_of_nonneg {s : Series} (hnon : s.nonneg) (hconv : 
 theorem Series.partial_nonneg {s : Series} (hnon : s.nonneg) (N : ℤ) : 0 ≤ s.partial N := by
   simp [Series.partial]; apply Finset.sum_nonneg; aesop
 
+-- Сумма ряда с неотрицательными членами неотрицательна
 theorem Series.sum_of_nonneg {s : Series} (hnon : s.nonneg) : 0 ≤ s.sum := by
   by_cases h : s.converges <;> simp [Series.sum, h]
   exact ge_of_tendsto' h.choose_spec (partial_nonneg hnon)
@@ -67,15 +70,19 @@ theorem Series.sum_of_nonneg {s : Series} (hnon : s.nonneg) : 0 ≤ s.sum := by
 /-- Corollary 7.3.2 (признак сравнения) / Exercise 7.3.1 -/
 theorem Series.converges_of_le {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hconv : t.converges) : s.absConverges ∧ |s.sum| ≤ s.abs.sum ∧ s.abs.sum ≤ t.sum := by sorry
 
+-- Признак сравнения (обратное направление): если `s` не сходится абсолютно и мажорируется рядом `t`, то `t` расходится
 theorem Series.diverges_of_ge {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hdiv : ¬ s.absConverges) : t.diverges := by sorry
 
 /-- Lemma 7.3.3 (геометрический ряд) / Exercise 7.3.2 -/
 theorem Series.converges_geom {x : ℝ} (hx : |x| < 1) : (fun n ↦ x ^ n : Series).convergesTo (1 / (1 - x)) := by sorry
 
+-- Геометрический ряд `∑ xⁿ` при `|x| < 1` сходится абсолютно
 theorem Series.absConverges_geom {x : ℝ} (hx : |x| < 1) : (fun n ↦ x ^ n : Series).absConverges := by sorry
 
+-- Геометрический ряд `∑ xⁿ` при `|x| ≥ 1` расходится
 theorem Series.diverges_geom {x : ℝ} (hx : |x| ≥ 1) : (fun n ↦ x ^ n : Series).diverges := by sorry
 
+-- Геометрический ряд `∑ xⁿ` сходится тогда и только тогда, когда `|x| < 1`
 theorem Series.converges_geom_iff (x : ℝ) : (fun n ↦ x ^ n : Series).converges ↔ |x| < 1 := by sorry
 
 /-- Proposition 7.3.4 (критерий Коши) -/
@@ -192,6 +199,7 @@ theorem Series.zeta_eq {q : ℝ} (hq : q > 1) : (mk' (m := 1) fun n ↦ 1 / (n :
     grind
   simp [e]
 
+-- Базельская задача: `∑ 1/n² = π²/6`
 theorem Series.Basel_problem :  (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ 2 : Series).sum = Real.pi ^ 2 / 6 := by
   have := zeta_eq (show 2 > 1 by norm_num)
   simp [Complex.ofReal_ofNat, riemannZeta_two] at this

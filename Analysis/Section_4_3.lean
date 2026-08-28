@@ -118,6 +118,7 @@ example : ¬ (0.01 : ℚ).Close (0.99 : ℚ) (1.01 : ℚ) := by sorry
 /-- Examples 4.3.6 (c) -/
 example (ε : ℚ) (hε : ε > 0) : ε.Close 2 2 := by sorry
 
+-- Каждое число `0`-близко к самому себе: `dist x x = 0 ≤ 0`
 theorem close_refl (x : ℚ) : (0 : ℚ).Close x x := by sorry
 
 /-- Proposition 4.3.7(a) / Exercise 4.3.2 -/
@@ -226,6 +227,7 @@ example (x : ℚ) : x^(-3 : ℤ) = 1/(x^3) := zpow_neg x 3
 
 example (x : ℚ) : x^(-3 : ℤ) = 1/(x*x*x) := by convert zpow_neg x 3; ring
 
+-- Возведение в степень `n : ℤ`, приведённую из `ℕ`, совпадает с обычным возведением в натуральную степень `x^n`
 theorem pow_eq_zpow (x : ℚ) (n : ℕ) : x^(n : ℤ) = x^n := zpow_natCast x n
 
 /-- Proposition 4.3.12(a) (Свойства возведения в степень, II) (сумма показателей) / Exercise 4.3.4 -/
@@ -243,6 +245,7 @@ theorem zpow_pos {x : ℚ} (n : ℤ) (hx : x > 0) : x^n > 0 := by sorry
 /-- Proposition 4.3.12(b) (Свойства возведения в степень, II) (монотонность) / Exercise 4.3.4 -/
 theorem zpow_ge_zpow {x y : ℚ} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n > 0) : x^n ≥ y^n := by sorry
 
+-- Для отрицательного показателя степени монотонность обращается: из `x ≥ y > 0` следует `x^n ≤ y^n`
 theorem zpow_ge_zpow_ofneg {x y : ℚ} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n < 0) : x^n ≤ y^n := by
   sorry
 

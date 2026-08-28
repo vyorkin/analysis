@@ -21,6 +21,7 @@ theorem derivative_of_monotone (X : Set ℝ) {x₀ : ℝ} (hx₀ : ClusterPt x�
     derivWithin f X x₀ ≥ 0 := by
   sorry
 
+-- Если `f` убывает (антитонна) и дифференцируема в точке `x₀`, то производная там неположительна
 theorem derivative_of_antitone (X : Set ℝ) {x₀ : ℝ} (hx₀ : ClusterPt x₀ (.principal (X \ {x₀})))
   {f : ℝ → ℝ} (hmono : Antitone f) (hderiv : DifferentiableWithinAt ℝ f X x₀) : 
     derivWithin f X x₀ ≤ 0 := by
@@ -32,6 +33,7 @@ theorem strictMono_of_positive_derivative {a b : ℝ} {f : ℝ → ℝ}
     StrictMonoOn f (.Icc a b) := by
   sorry
 
+-- Если производная `f` отрицательна на интервале `(a,b)`, то `f` строго убывает на отрезке `[a,b]`
 theorem strictAnti_of_negative_derivative {a b : ℝ} {f : ℝ → ℝ}
   (hderiv : DifferentiableOn ℝ f (.Icc a b)) (hneg : ∀ x ∈ Set.Ioo a b, derivWithin f (.Icc a b) x < 0) : 
     StrictAntiOn f (.Icc a b) := by

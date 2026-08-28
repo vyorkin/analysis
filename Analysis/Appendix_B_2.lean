@@ -33,6 +33,7 @@ theorem NNRealDecimal.toNNReal_conv (d : NNRealDecimal) :
   Summable fun i ↦ (d.fracPart i) * (10 : NNReal) ^ (-i-1 : ℝ) := by
   sorry
 
+-- коэрция `NNRealDecimal → NNReal` сюръективна: любое неотрицательное вещественное `x` представимо десятичной записью
 theorem NNRealDecimal.surj (x : NNReal) : ∃ d : NNRealDecimal, x = d := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_cases h : x = 0
@@ -118,6 +119,7 @@ noncomputable instance RealDecimal.instCoeReal : Coe RealDecimal ℝ where
     | RealDecimal.pos d => d.toNNReal
     | RealDecimal.neg d => -(d.toNNReal : ℝ)
 
+-- коэрция `RealDecimal → ℝ` сюръективна: любое вещественное `x` представимо десятичной записью
 theorem RealDecimal.surj (x : ℝ) : ∃ d : RealDecimal, x = d := by
   obtain h | h := le_or_gt 0 x
   . choose d hd using NNRealDecimal.surj (x.toNNReal); use pos d; simp [←hd, h]
@@ -130,8 +132,10 @@ theorem RealDecimal.not_inj_one (d : RealDecimal) : (d : ℝ) = 1 ↔ (d = pos (
 /-- Exercise B.2.3 -/
 abbrev TerminatingDecimal (x : ℝ) : Prop := ∃ (n : ℤ) (m : ℕ), x = n / (10 : ℝ)^m
 
+-- для обрывающейся десятичной дроби `x` существуют ровно два разных десятичных представления, равных `x`
 theorem RealDecimal.not_inj_terminating {x : ℝ} (hx : TerminatingDecimal x) : ∃ d₁ d₂ : RealDecimal, d₁ ≠ d₂ ∧ ∀ d : RealDecimal, d = x ↔ d = d₁ ∨ d = d₂ := by sorry
 
+-- для необрывающейся (нетерминирующей) десятичной дроби `x` десятичное представление единственно
 theorem RealDecimal.inj_nonterminating {x : ℝ} (hx : ¬TerminatingDecimal x) : ∃! d : RealDecimal, d = x := by sorry
 
 /-- Exercise B.2.4.  Это Corollary 8.3.4, но задача — переписать доказательство с использованием

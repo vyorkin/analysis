@@ -84,6 +84,7 @@ theorem closure_def (X : Set ℝ) : closure X = { x | AdherentPt x X } := by
   constructor <;> intro h ε hε
   all_goals choose y hy hxy using h _ (half_pos hε); exact ⟨ _, hy, by rw [abs_sub_comm]; linarith ⟩
 
+-- Поточечная версия `closure_def`: `x` лежит в замыкании `X` тогда и только тогда, когда `x` — точка прикосновения `X`
 theorem closure_def' (X : Set ℝ) (x : ℝ) : x ∈ closure X ↔ AdherentPt x X := by
   simp [closure_def]
 
@@ -125,27 +126,35 @@ theorem closure_of_Ioo {a b : ℝ} (h : a < b) : closure (.Ioo a b) = .Icc a b :
   . sorry
   intro ε _; use x, (by exact ⟨lt_of_le_of_ne h1 (Ne.symm ha), lt_of_le_of_ne h2 hb⟩); simp; order
 
+-- Замыкание полуоткрытого интервала `(a, b]` — это отрезок `[a, b]`
 theorem closure_of_Ioc {a b : ℝ} (h : a < b) : closure (.Ioc a b) = .Icc a b := by
   sorry
 
+-- Замыкание полуоткрытого интервала `[a, b)` — это отрезок `[a, b]`
 theorem closure_of_Ico {a b : ℝ} (h : a < b) : closure (.Ico a b) = .Icc a b := by
   sorry
 
+-- Отрезок `[a, b]` совпадает со своим замыканием, то есть замкнут
 theorem closure_of_Icc {a b : ℝ} (h : a ≤ b) : closure (.Icc a b) = .Icc a b := by
   sorry
 
+-- Замыкание луча `(a, ∞)` — это луч `[a, ∞)`
 theorem closure_of_Ioi {a : ℝ} : closure (.Ioi a) = .Ici a := by
   sorry
 
+-- Луч `[a, ∞)` совпадает со своим замыканием
 theorem closure_of_Ici {a : ℝ} : closure (.Ici a) = .Ici a := by
   sorry
 
+-- Замыкание луча `(-∞, a)` — это луч `(-∞, a]`
 theorem closure_of_Iio {a : ℝ} : closure (.Iio a) = .Iic a := by
   sorry
 
+-- Луч `(-∞, a]` совпадает со своим замыканием
 theorem closure_of_Iic {a : ℝ} : closure (.Iic a) = .Iic a := by
   sorry
 
+-- Вся прямая `ℝ` совпадает со своим замыканием
 theorem closure_of_R : closure (.univ : Set ℝ) = .univ := by sorry
 
 /-- Lemma 9.1.13 / Exercise 9.1.2 (N) -/
@@ -168,6 +177,7 @@ theorem limit_of_AdherentPt (X : Set ℝ) (x : ℝ) :
   AdherentPt x X ↔ ∃ a : ℕ → ℝ, (∀ n, a n ∈ X) ∧ Filter.atTop.Tendsto a (nhds x) := by
     sorry
 
+-- Любая точка множества является его точкой прикосновения
 theorem AdherentPt.of_mem {X : Set ℝ} {x : ℝ} (h : x ∈ X) : AdherentPt x X := by
   rw [limit_of_AdherentPt]; use fun _ ↦ x; simp [h]
 
@@ -175,6 +185,7 @@ theorem AdherentPt.of_mem {X : Set ℝ} {x : ℝ} (h : x ∈ X) : AdherentPt x X
 theorem isClosed_def (X : Set ℝ) : IsClosed X ↔ closure X = X :=
   closure_eq_iff_isClosed.symm
 
+-- Поточечная версия определения замкнутости: `X` замкнуто тогда и только тогда, когда оно содержит все свои точки прикосновения
 theorem isClosed_def' (X : Set ℝ) : IsClosed X ↔ ∀ x, AdherentPt x X → x ∈ X := by
   simp [isClosed_def, subset_antisymm_iff, subset_closure]; simp [closure_def]; rfl
 
@@ -265,27 +276,35 @@ theorem mem_Icc_isLimit {a b x : ℝ} (h : a < b) (hx : x ∈ Set.Icc a b) : Lim
     convert tendsto_mul_add_inv_atTop_nhds_zero 1 (b - x)⁻¹ (by norm_num) using 2 with n; simp
   sorry
 
+-- Каждая точка полуоткрытого интервала `[a, b)` — его предельная точка
 theorem mem_Ico_isLimit {a b x : ℝ} (hx : x ∈ Set.Ico a b) : LimitPt x (.Ico a b) := by
   sorry
 
+-- Каждая точка полуоткрытого интервала `(a, b]` — его предельная точка
 theorem mem_Ioc_isLimit {a b x : ℝ} (hx : x ∈ Set.Ioc a b) : LimitPt x (.Ioc a b) := by
   sorry
 
+-- Каждая точка открытого интервала `(a, b)` — его предельная точка
 theorem mem_Ioo_isLimit {a b x : ℝ} (hx : x ∈ Set.Ioo a b) : LimitPt x (.Ioo a b) := by
   sorry
 
+-- Каждая точка луча `[a, ∞)` — его предельная точка
 theorem mem_Ici_isLimit {a x : ℝ} (hx : x ∈ Set.Ici a) : LimitPt x (.Ici a) := by
   sorry
 
+-- Каждая точка луча `(a, ∞)` — его предельная точка
 theorem mem_Ioi_isLimit {a x : ℝ} (hx : x ∈ Set.Ioi a) : LimitPt x (.Ioi a) := by
   sorry
 
+-- Каждая точка луча `(-∞, a]` — его предельная точка
 theorem mem_Iic_isLimit {a x : ℝ} (hx : x ∈ Set.Iic a) : LimitPt x (.Iic a) := by
   sorry
 
+-- Каждая точка луча `(-∞, a)` — его предельная точка
 theorem mem_Iio_isLimit {a x : ℝ} (hx : x ∈ Set.Iio a) : LimitPt x (.Iio a) := by
   sorry
 
+-- Каждая точка вещественной прямой — предельная точка `ℝ`
 theorem mem_R_isLimit {x : ℝ} : LimitPt x (.univ) := by
   sorry
 

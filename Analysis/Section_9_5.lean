@@ -28,6 +28,7 @@ abbrev LeftLimitExists (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : Prop := �
 open Classical in
 noncomputable abbrev left_limit (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : ℝ := if h : LeftLimitExists X f x₀ then h.choose else 0
 
+-- Если правый предел `f` в `x₀` вдоль `X` равен `L`, то `right_limit` корректно вычисляет именно это значение `L`
 theorem right_limit.eq {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} {L : ℝ} (had : AdherentPt x₀ (X ∩ .Ioi x₀))
   (h : (nhdsWithin x₀ (X ∩ .Ioi x₀)).Tendsto f (nhds L)) : RightLimitExists X f x₀ ∧ right_limit X f x₀ = L := by
   have h' : RightLimitExists X f x₀ := by use L
@@ -36,6 +37,7 @@ theorem right_limit.eq {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} {L : ℝ} (h
     rwa [←mem_closure_iff_nhdsWithin_neBot, closure_def']
   exact tendsto_nhds_unique h'.choose_spec h
 
+-- Если левый предел `f` в `x₀` вдоль `X` равен `L`, то `left_limit` корректно вычисляет именно это значение `L`
 theorem left_limit.eq {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} {L : ℝ} (had : AdherentPt x₀ (X ∩ .Iio x₀))
   (h : (nhdsWithin x₀ (X ∩ .Iio x₀)).Tendsto f (nhds L)) : LeftLimitExists X f x₀ ∧ left_limit X f x₀ = L := by
   have h' : LeftLimitExists X f x₀ := by use L
@@ -44,10 +46,12 @@ theorem left_limit.eq {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} {L : ℝ} (ha
     rwa [←mem_closure_iff_nhdsWithin_neBot, closure_def']
   exact tendsto_nhds_unique h'.choose_spec h
 
+-- Если правый предел существует, то `f` действительно сходится к `right_limit X f x₀` в этом смысле
 theorem right_limit.eq' {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : RightLimitExists X f x₀) : 
   (nhdsWithin x₀ (X ∩ .Ioi x₀)).Tendsto f (nhds (right_limit X f x₀)) := by
   simp [right_limit, h]; exact h.choose_spec
 
+-- Если левый предел существует, то `f` действительно сходится к `left_limit X f x₀` в этом смысле
 theorem left_limit.eq' {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : LeftLimitExists X f x₀) : 
   (nhdsWithin x₀ (X ∩ .Iio x₀)).Tendsto f (nhds (left_limit X f x₀)) := by
   simp [left_limit, h]; exact h.choose_spec
@@ -57,6 +61,7 @@ example : right_limit .univ Real.sign 0 = 1 := by sorry
 
 example : left_limit .univ Real.sign 0 = -1 := by sorry
 
+-- Последовательностная характеризация: если `aₙ → x₀` оставаясь в `X ∩ (x₀, ∞)`, то `f(aₙ)` сходится к правому пределу
 theorem right_limit.conv {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (had : AdherentPt x₀ (X ∩ .Ioi x₀))
   (h : RightLimitExists X f x₀)
   (a : ℕ → ℝ) (ha : ∀ n, a n ∈ X ∩ .Ioi x₀)
@@ -66,6 +71,7 @@ theorem right_limit.conv {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (had : Adh
   apply Convergesto.comp _ ha hconv
   rwa [Convergesto.iff, (eq had hL).2]
 
+-- Последовательностная характеризация: если `aₙ → x₀` оставаясь в `X ∩ (-∞, x₀)`, то `f(aₙ)` сходится к левому пределу
 theorem left_limit.conv {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (had : AdherentPt x₀ (X ∩ .Iio x₀))
   (h : LeftLimitExists X f x₀)
   (a : ℕ → ℝ) (ha : ∀ n, a n ∈ X ∩ .Iio x₀)

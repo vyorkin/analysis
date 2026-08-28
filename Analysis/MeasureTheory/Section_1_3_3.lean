@@ -15,6 +15,8 @@ noncomputable def LowerUnsignedLebesgueIntegral {d : ℕ} (f : EuclideanSpace' d
 noncomputable def UpperUnsignedLebesgueIntegral {d : ℕ} (f : EuclideanSpace' d → EReal) : EReal :=
   sInf { R | ∃ g : EuclideanSpace' d → EReal, ∃ hg : UnsignedSimpleFunction g, ∀ x, g x ≥ f x ∧ R = hg.integ}
 
+/-- Нижний интеграл Лебега функции `f ≥ 0` можно эквивалентно определить, взяв супремум по простым
+    функциям `g`, для которых `g ≤ f` выполняется лишь почти всюду, а не всюду -/
 theorem LowerUnsignedLebesgueIntegral.eq {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : ∀ x, 0 ≤ f x) : LowerUnsignedLebesgueIntegral f =
   sSup { R | ∃ g : EuclideanSpace' d → EReal, ∃ hg : UnsignedSimpleFunction g, (AlmostAlways (fun x ↦ g x ≤ f x)) ∧ R = hg.integ} := by
   -- Обе стороны — супремумы по множествам интегралов простых функций g, ограниченных f.
@@ -300,9 +302,13 @@ theorem LowerUnsignedLebesgueIntegral.add {d : ℕ} {f g : EuclideanSpace' d →
 theorem UpperUnsignedLebesgueIntegral.eq_outer_measure_integral {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : 
     UpperUnsignedLebesgueIntegral (Real.toEReal ∘ E.indicator') = Lebesgue_outer_measure E := by sorry
 
+/-- Контрпример: существуют беззнаковые, но не обязательно измеримые функции `f, g`, для которых
+    нижний интеграл суммы не равен сумме нижних интегралов — измеримость `f + g` в Corollary 1.3.14
+    существенна -/
 theorem LowerUnsignedLebesgueIntegral.not_additive : ∃ (d : ℕ) (f g : EuclideanSpace' d → EReal) (hf : Unsigned f) (hg : Unsigned g), (LowerUnsignedLebesgueIntegral (f + g) ≠ LowerUnsignedLebesgueIntegral f + LowerUnsignedLebesgueIntegral g) := by
     sorry
 
+-- Контрпример: существуют беззнаковые, но не обязательно измеримые функции `f, g`, для которых верхний интеграл суммы не равен сумме верхних интегралов
 theorem UpperUnsignedLebesgueIntegral.not_additive : ∃ (d : ℕ) (f g : EuclideanSpace' d → EReal) (hf : Unsigned f) (hg : Unsigned g), (UpperUnsignedLebesgueIntegral (f + g) ≠ UpperUnsignedLebesgueIntegral f + UpperUnsignedLebesgueIntegral g) := by
     sorry
 
@@ -339,6 +345,7 @@ theorem UnsignedLebesgueIntegral.markov_inequality {d : ℕ} {f : EuclideanSpace
 theorem UnsignedLebesgueIntegral.ae_finite {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hfin : UnsignedLebesgueIntegral f < ⊤) : 
     AlmostAlways (fun x ↦ f x < ⊤) := by sorry
 
+-- Контрпример к обращению Exercise 1.3.18(ii): существует измеримая функция `f`, конечная почти всюду, но с бесконечным интегралом Лебега
 theorem UnsignedLebesgueIntegral.ae_finite_no_converse : ∃ (d : ℕ) (f : EuclideanSpace' d → EReal) (hf : UnsignedMeasurable f) (hfin : AlmostAlways (fun x ↦ f x < ⊤)), UnsignedLebesgueIntegral f = ⊤ := by sorry
 
 /-- Exercise 1.3.18 (iii) -/

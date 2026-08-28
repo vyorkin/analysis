@@ -51,10 +51,13 @@ abbrev Sequence.BddBelowBy (a : Sequence) (M : ℝ) : Prop := ∀ n ≥ a.m, a n
 
 abbrev Sequence.BddBelow (a : Sequence) : Prop := ∃ M, a.BddBelowBy M
 
+-- Последовательность ограничена тогда и только тогда, когда она ограничена и сверху, и снизу.
 theorem Sequence.bounded_iff (a : Sequence) : a.IsBounded ↔ a.BddAbove ∧ a.BddBelow := by sorry
 
+-- Супремум ограниченной последовательности конечен (не равен `±∞`).
 theorem Sequence.sup_of_bounded {a : Sequence} (h : a.IsBounded) : a.sup.IsFinite := by sorry
 
+-- Инфимум ограниченной последовательности конечен.
 theorem Sequence.inf_of_bounded {a : Sequence} (h : a.IsBounded) : a.inf.IsFinite := by sorry
 
 /-- Proposition 6.3.6 (a) (свойство точной верхней грани) / Exercise 6.3.2 -/
@@ -89,16 +92,20 @@ theorem Sequence.convergent_of_monotone {a : Sequence} (hbound : a.BddAbove) (hm
 theorem Sequence.lim_of_monotone {a : Sequence} (hbound : a.BddAbove) (hmono : a.IsMonotone) : 
     lim a = a.sup := by sorry
 
-theorem Sequence.convergent_of_antitone {a : Sequence} (hbound : a.BddBelow) (hmono : a.IsAntitone) : 
+-- Ограниченная снизу антитонная последовательность сходится (аналог Proposition 6.3.8(a) для убывающих последовательностей).
+theorem Sequence.convergent_of_antitone {a : Sequence} (hbound : a.BddBelow) (hmono : a.IsAntitone) :
     a.Convergent := by sorry
 
-theorem Sequence.lim_of_antitone {a : Sequence} (hbound : a.BddBelow) (hmono : a.IsAntitone) : 
+-- Для ограниченной снизу антитонной последовательности предел равен её инфимуму (аналог Proposition 6.3.8(b)).
+theorem Sequence.lim_of_antitone {a : Sequence} (hbound : a.BddBelow) (hmono : a.IsAntitone) :
     lim a = a.inf := by sorry
 
-theorem Sequence.convergent_iff_bounded_of_monotone {a : Sequence} (ha : a.IsMonotone) : 
+-- Монотонная последовательность сходится тогда и только тогда, когда она ограничена.
+theorem Sequence.convergent_iff_bounded_of_monotone {a : Sequence} (ha : a.IsMonotone) :
     a.Convergent ↔ a.IsBounded := by sorry
 
-theorem Sequence.bounded_iff_convergent_of_antitone {a : Sequence} (ha : a.IsAntitone) : 
+-- Антитонная последовательность сходится тогда и только тогда, когда она ограничена.
+theorem Sequence.bounded_iff_convergent_of_antitone {a : Sequence} (ha : a.IsAntitone) :
     a.Convergent ↔ a.IsBounded := by sorry
 
 /-- Example 6.3.9 (a) -/

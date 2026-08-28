@@ -49,16 +49,20 @@ abbrev Digit.toNat (d : Digit) : ℕ := d.val
 instance Digit.instCoeNat : Coe Digit Nat where
   coe := toNat
 
+-- цифра `d`, приведённая к натуральному числу, меньше 10
 theorem Digit.lt (d : Digit) : (d : ℕ) < 10 := d.isLt
 
 abbrev Digit.mk {n : ℕ} (h : n < 10) : Digit := ⟨n, h⟩
 
+-- цифра, построенная из `n < 10` через `Digit.mk`, при обратном приведении в `ℕ` даёт то же `n`
 @[simp]
 theorem Digit.toNat_mk {n : ℕ} (h : n < 10) : (Digit.mk h : ℕ) = n := rfl
 
+-- две цифры равны тогда и только тогда, когда равны их значения-натуральные числа
 @[simp]
 theorem Digit.inj (d d' : Digit) : d = d' ↔ (d : ℕ) = d' := by grind
 
+-- цифра `d` равна цифре, построенной из `n < 10`, тогда и только тогда, когда `(d : ℕ) = n`
 theorem Digit.mk_eq_iff (d : Digit) {n : ℕ} (h : n < 10) : d = mk h ↔ (d : ℕ) = n := by
   convert Digit.inj d (mk h)
 #check (0 : Digit)
@@ -72,6 +76,7 @@ theorem Digit.mk_eq_iff (d : Digit) {n : ℕ} (h : n < 10) : d = mk h ↔ (d : �
 #check (8 : Digit)
 #check (9 : Digit)
 
+-- любая цифра равна одному из значений от 0 до 9
 theorem Digit.eq (n : Digit) : n = 0 ∨ n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 ∨ n = 5 ∨ n = 6 ∨ n = 7 ∨ n = 8 ∨ n = 9 := by
   fin_cases n <;> simp +decide
 
@@ -81,11 +86,13 @@ structure PosintDecimal where
   nonempty : digits ≠ []
   nonzero : digits.head nonempty ≠ 0
 
+-- два десятичных представления равны, если у них совпадают списки цифр
 theorem PosintDecimal.congr' {p q : PosintDecimal} (h : p.digits = q.digits) : p = q := by
   obtain ⟨ pd, _, _ ⟩ := p
   obtain ⟨ qd, _, _ ⟩ := q
   congr
 
+-- тот же результат, что и `congr'`, но равенство списков цифр выражено через равенство длин и поэлементное совпадение
 theorem PosintDecimal.congr {p q : PosintDecimal} (h : p.digits.length = q.digits.length)
   (h' : ∀ (n : ℕ) (h₁ : n < p.digits.length) (h₂ : n < q.digits.length), p.digits.get ⟨ n, h₁ ⟩ = q.digits.get ⟨ n, h₂ ⟩) : p = q := by
   apply congr'
@@ -93,13 +100,16 @@ theorem PosintDecimal.congr {p q : PosintDecimal} (h : p.digits.length = q.digit
 
 abbrev PosintDecimal.head (p : PosintDecimal) : Digit := p.digits.head p.nonempty
 
+-- старшая цифра десятичной записи `p` не равна нулю (переформулировка поля `nonzero` через `head`)
 theorem PosintDecimal.head_ne_zero (p : PosintDecimal) : p.head ≠ 0 := p.nonzero
 
+-- старшая цифра `p`, приведённая к натуральному числу, не равна нулю
 theorem PosintDecimal.head_ne_zero' (p : PosintDecimal) : (p.head : ℕ) ≠ 0 := by
   by_contra!
   apply head_ne_zero p
   simp_all [Digit.toNat, Digit.inj]; rfl
 
+-- список цифр `p` непуст: его длина строго положительна
 theorem PosintDecimal.length_pos (p : PosintDecimal) : 0 < p.digits.length := by
   simp [List.length_pos_iff, p.nonempty]
 
@@ -135,9 +145,11 @@ example : (PosintDecimal.mk' 3 [1, 4] (by decide) : ℕ) = 314 := by decide
 theorem PosintDecimal.ten_eq_ten : (mk' 1 [0] (by decide) : ℕ) = 10 := by
   decide
 
+-- однозначная запись из единственной ненулевой цифры `d` как натуральное число равна самой `d`
 theorem PosintDecimal.digit_eq {d : Digit} (h : d ≠ 0) : (mk' d [] h : ℕ) = d := by
   simp [toNat, mk']
 
+-- десятичное представление `p`, как натуральное число, строго положительно
 theorem PosintDecimal.pos (p : PosintDecimal) : 0 < (p : ℕ) := by
   simp [toNat]
   calc
@@ -175,6 +187,7 @@ theorem PosintDecimal.toNat_eq_foldl (q : PosintDecimal) :
       congr 1 <;> grind
     grind
 
+-- приписывание цифры `d` в конец записи `p` умножает значение `p` на 10 и добавляет `d`
 @[simp]
 theorem PosintDecimal.append_toNat (p : PosintDecimal) (d : Digit) : 
   (p.append d : ℕ) = d.toNat + 10 * p.toNat  := by
@@ -183,6 +196,7 @@ theorem PosintDecimal.append_toNat (p : PosintDecimal) (d : Digit) :
     simp [head, ← List.cons_append, List.cons_head_tail]]
   rw [List.foldl_append]; simp [List.foldl]; ring
 
+-- запись `p` из хотя бы двух цифр получается приписыванием последней цифры `d` к некоторой более короткой записи `q`
 theorem PosintDecimal.eq_append {p : PosintDecimal} (h : 2 ≤ p.digits.length) : ∃ (q : PosintDecimal) (d : Digit), p = q.append d := by
   use mk' p.head (p.digits.tail.dropLast) p.head_ne_zero
   set a := p.digits.getLast p.nonempty; use a
@@ -252,6 +266,7 @@ theorem PosintDecimal.exists_unique (n : ℕ) : n > 0 → ∃! p : PosintDecimal
   rw [←b'₀.mk_eq_iff hr] at hb'₀r
   rw [huniq b' this.symm, hb'₀r]
 
+-- два десятичных представления равны тогда и только тогда, когда равны их значения-натуральные числа
 @[simp]
 theorem PosintDecimal.coe_inj (p q : PosintDecimal) : (p : ℕ) = (q : ℕ) ↔ p = q := by
   constructor <;> intro h
@@ -274,6 +289,7 @@ instance IntDecimal.instCoeInt : Coe IntDecimal Int where
 
 example : (IntDecimal.neg (PosintDecimal.mk' 3 [1, 4] (by decide)) : ℤ) = -314 := by decide
 
+-- приведение `IntDecimal.toInt` из десятичных представлений целых чисел в `ℤ` — биекция
 theorem IntDecimal.Int_bij : Function.Bijective IntDecimal.toInt := by
   constructor
   . intro p q hpq
@@ -308,8 +324,10 @@ abbrev PosintDecimal.digit (p : PosintDecimal) (i : ℕ) : Digit :=
 
 abbrev PosintDecimal.carry (p q : PosintDecimal) : ℕ → ℕ := Nat.rec 0 (fun i ε ↦ if ((p.digit i : ℕ) + (q.digit i : ℕ) + ε) < 10 then 0 else 1)
 
+-- при сложении в столбик `p` и `q` перенос в самой младшей (нулевой) позиции отсутствует
 theorem PosintDecimal.carry_zero (p q : PosintDecimal) : p.carry q 0 = 0 := by convert Nat.rec_zero _ _
 
+-- перенос в позиции `i+1` равен 1, если сумма цифр и переноса в позиции `i` не помещается в одну цифру, и 0 иначе
 theorem PosintDecimal.carry_succ (p q : PosintDecimal) (i : ℕ) : p.carry q (i+1) = if ((p.digit i : ℕ) + (q.digit i : ℕ) + p.carry q i < 10) then 0 else 1 :=
   Nat.rec_add_one 0 (fun i ε ↦ if ((p.digit i : ℕ) + (q.digit i : ℕ) + ε) < 10 then 0 else 1) i
 
@@ -326,9 +344,11 @@ theorem PosintDecimal.sum_digit_lt (p q : PosintDecimal) (i : ℕ) :
 /-- Определите это число так, чтобы оно удовлетворяло двум следующим теоремам. -/
 def PosintDecimal.sum_digit_top (p q : PosintDecimal) : ℕ := by sorry
 
+-- старшая цифра суммы `p + q` (на позиции `sum_digit_top`) не равна нулю
 theorem PosintDecimal.leading_nonzero (p q : PosintDecimal) : 
     p.sum_digit q (p.sum_digit_top q) ≠ 0 := sorry
 
+-- за пределами старшей позиции (`sum_digit_top`) все цифры суммы `p + q` равны нулю
 theorem PosintDecimal.out_of_range_eq_zero (p q : PosintDecimal) : 
     ∀ i > ↑(p.sum_digit_top q), p.sum_digit q i = 0 := sorry
 
@@ -337,5 +357,6 @@ def PosintDecimal.longAddition (p q : PosintDecimal) : PosintDecimal where
   nonempty := sorry
   nonzero := sorry
 
+-- цифры `longAddition p q` совпадают с `sum_digit`, а как натуральное число оно равно `p + q`
 theorem PosintDecimal.sum_eq (p q : PosintDecimal) (i : ℕ) : 
     (((p.longAddition q).digit i) : ℕ) = p.sum_digit q i ∧ (p.longAddition q : ℕ) = p + q := by sorry
