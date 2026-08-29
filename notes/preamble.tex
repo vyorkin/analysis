@@ -1,0 +1,179 @@
+% Общий преамбул для конспекта. Собирается через XeLaTeX/LuaLaTeX.
+
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+
+\usepackage{fontspec}
+\setmainfont{PT Serif}
+% Без Scale=MatchLowercase Menlo визуально заметно крупнее и жирнее PT Serif
+% при том же кегле — инлайн-код "прыгает" на фоне обычного текста.
+% MatchLowercase подгоняет размер моноширинного шрифта по x-height основного.
+\setmonofont{Menlo}[Scale=MatchLowercase]
+\newfontfamily\cyrillicfont{PT Serif}
+\newfontfamily\cyrillicfonttt{Menlo}[Scale=MatchLowercase]
+
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+
+% amsthm по умолчанию продолжает текст доказательства на той же строке, что
+% и заголовок "Доказательство." — здесь после заголовка всегда перенос
+% строки. Копия \newenvironment{proof} из amsthm.sty с добавленным \newline.
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep
+        \itshape
+    #1\@addpunct{.}]\hspace{0pt}\\\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{xcolor}
+
+% Документ читается с экрана, не печатается — поля уже, чем в книжной
+% вёрстке, и одинаковые с обеих сторон (документ не переплетается).
+\usepackage[margin=2.7cm]{geometry}
+
+% Чуть больше межстрочного интервала, чем "книжный" одинарный — легче
+% воспринимать длинные доказательства и оставлять место для мысленных пометок.
+\linespread{1.08}
+
+% Приглушённый серый — для служебных пометок (ссылка на Lean-исходник),
+% чтобы они не конкурировали по контрасту с математическим текстом.
+\definecolor{leangray}{gray}{0.58}
+
+% Приглушённый синий — для кликабельных ссылок на другие аксиомы/теоремы
+% (\taoref). hyperref подключён с [hidelinks], то есть сам он ссылки никак
+% не выделяет — цвет здесь единственный сигнал, что по тексту можно
+% кликнуть, поэтому красим текст ссылки вручную сами.
+\definecolor{taoblue}{RGB}{37,84,150}
+
+% Компактные, но не слипшиеся списки по умолчанию — пригодится для шагов
+% доказательства/условий упражнений.
+\setlist{itemsep=0.2em, topsep=0.5em}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl} % разрешает перенос \path/\url по любому символу, не только после "_"/"."
+\usepackage{cleveref}
+
+% hyperref по умолчанию делает \url/\path курсивным, если курсивен окружающий
+% текст (\urlstyle{same}) — для моноширинного шрифта это выглядит плохо
+% (синтетический наклон). Код должен быть прямым всегда.
+\urlstyle{tt}
+
+% Заголовки разделов вида "3.2" — как у Тао
+\renewcommand\thesection{\thechapter.\arabic{section}}
+
+% Внутренние (немые) amsthm-окружения. Их автосчётчик не используется по
+% значению — он лишь механизм amsthm для печати номера. Сам номер мы каждый
+% раз подставляем вручную через \renewcommand\theaxiomEnv, см. ниже.
+%
+% Везде используется стиль "definition" (жирный заголовок, ПРЯМОЙ текст тела) —
+% стандартный "plain" даёт курсивное тело, и курсив на длинных абзацах и
+% особенно в моноширинном шрифте читается плохо.
+\theoremstyle{definition}
+\newtheorem{axiomEnv}{Аксиома}
+\newtheorem{theoremEnv}[axiomEnv]{Теорема}
+\newtheorem{propositionEnv}[axiomEnv]{Утверждение}
+\newtheorem{lemmaEnv}[axiomEnv]{Лемма}
+\newtheorem{corollaryEnv}[axiomEnv]{Следствие}
+\newtheorem{definitionEnv}[axiomEnv]{Определение}
+\newtheorem{exampleEnv}[axiomEnv]{Пример}
+\newtheorem{exerciseEnv}[axiomEnv]{Упражнение}
+\newtheorem{assumptionEnv}[axiomEnv]{Предположение}
+\newtheorem*{axiomEnv*}{Аксиома}
+\newtheorem*{theoremEnv*}{Теорема}
+\newtheorem*{propositionEnv*}{Утверждение}
+\newtheorem*{lemmaEnv*}{Лемма}
+\newtheorem*{corollaryEnv*}{Следствие}
+\newtheorem*{definitionEnv*}{Определение}
+\newtheorem*{exampleEnv*}{Пример}
+\newtheorem*{exerciseEnv*}{Упражнение}
+\newtheorem*{assumptionEnv*}{Предположение}
+\newtheorem*{remark}{Замечание}
+
+% Дословная нумерация Тао. Использование:
+%   \begin{axiom}{3.8}{универсальная спецификация} ... \end{axiom}
+% Первый аргумент — номер БУКВАЛЬНО как в докстринге Lean-теоремы (сверяться
+% через \leanref ниже), второй — заголовок в скобках (можно оставить {}).
+% У Тао аксиомы нумеруются "Глава.N" (Axiom 3.8), а теоремы/леммы/... —
+% "Глава.Раздел.N" (Proposition 3.4.9), поэтому общая авто-нумерация по
+% разделу здесь не годится — номер всегда указывается вручную.
+% Каждое окружение заодно ставит \label{префикс:номер} — это даёт возможность
+% ссылаться на него настоящей кликабельной ссылкой через \taoref (см. ниже),
+% без ручной возни с метками. Коллизий не бывает: номера Тао уникальны по
+% всей книге.
+%
+% \nopagebreak в конце запрещает разрыв страницы сразу после формулировки —
+% без него между "Утверждение 2.1.6." и следующим за ним "Доказательство."
+% может влезть граница страницы, что рвёт нить рассуждения.
+\newenvironment{axiom}[2]{\renewcommand\theaxiomEnv{#1}\begin{axiomEnv}[#2]\label{ax:#1}}{\end{axiomEnv}\nopagebreak}
+\newenvironment{theorem}[2]{\renewcommand\theaxiomEnv{#1}\begin{theoremEnv}[#2]\label{thm:#1}}{\end{theoremEnv}\nopagebreak}
+\newenvironment{proposition}[2]{\renewcommand\theaxiomEnv{#1}\begin{propositionEnv}[#2]\label{prop:#1}}{\end{propositionEnv}\nopagebreak}
+\newenvironment{lemma}[2]{\renewcommand\theaxiomEnv{#1}\begin{lemmaEnv}[#2]\label{lem:#1}}{\end{lemmaEnv}\nopagebreak}
+\newenvironment{corollary}[2]{\renewcommand\theaxiomEnv{#1}\begin{corollaryEnv}[#2]\label{cor:#1}}{\end{corollaryEnv}\nopagebreak}
+\newenvironment{definition}[2]{\renewcommand\theaxiomEnv{#1}\begin{definitionEnv}[#2]\label{def:#1}}{\end{definitionEnv}\nopagebreak}
+\newenvironment{example}[2]{\renewcommand\theaxiomEnv{#1}\begin{exampleEnv}[#2]\label{ex:#1}}{\end{exampleEnv}\nopagebreak}
+\newenvironment{exercise}[2]{\renewcommand\theaxiomEnv{#1}\begin{exerciseEnv}[#2]\label{exr:#1}}{\end{exerciseEnv}\nopagebreak}
+\newenvironment{assumption}[2]{\renewcommand\theaxiomEnv{#1}\begin{assumptionEnv}[#2]\label{assum:#1}}{\end{assumptionEnv}\nopagebreak}
+
+% Беззвёздная версия — для утверждений, которые у Тао не пронумерованы
+% (например, приведены как рассуждение в прозе, без формальной метки).
+% Аргумент — заголовок в скобках, номер не печатается.
+\newenvironment{axiom*}[1]{\begin{axiomEnv*}[#1]}{\end{axiomEnv*}\nopagebreak}
+\newenvironment{theorem*}[1]{\begin{theoremEnv*}[#1]}{\end{theoremEnv*}\nopagebreak}
+\newenvironment{proposition*}[1]{\begin{propositionEnv*}[#1]}{\end{propositionEnv*}\nopagebreak}
+\newenvironment{lemma*}[1]{\begin{lemmaEnv*}[#1]}{\end{lemmaEnv*}\nopagebreak}
+\newenvironment{corollary*}[1]{\begin{corollaryEnv*}[#1]}{\end{corollaryEnv*}\nopagebreak}
+\newenvironment{definition*}[1]{\begin{definitionEnv*}[#1]}{\end{definitionEnv*}\nopagebreak}
+\newenvironment{example*}[1]{\begin{exampleEnv*}[#1]}{\end{exampleEnv*}\nopagebreak}
+\newenvironment{exercise*}[1]{\begin{exerciseEnv*}[#1]}{\end{exerciseEnv*}\nopagebreak}
+\newenvironment{assumption*}[1]{\begin{assumptionEnv*}[#1]}{\end{assumptionEnv*}\nopagebreak}
+
+% Ссылка на конкретную лемму/теорему в Lean-файле того же раздела.
+% \path (из url.sty, с xurl) даёт моноширинный текст, переносимый по любому
+% символу — длинные идентификаторы не вылезают за поля, и не нужно
+% экранировать подчёркивания вручную.
+\newcommand{\leanref}[1]{\path{#1}}
+
+% Короткая вставка кода прямо в тексте (не длинный идентификатор — для тех
+% есть \leanref). \mbox запрещает перенос строки внутри — короткий фрагмент
+% вроде "zero : Nat" не должен разрываться пополам на границе строки.
+\newcommand{\code}[1]{\mbox{\texttt{#1}}}
+
+% Вынесенная строка с именем Lean-теоремы/леммы вместе с её формальной
+% сигнатурой — ставится последней внутри окружения, после
+% доказательства/формулировки. #1 — идентификатор, #2 — явные параметры и
+% формулировка (без неявных {..}-параметров), в родном синтаксисе Lean.
+% Флеш-лефт, а не hfill: сигнатура обычно длиннее одного идентификатора и
+% переносится на несколько строк, вправо это смотрелось бы плохо.
+\newcommand{\leansource}[2]{\par\nobreak\smallskip\noindent{\footnotesize\color{leangray}Lean:~{\leanref{#1}}\ \texttt{#2}}\par}
+
+% Единообразный разбор случаев внутри \begin{proof}...\end{proof}:
+%   \caselabel{$\Omega \in \Omega$} Тогда ...
+\newcommand{\caselabel}[1]{\medskip\noindent\textbf{Случай #1.}\ }
+
+% То же самое, но с произвольной подписью — для шагов индукции и похожих
+% структурных частей доказательства:
+%   \prooflabel{База} $n = 0$: ...
+%   \prooflabel{Переход} ...
+\newcommand{\prooflabel}[1]{\medskip\noindent\textbf{#1.}\ }
+
+% Кликабельная ссылка на другую аксиому/теорему/... по её метке (см. префиксы
+% выше — ax:, thm:, prop:, lem:, cor:, def:, ex:, exr:, assum:). Падеж и
+% формулировку текста задаём сами вторым аргументом, макрос не гадает.
+%   По \taoref{ax:2.1}{аксиоме 2.1}, $0$ — натуральное число.
+\newcommand{\taoref}[2]{\hyperref[#1]{\color{taoblue}#2}}
+
+% Обоснование шага доказательства — мелкой серой пометкой сразу после
+% содержательного утверждения, вместо ведущего "По аксиоме X, ...". Само
+% рассуждение остаётся обычным текстом на переднем плане, ссылка на
+% аксиому/лемму отходит на второй план (как и \leansource):
+%   $0$ — натуральное число.\by{\taoref{ax:2.1}{аксиома 2.1}}
+\newcommand{\by}[1]{\ {\footnotesize\color{leangray}(#1)}}

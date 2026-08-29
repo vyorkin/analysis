@@ -27,6 +27,10 @@
 
 - Fix: use `have heq : <LHS> = <RHS> := by ext; ...` to build the rewrite manually, then `rw [heq]`. The explicit `have` gives `rw` a concrete LHS to match.
 
+**Can't rewrite a subterm that mentions the binder it's under.** `rw [iff_lemma]` fails on a hypothesis like `∃ x, P x` when `iff_lemma : P x ↔ Q x` would need to fire on the occurrence of `P x` inside the `∃ x, …` itself — `kabstract` (which `rw` uses to find the pattern) doesn't descend into binder bodies, since the match would depend on the bound variable. Error looks like "did not find an occurrence of the pattern" even though the subterm is visibly there.
+
+- Fix: use `simp only [iff_lemma]` instead — `simp` rewrites under binders via congruence lemmas (e.g. `exists_congr`, `forall_congr'`).
+
 ## `simp`
 
 **Over-expands `abbrev`s.** `simp` may unfold `abbrev` definitions further than intended, producing raw `if`/`dite` expressions that break subsequent tactic applications.

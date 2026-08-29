@@ -1,0 +1,206 @@
+Множества, наряду с числами, — второй фундаментальный объект математического анализа.
+В этой главе вводятся элементарные аксиомы теории множеств: их достаточно для дальнейшего
+изложения, а более тонкие вопросы (бесконечные множества, аксиома выбора) откладываются
+до отдельной главы.
+
+\section{Фундаментальные понятия}
+
+\begin{axiom}{3.1}{множества являются объектами}
+Если $A$ — множество, то $A$ также является объектом. В частности, для любых двух множеств
+$A$ и $B$ имеет смысл вопрос, является ли $A$ элементом $B$.
+\leansource{SetTheory.Set.coe_eq}{(h : (X : Object) = (Y : Object)) : X = Y}
+\end{axiom}
+
+\begin{axiom}{3.2}{равенство множеств}
+Два множества $A$ и $B$ называются \emph{равными}, $A=B$, если каждый элемент $A$
+является элементом $B$ и наоборот.
+\leansource{SetTheory.Set.ext}{(h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y}
+\end{axiom}
+
+\begin{remark}
+В книге это определение, а не отдельная аксиома: равенство множеств устроено так же, как
+любое другое отношение, определяемое через $\in$. В Lean же тип \code{Set} — совершенно
+новый примитивный тип, никак не связанный заранее с отношением \code{mem}, поэтому связь
+между равенством и «одинаковыми элементами» (аксиома экстенсиональности) постулируется как
+часть самого класса \code{SetTheory}, а не выводится из чего-то более простого — отсюда и
+номер аксиомы вместо номера определения.
+\end{remark}
+
+\begin{axiom}{3.3}{пустое множество}
+Существует множество $\emptyset$, называемое \emph{пустым множеством}, не содержащее
+элементов: для любого объекта $x$ выполняется $x \notin \emptyset$.
+\leansource{SetTheory.Set.instEmpty}{: EmptyCollection Set}
+\leansource{SetTheory.Set.not_mem_empty}{: ∀ x, x ∉ (∅ : Set)}
+\end{axiom}
+
+\begin{remark}
+Пустое множество единственно: если бы существовали два пустых множества, они были бы равны
+друг другу по \taoref{ax:3.2}{аксиоме 3.2} (у обоих попросту нет элементов, а значит,
+«каждый элемент одного является элементом другого» выполняется без исключений).
+\end{remark}
+
+\begin{lemma}{3.1.5}{единственный выбор}
+Пусть $A$ — непустое множество. Тогда существует объект $x$ такой, что $x \in A$.
+\leansource{SetTheory.Set.nonempty_def}{(h : X ≠ ∅) : ∃ x, x ∈ X}
+\end{lemma}
+
+\begin{proof}
+От противного: если бы такого $x$ не было, то $x \notin A$ для всех $x$, а тогда
+$x \in A \iff x \in \emptyset$ для всех $x$ (обе стороны всегда ложны), откуда $A=\emptyset$
+по \taoref{ax:3.2}{аксиоме 3.2} — противоречие с условием.
+\end{proof}
+
+\begin{axiom}{3.4}{одноэлементное и парное множества}
+Если $a$ — объект, то существует множество $\{a\}$, единственный элемент которого — $a$:
+для любого объекта $y$ выполняется $y \in \{a\} \iff y=a$. Если $a$ и $b$ — объекты, то
+существует множество $\{a,b\}$, элементы которого — в точности $a$ и $b$:
+$y \in \{a,b\} \iff (y=a \lor y=b)$.
+\leansource{SetTheory.Set.instSingleton}{: Singleton Object Set}
+\leansource{SetTheory.Set.mem_singleton}{(x a : Object) : x ∈ ({a} : Set) ↔ x = a}
+\leansource{SetTheory.Set.pair_eq}{(a b : Object) : ({a,b} : Set) = {a} ∪ {b}}
+\end{axiom}
+
+\begin{axiom}{3.5}{попарное объединение}
+Для любых двух множеств $A,B$ существует множество $A \cup B$, называемое их
+\emph{объединением} и состоящее из всех элементов, принадлежащих $A$ или $B$ (или обоим):
+$x \in A \cup B \iff (x \in A \lor x \in B)$.
+\leansource{SetTheory.Set.instUnion}{: Union Set}
+\leansource{SetTheory.Set.mem_union}{(x : Object) (X Y : Set) : x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y)}
+\end{axiom}
+
+\begin{lemma}{3.1.12}{базовые свойства объединений}
+Пусть $A,B,C$ — множества. Тогда объединение коммутативно ($A \cup B = B \cup A$) и
+ассоциативно ($(A \cup B) \cup C = A \cup (B \cup C)$). Кроме того,
+$A \cup A = A \cup \emptyset = \emptyset \cup A = A$.
+\leansource{SetTheory.Set.union_comm}{(A B : Set) : A ∪ B = B ∪ A}
+\leansource{SetTheory.Set.union_assoc}{(A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C)}
+\end{lemma}
+
+\begin{proof}
+Докажем только ассоциативность — остальное устроено проще и доказывается похожим
+разбором случаев. Раскрывая \taoref{ax:3.5}{аксиому 3.5} с обеих сторон, получаем
+\[
+  x \in (A \cup B) \cup C \iff (x \in A \lor x \in B \lor x \in C)
+  \iff x \in A \cup (B \cup C).
+\]
+Обе части равносильны одному и тому же условию, значит множества равны.
+\end{proof}
+
+\begin{remark}
+Поскольку объединение ассоциативно, скобки при объединении нескольких множеств можно не
+писать: $A \cup B \cup C$ однозначно определено.
+\end{remark}
+
+\begin{definition}{3.1.14}{подмножество}
+Пусть $A,B$ — множества. Говорим, что $A$ — \emph{подмножество} $B$, и пишем $A \subseteq B$,
+если каждый элемент $A$ является элементом $B$. Говорим, что $A$ — \emph{собственное
+подмножество} $B$, и пишем $A \subsetneq B$, если $A \subseteq B$ и $A \neq B$.
+\leansource{SetTheory.Set.instSubset}{: HasSubset Set}
+\leansource{SetTheory.Set.instSSubset}{: HasSSubset Set}
+\end{definition}
+
+\begin{proposition}{3.1.17}{включение частично упорядочивает множества}
+Пусть $A,B,C$ — множества. Если $A \subseteq B$ и $B \subseteq C$, то $A \subseteq C$. Если
+$A \subseteq B$ и $B \subseteq A$, то $A=B$. Наконец, если $A \subsetneq B$ и
+$B \subsetneq C$, то $A \subsetneq C$.
+\leansource{SetTheory.Set.subset_trans}{(hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C}
+\leansource{SetTheory.Set.subset_antisymm}{(A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A) : A = B}
+\end{proposition}
+
+\begin{proof}
+Докажем транзитивность. Пусть $A \subseteq B$, $B \subseteq C$ и $x \in A$. Тогда $x \in B$,
+поскольку $A \subseteq B$, а значит $x \in C$, поскольку $B \subseteq C$. Так как $x$ был
+произвольным элементом $A$, получаем $A \subseteq C$.
+\end{proof}
+
+\begin{remark}
+Включение множеств похоже на отношение $\leq$ для чисел, но с важным отличием: порядок на
+числах — тотальный (\taoref{prop:2.2.13}{трихотомия}), а включение множеств — лишь
+\emph{частичный}. Например, множества чётных и нечётных натуральных чисел не сравнимы между
+собой: ни одно не содержится в другом.
+\end{remark}
+
+\begin{axiom}{3.6}{аксиома спецификации}
+Пусть $A$ — множество, и пусть $P(x)$ — свойство, применимое к элементам $A$. Тогда
+существует множество $\{x \in A : P(x)\text{ истинно}\}$, элементы которого — в точности
+те элементы $x$ множества $A$, для которых $P(x)$ истинно.
+\leansource{SetTheory.Set.specification_axiom}{(h : x ∈ A.specify P) : x ∈ A}
+\leansource{SetTheory.Set.specify_subset}{(P : A → Prop) : A.specify P ⊆ A}
+\end{axiom}
+
+\begin{remark}
+Множество, полученное спецификацией, всегда является подмножеством $A$ — оно может
+совпадать с $A$ целиком или оказаться пустым, но не выйти за его пределы.
+\end{remark}
+
+\begin{definition}{3.1.22}{пересечение}
+\emph{Пересечением} двух множеств $S_1,S_2$ называется множество
+$S_1 \cap S_2 := \{x \in S_1 : x \in S_2\}$, то есть множество элементов, принадлежащих
+одновременно обоим множествам.
+\leansource{SetTheory.Set.instIntersection}{: Inter Set}
+\leansource{SetTheory.Set.mem_inter}{(x : Object) (X Y : Set) : x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y)}
+\end{definition}
+
+\begin{definition}{3.1.26}{разность множеств}
+\emph{Разностью} множеств $A$ и $B$ называется множество
+$A \setminus B := \{x \in A : x \notin B\}$, то есть $A$ с удалёнными элементами $B$.
+\leansource{SetTheory.Set.instSDiff}{: SDiff Set}
+\leansource{SetTheory.Set.mem_sdiff}{(x : Object) (X Y : Set) : x ∈ (X \ Y) ↔ (x ∈ X ∧ x ∉ Y)}
+\end{definition}
+
+\begin{proposition}{3.1.27}{множества образуют булеву алгебру}
+Пусть $A,B,C$ — множества, все являющиеся подмножествами некоторого множества $X$. Тогда:
+\begin{itemize}
+  \item[(a)] $A \cup \emptyset = A$ и $A \cap \emptyset = \emptyset$;
+  \item[(b)] $A \cup X = X$ и $A \cap X = A$;
+  \item[(c)] $A \cap A = A$ и $A \cup A = A$;
+  \item[(d)] $A \cup B = B \cup A$ и $A \cap B = B \cap A$;
+  \item[(e)] $(A \cup B) \cup C = A \cup (B \cup C)$ и $(A \cap B) \cap C = A \cap (B \cap C)$;
+  \item[(f)] $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$ и
+        $A \cup (B \cap C) = (A \cup B) \cap (A \cup C)$;
+  \item[(g)] $A \cup (X \setminus A) = X$ и $A \cap (X \setminus A) = \emptyset$;
+  \item[(h)] (законы де Моргана) $X \setminus (A \cup B) = (X \setminus A) \cap (X \setminus B)$
+        и $X \setminus (A \cap B) = (X \setminus A) \cup (X \setminus B)$.
+\end{itemize}
+\leansource{SetTheory.Set.compl_union}{: X \ (A ∪ B) = (X \ A) ∩ (X \ B)}
+\leansource{SetTheory.Set.compl_inter}{: X \ (A ∩ B) = (X \ A) ∪ (X \ B)}
+\end{proposition}
+
+\begin{remark}
+Как и в книге, доказательства (все — прямые разборы принадлежности элемента, в духе
+\taoref{lem:3.1.12}{леммы 3.1.12}) здесь опущены — в Lean-файле они выписаны явно. Законы
+де Моргана названы в честь Августа де Моргана; между $\cup$ и $\cap$, а также между $X$ и
+$\emptyset$, здесь просматривается симметрия — свойство, называемое \emph{двойственностью}.
+\end{remark}
+
+\begin{axiom}{3.7}{аксиома замены}
+Пусть $A$ — множество. Для каждого объекта $x \in A$ и объекта $y$ пусть дано утверждение
+$P(x,y)$, такое что для каждого $x \in A$ существует не более одного $y$, для которого
+$P(x,y)$ истинно. Тогда существует множество
+\[
+  \{y : P(x,y)\text{ истинно для некоторого }x \in A\},
+\]
+такое что для любого объекта $z$ выполняется $z \in \{y : \ldots\} \iff P(x,z)$ истинно
+для некоторого $x \in A$.
+\leansource{SetTheory.Set.replacement_axiom}{(hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object) : y ∈ A.replace hP ↔ ∃ x, P x y}
+\end{axiom}
+
+\begin{remark}
+Аксиома замены позволяет, имея множество $A$, построить новое множество, «применив»
+$P$ к каждому его элементу — например, взять $A=\{3,5,9\}$ и $P(x,y) :\iff y=x{+}{+}$,
+чтобы получить $\{4,6,10\}$.
+\end{remark}
+
+\begin{axiom}{3.8}{бесконечность}
+Существует множество $\mathbb{N}$, элементы которого называются натуральными числами, а
+также объект $0 \in \mathbb{N}$ и объект $n{+}{+}$, сопоставленный каждому натуральному
+числу $n \in \mathbb{N}$, такие что выполняются \taoref{ax:2.1}{аксиомы Пеано 2.1}–\taoref{ax:2.5}{2.5}.
+\leansource{SetTheory.Set.nat_equiv}{: ℕ ≃ Nat}
+\end{axiom}
+
+\begin{remark}
+Это формальная версия \taoref{assum:2.6}{предположения 2.6}: аксиома бесконечности —
+первая аксиома, дающая заведомо бесконечное множество, и именно она позволяет считать
+натуральные числа полноправными объектами теории множеств, а не отдельной надстройкой
+над ней.
+\end{remark}
