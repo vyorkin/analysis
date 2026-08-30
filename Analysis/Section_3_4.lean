@@ -114,15 +114,41 @@ theorem SetTheory.Set.image_in_codomain {X Y : Set} (f : X → Y) (S : Set) :
 /-- Example 3.4.2 -/
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n : ℕ)
 
--- конкретное вычисление: образ `{1,2,3}` под удвоением `f_3_4_2` — это `{2,4,6}`
+-- Конкретное вычисление: образ `{1,2,3}` под удвоением `f_3_4_2` — это `{2,4,6}`
 theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
-  ext
-  simp only [mem_image, mem_triple, f_3_4_2]
+  ext y
+  rw [mem_image]
+  unfold f_3_4_2
+  simp only [mem_triple]
   constructor
-  · rintro ⟨_, (_ | _ | _), rfl⟩ <;> simp_all
+  · -- `rfl` в паттерне сразу подставляет равенство `f x₁ = y`
+    rintro ⟨_, (_ | _ | _), rfl⟩ <;> simp_all
   · rintro (_ | _ | _)
+    -- в отличие от `<;>`, `map_tacs` применяет
+    -- к каждой из трёх целей свою тактику по порядку
     map_tacs [use 1; use 2; use 3]
     all_goals simp_all
+
+-- Та же теорема, что и `image_f_3_4_2`,
+-- но без комбинаторов вроде `rintro (_ | _ | _)` и `map_tacs`:
+-- все шесть случаев (три в каждую сторону) расписаны отдельно, для наглядности
+theorem SetTheory.Set.image_f_3_4_2' : image f_3_4_2 {1,2,3} = {2,4,6} := by
+  ext y
+  rw [mem_image]
+  unfold f_3_4_2
+  simp only [mem_triple]
+  constructor
+  · intro h
+    obtain ⟨x, hx, hfx⟩ := h
+    rcases hx with hx | hx | hx
+    · simp_all
+    · simp_all
+    · simp_all
+  · intro h
+    rcases h with h | h | h
+    · exact ⟨1, by simp_all, by simp_all⟩
+    · exact ⟨2, by simp_all, by simp_all⟩
+    · exact ⟨3, by simp_all, by simp_all⟩
 
 /-- Example 3.4.3 записан с использованием понятия образа из Mathlib. -/
 example : (fun n : ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by aesop
@@ -245,20 +271,20 @@ abbrev f_3_4_9_d : ({4,7} : Set) → ({0,1} : Set) := fun x ↦ ⟨ 1, by simp �
 
 -- объект `F ∈ {0,1}^{4,7}` — это ровно одна из четырёх функций `{4,7} → {0,1}`, перечисленных выше
 theorem SetTheory.Set.example_3_4_9 (F : Object) :
-    F ∈ ({0,1} : Set) ^ ({4,7} : Set) ↔ F = f_3_4_9_a
-    ∨ F = f_3_4_9_b ∨ F = f_3_4_9_c ∨ F = f_3_4_9_d := by
-  rw [powerset_axiom]
-  refine ⟨?_, by aesop ⟩
-  rintro ⟨f, rfl⟩
-  have h1 := (f ⟨4, by simp⟩).property
-  have h2 := (f ⟨7, by simp⟩).property
-  simp [coe_of_fun_inj] at *
-  obtain _ | _ := h1 <;> obtain _ | _ := h2
-  map_tacs [left; (right;left); (right;right;left); (right;right;right)]
-  all_goals
-    ext ⟨_, hx⟩
-    simp at hx
-    grind
+  F ∈ ({0,1} : Set) ^ ({4,7} : Set) ↔
+    F = f_3_4_9_a ∨ F = f_3_4_9_b ∨ F = f_3_4_9_c ∨ F = f_3_4_9_d := by
+      rw [powerset_axiom]
+      refine ⟨?_, by aesop ⟩
+      rintro ⟨f, rfl⟩
+      have h1 := (f ⟨4, by simp⟩).property
+      have h2 := (f ⟨7, by simp⟩).property
+      simp [coe_of_fun_inj] at *
+      obtain _ | _ := h1 <;> obtain _ | _ := h2
+      map_tacs [left; (right;left); (right;right;left); (right;right;right)]
+      all_goals
+        ext ⟨_, hx⟩
+        simp at hx
+        grind
 
 /-- Exercise 3.4.6 (i). Здесь нужно дать подходящее определение степенного множества. -/
 def SetTheory.Set.powerset (X : Set) : Set :=
