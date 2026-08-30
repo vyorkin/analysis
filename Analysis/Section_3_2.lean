@@ -153,59 +153,154 @@ theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
 
 /--
 Exercise 3.2.1.
+
+Здесь необходимо показать, что из аксиомы универсальной спецификации
+вытекают аксиомы 3.3, 3.4, 3.5, 3.6 и 3.7.
 Суть упражнения — установить эти результаты,
 не используя ни парадокс Рассела, ни пустое множество.
+
+Если предположить, что все натуральные числа являются объектами,
+то мы также получим аксиому 3.8. Таким образом, эта аксиома,
+если бы она была принята, то значительно упростила бы основу теории множеств.
+Она может рассматриваться как одна из основ интуитивной модели теории множеств,
+известной как наивная теория множеств. К сожалению, мы убедились,
+что аксиома 3.9 слишком хороша, чтобы быть правдой.
 -/
 theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) :
+  -- Существует такое множество, что никакой элемент в него не входит.
   ∃ (X : Set), ∀ x, x ∉ X := by
-    sorry
+    -- Развернём определение универсальной спецификации для наглядности.
+    unfold axiom_of_universal_specification at h
+    -- Универсальная спецификация говорит нам о том,
+    -- что всегда найдётся такое множество `A` для которого верно следующее:
+    -- Если какой‑то элемент входит в множество,
+    -- то утверждение `P` для этого элемента выполняется (и наоборот).
+    --
+    -- В качестве `P` берём заведомо ложное утверждение:
+    -- тогда никакой `x` не может ему удовлетворять,
+    -- и построенное по спецификации множество автоматически окажется пустым.
+    set P : Object → Prop := fun _ ↦ False
+    specialize h P
+    unfold P at h
+    obtain ⟨A, hA⟩ := h
+    -- Никакой элемент `x` не является элементом множества `A`.
+    guard_hyp hA : ∀ (x : Object), x ∈ A ↔ False
+    -- Вот такое множество и будем использовать для доказательства.
+    use A
+    intro x hx
+    exact (hA x).mp hx
+
+/-- Exercise 3.2.1 -/
+theorem SetTheory.Set.singleton_exists
+  (h : axiom_of_universal_specification) (x : Object) :
+    -- Существование одноэлементного множества.
+    ∃ (X : Set), ∀ y, y ∈ X ↔ y = x := by
+      -- Развернём определение универсальной спецификации для наглядности.
+      unfold axiom_of_universal_specification at h
+      set P : Object → Prop := fun y ↦ y = x
+      specialize h P
+      obtain ⟨A, h⟩ := h
+      unfold P at h; replace h : ∀ y, y ∈ A ↔ y = x := h
+      use A, h
+
+/-- Exercise 3.2.1 -/
+theorem SetTheory.Set.pair_exists
+  (h : axiom_of_universal_specification) (x₁ x₂ : Object) :
+    -- Существование множества-пары.
+    ∃ (X : Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
+      unfold axiom_of_universal_specification at h
+      set P : Object → Prop := fun y ↦ y = x₁ ∨ y = x₂
+      specialize h P
+      obtain ⟨A, h⟩ := h
+      unfold P at h
+      use A
+
+/-- Exercise 3.2.1 -/
+theorem SetTheory.Set.union_exists
+  (h : axiom_of_universal_specification) (A B : Set) :
+    -- Существованиe объединения.
+    ∃ (Z : Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
+      unfold axiom_of_universal_specification at h
+      -- Для фиксированных множеств `A, B` возьмём `P (z) : ⇐⇒ (z ∈ A ∨ z ∈ B)`.
+      set P : Object → Prop := fun z ↦ z ∈ A ∨ z ∈ B
+      -- По аксиоме универсальной спецификации найдётся множество `Z` такое,
+      -- что для всякого `z` выполняется `z ∈ Z ⇐⇒ (z ∈ A ∨ z ∈ B)`.
+      specialize h P
+      obtain ⟨Z, h⟩ := h
+      unfold P at h
+      -- Это и есть искомое объединение `A ∪ B`.
+      exact ⟨Z, h⟩
 
 /--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты,
-  не используя ни парадокс Рассела, ни одноэлементное множество.
--/
-theorem SetTheory.Set.singleton_exists (h : axiom_of_universal_specification) (x : Object) :
-  ∃ (X : Set), ∀ y, y ∈ X ↔ y = x := by
-    sorry
+Exercise 3.2.1
 
-/--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты,
-  не используя ни парадокс Рассела, ни пару.
+```
+theorem SetTheory.Set.specification_axiom''
+  {A : Set} (P : A → Prop) (x : Object) :
+    x ∈ A.specify P ↔ ∃ h : x ∈ A, P ⟨x, h⟩ := by
+```
 -/
-theorem SetTheory.Set.pair_exists (h : axiom_of_universal_specification) (x₁ x₂ : Object) :
-  ∃ (X : Set), ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂ := by
-    sorry
+theorem SetTheory.Set.specify_exists
+  (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) :
+    ∃ (Z : Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨z, h⟩ := by
+      unfold axiom_of_universal_specification at h
+      -- Для фиксированных `A, P` возьмём `Q z := ∃ h : z ∈ A, P ⟨z, h⟩`.
+      set Q : Object → Prop := fun z ↦ ∃ h : z ∈ A, P ⟨z, h⟩
+      specialize h Q
+      obtain ⟨Z, hZ⟩ := h
+      unfold Q at hZ
+      exact ⟨Z, hZ⟩
 
-/--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты,
-  не используя ни парадокс Рассела, ни операцию объединения.
--/
-theorem SetTheory.Set.union_exists (h : axiom_of_universal_specification) (A B : Set) :
-  ∃ (Z : Set), ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B := by
-    sorry
-
-/--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты,
-  не используя ни парадокс Рассела, ни операцию спецификации.
--/
-theorem SetTheory.Set.specify_exists (h : axiom_of_universal_specification) (A : Set) (P : A → Prop) :
-  ∃ (Z : Set), ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨ z, h ⟩ := by
-    sorry
-
-/--
-  Exercise 3.2.1. Суть упражнения — установить эти результаты,
-  не используя ни парадокс Рассела, ни операцию замены.
--/
+/-- Exercise 3.2.1 -/
 theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A : Set)
-  (P : A → Object → Prop) (hP : ∀ x y y', P x y ∧ P x y' → y = y') :
+  (P : A → Object → Prop) (_hP : ∀ x y y', P x y ∧ P x y' → y = y') :
     ∃ (Z : Set), ∀ y, y ∈ Z ↔ ∃ a : A, P a y := by
-      sorry
+      unfold axiom_of_universal_specification at h
+      set Q : Object → Prop := fun y ↦ ∃ (a : A), P a y
+      -- Ну значит существует и такое множество `A`,
+      -- для которого выполняется `x ∈ A ↔ Q x`
+      specialize h Q
+      obtain ⟨Z, hz⟩ := h
+      unfold Q at hz
+      use Z
 
-/-- Exercise 3.2.2 (no set contains itself) -/
+/--
+Exercise 3.2.2 (no set contains itself).
+
+Используйте аксиому регулярности и аксиому одноэлементного множества,
+чтобы показать, что если A — множество, то A ∉ A.
+-/
 theorem SetTheory.Set.not_mem_self (A : Set) : (A : Object) ∉ A := by
-  sorry
+  intro h
+  -- Строим одноэлементное множество `SA = {A}`,
+  -- к которому применим аксиому регулярности.
+  set SA : Set := {(A : Object)}
+  -- mem_singleton : (x a : Object) : x ∈ {a} ↔ x = a
+  have hsa := (mem_singleton A A).mpr -- : A = A → A ∈ {A}
+  -- `SA` непусто: оно содержит сам `A` (это следует из `A = A` по `rfl`).
+  have hmemA : (A : Object) ∈ SA := hsa /- A = A -/ rfl -- A ∈ {A}
+  -- Аксиома регулярности к непустому `SA` даёт элемент `x ∈ SA`, для которого,
+  -- если `x` — само множество `S`, то `S` и `SA` не имеют общих элементов.
+  -- (A : Set) (hA : ∃ x, x ∈ A) :
+  --   ∃ x, x ∈ A ∧ ∀ (S : Set), x = S → ¬∃ y, y ∈ A ∧ y ∈ S
+  have hr := regularity_axiom SA ⟨(A : Object), hmemA⟩
+  obtain ⟨x, ⟨hxa, h'⟩⟩ := hr
+  -- Единственный элемент `SA` — это `A`, поэтому `x = A`.
+  have hxA : x = (A : Object) := (mem_singleton x A).mp hxa
+  -- Подставляем `S := A` (пользуясь `x = A`): получаем, что `A` и `SA` не пересекаются.
+  specialize h' A hxA
+  -- Но `A` лежит и в `SA` (это `hmemA`), и в самом себе (это исходное `h`) —
+  -- значит, `A` является их общим элементом, что противоречит предыдущему шагу.
+  have hcommon : ∃ y, y ∈ SA ∧ y ∈ A := ⟨(A : Object), hmemA, h⟩
+  -- exact h' hcommon
+  contradiction
 
-/-- Exercise 3.2.2 (no two sets contain each other) -/
+/--
+Exercise 3.2.2 (no two sets contain each other).
+
+Кроме того, покажите, что если A и B — два множества,
+то либо A ∉ B, либо B ∉ A, либо оба условия одновременно.
+-/
 theorem SetTheory.Set.not_mem_mem (A B : Set) : (A : Object) ∉ B ∨ (B : Object) ∉ A := by
   sorry
 
