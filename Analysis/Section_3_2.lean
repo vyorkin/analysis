@@ -269,6 +269,9 @@ Exercise 3.2.2 (no set contains itself).
 
 Используйте аксиому регулярности и аксиому одноэлементного множества,
 чтобы показать, что если A — множество, то A ∉ A.
+
+Из‑за отсутствия аннотаций, доказательствo и контекст
+читается и понимается сложнее, чем обычно.
 -/
 theorem SetTheory.Set.not_mem_self (A : Set) : (A : Object) ∉ A := by
   intro h
@@ -279,11 +282,12 @@ theorem SetTheory.Set.not_mem_self (A : Set) : (A : Object) ∉ A := by
   have hsa := (mem_singleton A A).mpr -- : A = A → A ∈ {A}
   -- `SA` непусто: оно содержит сам `A` (это следует из `A = A` по `rfl`).
   have hmemA : (A : Object) ∈ SA := hsa /- A = A -/ rfl -- A ∈ {A}
+  -- regularity_axiom
+  --   (A : Set) (hA : ∃ x, x ∈ A) :
+  --     ∃ x, x ∈ A ∧ ∀ (S : Set), x = S → ¬∃ y, y ∈ A ∧ y ∈ S
+  have hr := regularity_axiom SA ⟨(A : Object), hmemA⟩
   -- Аксиома регулярности к непустому `SA` даёт элемент `x ∈ SA`, для которого,
   -- если `x` — само множество `S`, то `S` и `SA` не имеют общих элементов.
-  -- (A : Set) (hA : ∃ x, x ∈ A) :
-  --   ∃ x, x ∈ A ∧ ∀ (S : Set), x = S → ¬∃ y, y ∈ A ∧ y ∈ S
-  have hr := regularity_axiom SA ⟨(A : Object), hmemA⟩
   obtain ⟨x, ⟨hxa, h'⟩⟩ := hr
   -- Единственный элемент `SA` — это `A`, поэтому `x = A`.
   have hxA : x = (A : Object) := (mem_singleton x A).mp hxa
@@ -302,7 +306,33 @@ Exercise 3.2.2 (no two sets contain each other).
 то либо A ∉ B, либо B ∉ A, либо оба условия одновременно.
 -/
 theorem SetTheory.Set.not_mem_mem (A B : Set) : (A : Object) ∉ B ∨ (B : Object) ∉ A := by
-  sorry
+  -- От противного: предполагаем, что оба условия нарушены сразу,
+  -- т.е. `A ∈ B` и `B ∈ A` одновременно (`by_contra!` сразу протаскивает `push_neg`).
+  by_contra! h
+  obtain ⟨hAB, hBA⟩ := h
+  -- Строим пару `P = {A, B}`, к которой применим аксиому регулярности.
+  set P : Set := {(A : Object), (B : Object)}
+  -- mem_pair : (x a b : Object) : x ∈ {a, b} ↔ x = a ∨ x = b
+  have hmemA : (A : Object) ∈ P := (mem_pair A A B).mpr (Or.inl rfl)
+  have hmemB : (B : Object) ∈ P := (mem_pair B A B).mpr (Or.inr rfl)
+  -- `P` непусто: оно содержит `A`. Аксиома регулярности даёт элемент `x ∈ P`, для которого,
+  -- если `x` — само множество `S`, то `S` и `P` не имеют общих элементов.
+  -- (A : Set) (hA : ∃ x, x ∈ A) :
+  --   ∃ x, x ∈ A ∧ ∀ (S : Set), x = S → ¬∃ y, y ∈ A ∧ y ∈ S
+  have hr := regularity_axiom P ⟨(A : Object), hmemA⟩
+  obtain ⟨x, hxP, h'⟩ := hr
+  -- Единственные элементы `P` — это `A` и `B`, значит `x = A` или `x = B`.
+  rcases (mem_pair x A B).mp hxP with hxA | hxB
+  · -- Случай `x = A`: подставляем `S := A` и получаем, что `A` и `P` не пересекаются.
+    specialize h' A hxA
+    -- Но `B` лежит и в `A` (это `hBA`), и в `P` (это `hmemB`) —
+    -- значит, `B` является их общим элементом, что противоречит предыдущему шагу.
+    exact h' ⟨(B : Object), hmemB, hBA⟩
+  · -- Случай `x = B`: подставляем `S := B` и получаем, что `B` и `P` не пересекаются.
+    specialize h' B hxB
+    -- Но `A` лежит и в `B` (это `hAB`), и в `P` (это `hmemA`) —
+    -- значит, `A` является их общим элементом, что противоречит предыдущему шагу.
+    exact h' ⟨(A : Object), hmemA, hAB⟩
 
 /-- Exercise 3.2.3 (universal specification) -/
 theorem SetTheory.Set.univ_iff : axiom_of_universal_specification ↔

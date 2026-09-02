@@ -31,30 +31,37 @@ export SetTheory (Set Object nat)
 variable [SetTheory]
 
 /--
-Definition 3.4.1:
+Определение 3.4.1:
+Формулируется определение образа через аксиому замены с предикатом вот такого вида.
 Интересно, что определение не требует, чтобы {lean}`S` было подмножеством {lean}`X`.
 -/
 abbrev SetTheory.Set.image {X Y : Set} (f : X → Y) (S : Set) : Set :=
   X.replace (P := fun x y ↦ f x = y ∧ x.val ∈ S) (by
+    -- Чтобы "доказать" эту аксиому замены с таким предикатом `P`
+    -- требуется просто показать его функциональность/однозначность:
+    -- `hp: ∀ x y y', P x y ∧ P x y' → y = y'`
+    -- (каждому `x` он сопоставляет не более одного `y`).
+    -- Итак требуется доказать посылку аксиомы замены/подстановки.
+    -- Можно было бы сделать просто вот так:
     -- simp_all
-    -- Аксиома замены требует функциональности предиката `P`:
-    -- каждому `x` он сопоставляет не более одного `y`.
+    -- Но это не наш способ %)
     intro x y y' h
-    obtain ⟨⟨hy, _⟩, ⟨hy', _⟩⟩ := h
+    obtain ⟨h₁, h₂⟩ := h
+    obtain ⟨hy, _⟩ := h₁
+    obtain ⟨hy', _⟩ := h₂
     -- Обе части конъюнкции говорят, что соответствующий `y` — это `f x`,
     -- поэтому оба значения совпадают с `f x`, а значит и друг с другом.
     rw [← hy, ← hy'])
 
-/--
-Definition 3.4.1:
-По сути, здесь с двух сторон написано ровно одно и то же,
-лишь конъюнкты поменены местами.
--/
+/-- Определение 3.4.1 -/
+-- По сути, здесь с двух сторон написано ровно одно и то же,
+-- лишь конъюнкты поменены местами.
 theorem SetTheory.Set.mem_image {X Y : Set} (f : X → Y) (S : Set) (y : Object) :
   y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y := by
     grind [replacement_axiom]
 
--- Тот же результат, что и `mem_image`, но доказан явно через `rw` и `constructor`, а не `grind`
+-- Тот же результат, что и `mem_image`,
+-- но доказан явно через `rw` и `constructor`, а не `grind`
 theorem SetTheory.Set.mem_image' {X Y : Set} (f : X → Y) (S : Set) (y : Object) :
   y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y := by
     rw [image]
@@ -72,19 +79,30 @@ theorem SetTheory.Set.mem_image' {X Y : Set} (f : X → Y) (S : Set) (y : Object
 /-- Альтернативное определение образа через аксиому спецификации. -/
 theorem SetTheory.Set.image_eq_specify {X Y : Set} (f : X → Y) (S : Set) :
   image f S = Y.specify (fun y ↦ ∃ x : X, x.val ∈ S ∧ f x = y) := by
-    unfold image
+    ext y
+    -- `x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩`, а `Subtype.coe_eq_iff` как раз
+    -- превращает равенство `↑(f x) = y` (в `Object`) в такую же экзистенцию по `h`
+    rw [specification_axiom'', mem_image]
+    simp only [Subtype.coe_eq_iff]
+    tauto
+
+-- Моё странное доказательство.
+theorem SetTheory.Set.image_eq_specify' {X Y : Set} (f : X → Y) (S : Set) :
+  image f S = Y.specify (fun y ↦ ∃ x : X, x.val ∈ S ∧ f x = y) := by
     ext y
     rw [specification_axiom''] -- x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
     constructor
-    · rw [replacement_axiom] -- y ∈ A.replace hP ↔ ∃ x, P x y
+    · unfold image
+      rw [replacement_axiom] -- y ∈ A.replace hP ↔ ∃ x, P x y
       rintro ⟨x, ⟨hfx, hsx⟩⟩
       refine ⟨?_, x, hsx, ?_⟩
-      · rw [← hfx]
+      · subst hfx
         have ⟨y, hy⟩ := f x
         exact hy
       · subst hfx
         rfl
-    · rw [replacement_axiom]
+    · unfold image
+      rw [replacement_axiom]
       rintro ⟨y', ⟨x, hx⟩⟩
       obtain ⟨hxs, hfx⟩ := hx
       refine ⟨x, ⟨?_, hxs⟩⟩
@@ -95,6 +113,41 @@ theorem SetTheory.Set.image_eq_specify {X Y : Set} (f : X → Y) (S : Set) :
   Обратите внимание на необходимость приведения {name}`Subtype.val`,
   чтобы согласовать типы.
 -/
+-- Здесь `X → Y` на самом деле означает `X.toSubtype → Y.toSubtype`
+-- (это работает через инстанс `CoeSort Set (Type v)`),
+-- то есть `f: X → Y` действует не на `Object`, а на подтипах
+-- `{x : Object // x ∈ X}` и `{y : Object // y ∈ Y}`.
+--
+-- `S : Set` — произвольное множество, необязательно подмножество `X`.
+-- Элементы `S`, не лежащие в `X`, просто не участвуют в образе,
+-- так как `f` к ним неприменима.
+--
+-- `image f S` (левая часть) — это наш образ из Определения 3.4.1,
+-- построенный через аксиому замены. Он сам имеет тип `Set`,
+-- поэтому, чтобы сравнить его с Mathlib-множеством,
+-- его нужно явно привести к `_root_.Set Object` —
+-- это и делает аннотация `(image f S : _root_.Set Object)`
+-- (через инстанс `Coe Set (_root_.Set Object)`).
+--
+-- Правая часть строится целиком средствами Mathlib:
+-- `{x | x.val ∈ S}` — это те `x : X.toSubtype`, чьё значение `x.val` лежит в `S`
+-- (по сути пересечение `S` с `X`, выраженное как подмножество подтипа `X.toSubtype`)
+-- `f '' (...)` — обычный Mathlib-образ этого множества,
+-- лежащий уже в `_root_.Set Y.toSubtype`,
+-- то есть это множество пар `⟨y, доказательство того что y ∈ Y⟩`.
+--
+-- `Subtype.val '' (...)` берёт каждую такую пару и оставляет только `y`,
+-- выбрасывая доказательство. По определению:
+-- `Set.image`, `g '' T = {b | ∃ a ∈ T, g a = b}`,
+-- поэтому при `g := Subtype.val` это разворачивается в
+-- `b ∈ Subtype.val '' T ↔ ∃ (h : b ∈ Y), ⟨b, h⟩ ∈ T`.
+-- Так множество пар `_root_.Set Y.toSubtype` превращается в множество голых объектов
+-- `_root_.Set Object`, с которым уже можно сравнивать левую часть.
+--
+-- Итак:
+-- Теорема говорит, что наш образ (после приведения к Mathlib-множеству) —
+-- это то же самое, что образ, вычисленный целиком в терминах Mathlib,
+-- если предварительно ограничить `S` элементами, которые вообще лежат в `X`.
 theorem SetTheory.Set.image_eq_image {X Y : Set} (f : X → Y) (S : Set) :
   (image f S : _root_.Set Object) = Subtype.val '' (f '' {x | x.val ∈ S}) := by
     ext
@@ -105,11 +158,24 @@ theorem SetTheory.Set.image_eq_image {X Y : Set} (f : X → Y) (S : Set) :
   Образ {lean}`image f S` (при любом {lean}`S`) лежит
   в области значений {lean}`f`, то есть {lean}`image f S ⊆ Y`.
 -/
-theorem SetTheory.Set.image_in_codomain {X Y : Set} (f : X → Y) (S : Set) :
-  image f S ⊆ Y := by
+theorem SetTheory.Set.image_in_codomain {X Y : Set}
+  (f : X → Y) (S : Set) : image f S ⊆ Y := by
     intro _ h
     rw [mem_image] at h
     grind
+
+-- Тот же результат, что и `image_in_codomain`, но доказан явно, без `grind`
+theorem SetTheory.Set.image_in_codomain' {X Y : Set}
+  (f : X → Y) (S : Set) : image f S ⊆ Y := by
+    intro y h
+    rw [mem_image] at h
+    -- `h : ∃ x : X, x.val ∈ S ∧ f x = y` — раскрываем существование
+    obtain ⟨x, _, hfx⟩ := h
+    -- `hfx : ↑(f x) = y`, поэтому цель `y ∈ Y` переписывается в `↑(f x) ∈ Y`
+    rw [← hfx]
+    -- а это в точности то, что утверждает
+    -- второй компонент подтипа `f x : Y.toSubtype`
+    exact (f x).property
 
 /-- Example 3.4.2 -/
 abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n : ℕ)
@@ -117,7 +183,7 @@ abbrev f_3_4_2 : nat → nat := fun n ↦ (2*n : ℕ)
 -- Конкретное вычисление: образ `{1,2,3}` под удвоением `f_3_4_2` — это `{2,4,6}`
 theorem SetTheory.Set.image_f_3_4_2 : image f_3_4_2 {1,2,3} = {2,4,6} := by
   ext y
-  rw [mem_image]
+  rw [mem_image] -- y ∈ image f S ↔ ∃ x, ↑x ∈ S ∧ ↑(f x) = y
   unfold f_3_4_2
   simp only [mem_triple]
   constructor
@@ -150,16 +216,164 @@ theorem SetTheory.Set.image_f_3_4_2' : image f_3_4_2 {1,2,3} = {2,4,6} := by
     · exact ⟨2, by simp_all, by simp_all⟩
     · exact ⟨3, by simp_all, by simp_all⟩
 
+-- И ещё более подробно тоже самое.
+theorem SetTheory.Set.image_f_3_4_2'' : image f_3_4_2 {1,2,3} = {2,4,6} := by
+  ext y
+  rw [mem_image]
+  unfold f_3_4_2
+  simp only [mem_triple]
+  constructor
+  · intro h
+    obtain ⟨x, hx, hfx⟩ := h
+    rcases hx with hx | hx | hx
+    · -- `nat_coe_eq_iff'` переводит равенство объектов `↑x = 1`
+      -- в равенство обычных чисел `(x : ℕ) = 1`
+      have hx' : nat_equiv.symm x = 1 := nat_coe_eq_iff'.mp hx
+      rw [hx'] at hfx
+      left
+      -- `norm_num` сворачивает `2 * 1` до `2`
+      -- и снимает двойное приведение `↑↑` до `↑2`
+      norm_num at hfx
+      exact hfx.symm
+    · have hx' : nat_equiv.symm x = 2 := nat_coe_eq_iff'.mp hx
+      rw [hx'] at hfx
+      right; left
+      norm_num at hfx
+      exact hfx.symm
+    · have hx' : nat_equiv.symm x = 3 := nat_coe_eq_iff'.mp hx
+      rw [hx'] at hfx
+      right; right
+      norm_num at hfx
+      exact hfx.symm
+  · intro h
+    rcases h with h | h | h
+    · exact ⟨1, Or.inl rfl, by rw [h]; norm_num⟩
+    · exact ⟨2, Or.inr (Or.inl rfl), by rw [h]; norm_num⟩
+    · exact ⟨3, Or.inr (Or.inr rfl), by rw [h]; norm_num⟩
+
 /-- Example 3.4.3 записан с использованием понятия образа из Mathlib. -/
-example : (fun n : ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by aesop
+-- Пусть ℤ – множество целых чисел (которое мы определим строго в следующем разделе).
+-- И пусть `f : ℤ → ℤ` – отображение `f(x) = x^2`,
+-- тогда `f({-1, 0, 1, 2}) = {0, 1, 4}`
+--
+-- Заметим, что `f` не является инъекцией, так как `f(-1) = f(1)`, но `-1 ≠ 1`.
+--
+example : (fun n : ℤ ↦ n^2) '' {-1,0,1,2} = {0,1,4} := by
+  -- aesop
+  ext y
+  constructor
+  · rw [Set.mem_image] -- y ∈ f '' s ↔ ∃ x ∈ s, f x = y
+    rintro ⟨x, hx, rfl⟩
+    rcases hx with rfl | rfl | rfl | rfl
+    · right; left; norm_num
+    · left; norm_num
+    · right; left; norm_num
+    · right; right; norm_num
+  · rw [Set.mem_image]
+    intro hy
+    rcases hy with rfl | rfl | rfl
+    · use 0
+      constructor
+      · right; left; rfl
+      · ring
+    · use 1
+      constructor
+      · right; right; left; rfl
+      · ring
+    · use 2
+      constructor
+      · right; right; right; rfl
+      · ring
 
--- прямое направление `mem_image`: если `x ∈ S`, то `f x` лежит в образе `image f S`
+-- Прямое направление `mem_image`:
+-- если `x ∈ S`, то `f x` лежит в образе `image f S`.
 theorem SetTheory.Set.mem_image_of_eval {X Y : Set} (f : X → Y) (S : Set) (x : X) :
-    x.val ∈ S → (f x).val ∈ image f S := by sorry
+  x.val ∈ S → (f x).val ∈ image f S := by
+    intro hxs
+    rw [mem_image] -- y ∈ image f S ↔ ∃ x, ↑x ∈ S ∧ ↑(f x) = y
+    use x
 
--- контрпример к обратному направлению: `f x ∈ image f S` не гарантирует `x ∈ S`
+-- Понятно, что теорема выше вернa: `x ∈ S → f(x) ∈ f(S)`
+-- А вот уже такая импликация в общем случае не верна:
+-- `f(x) ∈ f(S) → x ∈ S`
+-- Ровно это и написано в формулировке теоремы ниже:
+-- `¬((f x).val ∈ image f S → x.val ∈ S)`
+--
+-- Область значений (образ) функции, может быть уже,
+-- чем область определения.
+--
+-- Например для `f : X → Y`:
+-- `X = {-1, 0, 1, 2}`
+-- `Y = {0, 1, 4}` (заметь, что здесь на один элемент меньше)
+-- `4 = f(-2)` лежит в `Y`, но
+-- `-2` не лежит в `X`
+
+/--
+Контрпример к обратному направлению:
+{lit}`f x ∈ image f S` не гарантирует {lit}`x ∈ S`.
+-/
 theorem SetTheory.Set.mem_image_of_eval_counter :
-    ∃ (X Y : Set) (f : X → Y) (S : Set) (x : X), ¬((f x).val ∈ image f S → x.val ∈ S) := by sorry
+  ∃ (X Y : Set) (f : X → Y) (S : Set) (x : X),
+    ¬((f x).val ∈ image f S → x.val ∈ S) := by
+      -- Чтобы это показать, подойдет любая неинъективная функция.
+      -- Она-то уж точно гарантирует, что образ
+      -- будет содержать меньшее количество элементов,
+      -- чем прообраз (по определению (не)инъективности).
+      --
+      -- Пусть образ будет содержать ровно один элемент,
+      -- а для области определения возьмем множество из двух элементов.
+      --
+      -- Короче, построим такую функцию:
+      -- f : {1, 2} → {1}
+      set X : Set := {1, 2}
+      set Y : Set := {1}
+      -- Какое-то подмножество X: S ⊆ X : {2} ⊆ {1, 2}
+      set S : Set := {2}
+      --
+      have hx : 1 ∈ X := by simp [X]
+      have hy : 1 ∈ Y := by simp [Y]
+      -- Константная неинъективная функция:
+      -- Отображает все в один элемент – `1`.
+      set f : X → Y := fun _ ↦ (⟨1, hy⟩ : Y)
+      -- В качестве исходного элемента `x ∈ X` возьмем `1`.
+      set x : X := ⟨1, hx⟩
+      --
+      -- Теперь покажем, что для этих выбранных нами `X, Y, S, f`:
+      --
+      -- если `f x ∈ image f S`,     то `x ∉ S`    (`x := 1, S := {2}`)
+      -- т.е. `f 1 ∈ image f ({2})`, то `1 ∉ {2}`  (`f _ := 1`)
+      --        `1 ∈ {1}`,           то `1 ∉ {2}`
+      --
+      use X, Y, f, S, x
+      --
+      -- Попробуем прийти к противоречию:
+      --
+      -- Раскроем определение образa.
+      rw [mem_image] -- y ∈ image f S ↔ ∃ x, ↑x ∈ S ∧ ↑(f x) = y
+      -- Сразу же переименуем `x_1` в `s` – так будет легче читаться.
+      intro h; rename_bvar x → s at h
+      unfold S at h
+      --
+      -- Смысл `h`:
+      -- если найдётся элемент `s`, лежащий в `S = {2}`
+      -- и дающий то же значение, что и `f x`,
+      -- то `x ∈ {2} → x = 2`, но `x = 1`.
+      -- То есть мы знаем, что это ложно: `(x.val = 1) ∉ {2}`).
+      -- Значит нужно предъявить такого свидетеля.
+      --
+      rw [mem_singleton] at h
+      -- Свидетель — сам элемент `2`: он лежит и в `X`, и в `S`,
+      have hx2 : 2 ∈ X := by simp [X]
+      have hs2 : 2 ∈ S := by simp [S]
+      -- `f` – константнaя функция,
+      -- так что `f 2` = `f x` по `rfl`.
+      have heq : (f ⟨2, hx2⟩).val = (f x).val := rfl
+      have hex : ∃ s, s.val ∈ S ∧ (f s).val = (f x).val :=
+        ⟨⟨2, hx2⟩, hs2, heq⟩
+      have hcontra : x.val = 2 := h hex
+      -- Имеем hcontra : x = 2, но x = 1 по предположению выше.
+      -- Противоречие.
+      simp [x] at hcontra
 
 /--
   Definition 3.4.4 (прообразы).
@@ -168,41 +382,110 @@ theorem SetTheory.Set.mem_image_of_eval_counter :
 abbrev SetTheory.Set.preimage {X Y : Set} (f : X → Y) (U : Set) : Set :=
   X.specify (P := fun x ↦ (f x).val ∈ U)
 
--- элемент `x : X` попадает в прообраз `preimage f U` тогда и только тогда, когда `f x ∈ U`
+/--
+Элемент {lit}`x : X` попадает в прообраз {lit}`preimage f U`
+тогда и только тогда, когда {lit}`f x ∈ U`.
+-/
 @[simp]
 theorem SetTheory.Set.mem_preimage {X Y : Set}
   (f : X → Y) (U : Set) (x : X) :
     x.val ∈ preimage f U ↔ (f x).val ∈ U :=
-      by rw [specification_axiom']
+      by rw [specification_axiom'] -- ↑x ∈ A.specify P ↔ P x
 
 /--
-  Версия {name}`mem_preimage`, не требующая, чтобы {lean}`x` имел тип {lean}`X`.
+  Версия {name}`mem_preimage` для произвольного {lean}`x : Object`:
+  принадлежность {lean}`x` множеству {lean}`X` не предполагается заранее
+  (в отличие от {name}`mem_preimage`, где это указано в параметрe {lean}`x : X`),
+  а выражена внутри самого утверждения через {lean}`∃ x' : X, x'.val = x`.
 -/
-theorem SetTheory.Set.mem_preimage' {X Y : Set} (f : X → Y) (U : Set) (x : Object) :
+theorem SetTheory.Set.mem_preimage'
+    {X Y : Set} (f : X → Y) (U : Set) (x : Object) :
   x ∈ preimage f U ↔ ∃ x' : X, x'.val = x ∧ (f x').val ∈ U := by
     constructor
     . intro h
       by_cases hx : x ∈ X
       . use ⟨x, hx⟩
-        have := mem_preimage f U ⟨ _, hx ⟩
+        have := mem_preimage f U ⟨_, hx⟩
         simp_all
       . grind [specification_axiom]
     . rintro ⟨x', rfl, hfx'⟩
       rwa [mem_preimage]
 
+-- Тот же результат, что и `mem_preimage'`, но доказан без `simp_all`/`grind`
+theorem SetTheory.Set.mem_preimage''
+    {X Y : Set} (f : X → Y) (U : Set) (x : Object) :
+  x ∈ preimage f U ↔ ∃ x' : X, x'.val = x ∧ (f x').val ∈ U := by
+    constructor
+    · intro h
+      -- `preimage f U` — это `X.specify P`
+      unfold preimage at h
+      --
+      -- `specification_axiom` говорит, что
+      -- специфицированнoe/отфильтрованнoe/выделенное множество
+      -- всегда является подмножеством исходного множества.
+      --
+      -- Значит из `h : x ∈ preimage f U` сразу следует `x ∈ X`.
+      -- (h : x ∈ A.specify P) : x ∈ A
+      have hx : x ∈ X := specification_axiom h
+      -- Раз есть доказательство `hx`, можно собрать элемент `⟨x, hx⟩ : X`
+      -- и предъявить его как свидетеля для `∃ x' : X, ...`.
+      use ⟨x, hx⟩
+      use rfl -- x = x → (↑⟨x, hx⟩ = x)
+      --
+      -- Осталось показать `(f ⟨x, hx⟩).val ∈ U`.
+      --
+      -- Это в точности `mem_preimage`, применённая к `⟨x, hx⟩ : X`.
+      have hfxu := mem_preimage f U ⟨x, hx⟩ -- ↑x ∈ preimage f U ↔ ↑(f x) ∈ U
+      --
+      unfold preimage at hfxu
+      exact hfxu.mp h
+    · rintro ⟨x', rfl, hfx'⟩
+      -- Здесь `rfl` в паттерне уже заменил `x` на `x'.val`,
+      -- поэтому осталось применить `mem_preimage` в обратную сторону.
+      have hfxu := mem_preimage f U x'
+      exact hfxu.mpr hfx'
+
 /-- Связь с понятием прообраза из Mathlib. -/
 theorem SetTheory.Set.preimage_eq {X Y : Set} (f : X → Y) (U : Set) :
   ((preimage f U) : _root_.Set Object) = Subtype.val '' (f⁻¹' {y | y.val ∈ U}) := by
+    -- Слева — наш `preimage f U : Set`, приведённый к Mathlib-множеству через
+    -- `inst_coe_set` (по определению `(X : _root_.Set Object) = {x | x ∈ X}`).
+    -- Справа — Mathlib-прообраз `{y | y.val ∈ U}` под `f : X.toSubtype → Y.toSubtype`,
+    -- перенесённый обратно из подтипа `X.toSubtype` в `Object` через `Subtype.val ''`.
+    --
+    -- Обе стороны — множества элементов типа `Object`, поэтому `ext` сводит
+    -- равенство множеств к поэлементной эквивалентности для произвольного `x : Object`:
+    --   x ∈ preimage f U  ↔  x ∈ Subtype.val '' (f⁻¹' {y | y.val ∈ U})
     ext
+    -- `simp` разворачивает обе стороны до одной и той же экзистенциальной формы:
+    --  * слева `specification_axiom''` превращает `x ∈ preimage f U`
+    --    в `∃ h : x ∈ X, (f ⟨x, h⟩).val ∈ U`;
+    --  * справа `Set.preimage_setOf_eq` и `Set.mem_image` превращают
+    --    `x ∈ Subtype.val '' (f⁻¹' {y | y.val ∈ U})`
+    --    в `∃ x' : X, (f x').val ∈ U ∧ x'.val = x`;
+    --  * `Subtype.exists` расщепляет свидетеля `x' : X` на пару
+    --    `(a : Object, h : a ∈ X)`, а `exists_and_right`/`exists_eq_right`
+    --    используют равенство `a = x`, чтобы подставить `a := x`
+    --    и убрать лишний экзистенциал.
+    -- После этого обе стороны буквально совпадают: `∃ h : x ∈ X, (f ⟨x, h⟩).val ∈ U`,
+    -- и `simp` закрывает цель через `Iff.rfl`.
     simp
 
--- прообраз `preimage f U` целиком лежит в области определения `X`
+/-- Прообраз {lit}`preimage f U` целиком лежит в области определения {lit}`X`. -/
+-- Это верно просто по определению прообраза и спецификации:
+-- `preimage f U` это все такие `х ∈ Х`, что `(f x) ∈ U`.
+-- Отсюда можно получить доказательствo `х ∈ Х`.
 theorem SetTheory.Set.preimage_in_domain {X Y : Set} (f : X → Y) (U : Set) :
   (preimage f U) ⊆ X := by
-    intro _ _
-    aesop
+    intro x h
+    unfold preimage at h
+    -- x ∈ A.specify P ↔ ∃ (h : x ∈ A), P ⟨x, h⟩
+    simp_all only [specification_axiom'']
+    obtain ⟨hx, _⟩ := h
+    exact hx
 
-/-- Example 3.4.6 -/
+/-- Пример 3.4.6. -/
+-- Если `f : ℕ → ℕ` отображение `f(x) = 2*x`, то `f({1,2,3}) = {2,4,6}`.
 theorem SetTheory.Set.preimage_f_3_4_2 : preimage f_3_4_2 {2,4,6} = {1,2,3} := by
   ext
   simp only [mem_preimage', mem_triple, f_3_4_2]
@@ -212,15 +495,50 @@ theorem SetTheory.Set.preimage_f_3_4_2 : preimage f_3_4_2 {2,4,6} = {1,2,3} := b
     map_tacs [use 1; use 2; use 3]
     all_goals simp
 
--- конкретный пример: образ прообраза `{1,2,3}` под `f_3_4_2` не восстанавливает `{1,2,3}`,
--- поскольку `f_3_4_2` не сюръективна
+-- Для `f(x) = 2*x` мы видим, что `f⁻¹({1, 2, 3}) = {1}`.
+--
+-- Прообраз `f⁻¹({1,2,3})` — это все такие `x`,
+-- для которых `f(x) ∈ {1,2,3}`,
+-- то есть все `x`, для которых `2*x ∈ {1,2,3}`:
+-- `2*x = 1` — нет решения среди натуральных чисел;
+-- `2*x = 2` — `x = 1`;
+-- `2*x = 3` — нет решения (3 нечётно).
+--
+-- Единственный подходящий `x` — это 1, поэтому `f⁻¹({1,2,3}) = {1}`.
+--
+-- Таким образом образ и прообраз это два совершенно разных множества.
+--
+-- Конкретный пример: `f_3_4_2 : n ↦ 2*n`.
+-- Образ прообраза `{1,2,3}` под `f_3_4_2` не восстанавливает `{1,2,3}`,
+-- поскольку `f_3_4_2` не сюръективна.
 theorem SetTheory.Set.image_preimage_f_3_4_2 :
-  image f_3_4_2 (preimage f_3_4_2 {1,2,3}) ≠ {1,2,3} := by sorry
+  image f_3_4_2 (preimage f_3_4_2 {1,2,3}) ≠ {1,2,3} := by
+    -- `f_3_4_2 : n ↦ 2*n`
+    -- Достаточно предъявить число `3`.
+    -- Оно лежит в `{1,2,3}`, но не может лежать в образе,
+    -- потому что `f_3_4_2 x = 2*x` всегда чётно, а `3` нечётно.
+    intro h
+    rw [Set.ext_iff] at h
+    obtain ⟨h₀, h₁⟩ := h 3
+    have hmem : 3 ∈ ({1,2,3} : Set) := by simp
+    specialize h₁ hmem
+    -- (f : X.toSubtype → Y.toSubtype)
+    -- (S : Set)
+    -- (y : Object)
+    -- : y ∈ image f S ↔ ∃ x, ↑x ∈ S ∧ ↑(f x) = y
+    obtain ⟨x, hx, hfx⟩ := (mem_image f_3_4_2 _ 3).mp h₁
+    -- где _ := (preimage f_3_4_2 {1,2,3})
+    unfold f_3_4_2 at hfx
+    -- Снимаем коэрции:
+    -- `hfx` превращается в чистое `2 * nat_equiv.symm x = 3`.
+    simp at hfx
+    -- `omega` видит, что такого `x` не существует.
+    omega
 
 /-- Example 3.4.7 (с использованием понятия прообраза из Mathlib) -/
 example : (fun n : ℤ ↦ n^2) ⁻¹' {0,1,4} = {-2,-1,0,1,2} := by
   ext
-  refine ⟨ ?_, by aesop ⟩
+  refine ⟨?_, by aesop⟩
   rintro (_ | _ | h)
   on_goal 3 =>
     have : 2 ^ 2 = (4 : ℤ) := (by norm_num)
