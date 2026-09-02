@@ -113,7 +113,7 @@ $6 \neq 2$.
 Пусть $P(n)$ — свойство, применимое к натуральному числу $n$. Если $P(0)$ истинно и для
 каждого $n$ из истинности $P(n)$ следует истинность $P(n{+}{+})$, то $P(n)$ истинно для
 всех натуральных $n$.
-\leansource{Nat.induction}{(P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) : ∀ n, P n}
+\leansource{Nat.induction}{(P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++))\leanbreak: ∀ n, P n}
 \end{axiom}
 
 \begin{remark}
@@ -141,7 +141,7 @@ $\mathbb{N}$ здесь строится явно — индуктивным т�
 Пусть для каждого натурального $n$ задана функция $f_n : \mathbb{N} \to \mathbb{N}$, и пусть
 $c \in \mathbb{N}$. Тогда существует единственная последовательность $(a_n)_{n \in \mathbb{N}}$
 такая, что $a_0 = c$ и $a_{n{+}{+}} = f_n(a_n)$ для всех $n$.
-\leansource{Nat.recurse_uniq}{(f : Nat → Nat → Nat) (c : Nat) : ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n)}
+\leansource{Nat.recurse_uniq}{(f : Nat → Nat → Nat) (c : Nat)\leanbreak: ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n)}
 \end{proposition}
 
 \begin{remark}

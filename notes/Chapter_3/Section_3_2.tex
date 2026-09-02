@@ -5,7 +5,7 @@
 \[
   x \in A \iff P(x).
 \]
-\leansource{axiom_of_universal_specification}{: Prop := ∀ P : Object → Prop, ∃ A : Set, ∀ x : Object, x ∈ A ↔ P x}
+\leansource{axiom_of_universal_specification}{\leanbreak: Prop := ∀ P : Object → Prop, ∃ A : Set, ∀ x : Object, x ∈ A ↔ P x}
 \end{axiom}
 
 Эта аксиома кажется естественным способом ввести в теорию произвольные множества, задаваемые
@@ -29,12 +29,12 @@
 Применим это к $x = \Omega$ и разберём два случая.
 
 \caselabel{$\Omega \in \Omega$} Тогда $P(\Omega)$ верно, то есть найдётся множество
-$X$ с $\Omega = X$ и $\Omega \notin X$. Подставляя $X = \Omega$, получаем $\Omega \notin \Omega$ —
-противоречие с предположением случая.
+$X$ с $\Omega = X$ и $\Omega \notin X$. Подставляя $X = \Omega$, получаем $\Omega \notin \Omega$,
+а по предположению случая $\Omega \in \Omega$ — противоречие.
 
 \caselabel{$\Omega \notin \Omega$} Тогда само $\Omega$ свидетельствует об истинности
-$P(\Omega)$ (берём $X := \Omega$), а значит $\Omega \in \Omega$ по построению $\Omega$ —
-противоречие.
+$P(\Omega)$\mbox{ (берём $X := \Omega$)}, а значит $\Omega \in \Omega$ по построению
+$\Omega$ — противоречие.
 
 В обоих случаях приходим к противоречию, значит исходное предположение (аксиома универсальной
 спецификации) ложно.
@@ -55,11 +55,115 @@ $P(\Omega)$ (берём $X := \Omega$), а значит $\Omega \in \Omega$ по
 \[
   \exists x \in A.\; \forall S.\; (x = S \implies S \cap A = \varnothing).
 \]
-\leansource{SetTheory.Set.axiom_of_regularity}{(h : A ≠ ∅) : ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A}
+\leansource{SetTheory.Set.axiom_of_regularity}{(h : A ≠ ∅)\leanbreak: ∃ x : A, ∀ S : Set, x.val = S → Disjoint S A}
 \end{axiom}
+
+\begin{remark}
+Доказательство здесь не приводится: у Тао это аксиома, то есть постулат, а не выводимое
+утверждение. Формулировка выше на самом деле переводит в термины \code{Set}/$\in$ более
+примитивную версию аксиомы регулярности из раздела 3.1 (заданную через
+\code{Object}/\code{mem}) — и именно этот перевод в Lean оформлен как обычная доказанная
+теорема, \leanref{SetTheory.Set.axiom_of_regularity}.
+\end{remark}
 
 \begin{remark}
 Аксиома регулярности запрещает бесконечный спуск по цепочке принадлежности
 $\cdots \in x_2 \in x_1 \in x_0$ и, в частности, запрещает множеству содержать само себя
 ($A \in A$ невозможно).
+\end{remark}
+
+\begin{exercise}{3.2.1}{}
+Аксиома универсальной спецификации, не используя парадокс Рассела, влечёт
+\taoref{ax:3.3}{аксиому пустого множества (3.3)}, \taoref{ax:3.4}{аксиому 3.4} (существование
+одноэлементного и парного множеств), \taoref{ax:3.5}{аксиому попарного объединения (3.5)},
+\taoref{ax:3.6}{аксиому спецификации (3.6)} и \taoref{ax:3.7}{аксиому замены (3.7)}.
+\leansource{SetTheory.Set.emptyset_exists}{(h : axiom\_of\_universal\_specification)\leanbreak
+  : ∃ X : Set, ∀ x, x ∉ X}
+\leansource{SetTheory.Set.singleton_exists}{(h : axiom\_of\_universal\_specification)
+  (x : Object)\leanbreak: ∃ X : Set, ∀ y, y ∈ X ↔ y = x}
+\leansource{SetTheory.Set.pair_exists}{(h : axiom\_of\_universal\_specification)
+  (x₁ x₂ : Object)\leanbreak: ∃ X : Set, ∀ y, y ∈ X ↔ y = x₁ ∨ y = x₂}
+\leansource{SetTheory.Set.union_exists}{(h : axiom\_of\_universal\_specification) (A B : Set)\leanbreak
+  : ∃ Z : Set, ∀ z, z ∈ Z ↔ z ∈ A ∨ z ∈ B}
+\leansource{SetTheory.Set.specify_exists}{\leanbreak
+  (h : axiom\_of\_universal\_specification) (A : Set) (P : A → Prop)\leanbreak
+  : ∃ Z : Set, ∀ z, z ∈ Z ↔ ∃ h : z ∈ A, P ⟨z, h⟩}
+\leansource{SetTheory.Set.replace_exists}{\leanbreak
+  (h : axiom\_of\_universal\_specification) (A : Set) (P : A → Object → Prop)
+  (\_hP : ∀ x y y', P x y ∧ P x y' → y = y')\leanbreak
+  : ∃ Z : Set, ∀ y, y ∈ Z ↔ ∃ a : A, P a y}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{Пустое множество} Возьмём заведомо ложное утверждение $P(x) :\iff \bot$. По
+аксиоме универсальной спецификации найдётся множество $A$ такое, что для всякого $x$
+выполняется $x \in A \iff P(x)$, то есть $x \in A \iff \bot$. Значит ни один $x$ не
+принадлежит $A$ — это и есть искомое пустое множество.
+
+\prooflabel{Одноэлементное множество} Для фиксированного $x$ возьмём $P(y) :\iff y = x$.
+По аксиоме универсальной спецификации найдётся множество $A$ такое, что для всякого $y$
+выполняется $y \in A \iff y = x$ — это и есть искомое одноэлементное множество $\{x\}$.
+
+\prooflabel{Парное множество} Для фиксированных $x_1,x_2$ возьмём
+$P(y) :\iff \nosplit{(y = x_1 \lor y = x_2)}$. По аксиоме универсальной спецификации найдётся
+множество $A$ такое, что для всякого $y$ выполняется
+$y \in A \iff \nosplit{(y = x_1 \lor y = x_2)}$ — это и есть искомое парное множество
+$\{x_1,x_2\}$.
+
+\prooflabel{Объединение} Для фиксированных множеств $A,B$ возьмём
+$P(z) :\iff \nosplit{(z \in A \lor z \in B)}$. По аксиоме универсальной спецификации найдётся
+множество $Z$ такое, что для всякого $z$ выполняется
+$z \in Z \iff \nosplit{(z \in A \lor z \in B)}$ — это и есть искомое объединение $A \cup B$.
+
+\prooflabel{Спецификация} Для фиксированного множества $A$ и свойства $P$ на его элементах
+возьмём $Q(z) :\iff \nosplit{(z \in A \land P(z))}$. По аксиоме универсальной спецификации
+найдётся множество $Z$ такое, что для всякого $z$ выполняется $z \in Z \iff Q(z)$ — это и
+есть искомое множество $\{x \in A : P(x)\}$.
+
+\prooflabel{Замена} Для фиксированного множества $A$ и свойства $P(x,y)$, однозначного по
+$y$ на элементах $A$, возьмём $Q(y) :\iff \nosplit{(\exists a \in A.\; P(a,y))}$. По аксиоме
+универсальной спецификации найдётся множество $Z$ такое, что для всякого $y$ выполняется
+$y \in Z \iff Q(y)$ — это и есть искомое множество замены. Заметим, что условие
+однозначности $P$ здесь вообще не используется: оно нужно лишь в самой аксиоме замены
+(\taoref{ax:3.7}{аксиома 3.7}), а не в этом выводе из универсальной спецификации.
+\end{proof}
+
+\begin{exercise}{3.2.2}{}
+Используя аксиому регулярности и аксиому одноэлементного множества, покажите, что ни одно
+множество не содержит само себя: если $A$ — множество, то $A \notin A$. Покажите также, что
+никакие два множества не содержат друг друга: для множеств $A,B$ выполняется $A \notin B$ или
+$B \notin A$ (либо оба условия сразу).
+\leansource{SetTheory.Set.not_mem_self}{(A : Set) : (A : Object) ∉ A}
+\leansource{SetTheory.Set.not_mem_mem}{(A B : Set)\leanbreak: (A : Object) ∉ B ∨ (B : Object) ∉ A}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{$A \notin A$}
+Предположим противное: $A \in A$. Рассмотрим одноэлементное множество $\{A\}$
+(\taoref{ax:3.4}{аксиома 3.4}) — оно непусто, поскольку $A \in \{A\}$. По
+\taoref{ax:3.9}{аксиоме регулярности (3.9)}, применённой к $\{A\}$, найдётся элемент
+$x \in \{A\}$ такой, что для всякого множества $S$ из $x = S$ следует $S \cap \{A\} =
+\varnothing$. Поскольку $x \in \{A\}$, единственный элемент $\{A\}$ даёт $x = A$. Применяя
+условие к $S := A$, получаем $A \cap \{A\} = \varnothing$. Но $A \in \{A\}$ по построению и
+$A \in A$ по предположению, значит $A \in A \cap \{A\}$ — противоречие с $A \cap \{A\} =
+\varnothing$.
+
+\prooflabel{Никакие два множества не содержат друг друга}
+Предположим противное: $A \in B$ и $B \in A$ одновременно. Рассмотрим пару $P := \{A, B\}$
+(\taoref{ax:3.4}{аксиома 3.4}) — она непуста, поскольку $A \in P$. По
+\taoref{ax:3.9}{аксиоме регулярности (3.9)}, применённой к $P$, найдётся элемент $x \in P$
+такой, что для всякого множества $S$ из $x = S$ следует $S \cap P = \varnothing$. Поскольку
+$x \in P$, либо $x = A$, либо $x = B$.
+
+\caselabel{$x = A$} Применяя условие к $S := A$, получаем $A \cap P = \varnothing$. Но
+$B \in A$ по предположению и $B \in P$ по построению, значит $B \in A \cap P$ — противоречие.
+
+\caselabel{$x = B$} Применяя условие к $S := B$, получаем $B \cap P = \varnothing$. Но
+$A \in B$ по предположению и $A \in P$ по построению, значит $A \in B \cap P$ — противоречие.
+\end{proof}
+
+\begin{remark}
+Упражнение 3.2.3 в этот конспект пока не входит — соответствующие теоремы в Lean всё ещё
+\code{sorry}: равносильность аксиомы универсальной спецификации существованию универсального
+множества, и что универсального множества не существует.
 \end{remark}

@@ -18,12 +18,24 @@ $A$ и $B$ имеет смысл вопрос, является ли $A$ эле�
 \end{axiom}
 
 \begin{remark}
-В книге это определение, а не отдельная аксиома: равенство множеств устроено так же, как
-любое другое отношение, определяемое через $\in$. В Lean же тип \code{Set} — совершенно
-новый примитивный тип, никак не связанный заранее с отношением \code{mem}, поэтому связь
-между равенством и «одинаковыми элементами» (аксиома экстенсиональности) постулируется как
-часть самого класса \code{SetTheory}, а не выводится из чего-то более простого — отсюда и
-номер аксиомы вместо номера определения.
+В книге это определение: равенство множеств устроено так же, как любое другое
+отношение, определяемое через $\in$. В Lean же тип \code{Set} — совершенно новый
+примитивный тип, никак не связанный заранее с отношением \code{mem}. Связь между
+равенством и «одинаковыми элементами» (аксиома экстенсиональности) здесь постулируется
+как часть самого класса \code{SetTheory} — отсюда и номер аксиомы вместо номера
+определения.
+\end{remark}
+
+\begin{exercise}{3.1.1}{}
+Равенство множеств рефлексивно, симметрично и транзитивно.
+\end{exercise}
+
+\begin{remark}
+В Lean это упражнение решается бесплатно: равенство множеств здесь — обычное равенство
+\code{=} типа \code{Set}, а рефлексивность, симметричность и транзитивность \code{=} для
+\emph{любого} типа встроены в само ядро Lean (конструктор \code{Eq.refl} и производные от
+него \code{Eq.symm}, \code{Eq.trans}) и не требуют отдельного доказательства для каждого
+конкретного типа.
 \end{remark}
 
 \begin{axiom}{3.3}{пустое множество}
@@ -47,7 +59,7 @@ $A$ и $B$ имеет смысл вопрос, является ли $A$ эле�
 \begin{proof}
 От противного: если бы такого $x$ не было, то $x \notin A$ для всех $x$, а тогда
 $x \in A \iff x \in \emptyset$ для всех $x$ (обе стороны всегда ложны), откуда $A=\emptyset$
-по \taoref{ax:3.2}{аксиоме 3.2} — противоречие с условием.
+по \taoref{ax:3.2}{аксиоме 3.2}, а по условию $A \neq \emptyset$ — противоречие.
 \end{proof}
 
 \begin{axiom}{3.4}{одноэлементное и парное множества}
@@ -60,12 +72,35 @@ $y \in \{a,b\} \iff (y=a \lor y=b)$.
 \leansource{SetTheory.Set.pair_eq}{(a b : Object) : ({a,b} : Set) = {a} ∪ {b}}
 \end{axiom}
 
+\begin{exercise}{3.1.2}{}
+Множества $\emptyset$, $\{\emptyset\}$ и $\{\emptyset,\{\emptyset\}\}$ попарно различны.
+\leansource{SetTheory.Set.emptyset_neq_singleton}{: empty ≠ singleton\_empty}
+\leansource{SetTheory.Set.emptyset_neq_pair}{: empty ≠ pair\_empty}
+\leansource{SetTheory.Set.singleton_empty_neq_pair}{: singleton\_empty ≠ pair\_empty}
+\end{exercise}
+
+\begin{proof}
+Обозначим $\emptyset$, $\{\emptyset\}$, $\{\emptyset,\{\emptyset\}\}$ через $E$, $S$, $P$.
+
+\prooflabel{$E\neq S$} Если бы $E=S$, то из $\emptyset \in S$ (по
+\taoref{ax:3.4}{аксиоме 3.4}, $\emptyset \in \{\emptyset\}$) следовало бы
+$\emptyset \in E = \emptyset$ — противоречие с \taoref{ax:3.3}{аксиомой 3.3}.
+
+\prooflabel{$E\neq P$} Аналогично: $\emptyset \in P$ по \taoref{ax:3.4}{аксиоме 3.4}, а
+если бы $E=P$, получили бы $\emptyset \in \emptyset$ — снова противоречие с
+\taoref{ax:3.3}{аксиомой 3.3}.
+
+\prooflabel{$S\neq P$} $S \in P$ по \taoref{ax:3.4}{аксиоме 3.4} (второй элемент пары).
+Если бы $S=P$, то $S \in S$, откуда по \taoref{ax:3.4}{аксиоме 3.4} $S=\emptyset=E$ —
+противоречит уже доказанному $E \neq S$.
+\end{proof}
+
 \begin{axiom}{3.5}{попарное объединение}
 Для любых двух множеств $A,B$ существует множество $A \cup B$, называемое их
 \emph{объединением} и состоящее из всех элементов, принадлежащих $A$ или $B$ (или обоим):
 $x \in A \cup B \iff (x \in A \lor x \in B)$.
 \leansource{SetTheory.Set.instUnion}{: Union Set}
-\leansource{SetTheory.Set.mem_union}{(x : Object) (X Y : Set) : x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y)}
+\leansource{SetTheory.Set.mem_union}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y)}
 \end{axiom}
 
 \begin{lemma}{3.1.12}{базовые свойства объединений}
@@ -105,12 +140,23 @@ $A \subseteq B$ и $B \subseteq A$, то $A=B$. Наконец, если $A \sub
 $B \subsetneq C$, то $A \subsetneq C$.
 \leansource{SetTheory.Set.subset_trans}{(hAB : A ⊆ B) (hBC : B ⊆ C) : A ⊆ C}
 \leansource{SetTheory.Set.subset_antisymm}{(A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A) : A = B}
+\leansource{SetTheory.Set.ssubset_trans}{(A B C : Set) (hAB : A ⊂ B) (hBC : B ⊂ C) : A ⊂ C}
 \end{proposition}
 
 \begin{proof}
-Докажем транзитивность. Пусть $A \subseteq B$, $B \subseteq C$ и $x \in A$. Тогда $x \in B$,
-поскольку $A \subseteq B$, а значит $x \in C$, поскольку $B \subseteq C$. Так как $x$ был
-произвольным элементом $A$, получаем $A \subseteq C$.
+\prooflabel{Транзитивность} Пусть $A \subseteq B$, $B \subseteq C$ и $x \in A$. Тогда
+$x \in B$, поскольку $A \subseteq B$, а значит $x \in C$, поскольку $B \subseteq C$. Так
+как $x$ был произвольным элементом $A$, получаем $A \subseteq C$.
+
+\prooflabel{Антисимметричность} Пусть $A \subseteq B$ и $B \subseteq A$. Тогда для любого
+$x$: $x \in A \Rightarrow x \in B$ (из $A \subseteq B$) и $x \in B \Rightarrow x \in A$ (из
+$B \subseteq A$), то есть $x \in A \iff x \in B$. По \taoref{ax:3.2}{аксиоме 3.2} это и
+значит $A=B$.
+
+\prooflabel{Строгая транзитивность} Пусть $A \subsetneq B$ и $B \subsetneq C$. По уже
+доказанной обычной транзитивности $A \subseteq C$. Остаётся показать $A \neq C$: если бы
+$A=C$, то из $B \subseteq C = A$ и $A \subseteq B$ по антисимметричности получили бы
+$A=B$ — противоречие с $A \subsetneq B$.
 \end{proof}
 
 \begin{remark}
@@ -138,14 +184,41 @@ $B \subsetneq C$, то $A \subsetneq C$.
 $S_1 \cap S_2 := \{x \in S_1 : x \in S_2\}$, то есть множество элементов, принадлежащих
 одновременно обоим множествам.
 \leansource{SetTheory.Set.instIntersection}{: Inter Set}
-\leansource{SetTheory.Set.mem_inter}{(x : Object) (X Y : Set) : x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y)}
+\leansource{SetTheory.Set.mem_inter}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y)}
 \end{definition}
+
+\begin{exercise}{3.1.7}{}
+Пусть $A,B,C$ — множества. Тогда $A \cap B \subseteq A$ и $A \cap B \subseteq B$, причём
+$C \subseteq A$ и $C \subseteq B$ равносильно $C \subseteq A \cap B$. Аналогично,
+$A \subseteq A \cup B$ и $B \subseteq A \cup B$, причём $A \subseteq C$ и $B \subseteq C$
+равносильно $A \cup B \subseteq C$.
+\leansource{SetTheory.Set.inter_subset_left}{(A B : Set) : A ∩ B ⊆ A}
+\leansource{SetTheory.Set.inter_subset_right}{(A B : Set) : A ∩ B ⊆ B}
+\leansource{SetTheory.Set.subset_inter_iff}{(A B C : Set) : C ⊆ A ∩ B ↔ C ⊆ A ∧ C ⊆ B}
+\leansource{SetTheory.Set.subset_union_left}{(A B : Set) : A ⊆ A ∪ B}
+\leansource{SetTheory.Set.subset_union_right}{(A B : Set) : B ⊆ A ∪ B}
+\leansource{SetTheory.Set.union_subset_iff}{(A B C : Set) : A ∪ B ⊆ C ↔ A ⊆ C ∧ B ⊆ C}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{$A \cap B \subseteq A$} Если $x \in A \cap B$, то $x \in A$ по
+\taoref{def:3.1.22}{определению 3.1.22}.
+
+\prooflabel{$C \subseteq A \cap B \iff \nosplit{(C \subseteq A \land C \subseteq B)}$} $C \subseteq
+A \cap B$ означает, что каждый $x \in C$ лежит и в $A$, и в $B$ — это в точности
+$C \subseteq A$ и $C \subseteq B$ одновременно.
+
+\prooflabel{Для $\cup$} Рассуждение двойственно: $x \in A \Rightarrow x \in A \cup B$ прямо
+по \taoref{ax:3.5}{аксиоме 3.5}, а $A \cup B \subseteq C$ означает, что каждый $x$, лежащий
+в $A$ или в $B$, лежит в $C$ — это в точности $A \subseteq C$ и $B \subseteq C$
+одновременно.
+\end{proof}
 
 \begin{definition}{3.1.26}{разность множеств}
 \emph{Разностью} множеств $A$ и $B$ называется множество
 $A \setminus B := \{x \in A : x \notin B\}$, то есть $A$ с удалёнными элементами $B$.
 \leansource{SetTheory.Set.instSDiff}{: SDiff Set}
-\leansource{SetTheory.Set.mem_sdiff}{(x : Object) (X Y : Set) : x ∈ (X \ Y) ↔ (x ∈ X ∧ x ∉ Y)}
+\leansource{SetTheory.Set.mem_sdiff}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X \textbackslash{} Y) ↔ (x ∈ X ∧ x ∉ Y)}
 \end{definition}
 
 \begin{proposition}{3.1.27}{множества образуют булеву алгебру}
@@ -162,16 +235,122 @@ $A \setminus B := \{x \in A : x \notin B\}$, то есть $A$ с удалённ
   \item[(h)] (законы де Моргана) $X \setminus (A \cup B) = (X \setminus A) \cap (X \setminus B)$
         и $X \setminus (A \cap B) = (X \setminus A) \cup (X \setminus B)$.
 \end{itemize}
-\leansource{SetTheory.Set.compl_union}{: X \ (A ∪ B) = (X \ A) ∩ (X \ B)}
-\leansource{SetTheory.Set.compl_inter}{: X \ (A ∩ B) = (X \ A) ∪ (X \ B)}
+\leansource{SetTheory.Set.compl_union}{: X \textbackslash{} (A ∪ B) = (X \textbackslash{} A) ∩ (X \textbackslash{} B)}
+\leansource{SetTheory.Set.compl_inter}{: X \textbackslash{} (A ∩ B) = (X \textbackslash{} A) ∪ (X \textbackslash{} B)}
 \end{proposition}
 
 \begin{remark}
-Как и в книге, доказательства (все — прямые разборы принадлежности элемента, в духе
-\taoref{lem:3.1.12}{леммы 3.1.12}) здесь опущены — в Lean-файле они выписаны явно. Законы
-де Моргана названы в честь Августа де Моргана; между $\cup$ и $\cap$, а также между $X$ и
-$\emptyset$, здесь просматривается симметрия — свойство, называемое \emph{двойственностью}.
+Между $\cup$ и $\cap$, а также между $X$ и $\emptyset$, здесь просматривается симметрия —
+свойство, называемое \emph{двойственностью}: замените в любом из пунктов $\cup$ на
+$\cap$ и $X$ на $\emptyset$ (и наоборот) — получите ровно вторую половину того же пункта.
 \end{remark}
+
+\begin{proof}
+Все пункты — прямые разборы принадлежности элемента, в духе \taoref{lem:3.1.12}{леммы
+3.1.12}.
+
+\prooflabel{(a)} $x \in A \cup \emptyset \iff \nosplit{(x \in A \lor x \in \emptyset)}$, а
+$x \in \emptyset$ всегда ложно, значит это равносильно $x \in A$. Аналогично
+$x \in A \cap \emptyset \iff \nosplit{(x \in A \land x \in \emptyset)}$ всегда ложно.
+
+\prooflabel{(b)} Поскольку $A \subseteq X$, из $x \in A$ следует $x \in X$.\\
+Значит $x \in A \cup X \iff \nosplit{(x \in A \lor x \in X)} \iff x \in X$,\\
+и $x \in A \cap X \iff \nosplit{(x \in A \land x \in X)} \iff x \in A$.
+
+\prooflabel{(c)} $x \in A \cap A \iff \nosplit{(x \in A \land x \in A)} \iff x \in A$,\\
+и так же $x \in A \cup A \iff \nosplit{(x \in A \lor x \in A)} \iff x \in A$.
+
+\prooflabel{(d)} Коммутативность $\cup$ — \taoref{lem:3.1.12}{лемма 3.1.12}.
+Коммутативность $\cap$ — тем же рассуждением: $x \in A \cap B \iff \nosplit{(x \in A \land x \in B)}
+\iff \nosplit{(x \in B \land x \in A)} \iff x \in B \cap A$.
+
+\prooflabel{(e)} Ассоциативность $\cup$ — \taoref{lem:3.1.12}{лемма 3.1.12}.
+Ассоциативность $\cap$ — тем же рассуждением: обе части равносильны
+$x \in A \land x \in B \land x \in C$.
+
+\prooflabel{(f)}
+\begin{align*}
+  x \in A \cap (B \cup C) &\iff x \in A \land (x \in B \lor x \in C) \\
+  &\iff (x \in A \land x \in B) \lor (x \in A \land x \in C) \\
+  &\iff x \in (A \cap B) \cup (A \cap C)
+\end{align*}
+— здесь используется дистрибутивность $\land$ относительно $\lor$ для
+утверждений. Вторая часть — тем же рассуждением, с дистрибутивностью $\lor$
+относительно $\land$.
+
+\prooflabel{(g)} Для $x \in X$: либо $x \in A$, либо $x \notin A$ (то есть
+$x \in X \setminus A$) — значит $A \cup (X \setminus A) = X$, поскольку оба множества
+слева — подмножества $X$. При этом $x \in A$ и $x \in X \setminus A$ одновременно
+невозможны ($x \notin A$ по определению разности), значит $A \cap (X \setminus A) =
+\emptyset$.
+
+\prooflabel{(h)}
+\begin{align*}
+  x \in X \setminus (A \cup B) &\iff x \in X \land \neg(x \in A \lor x \in B) \\
+  &\iff x \in X \land x \notin A \land x \notin B \\
+  &\iff (x \in X \land x \notin A) \land (x \in X \land x \notin B) \\
+  &\iff x \in (X \setminus A) \cap (X \setminus B)
+\end{align*}
+Вторая часть — тем же рассуждением, с $\neg(x \in A \land x \in B) \iff
+x \notin A \lor x \notin B$.
+\end{proof}
+
+\begin{exercise}{3.1.8}{законы поглощения}
+Для любых множеств $A,B$ выполняется $A \cap (A \cup B) = A$ и $A \cup (A \cap B) = A$.
+\leansource{SetTheory.Set.inter_union_cancel}{(A B : Set) : A ∩ (A ∪ B) = A}
+\leansource{SetTheory.Set.union_inter_cancel}{(A B : Set) : A ∪ (A ∩ B) = A}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{$A \cap (A \cup B) = A$} $x \in A \cap (A \cup B) \iff x \in A \land
+\nosplit{(x \in A \lor x \in B)}$. Если $x \in A$, правая скобка верна автоматически и всё
+условие равносильно просто $x \in A$.
+
+\prooflabel{$A \cup (A \cap B) = A$} Двойственно: $x \in A \cup (A \cap B) \iff x \in A
+\lor \nosplit{(x \in A \land x \in B)}$, и если $x \in A$ ложно, вторая часть дизъюнкции
+тоже ложна — условие снова равносильно $x \in A$.
+\end{proof}
+
+\begin{exercise}{3.1.9}{}
+Пусть $A,B,X$ — множества, $A \cup B = X$ и $A \cap B = \emptyset$. Тогда $A = X
+\setminus B$ и $B = X \setminus A$.
+\leansource{SetTheory.Set.partition_left}{(h\_union : A ∪ B = X) (h\_inter : A ∩ B = ∅)\leanbreak: A = X \textbackslash{} B}
+\leansource{SetTheory.Set.partition_right}{(h\_union : A ∪ B = X) (h\_inter : A ∩ B = ∅)\leanbreak: B = X \textbackslash{} A}
+\end{exercise}
+
+\begin{proof}
+Докажем $A = X \setminus B$ — для $B = X \setminus A$ рассуждение то же самое с
+переставленными $A$ и $B$.
+
+\prooflabel{$A \subseteq X \setminus B$} Пусть $x \in A$. Тогда $x \in A \cup B = X$. При
+этом $x \notin B$: иначе $x \in A \cap B = \emptyset$, что невозможно. Значит
+$x \in X \setminus B$.
+
+\prooflabel{$X \setminus B \subseteq A$} Пусть $x \in X \setminus B$, то есть $x \in X$ и
+$x \notin B$. Из $x \in X = A \cup B$ следует $x \in A$ или $x \in B$. Второе исключено,
+значит $x \in A$.
+\end{proof}
+
+\begin{exercise}{3.1.10}{}
+Пусть $A,B$ — множества. Тогда множества $A \setminus B$, $A \cap B$ и $B \setminus A$
+попарно не пересекаются, а их объединение равно $A \cup B$.
+\leansource{SetTheory.Set.union_eq_partition}{(A B : Set)\leanbreak: A ∪ B = (A \textbackslash{} B) ∪ (A ∩ B) ∪ (B \textbackslash{} A)}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{Попарная непересекаемость} Если $x \in (A \setminus B) \cap (A \cap B)$, то
+$x \notin B$ (из $A \setminus B$) и $x \in B$ (из $A \cap B$) одновременно — невозможно.
+Аналогично для двух других пар: каждая пара среди $A \setminus B$, $A \cap B$,
+$B \setminus A$ требует одновременно $x \in B$ и $x \notin B$ либо $x \in A$ и
+$x \notin A$.
+
+\prooflabel{Объединение} Пусть $x \in A \cup B$, то есть $x \in A$ или $x \in B$. Если
+$x \in B$, то либо $x \in A$ (тогда $x \in A \cap B$), либо $x \notin A$ (тогда
+$x \in B \setminus A$). Если же $x \notin B$, то из $x \in A \cup B$ следует $x \in A$, то
+есть $x \in A \setminus B$. В любом случае $x$ лежит в одном из трёх множеств справа.
+Обратное включение — из \taoref{def:3.1.26}{определения 3.1.26} каждое из $A \setminus B$,
+$A \cap B$, $B \setminus A$ является подмножеством $A \cup B$.
+\end{proof}
 
 \begin{axiom}{3.7}{аксиома замены}
 Пусть $A$ — множество. Для каждого объекта $x \in A$ и объекта $y$ пусть дано утверждение
@@ -182,8 +361,32 @@ $P(x,y)$ истинно. Тогда существует множество
 \]
 такое что для любого объекта $z$ выполняется $z \in \{y : \ldots\} \iff P(x,z)$ истинно
 для некоторого $x \in A$.
-\leansource{SetTheory.Set.replacement_axiom}{(hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object) : y ∈ A.replace hP ↔ ∃ x, P x y}
+\leansource{SetTheory.Set.replacement_axiom}{\leanbreak
+  (hP : ∀ x y y', P x y ∧ P x y' → y = y') (y : Object)\leanbreak
+  : y ∈ A.replace hP ↔ ∃ x, P x y}
 \end{axiom}
+
+\begin{exercise}{3.1.11}{}
+Аксиома замены влечёт аксиому спецификации.
+\leansource{SetTheory.Set.specification_from_replacement}{\leanbreak: ∃ B, B ⊆ A ∧ ∀ x, x.val ∈ B ↔ P x}
+\end{exercise}
+
+\begin{proof}
+Пусть $A$ — множество и $P$ — свойство на его элементах. Определим утверждение
+$P'(x,y) :\iff P(x) \land y=x$. Оно однозначно по $x$: если $P'(x,y)$ и $P'(x,y')$, то оба
+$y$ и $y'$ равны $x$, значит $y=y'$. По \taoref{ax:3.7}{аксиоме замены}, применённой к $A$
+и $P'$, существует множество $B := \{y : P'(x,y) \text{ для некоторого } x \in A\}$.
+
+\prooflabel{$B \subseteq A$} Каждый элемент $B$ имеет вид $y=x$ для некоторого $x \in A$ с
+$P(x)$ — значит сам является элементом $A$.
+
+\prooflabel{$x \in B \iff P(x)$ для $x \in A$} Если $x \in B$, то $x=x'$ для некоторого
+$x' \in A$ с $P(x')$, откуда $P(x)$. Обратно, если $P(x)$ верно, само $x$ свидетельствует,
+что $x \in B$ (берём $y:=x$).
+
+Таким образом $B = \{x \in A : P(x)\}$ — множество, которое и требовала бы аксиома
+спецификации.
+\end{proof}
 
 \begin{remark}
 Аксиома замены позволяет, имея множество $A$, построить новое множество, «применив»
@@ -201,6 +404,21 @@ $P$ к каждому его элементу — например, взять $
 \begin{remark}
 Это формальная версия \taoref{assum:2.6}{предположения 2.6}: аксиома бесконечности —
 первая аксиома, дающая заведомо бесконечное множество, и именно она позволяет считать
-натуральные числа полноправными объектами теории множеств, а не отдельной надстройкой
-над ней.
+натуральные числа полноправными объектами теории множеств.
+\end{remark}
+
+\begin{remark}
+В Lean уже доказан дополнительный материал, который в конспект пока не перенесён — везде
+ниже, кроме отдельно оговорённого случая, доказательство есть, просто ещё не переписано:
+\begin{itemize}
+  \item Примеры 3.1.16, 3.1.17, 3.1.24, 3.1.25, 3.1.28, 3.1.30, 3.1.31 — иллюстративные
+        примеры на подмножество, спецификацию, пересечение, разность и замену.
+  \item Упражнение 3.1.5 (\code{subset\_tfae}) — равносильность $A \subseteq B$,
+        $A \cup B = B$ и $A \cap B = A$.
+  \item Упражнение 3.1.12 — как $\subseteq$ ведёт себя относительно объединения и
+        пересечения подмножеств, и контрпример для разности множеств.
+  \item Упражнение 3.1.13 (\code{singleton\_iff}) — характеризация одноэлементных множеств
+        через отсутствие непустых собственных подмножеств. Здесь доказательство в Lean
+        всё ещё \code{sorry}, формулировку добавить пока нельзя.
+\end{itemize}
 \end{remark}
