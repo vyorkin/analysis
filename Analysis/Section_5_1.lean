@@ -73,20 +73,34 @@ abbrev Sequence.mk' (n₀ : ℤ) (a : { n // n ≥ n₀ } → ℚ) : Sequence wh
   seq n := if h : n ≥ n₀ then a ⟨n, h⟩ else 0
   vanish := by grind
 
--- значение последовательности, построенной через `mk'`, в точке `n ≥ n₀` совпадает со значением исходной функции `a`
-lemma Sequence.eval_mk {n n₀ : ℤ} (a : { n // n ≥ n₀ } → ℚ) (h : n ≥ n₀) :
-  (Sequence.mk' n₀ a) n = a ⟨ n, h ⟩ := by grind
+/--
+Значение последовательности, построенной через `mk'`,
+в точке `n ≥ n₀` совпадает со значением исходной функции `a`.
+-/
+lemma Sequence.eval_mk {n n₀ : ℤ}
+  (a : { n // n ≥ n₀ } → ℚ) (h : n ≥ n₀) :
+    (Sequence.mk' n₀ a) n = a ⟨n, h⟩ := by grind
 
--- при приведении функции `a : ℕ → ℚ` к `Sequence` её значение в точке `n : ℕ` совпадает с `a n`
+/--
+При приведении функции `a : ℕ → ℚ` к `Sequence`
+её значение в точке `n : ℕ` совпадает с `a n`.
+-/
 @[simp]
 lemma Sequence.eval_coe (n : ℕ) (a : ℕ → ℚ) : (a : Sequence) n = a n :=
   by norm_cast
 
--- то же приведение `a : ℕ → ℚ` к `Sequence`, но на целочисленном индексе `n`: значение равно `a n.toNat` при `n ≥ 0` и нулю иначе
+/--
+То же приведение `a : ℕ → ℚ` к `Sequence`,
+но на целочисленном индексе `n`:
+значение равно `a n.toNat` при `n ≥ 0` и нулю иначе.
+-/
 @[simp]
-lemma Sequence.eval_coe_at_int (n : ℤ) (a : ℕ → ℚ) : (a : Sequence) n = if n ≥ 0 then a n.toNat else 0 := by norm_cast
+lemma Sequence.eval_coe_at_int (n : ℤ) (a : ℕ → ℚ) :
+  (a : Sequence) n = if n ≥ 0 then a n.toNat else 0 :=
+    by norm_cast
 
--- последовательность, приведённая из функции `a : ℕ → ℚ`, начинается с индекса `n₀ = 0`
+-- Последовательность, приведённая из функции `a : ℕ → ℚ`,
+-- начинается с индекса `n₀ = 0`
 @[simp]
 lemma Sequence.n0_coe (a : ℕ → ℚ) : (a : Sequence).n₀ = 0 := by norm_cast
 
@@ -106,7 +120,9 @@ example (n : ℕ) : Sequence.three n = 3 := Sequence.eval_coe _ (fun (_ : ℕ) �
 abbrev Sequence.squares_from_three : Sequence := mk' 3 (·^2)
 
 /-- Example 5.1.2 (f) -/
-example (n : ℤ) (hn : n ≥ 3) : Sequence.squares_from_three n = n^2 := Sequence.eval_mk _ hn
+example (n : ℤ) (hn : n ≥ 3) :
+  Sequence.squares_from_three n = n^2 :=
+    Sequence.eval_mk _ hn
 
 -- Нужно временно выйти из пространства имён `Chapter5`, чтобы ввести следующую нотацию
 
@@ -120,7 +136,10 @@ end Chapter5
 abbrev Rat.Steady (ε : ℚ) (a : Chapter5.Sequence) : Prop :=
   ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m)
 
--- разворачивает `Rat.Steady` в определение: любые два члена `a n`, `a m` с `n, m ≥ a.n₀` ε-близки
+/--
+Разворачивает `Rat.Steady` в определение:
+любые два члена `a n`, `a m` с `n, m ≥ a.n₀` ε-близки
+-/
 lemma Rat.steady_def (ε : ℚ) (a : Chapter5.Sequence) :
   ε.Steady a ↔ ∀ n ≥ a.n₀, ∀ m ≥ a.n₀, ε.Close (a n) (a m) := by rfl
 
