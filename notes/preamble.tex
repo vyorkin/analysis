@@ -43,6 +43,9 @@
 \usepackage{graphicx}
 \graphicspath{{images/}}
 \usepackage{xcolor}
+\usepackage{framed} % рамка \leftbar для окружения intuition, см. ниже
+\usepackage{tikz} % минималистичные иллюстрации к отдельным доказательствам
+\usetikzlibrary{calc} % арифметика над координатами ($(x)+(dx,dy)$)
 
 % Документ читается с экрана, не печатается — поля уже, чем в книжной
 % вёрстке, и одинаковые с обеих сторон (документ не переплетается).
@@ -61,6 +64,13 @@
 % не выделяет — цвет здесь единственный сигнал, что по тексту можно
 % кликнуть, поэтому красим текст ссылки вручную сами.
 \definecolor{taoblue}{RGB}{37,84,150}
+
+% Тот же приглушённый серый, что и leangray — для линии слева и подписи
+% окружения intuition (см. ниже). Отдельное имя цвета, а не переиспользование
+% leangray напрямую, чтобы два визуально разных по смыслу элемента (ссылка на
+% Lean-исходник и блок с интуицией) не были жёстко связаны одним именем —
+% если в будущем понадобится развести их цвета, менять придётся только здесь.
+\definecolor{intuitiongray}{gray}{0.55}
 
 % Компактные, но не слипшиеся списки по умолчанию — пригодится для шагов
 % доказательства/условий упражнений.
@@ -102,6 +112,7 @@
 \newtheorem{exampleEnv}[axiomEnv]{Пример}
 \newtheorem{exerciseEnv}[axiomEnv]{Упражнение}
 \newtheorem{assumptionEnv}[axiomEnv]{Предположение}
+\newtheorem{remarkEnv}[axiomEnv]{Замечание}
 \newtheorem*{axiomEnv*}{Аксиома}
 \newtheorem*{theoremEnv*}{Теорема}
 \newtheorem*{propositionEnv*}{Утверждение}
@@ -137,6 +148,12 @@
 \newenvironment{example}[2]{\renewcommand\theaxiomEnv{#1}\begin{exampleEnv}[#2]\label{ex:#1}}{\end{exampleEnv}\nopagebreak}
 \newenvironment{exercise}[2]{\renewcommand\theaxiomEnv{#1}\begin{exerciseEnv}[#2]\label{exr:#1}}{\end{exerciseEnv}\nopagebreak}
 \newenvironment{assumption}[2]{\renewcommand\theaxiomEnv{#1}\begin{assumptionEnv}[#2]\label{assum:#1}}{\end{assumptionEnv}\nopagebreak}
+
+% Нумерованное замечание (в отличие от беззвёздного \remark выше, который печатается
+% вовсе без номера) — для тех редких случаев, когда у Тао само замечание пронумеровано
+% (например, Remark 3.3.19). Название оставлено отдельным от \remark, чтобы не менять
+% смысл уже использующихся в разделах \begin{remark}...\end{remark}.
+\newenvironment{remarknum}[2]{\renewcommand\theaxiomEnv{#1}\begin{remarkEnv}[#2]\label{rem:#1}}{\end{remarkEnv}\nopagebreak}
 
 % Беззвёздная версия — для утверждений, которые у Тао не пронумерованы
 % (например, приведены как рассуждение в прозе, без формальной метки).
@@ -251,3 +268,26 @@
 % аксиому/лемму отходит на второй план (как и \leansource):
 %   $0$ — натуральное число.\by{\taoref{ax:2.1}{аксиома 2.1}}
 \newcommand{\by}[1]{\ {\footnotesize\color{leangray}(#1)}}
+
+% Блок с интуитивным объяснением — тонкая вертикальная линия слева (как
+% цитата), мелкая серая подпись "Интуиция" сверху, дальше обычный текст без
+% заливки и без изменения цвета. Ставится после формулировки аксиомы/теоремы/
+% определения (пояснить, что она значит и зачем нужна в такой форме) или
+% перед/внутри \begin{proof} (пояснить замысел доказательства, выбор
+% конкретного свидетеля и т.п.) — вне самих theorem-подобных окружений, чтобы
+% не мешать \leansource оставаться последней строкой внутри них (см.
+% STYLE.md, "Ссылка на Lean").
+%
+% framed.sty (\MakeFramed/\FrameCommand), а не ручной \vrule в minipage —
+% minipage не умеет переносить содержимое через границу страницы, а
+% framed.sty именно для этого и существует (та же причина, по которой
+% \leansource выше использует \parbox только для сигнатур, которые заведомо
+% короче страницы, а не для сколь угодно длинного текста).
+\newenvironment{intuition}{%
+  \def\FrameCommand{{\color{intuitiongray}\vrule width 1pt}\hspace{10pt}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \noindent{\footnotesize\color{intuitiongray}\textbf{Интуиция}}\par\smallskip
+  \noindent\ignorespaces
+}{%
+  \par\endMakeFramed\par\medskip
+}

@@ -1,0 +1,266 @@
+\section{Образы и прообразы}
+
+\begin{remark}
+С этого раздела функции из \taoref{def:3.3.1}{определения 3.3.1} (собственная структура
+\code{Function X Y} из раздела 3.3) больше не используются — вместо них берутся обычные
+Lean-функции \code{f : X → Y} между подтипами \code{X.toSubtype} и \code{Y.toSubtype} (через
+приведение типа \code{Set} к \code{Type}).
+\end{remark}
+
+\begin{definition}{3.4.1}{образ}
+Пусть $f:X\to Y$ — функция и $S$ — множество (не обязательно $S\subseteq X$). \emph{Образом}
+$S$ под действием $f$ называется множество
+\[
+  f(S) := \{y\in Y : \exists x\in X,\, x\in S \land f(x)=y\}.
+\]
+\leansource{SetTheory.Set.image}{\leanbreak\{X Y : Set\} (f : X → Y) (S : Set) : Set}
+\leansource{SetTheory.Set.mem_image}{\leanbreak(f : X → Y) (S : Set) (y : Object)\leanbreak: y ∈ image f S ↔ ∃ x : X, x.val ∈ S ∧ f x = y}
+\end{definition}
+
+\begin{intuition}
+$f(S)$ — это буквально «прогнать через $f$ каждую точку $S$ и собрать результаты в одно
+множество». Определение не требует $S\subseteq X$ намеренно: элементы $S$, не попавшие в
+область определения $f$, просто не участвуют в построении — это удобнее, чем заранее
+обрезать $S$ до $S\cap X$ вручную.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) ellipse (1.3 and 1);
+  \draw[intuitiongray] (3.2,0) ellipse (1.3 and 1);
+  \node[above,intuitiongray] at (0,1.15) {$X$};
+  \node[above,intuitiongray] at (3.2,1.15) {$Y$};
+  \draw[intuitiongray,dashed] (-0.3,0.1) ellipse (0.55 and 0.55);
+  \node[font=\scriptsize] at (-0.3,-0.85) {$S$};
+  \draw[intuitiongray,dashed] (3.5,0.1) ellipse (0.55 and 0.55);
+  \node[font=\scriptsize] at (3.5,-0.85) {$f(S)$};
+  \fill (-0.5,0.2) circle (1.2pt);
+  \fill (-0.1,0) circle (1.2pt);
+  \fill (3.3,0.2) circle (1.2pt);
+  \fill (3.7,0) circle (1.2pt);
+  \draw[->] (-0.5,0.2) -- (3.3,0.2);
+  \draw[->] (-0.1,0) -- (3.7,0);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}образ $f(S)$ — точки $Y$, куда попадают точки $S$ под
+действием $f$}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+Определение не требует $S\subseteq X$. В образ попадают только те $x\in S$, которые заодно
+лежат и в $X$: элементы $S$ вне области определения $f$ в построении образа не участвуют.
+\end{remark}
+
+\begin{remark}
+Независимо от выбора $S$, образ всегда лежит в области значений: $f(S)\subseteq Y$.
+\leansource{SetTheory.Set.image_in_codomain}{(f : X → Y) (S : Set) : image f S ⊆ Y}
+\end{remark}
+
+\begin{example}{3.4.2}{}
+Пусть $f:\mathbb{N}\to\mathbb{N}$, $f(n):=2n$. Тогда образ $\{1,2,3\}$ под действием $f$ —
+это $f(\{1,2,3\}) = \{2,4,6\}$.
+\leansource{SetTheory.Set.image_f_3_4_2}{: image f\_3\_4\_2 \{1,2,3\} = \{2,4,6\}}
+\end{example}
+
+\begin{example}{3.4.3}{}
+Пусть $f:\mathbb{Z}\to\mathbb{Z}$, $f(x):=x^2$. Тогда образ $\{-1,0,1,2\}$ под действием $f$
+— это $f(\{-1,0,1,2\}) = \{0,1,4\}$. Заметим, что $f$ не инъективна: $f(-1)=f(1)=1$, хотя
+$-1\neq1$, поэтому образ четырёхэлементного множества оказался лишь трёхэлементным.
+\end{example}
+
+\begin{remark}
+Если $x\in S$, то $f(x)\in f(S)$ — прямое следствие \taoref{def:3.4.1}{определения 3.4.1}.
+Обратное направление в общем случае неверно. Контрпример: пусть $X=\{1,2\}$, $Y=\{1\}$, $f$ —
+постоянная функция $f(x):=1$, $S=\{2\}$, $x:=1$. Тогда $f(x)=1\in f(S)=\{1\}$, но
+$x=1\notin S=\{2\}$.
+\leansource{SetTheory.Set.mem_image_of_eval}{\leanbreak(f : X → Y) (S : Set) (x : X) : x.val ∈ S → (f x).val ∈ image f S}
+\leansource{SetTheory.Set.mem_image_of_eval_counter}{\leanbreak: ∃ (X Y : Set) (f : X → Y) (S : Set) (x : X),\leanbreak  ¬((f x).val ∈ image f S → x.val ∈ S)}
+\end{remark}
+
+\begin{definition}{3.4.4}{прообраз}
+Пусть $f:X\to Y$ — функция и $U$ — множество (не обязательно $U\subseteq Y$).
+\emph{Прообразом} $U$ под действием $f$ называется множество
+\[
+  f^{-1}(U) := \{x\in X : f(x)\in U\}.
+\]
+\leansource{SetTheory.Set.preimage}{\leanbreak\{X Y : Set\} (f : X → Y) (U : Set) : Set}
+\leansource{SetTheory.Set.mem_preimage}{\leanbreak(f : X → Y) (U : Set) (x : X)\leanbreak: x.val ∈ preimage f U ↔ (f x).val ∈ U}
+\end{definition}
+
+\begin{intuition}
+Прообраз идёт в противоположную сторону от образа: вместо «прогнать точки через $f$» он
+собирает все точки $X$, которые \emph{приземляются} в $U$ после применения $f$. Несмотря на
+обозначение $f^{-1}(U)$, эта операция определена для \emph{любой} функции $f$, не только для
+биективной — в отличие от настоящей обратной функции
+(\taoref{def:3.3.28}{определение 3.3.28}), прообраз не требует, чтобы у каждой точки $U$ был
+ровно один прообраз, он просто собирает их все, сколько бы их ни было.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) ellipse (1.3 and 1);
+  \draw[intuitiongray] (3.2,0) ellipse (1.3 and 1);
+  \node[above,intuitiongray] at (0,1.15) {$X$};
+  \node[above,intuitiongray] at (3.2,1.15) {$Y$};
+  \draw[intuitiongray,dashed] (-0.3,0.1) ellipse (0.6 and 0.6);
+  \node[font=\scriptsize] at (-0.3,-0.9) {$f^{-1}(U)$};
+  \draw[intuitiongray,dashed] (3.5,0.1) ellipse (0.5 and 0.5);
+  \node[font=\scriptsize] at (3.5,-0.75) {$U$};
+  \fill (-0.55,0.3) circle (1.2pt);
+  \fill (-0.1,-0.05) circle (1.2pt);
+  \fill (3.55,0.1) circle (1.2pt);
+  \draw[->] (-0.55,0.3) -- (3.55,0.15);
+  \draw[->] (-0.1,-0.05) -- (3.55,0.05);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}прообраз $f^{-1}(U)$ собирает все точки $X$, приземляющиеся
+в $U$ — их может быть несколько на одну точку $U$}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+Как и для образа, определение не требует $U\subseteq Y$.
+\end{remark}
+
+\begin{remark}
+Симметрично образу, прообраз всегда лежит в области определения: $f^{-1}(U)\subseteq X$.
+\leansource{SetTheory.Set.preimage_in_domain}{(f : X → Y) (U : Set) : preimage f U ⊆ X}
+\end{remark}
+
+\begin{example}{3.4.6}{}
+Пусть снова $f:\mathbb{N}\to\mathbb{N}$, $f(n):=2n$. Тогда прообраз $\{2,4,6\}$ под
+действием $f$ — это $f^{-1}(\{2,4,6\}) = \{1,2,3\}$.
+\leansource{SetTheory.Set.preimage_f_3_4_2}{: preimage f\_3\_4\_2 \{2,4,6\} = \{1,2,3\}}
+\end{example}
+
+\begin{remark}
+Образ и прообраз не обратны друг другу. Для той же функции $f(n):=2n$ прообраз $\{1,2,3\}$ —
+это $f^{-1}(\{1,2,3\})=\{1\}$: единственное натуральное $n$ с $2n\in\{1,2,3\}$ — это $n=1$. Но
+образ этого прообраза уже не восстанавливает исходное множество:
+$f(f^{-1}(\{1,2,3\}))=f(\{1\})=\{2\}\neq\{1,2,3\}$, поскольку элемент $3$ недостижим — $f$ не
+сюръективна.
+\leansource{SetTheory.Set.image_preimage_f_3_4_2}{: image f\_3\_4\_2 (preimage f\_3\_4\_2 \{1,2,3\}) ≠ \{1,2,3\}}
+\end{remark}
+
+\begin{example}{3.4.7}{}
+Пусть $f:\mathbb{Z}\to\mathbb{Z}$, $f(x):=x^2$. Тогда прообраз $\{0,1,4\}$ под действием $f$
+— это $f^{-1}(\{0,1,4\}) = \{-2,-1,0,1,2\}$.
+\end{example}
+
+\begin{axiom}{3.11}{степенное множество функций}
+Пусть $X,Y$ — множества. Тогда существует множество $X^Y$, элементы которого — в точности
+функции $f:Y\to X$ (точнее, их образы как объектов): для любого объекта $F$
+\[
+  F\in X^Y \iff \exists f:Y\to X,\; f=F.
+\]
+\leansource{SetTheory.Set.powerset_axiom}{\leanbreak\{X Y : Set\} (F : Object) : F ∈ (X \textasciicircum{} Y) ↔ ∃ f : Y → X, f = F}
+\end{axiom}
+
+\begin{intuition}
+Это ещё один скачок того же рода, что и \taoref{ax:3.8}{аксиома бесконечности}: ни
+объединение, ни спецификация, ни замена не умеют собирать в одно множество \emph{все}
+функции между двумя множествами сразу. Даже для конечных $X,Y$ таких функций уже
+$|X|^{|Y|}$ штук, а для бесконечных $X,Y$ это принципиально другой порядок объекта — такое
+множество приходится постулировать отдельной аксиомой.
+\end{intuition}
+
+\begin{remark}
+Обозначение $X^Y$ читается как «множество всех функций из $Y$ в $X$» — показатель степени
+$Y$ отражает то, что каждой из $|Y|$ точек области определения независимо сопоставляется одно
+из $|X|$ значений, что при конечных $X,Y$ даёт ровно $|X|^{|Y|}$ функций.
+\end{remark}
+
+\begin{example}{3.4.9}{}
+Множество $\{0,1\}^{\{4,7\}}$ состоит ровно из четырёх функций $\{4,7\}\to\{0,1\}$ — по одной
+на каждый выбор значений в точках $4$ и $7$: $(4\mapsto0,\,7\mapsto0)$,
+$(4\mapsto0,\,7\mapsto1)$, $(4\mapsto1,\,7\mapsto0)$ и $(4\mapsto1,\,7\mapsto1)$.
+\leansource{SetTheory.Set.example_3_4_9}{\leanbreak(F : Object) : F ∈ (\{0,1\} : Set) \textasciicircum{} (\{4,7\} : Set)\leanbreak  ↔ F = f\_3\_4\_9\_a ∨ F = f\_3\_4\_9\_b ∨ F = f\_3\_4\_9\_c ∨ F = f\_3\_4\_9\_d}
+\end{example}
+
+\begin{exercise}{3.4.6}{степенное множество}
+Пусть $X$ — множество. Используя \taoref{ax:3.11}{аксиому 3.11} и \taoref{ax:3.7}{аксиому
+замены (3.7)}, покажите, что существует множество, элементы которого — в точности
+подмножества $X$: для любого объекта $x$
+\[
+  x\in\mathcal{P}(X) \iff \exists Y,\; x=Y \land Y\subseteq X.
+\]
+Это множество называется \emph{степенным множеством} $X$ и обозначается $2^X$ или
+$\mathcal{P}(X)$.
+\leansource{SetTheory.Set.powerset}{(X : Set) : Set}
+\end{exercise}
+
+\begin{intuition}
+$\{0,1\}^X$ (множество из \taoref{ax:3.11}{аксиомы 3.11}) — это множество всех функций из $X$
+в двухэлементное множество $\{0,1\}$. Такие функции называются \emph{индикаторными} (или
+характеристическими): для $x\in X$ равенство $f(x)=1$ означает, что $x$ принадлежит
+подмножеству, которое $f$ описывает. Иначе говоря, каждая $f:X\to\{0,1\}$ однозначно задаёт
+подмножество $f^{-1}(\{1\})\subseteq X$ — прообраз единицы.
+
+Чтобы собрать все такие подмножества в одно множество, \taoref{ax:3.7}{аксиома замены}
+применяется к $\{0,1\}^X$: каждому элементу $F\in\{0,1\}^X$ (функции $f:X\to\{0,1\}$,
+представленной как объект) сопоставляется подмножество $Y:=f^{-1}(\{1\})$. Предикат
+однозначен — у каждого $F$ ровно один такой $Y$ — а это ровно то, что требует аксиома замены
+для построения множества результатов:
+\[
+  \mathcal{P}(X) := \{\,f^{-1}(\{1\}) : f\in\{0,1\}^X\,\}.
+\]
+\end{intuition}
+
+\begin{remark}
+Доказательство того, что построенное так множество \code{powerset X} действительно
+удовлетворяет характеризации из \taoref{exr:3.4.6}{Упражнения 3.4.6} (теорема \code{mem\_powerset}), в этот
+конспект пока не входит: в Lean это утверждение всё ещё \code{sorry}. Зависящие от него
+Лемма 3.4.10 и Замечание 3.4.11 (явное перечисление $\mathcal{P}(\{a,b,c\})$) тоже отложены
+до тех пор, пока \code{mem\_powerset} не будет доказана.
+\end{remark}
+
+\begin{axiom}{3.12}{объединение семейства множеств}
+Пусть $A$ — множество, элементы которого сами являются множествами. Тогда существует
+множество $\bigcup A$ — объединение всех множеств из $A$ — такое, что для любого объекта $x$
+\[
+  x\in\bigcup A \iff \exists S,\; x\in S \land S\in A.
+\]
+\leansource{SetTheory.Set.union_axiom}{(A : Set) (x : Object) : x ∈ union A ↔ ∃ (S : Set), x ∈ S ∧ (S : Object) ∈ A}
+\end{axiom}
+
+\begin{intuition}
+\taoref{ax:3.5}{Аксиома 3.5} объединяет ровно два множества за раз — чтобы объединить, скажем,
+сто множеств, пришлось бы применить её девяносто девять раз подряд, а для бесконечного
+семейства это вообще не сработало бы: конечное число шагов не покрывает бесконечно много
+множеств. Эта аксиома снимает ограничение сразу для произвольного (в том числе бесконечного)
+набора множеств $A$, объединяя их все одним махом.
+\end{intuition}
+
+\begin{remark}
+В отличие от \taoref{ax:3.5}{аксиомы 3.5} (объединение ровно двух множеств за раз), эта
+аксиома сразу объединяет произвольное множество множеств $A$. Пример 3.4.12 (конкретное
+вычисление $\bigcup\{\{2,3\},\{3,4\},\{4,5\}\}$) в этот конспект пока не входит: в Lean
+доказательство всё ещё \code{sorry}.
+\end{remark}
+
+\begin{definition*}{индексированное объединение}
+Пусть $I$ — множество индексов, и пусть для каждого $\alpha\in I$ задано множество $A_\alpha$.
+\emph{Индексированным объединением} семейства $(A_\alpha)_{\alpha\in I}$ называется множество
+\[
+  \bigcup_{\alpha\in I} A_\alpha := \bigcup\{A_\alpha : \alpha\in I\},
+\]
+то есть объединение (по \taoref{ax:3.12}{аксиоме 3.12}) множества всех $A_\alpha$, полученного
+аксиомой замены. Для любого объекта $x$
+\[
+  x\in\bigcup_{\alpha\in I}A_\alpha \iff \exists\alpha\in I,\; x\in A_\alpha.
+\]
+\leansource{SetTheory.Set.iUnion}{(I : Set) (A : I → Set) : Set}
+\leansource{SetTheory.Set.mem_iUnion}{(A : I → Set) (x : Object) : x ∈ iUnion I A ↔ ∃ α : I, x ∈ A α}
+\end{definition*}
+
+\begin{example*}{индексированное объединение}
+Пусть $I=\{1,2,3\}$ и семейство $(A_\alpha)_{\alpha\in I}$ задано как $A_1:=\{2,3\}$,
+$A_2:=\{3,4\}$, $A_3:=\{4,5\}$. Тогда $\bigcup_{\alpha\in I}A_\alpha = \{2,3,4,5\}$.
+\leansource{SetTheory.Set.iUnion_example}{: iUnion \{1,2,3\} index\_example = \{2,3,4,5\}}
+\end{example*}
+
+\begin{remark}
+Остальной материал раздела 3.4 в этот конспект пока не входит: объединение по пустому
+семейству индексов, индексированное пересечение (\code{iInter}), и Упражнения 3.4.1–3.4.11
+(связь образа/прообраза с обратной функцией, с $\cap$\,/\,$\cup$\,/\,$\setminus$, критерии
+сюръективности и инъективности через образ и прообраз, нечувствительность \code{iInter'} к
+выбору базовой точки, объединение/пересечение по объединению индексных множеств, дополнение
+объединения и пересечения). Все соответствующие теоремы в Lean всё ещё \code{sorry}.
+\end{remark}

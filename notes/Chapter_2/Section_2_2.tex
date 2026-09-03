@@ -14,6 +14,16 @@ $3+5$ — это то же самое, что $((5{+}{+}){+}{+}){+}{+}$: при�
 \taoref{prop:2.1.16}{утверждения 2.1.16}, применённое к $c=m$ и $f_n(a) = a{+}{+}$. Оно
 асимметрично по $n$ и $m$: индукция идёт по первому слагаемому, и оба равенства
 $0+m=m$, $(n{+}{+})+m=(n+m){+}{+}$ верны по построению.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \foreach \i/\x in {5/0,6/1.2,7/2.4,8/3.6} {\node (n\i) at (\x,0) {$\i$};}
+  \draw[->,intuitiongray] (n5) to[bend left=40] node[above,font=\scriptsize]{$++$} (n6);
+  \draw[->,intuitiongray] (n6) to[bend left=40] node[above,font=\scriptsize]{$++$} (n7);
+  \draw[->,intuitiongray] (n7) to[bend left=40] node[above,font=\scriptsize]{$++$} (n8);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}$3+5$ — три шага «взять следующее», начиная от $5$}
+\end{center}
 \end{remark}
 
 \begin{lemma}{2.2.2}{}
@@ -63,6 +73,15 @@ $((n{+}{+})+m){+}{+}$ — то же самое.
 \leansource{Nat.add_comm}{(n m : Nat) : n + m = m + n}
 \end{proposition}
 
+\begin{intuition}
+Само определение сложения (\taoref{def:2.2.1}{определение 2.2.1}) асимметрично — рекурсия
+идёт только по первому слагаемому, так что $n+m$ и $m+n$ разворачиваются в совершенно разные
+цепочки применений «взять следующее». Коммутативность поэтому не следует из определения
+напрямую: она доказывается лишь после того, как \taoref{lem:2.2.2}{лемма 2.2.2} и
+\taoref{lem:2.2.3}{лемма 2.2.3} независимо устанавливают, что ноль и перенос «следующего»
+ведут себя одинаково с обеих сторон.
+\end{intuition}
+
 \begin{proof}
 Индукция по $n$ при фиксированном $m$.
 
@@ -95,6 +114,13 @@ $(a{+}{+})+b=(a+b){+}{+}$, откуда $((a{+}{+})+b)+c = ((a+b){+}{+})+c = ((a
 Пусть $a,b,c$ — натуральные числа и $a+b=a+c$. Тогда $b=c$.
 \leansource{Nat.add_left_cancel}{(a b c : Nat) (habc : a + b = a + c) : b = c}
 \end{proposition}
+
+\begin{intuition}
+Это по сути \taoref{ax:2.4}{аксиома 2.4} (инъективность последователя), поднятая с одного
+шага «следующее» до произвольного числа шагов «прибавить $a$»: на шаге индукции равенство
+$(a+b){+}{+}=(a+c){+}{+}$ сокращается до $a+b=a+c$ именно инъективностью последователя, а
+дальше в дело вступает предположение индукции.
+\end{intuition}
 
 \begin{proof}
 Индукция по $a$ при фиксированных $b,c$.
@@ -154,6 +180,14 @@ $b{+}{+}=a$.
 \leansource{Nat.uniq_succ_eq}{(a : Nat) (ha : a.IsPos) : ∃! b, b++ = a}
 \end{lemma}
 
+\begin{intuition}
+Существование — это в точности сюръективность операции «взять следующее» на положительных
+числах: каждое положительное $a$ достижимо как чей-то последователь. Единственность — это
+инъективность той же операции, \taoref{ax:2.4}{аксиома 2.4}. Вместе они говорят, что
+$n \mapsto n{+}{+}$ задаёт биекцию $\mathbb{N} \to \mathbb{N}\setminus\{0\}$, хотя понятие
+биекции появится в тексте только в разделе 3.3.
+\end{intuition}
+
 \begin{proof}
 Существование — индукцией по $a$: случай $a=0$ невозможен, так как $a$ положительно. Если
 $a=n{+}{+}$, то $b:=n$ подходит.\\
@@ -167,6 +201,26 @@ $n \geq m$ или $m \leq n$, если $n=m+a$ для некоторого на�
 \leansource{Nat.instLE}{: LE Nat}
 \leansource{Nat.instLT}{: LT Nat}
 \end{definition}
+
+\begin{intuition}
+Порядку не понадобилась отдельная аксиома — он определяется через уже имеющееся сложение:
+$n \geq m$ означает «$m$ плюс что-то даёт $n$». Тот же приём ещё встретится в разделе 3.1,
+где пересечение множеств тоже вводится обычным определением через уже существующую операцию
+(спецификацию).
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray,->] (-0.3,0) -- (4.5,0);
+  \fill (0,0) circle (1.2pt);
+  \node[below] at (0,-0.2) {$m$};
+  \fill (3.2,0) circle (1.2pt);
+  \node[below] at (3.2,-0.2) {$n$};
+  \draw[->,intuitiongray] (0,0.4) -- node[above,font=\scriptsize]{$a$} (3.2,0.4);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}$n \geq m$ значит «от $m$ можно дойти до $n$, сдвинувшись
+на $a$ шагов вправо»}
+\end{center}
+\end{intuition}
 
 \begin{proposition}{2.2.12}{базовые свойства порядка}
 Пусть $a,b,c$ — натуральные числа. Тогда:
@@ -185,6 +239,15 @@ $n \geq m$ или $m \leq n$, если $n=m+a$ для некоторого на�
 \leansource{Nat.lt_iff_succ_le}{(a b : Nat) : a < b ↔ a++ ≤ b}
 \leansource{Nat.lt_iff_add_pos}{(a b : Nat) : a < b ↔ ∃ d : Nat, d.IsPos ∧ b = a + d}
 \end{proposition}
+
+\begin{intuition}
+Все шесть пунктов — это алгебра со свидетелями из \taoref{def:2.2.11}{определения 2.2.11}:
+$a \geq b$ значит «есть $x$ с $a=b+x$», и доказательство почти каждого пункта сводится к
+тому, чтобы явно построить нужный свидетель из уже имеющихся (сложить их, как в (b), или
+применить закон сокращения, чтобы найти скрытый нулевой свидетель, как в (c)). Пункты (e) и
+(f) переводят строгий порядок в то же самое, но с дополнительным требованием на свидетеля —
+он либо ненулевой (f), либо, что то же самое, позволяет сдвинуть $a$ на один шаг вперёд (e).
+\end{intuition}
 
 \begin{proof}
 \prooflabel{(a)} $a \geq a$ — свидетель $0$: $a = a + 0$.
@@ -222,6 +285,26 @@ $d$.
 \leansource{Nat.trichotomous}{(a b : Nat) : (a < b) ∨ (a = b) ∨ (a > b)}
 \end{proposition}
 
+\begin{intuition}
+Трихотомия — это то, что делает порядок на $\mathbb{N}$ \emph{тотальным}: любые два числа
+сравнимы. Позже, в разделе 3.1, включение множеств $\subseteq$ окажется лишь
+\emph{частичным} порядком именно потому, что для него трихотомия неверна — например,
+множества чётных и нечётных чисел вообще не сравнимы между собой.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray,->] (-0.3,0) -- (4.5,0);
+  \fill (2,0) circle (1.2pt);
+  \node[above] at (2,0.2) {$a$};
+  \node[below,font=\scriptsize] at (0.7,-0.2) {$b<a$};
+  \node[below,font=\scriptsize] at (2,-0.2) {$b=a$};
+  \node[below,font=\scriptsize] at (3.3,-0.2) {$b>a$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}для любого $b$ верно ровно одно из трёх — в отличие от
+частичного $\subseteq$ на множествах (см. диаграмму Хассе в разделе 3.1)}
+\end{center}
+\end{intuition}
+
 \begin{proof}
 То, что верно не больше одного из трёх, — из \taoref{prop:2.2.12}{утверждения 2.2.12(c)}:
 если бы, скажем, $a<b$ и $a>b$ одновременно, антисимметричность дала бы $a=b$, что
@@ -241,6 +324,29 @@ $m \geq m_0$.
   (hind : ∀ m, m ≥ m₀ → (∀ m', m₀ ≤ m' ∧ m' < m → P m') → P m)\leanbreak
   : ∀ m, m ≥ m₀ → P m}
 \end{proposition}
+
+\begin{intuition}
+Обычная индукция знает про $P$ на шаге $m$ только через непосредственного предшественника
+$m{-}1$. Здесь же на шаге $m$ разрешается использовать $P(m')$ сразу для \emph{всех}
+меньших $m'$ в отрезке $[m_0,m)$ — отсюда и название «усиленная». Доказательство сводит это
+к обычной индукции: вспомогательное утверждение $Q(n)$ — «$P$ уже установлено на всём
+отрезке $[m_0,n)$» — растёт по обычной \taoref{ax:2.5}{аксиоме 2.5}, а $P(m)$ в конце
+извлекается как частный случай $Q(m{+}{+})$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray,->] (-0.3,0) -- (4.5,0);
+  \draw[intuitiongray,line width=3pt] (0,0) -- (3.2,0);
+  \fill (0,0) circle (1.2pt);
+  \node[below,font=\scriptsize] at (0,-0.25) {$m_0$};
+  \draw[intuitiongray,fill=white] (3.2,0) circle (1.2pt);
+  \node[below,font=\scriptsize] at (3.2,-0.25) {$n$};
+  \node[above,font=\scriptsize] at (1.6,0.3) {$Q(n)$: $P$ верно на $[m_0,n)$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}с каждым шагом обычной индукции по $n$ закрашенный
+отрезок, где $P$ уже доказано, растёт на одну точку}
+\end{center}
+\end{intuition}
 
 \begin{proof}
 \prooflabel{Идея} Докажем более сильное утверждение

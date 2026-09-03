@@ -1,0 +1,578 @@
+\section{Функции}
+
+\begin{definition}{3.3.1}{функции}
+Пусть $X,Y$ — множества, и пусть $P$ — свойство, относящееся к объекту $x \in X$ и объекту
+$y \in Y$, такое что для каждого $x \in X$ существует ровно один $y \in Y$, для которого
+$P(x,y)$ истинно (иногда это называют \emph{тестом вертикальной линии}). Тогда \emph{функцией}
+$f : X \to Y$, заданной свойством $P$, с \emph{областью определения} $X$ и \emph{областью
+значений} $Y$, называется объект, который каждому аргументу $x \in X$ сопоставляет
+\emph{значение} $f(x) \in Y$ — единственный объект, для которого $P(x,f(x))$ истинно.
+\leansource{Chapter3.Function}{\leanbreak(X Y : Set) where\leanbreak  P : X → Y → Prop\leanbreak  unique : ∀ x : X, ∃! y : Y, P x y}
+\end{definition}
+
+\begin{intuition}
+Название «тест вертикальной линии» отсылает к школьной картинке — график отношения на
+плоскости задаёт функцию, только если каждая вертикальная линия $x=\text{const}$ пересекает
+его ровно один раз. Формулировка через $\exists!$ — это в точности та же идея, только без
+картинки: свойство $P$ выступает графиком, а «ровно один $y$ на каждый $x$» — алгебраическим
+переводом «ровно одно пересечение с вертикалью».
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}, scale=0.9]
+  \begin{scope}
+    \draw[intuitiongray,->] (-1.3,0) -- (1.3,0) node[right,font=\scriptsize]{$x$};
+    \draw[intuitiongray,->] (0,-1.2) -- (0,1.3) node[above,font=\scriptsize]{$y$};
+    \draw[thick] (-1,-0.7) to[out=40,in=200] (1,0.9);
+    \draw[dashed,intuitiongray] (0.4,-1.2) -- (0.4,1.3);
+    \fill (0.4,0.18) circle (1.3pt);
+    \node[below,font=\scriptsize] at (0.4,-1.2) {$x_0$};
+    \node[below,font=\scriptsize] at (0,-1.6) {функция};
+  \end{scope}
+  \begin{scope}[xshift=3.6cm]
+    \draw[intuitiongray,->] (-1.3,0) -- (1.3,0) node[right,font=\scriptsize]{$x$};
+    \draw[intuitiongray,->] (0,-1.2) -- (0,1.3) node[above,font=\scriptsize]{$y$};
+    \draw[thick] (0,0) circle (0.9);
+    \draw[dashed,intuitiongray] (0.3,-1.2) -- (0.3,1.3);
+    \fill (0.3,0.849) circle (1.3pt);
+    \fill (0.3,-0.849) circle (1.3pt);
+    \node[below,font=\scriptsize] at (0.3,-1.2) {$x_0$};
+    \node[below,font=\scriptsize] at (0,-1.6) {не функция};
+  \end{scope}
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}вертикаль $x=x_0$ пересекает график слева ровно один раз,
+справа — дважды}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+В Lean структура \code{Function X Y} хранит только свойство $P$ и доказательство
+единственности — она фиксирует, что функция \emph{существует}, но не даёт вычислимого правила
+для неё. Чтобы получить обычную Lean-функцию $X \to Y$, применяется \code{Function.to\_fn}: для
+каждого $x$ она берёт тот самый единственный $y$ через \code{Exists.choose} — операцию,
+использующую аксиому выбора \code{Classical.choice}. У Тао аксиома выбора обсуждается только в
+разделе 3.5, для бесконечных семейств множеств. Здесь она нужна, чтобы обойти границу между
+\code{Prop} и \code{Type}: доказательство $\exists! y,\, P(x,y)$ само по себе не даёт значения
+типа \code{Type}, поскольку доказательства из \code{Prop} стираются при компиляции.
+Единственность уже доказана, так что устранять неоднозначность выбора здесь не требуется.
+Из-за этого
+\code{Function.to\_fn} помечена \code{noncomputable} — Lean умеет рассуждать про эту функцию, но
+не может её вычислить. Наконец, инстанс \code{CoeFun} позволяет писать $f\,x$ вместо
+\code{f.to\_fn x}, работая с $f : \code{Function}\ X\ Y$ почти как с обычной функцией.
+\end{remark}
+
+\begin{example}{3.3.3}{}
+Рассмотрим три попытки задать функцию из $\mathbb{N}$ в $\mathbb{N}$ (или в его подмножество),
+используя тест вертикальной линии из \taoref{def:3.3.1}{определения 3.3.1}.
+\begin{itemize}
+  \item[(a)] $P(x,y) :\iff y=x+1$ на всём $\mathbb{N}$ — «функция-последователь». Для каждого $x$
+        существует ровно один такой $y$, а именно $y=x+1$, так что $P$ корректно задаёт
+        функцию $f:\mathbb{N}\to\mathbb{N}$, $f(x)=x+1$. Например, $f(4)=5$.
+  \item[(b)] $P(x,y) :\iff y+1=x$ на всём $\mathbb{N}$ — попытка задать «функцию-предшественник».
+        Тест вертикальной линии не проходит: при $x=0$ подходящего $y \in \mathbb{N}$ не
+        существует, поскольку $y+1=0$ невозможно ни для какого натурального $y$. Значит $P$ не
+        задаёт функцию на всём $\mathbb{N}$.
+  \item[(c)] То же $P(x,y) :\iff y+1=x$, но с областью определения $\mathbb{N} \setminus \{0\}$
+        вместо всего $\mathbb{N}$. Теперь тест вертикальной линии проходит: для каждого
+        ненулевого $x$ существует ровно один $y$ с $y+1=x$, а именно $y=x-1$. Например, для
+        такой функции предшественника $f(4)=3$.
+\end{itemize}
+\leansource{SetTheory.Set.P_3_3_3a_existsUnique}{(x : Nat) : ∃! y : Nat, P\_3\_3\_3a x y}
+\leansource{SetTheory.Set.not_P_3_3_3b_existsUnique}{: ¬ ∀ x, ∃! y : Nat, P\_3\_3\_3b x y}
+\leansource{SetTheory.Set.P_3_3_3c_existsUnique}{(x : (Nat \textbackslash{} \{0\} : Set))\leanbreak: ∃! y : Nat, P\_3\_3\_3c x y}
+\end{example}
+
+\begin{proof}
+\prooflabel{(a)} Свидетель $y:=x+1$ подходит тривиально ($x+1=x+1$). Единственность — если
+$y'=x+1$, то $y'=y$ по тому же равенству.
+
+\prooflabel{(b)} От противного: если бы $P$ задавала функцию на всём $\mathbb{N}$, то при
+$x=0$ существовал бы $y$ с $y+1=0$, то есть $y{+}{+}=0$. Но по \taoref{ax:2.3}{аксиоме 2.3}
+последователь никогда не равен нулю — противоречие.
+
+\prooflabel{(c)} При $x \neq 0$ по \taoref{lem:2.2.10}{лемме о единственном предшественнике}
+существует единственное $y$ с $y{+}{+}=x$, то есть $y+1=x$ — это и даёт существование и
+единственность.
+\end{proof}
+
+\begin{example}{3.3.4}{}
+Естественная попытка задать функцию квадратного корня — через свойство $P(x,y):\iff y^2=x$ —
+наталкивается на две проблемы теста вертикальной линии.
+\begin{itemize}
+  \item[(a)] Существуют $x$, для которых $P(x,y)$ не выполняется ни для какого $y$ — например,
+        при $x=-1$: квадрат вещественного числа не бывает отрицательным, значит $y^2=-1$
+        невозможно. Не существует функции $f:\mathbb{R}\to\mathbb{R}$ с $y=f(x)\iff y^2=x$.
+  \item[(b)] Даже если сузить область определения до $[0,+\infty)$, для одного $x$ может
+        существовать больше одного подходящего $y$ — например, при $x=4$ подходят и $y=2$, и
+        $y=-2$, то есть $\sqrt4=\pm2$. Не существует функции $f:[0,+\infty)\to\mathbb{R}$ с
+        $y=f(x)\iff y^2=x$.
+  \item[(c)] Если сузить и область значений до $[0,+\infty)$ тоже, обе проблемы исчезают:
+        $f:[0,+\infty)\to[0,+\infty)$, $f(x):=\sqrt{x}$, корректно задаётся тем же свойством
+        $P$.
+\end{itemize}
+\end{example}
+
+\begin{remark}
+Это первый пример, где вместо собственной теории множеств главы 3 используются типы и функции
+Mathlib напрямую ($f : \mathbb{R} \to \mathbb{R}$ — обычная Lean-функция) — вещественные числа
+в рамках главы 3 ещё не построены, только
+натуральные. Дальше в разделе 3.3 такой переход на Mathlib будет происходить всё чаще, а после
+главы 3 книга целиком переходит на понятие функции из Mathlib.
+\end{remark}
+
+\begin{example}{3.3.5}{}
+Постоянная функция $f:\mathbb{N}\to\mathbb{N}$, $f(x):=7$ для любого $x$, задаётся свойством
+$P(x,y):\iff y=7$ (не зависящим от $x$): для каждого $x$ единственный подходящий $y$ — это $7$.
+\leansource{SetTheory.Set.P_3_3_5_existsUnique}{(x : Nat) : ∃! y : Nat, P\_3\_3\_5 x y}
+\end{example}
+
+\begin{definition}{3.3.8}{равенство функций}
+Две функции $f:X\to Y$ и $g:X'\to Y'$ называются \emph{равными}, если совпадают их области
+определения ($X=X'$), совпадают их области значений ($Y=Y'$), и $f(x)=g(x)$ для каждого
+$x\in X$ (используя $X=X'$, чтобы $x$ также лежало в $X'$).
+\leansource{Function.eq_iff}{\{X Y : Set\} (f g : Function X Y)\leanbreak: f = g ↔ ∀ x : X, f x = g x}
+\end{definition}
+
+\begin{remark}
+В Lean $f$ и $g$ имеют один и тот же тип \code{Function X Y}, поэтому равенство областей
+определения и значений гарантируется самой сигнатурой — содержательным остаётся только
+поточечное условие $f(x)=g(x)$.
+\end{remark}
+
+\begin{example}{3.3.10}{}
+Функции $f,g:\mathbb{N}\to\mathbb{N}$, заданные формулами $f(x):=x^2+2x+1$ и $g(x):=(x+1)^2$,
+равны: как многочлены, $x^2+2x+1$ и $(x+1)^2$ тождественно совпадают, так что $f(x)=g(x)$
+для каждого $x$.
+
+Аналогично, на $[0,+\infty)$ равны функции $x\mapsto x$ и $x\mapsto|x|$ (модуль
+неотрицательного числа равен ему самому), но на всей вещественной оси они не равны: уже при
+$x=-1$ значения $-1$ и $|-1|=1$ различны.
+\leansource{SetTheory.Set.f_3_3_10_eq}{: f\_3\_3\_10a = f\_3\_3\_10b}
+\end{example}
+
+\begin{example}{3.3.11}{}
+Довольно скучный, но вполне корректный пример — \emph{пустая функция} $f:\varnothing\to X$: тест
+вертикальной линии выполняется автоматически, поскольку $x\in\varnothing$ ни для какого $x$ не
+бывает. Более того, по \taoref{def:3.3.8}{определению 3.3.8} любые две функции
+$f,g:\varnothing\to X$ равны — поточечное условие $f(x)=g(x)$ вновь выполняется тривиально,
+так что пустая функция единственна.
+\leansource{SetTheory.Set.f_3_3_11}{(X : Set) : Function (∅ : Set) X}
+\leansource{SetTheory.Set.empty_function_unique}{\leanbreak\{X : Set\} (f g : Function (∅ : Set) X) : f = g}
+\end{example}
+
+\begin{definition}{3.3.13}{композиция}
+Пусть $f:X\to Y$ и $g:Y\to Z$ — функции. \emph{Композицией} $g$ и $f$ называется функция
+$g\circ f:X\to Z$, определённая как $(g\circ f)(x):=g(f(x))$ для каждого $x\in X$.
+\leansource{Function.comp}{\leanbreak\{X Y Z : Set\} (g : Function Y Z) (f : Function X Y)\leanbreak: Function X Z}
+\leansource{Function.comp_eval}{\leanbreak\{X Y Z : Set\} (g : Function Y Z) (f : Function X Y) (x : X)\leanbreak: (g ○ f) x = g (f x)}
+\end{definition}
+
+\begin{intuition}
+Композиция работает как конвейер: $x$ сначала проходит через $f$, попадая в промежуточное
+множество $Y$, а затем результат передаётся в $g$. Порядок области определения и значений
+$f:X\to Y$ и $g:Y\to Z$ — не случаен: выход $f$ обязан попадать ровно туда, откуда $g$ умеет
+принимать вход, иначе состыковать два шага конвейера было бы нечем.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (X) at (0,0) {$X$};
+  \node (Y) at (2,0) {$Y$};
+  \node (Z) at (4,0) {$Z$};
+  \draw[->] (X) -- node[above]{$f$} (Y);
+  \draw[->] (Y) -- node[above]{$g$} (Z);
+  \draw[->,intuitiongray] (X) to[out=-40,in=-140] node[below]{$g\circ f$} (Z);
+\end{tikzpicture}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+В Lean композиция обозначена значком \code{○} вместо привычного \code{∘} — символ \code{∘}
+уже занят в Mathlib для композиции обычных Lean-функций, и переиспользовать его для структуры
+\code{Function X Y} значило бы создать неоднозначность.
+\end{remark}
+
+\begin{example}{3.3.14}{}
+Пусть $f,g:\mathbb{N}\to\mathbb{N}$ заданы формулами $f(x):=2x$ и $g(x):=x+3$. Тогда
+$(g\circ f)(x)=g(f(x))=2x+3$, а $(f\circ g)(x)=f(g(x))=2(x+3)=2x+6$ — разные функции, значит
+композиция функций в общем случае некоммутативна: $g\circ f \neq f\circ g$.
+\leansource{SetTheory.Set.g_circ_f_3_3_14}{\leanbreak: g\_3\_3\_14 ○ f\_3\_3\_14 = Function.mk\_fn (fun x ↦ (2*x+3 : ℕ))}
+\leansource{SetTheory.Set.f_circ_g_3_3_14}{\leanbreak: f\_3\_3\_14 ○ g\_3\_3\_14 = Function.mk\_fn (fun x ↦ (2*x+6 : ℕ))}
+\end{example}
+
+\begin{lemma}{3.3.15}{композиция ассоциативна}
+Пусть $f:W\to X$, $g:X\to Y$, $h:Y\to Z$ — функции. Тогда
+$h\circ(g\circ f) = (h\circ g)\circ f$.
+\leansource{SetTheory.Set.comp_assoc}{\leanbreak\{W X Y Z : Set\} (h : Function Y Z) (g : Function X Y) (f : Function W X)\leanbreak: h ○ (g ○ f) = (h ○ g) ○ f}
+\end{lemma}
+
+\begin{proof}
+По \taoref{def:3.3.8}{определению 3.3.8} достаточно проверить равенство поточечно: для любого
+$w\in W$
+\[
+  (h\circ(g\circ f))(w) = h((g\circ f)(w)) = h(g(f(w))) = (h\circ g)(f(w)) = ((h\circ g)\circ f)(w),
+\]
+где каждый переход — прямое применение \taoref{def:3.3.13}{определения композиции}.
+\end{proof}
+
+\begin{definition}{3.3.16}{инъективность}
+Функция $f:X\to Y$ называется \emph{инъективной} (или \emph{взаимно однозначной}), если
+разным элементам области определения она сопоставляет разные элементы области значений: для
+любых $x,x'\in X$ из $x\neq x'$ следует $f(x)\neq f(x')$.
+\leansource{Function.one_to_one}{\leanbreak\{X Y : Set\} (f : Function X Y) : Prop := ∀ x x' : X, x ≠ x' → f x ≠ f x'}
+\end{definition}
+
+\begin{intuition}
+Функция сама по себе уже гарантирует, что у каждого $x$ есть значение, и притом одно
+(\taoref{def:3.3.1}{определение 3.3.1}) — вопрос инъективности идёт в обратную сторону:
+может ли одно и то же значение $y$ получиться из двух разных $x$. Инъективность запрещает
+такое «склеивание» входов, то есть требует, чтобы стрелка $x \mapsto f(x)$ не сводила
+разные точки $X$ в одну точку $Y$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (x1) at (0,1) {$x_1$};
+  \node (x2) at (0,0) {$x_2$};
+  \node (x3) at (0,-1) {$x_3$};
+  \node (y1) at (2.2,1.5) {$y_1$};
+  \node (y2) at (2.2,0.5) {$y_2$};
+  \node (y3) at (2.2,-0.5) {$y_3$};
+  \node (y4) at (2.2,-1.5) {$y_4$};
+  \node[above] at (0,2) {$X$};
+  \node[above] at (2.2,2) {$Y$};
+  \draw[->,intuitiongray] (x1) -- (y1);
+  \draw[->,intuitiongray] (x2) -- (y2);
+  \draw[->,intuitiongray] (x3) -- (y4);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}инъекция: разные $x_i$ ведут в разные $y_j$, часть $Y$
+может остаться недостижимой}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+Равносильная, контрапозитивная формулировка — $f(x)=f(x') \Rightarrow x=x'$ — на практике
+используется чаще, поскольку из равенства значений сразу выводит равенство аргументов.
+\leansource{Function.one_to_one_iff}{\leanbreak(f : Function X Y) : f.one\_to\_one ↔ ∀ x x' : X, f x = f x' → x = x'}
+\end{remark}
+
+\begin{example}{3.3.18}{}
+Функция $f:\mathbb{N}\to\mathbb{N}$, $f(n):=n^2$, инъективна: из $n^2=m^2$ для натуральных
+$n,m$ следует $n=m$. Но та же формула на $\mathbb{Z}$ инъективности не сохраняет — например,
+$(-1)^2=1^2=1$, хотя $-1\neq1$. Инъективность, таким образом, зависит не только от самой
+функции, но и от того, какова её область определения.
+\leansource{SetTheory.Set.f_3_3_18_one_to_one}{\leanbreak: (Function.mk\_fn (fun (n : Nat) ↦ (n\textasciicircum{}2 : ℕ))).one\_to\_one}
+\end{example}
+
+\begin{remarknum}{3.3.19}{}
+Если $f$ не инъективна, то найдутся два различных элемента $x,x'\in X$ с $f(x)=f(x')$ —
+отсюда и название «two-to-one»: это утверждение конструктивно предъявляет пару-свидетеля
+неинъективности.
+\leansource{SetTheory.Set.two_to_one}{\leanbreak\{X Y : Set\} \{f : Function X Y\} (h : ¬ f.one\_to\_one)\leanbreak: ∃ x x' : X, x ≠ x' ∧ f x = f x'}
+\end{remarknum}
+
+\begin{definition}{3.3.20}{сюръективность}
+Функция $f:X\to Y$ называется \emph{сюръективной} (или \emph{сюръекцией}), если каждый
+элемент $Y$ получается применением $f$ к какому-то элементу $X$: для каждого $y\in Y$
+найдётся $x\in X$ такой, что $f(x)=y$.
+\leansource{Function.onto}{\leanbreak\{X Y : Set\} (f : Function X Y) : Prop := ∀ y : Y, ∃ x : X, f x = y}
+\end{definition}
+
+\begin{intuition}
+Инъективность следит за входами (не склеивать разные $x$), а сюръективность — симметричное
+условие про выходы: не оставлять точки области значений $Y$ недостижимыми. Область значений
+$Y$ фиксируется вместе с функцией (\taoref{def:3.3.1}{определение 3.3.1}), и она может быть
+шире, чем реально достижимое множество значений — сюръективность как раз и требует, чтобы
+такого запаса не было.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (x1) at (0,1.5) {$x_1$};
+  \node (x2) at (0,0.5) {$x_2$};
+  \node (x3) at (0,-0.5) {$x_3$};
+  \node (x4) at (0,-1.5) {$x_4$};
+  \node (y1) at (2.2,1) {$y_1$};
+  \node (y2) at (2.2,0) {$y_2$};
+  \node (y3) at (2.2,-1) {$y_3$};
+  \node[above] at (0,2) {$X$};
+  \node[above] at (2.2,2) {$Y$};
+  \draw[->,intuitiongray] (x1) -- (y1);
+  \draw[->,intuitiongray] (x2) -- (y1);
+  \draw[->,intuitiongray] (x3) -- (y2);
+  \draw[->,intuitiongray] (x4) -- (y3);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}сюръекция: каждый $y_j$ достигнут, элемент $y_1$ — сразу
+из двух точек $X$}
+\end{center}
+\end{intuition}
+
+\begin{example}{3.3.21}{}
+Функция $f:\mathbb{Z}\to\mathbb{Z}$, $f(n):=n^2$, не сюръективна: отрицательные числа не
+являются квадратом ни одного целого числа, значит не каждый $y\in\mathbb{Z}$ достижим. Но
+если сузить область значений до множества $A:=\{m\in\mathbb{Z} : \exists n,\, m=n^2\}$ самих
+целых квадратов, та же формула $g(n):=n^2$ задаёт сюръекцию $g:\mathbb{Z}\to A$ — каждый
+элемент $A$ по построению является чьим-то квадратом. Сюръективность, таким образом, зависит
+не только от самой функции, но и от того, какова её область значений.
+\end{example}
+
+\begin{definition}{3.3.23}{биективность}
+Функция $f:X\to Y$ называется \emph{биективной} (или \emph{биекцией}, или \emph{взаимно
+однозначным соответствием}), если она одновременно инъективна и сюръективна.
+\leansource{Function.bijective}{\leanbreak\{X Y : Set\} (f : Function X Y) : Prop := f.one\_to\_one ∧ f.onto}
+\end{definition}
+
+\begin{intuition}
+Инъективность и сюръективность вместе означают, что стрелка $x \mapsto f(x)$ ни разу не
+склеивает входы (инъективность) и ни разу не оставляет выход недостижимым (сюръективность) —
+то есть между $X$ и $Y$ устанавливается идеальное парное соответствие, каждому $x$ ровно один
+$y$ и обратно. Это в точности условие, при котором имеет смысл обратная функция
+(\taoref{def:3.3.28}{определение 3.3.28}) — двигаться по стрелке в обе стороны однозначно.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (x1) at (0,1) {$x_1$};
+  \node (x2) at (0,0) {$x_2$};
+  \node (x3) at (0,-1) {$x_3$};
+  \node (y1) at (2.2,1) {$y_1$};
+  \node (y2) at (2.2,0) {$y_2$};
+  \node (y3) at (2.2,-1) {$y_3$};
+  \node[above] at (0,1.8) {$X$};
+  \node[above] at (2.2,1.8) {$Y$};
+  \draw[->,intuitiongray] (x1) -- (y1);
+  \draw[->,intuitiongray] (x2) -- (y2);
+  \draw[->,intuitiongray] (x3) -- (y3);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}биекция: каждому $x_i$ отвечает ровно один $y_i$, и
+наоборот}
+\end{center}
+\end{intuition}
+
+\begin{example}{3.3.24}{}
+Рассмотрим три конечные функции.
+\begin{itemize}
+  \item $f:\{0,1,2\}\to\{3,4\}$, $f(0)=3$, $f(1)=3$, $f(2)=4$ — не инъективна: элементы $0$ и
+        $1$ оба отображаются в $3$. Следовательно, не биективна.
+  \item $g:\{0,1\}\to\{2,3,4\}$, $g(0)=2$, $g(1)=3$ — не сюръективна: элемент $4$ не
+        достигается. Следовательно, не биективна.
+  \item $h:\{0,1,2\}\to\{3,4,5\}$, $h(0)=3$, $h(1)=4$, $h(2)=5$ — биективна.
+\end{itemize}
+\end{example}
+
+\begin{example}{3.3.25}{}
+Функция $f:\mathbb{N}\to\mathbb{N}\setminus\{0\}$, $f(n):=n{+}{+}$, биективна: инъективна по
+закону сокращения (\taoref{prop:2.2.6}{утверждение 2.2.6} — из $n+1=m+1$ следует $n=m$), и
+сюръективна, поскольку для каждого ненулевого $b$ подходит прообраз $b-1$ (по
+\taoref{lem:2.2.10}{лемме о единственном предшественнике}).
+
+Та же формула $f:\mathbb{N}\to\mathbb{N}$, $f(n):=n{+}{+}$, но с областью значений
+$\mathbb{N}$ целиком, биекцией уже не является: $0$ недостижим, поскольку по
+\taoref{ax:2.3}{аксиоме 2.3} последователь никогда не равен нулю. Биективность, таким
+образом, зависит не только от самой функции, но и от того, каковы её область определения и
+область значений.
+\end{example}
+
+\begin{remarknum}{3.3.27}{}
+Распространённая ошибка — считать, что функция $f:X\to Y$ биективна, если для каждого
+$x\in X$ существует ровно один $y\in Y$ с $y=f(x)$. Это условие уже верно для любой функции
+по \taoref{def:3.3.1}{определению 3.3.1} (тест вертикальной линии) — оно лишь гарантирует
+корректность самого понятия функции и ничего не говорит о её поведении на разных аргументах.
+Контрпример: $X=Y=\mathbb{N}$, постоянная функция $f(x):=0$ — условие выполнено, но $f$ не
+инъективна, поскольку $f(0)=f(1)=0$.
+\leansource{Function.bijective_incorrect_def}{\leanbreak: ∃ X Y : Set, ∃ f : Function X Y,\leanbreak  (∀ x : X, ∃! y : Y, y = f x) ∧ ¬ f.bijective}
+\end{remarknum}
+
+\begin{intuition}
+Ловушка в том, что «$\exists! y,\, y=f(x)$» говорит только про сам объект $f(x)$ — а он,
+конечно, единствен, это тавтология равенства — и ничего не говорит про то, как $f(x)$
+соотносится со значениями $f$ в \emph{других} точках $x$. Инъективность и сюръективность —
+условия про функцию в целом, сравнивающие поведение на разных $x$ между собой, поэтому ни
+одно из них не может следовать из локального факта про единственность $f(x)$ в одной точке.
+\end{intuition}
+
+\begin{definition}{3.3.28}{обратная функция}
+Пусть $f:X\to Y$ — биективная функция. \emph{Обратной} к $f$ называется функция
+$f^{-1}:Y\to X$, определяемая условием: для $y\in Y$ значение $f^{-1}(y)$ — это единственный
+$x\in X$, для которого $f(x)=y$.
+\leansource{Function.inverse}{\leanbreak\{X Y : Set\} (f : Function X Y) (h : f.bijective) : Function Y X}
+\leansource{Function.inverse_eval}{\leanbreak\{X Y : Set\} \{f : Function X Y\} (h : f.bijective) (y : Y) (x : X)\leanbreak: x = (f.inverse h) y ↔ f x = y}
+\end{definition}
+
+\begin{intuition}
+Обе половины биективности нужны здесь порознь: сюръективность гарантирует, что подходящий
+$x$ для данного $y$ вообще \emph{существует}, а инъективность — что он определён
+\emph{однозначно}. Вместе они превращают «$f(x)=y$» в тест вертикальной линии, только
+прочитанный в обратную сторону — по $y$ вдоль горизонтали вместо $x$ вдоль вертикали.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (X) at (0,0) {$X$};
+  \node (Y) at (2.4,0) {$Y$};
+  \draw[->] (X) to[out=30,in=150] node[above]{$f$} (Y);
+  \draw[->,intuitiongray] (Y) to[out=210,in=-30] node[below]{$f^{-1}$} (X);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}$f$ и $f^{-1}$ — одна и та же стрелка, читаемая в обе
+стороны}
+\end{center}
+\end{intuition}
+
+\begin{remark}
+В Lean обратную функцию нельзя обозначить стандартной нотацией $f^{-1}$ из тайп-класса
+\code{Inv}: та требует, чтобы обратный элемент имел ровно тот же тип, что и сам элемент, а
+\code{Function Y X} — это другой тип, отличный от \code{Function X Y}. Поэтому в тексте выше
+$f^{-1}$ — это обозначение из конспекта, а в Lean та же функция называется \code{f.inverse h}.
+\end{remark}
+
+\begin{exercise}{3.3.1}{}
+Покажите, что равенство функций из \taoref{def:3.3.8}{определения 3.3.8} рефлексивно
+($f=f$), симметрично ($f=g \Rightarrow g=f$) и транзитивно (из $f=g$ и $g=h$ следует $f=h$).
+Покажите также, что если $f=f'$ и $g=g'$, то $g\circ f = g'\circ f'$.
+\leansource{Function.refl}{(f : Function X Y) : f = f}
+\leansource{Function.symm}{(f g : Function X Y) : f = g ↔ g = f}
+\leansource{Function.trans}{\leanbreak\{f g h : Function X Y\} (hfg : f = g) (hgh : g = h) : f = h}
+\leansource{Function.comp_congr}{\leanbreak\{f f' : Function X Y\} (hff' : f = f') \{g g' : Function Y Z\} (hgg' : g = g')\leanbreak: g ○ f = g' ○ f'}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{Рефлексивность} По \taoref{def:3.3.8}{определению 3.3.8} достаточно показать
+$f(x)=f(x)$ для каждого $x\in X$ — равенство $Y$ самому себе.
+
+\prooflabel{Симметричность} Пусть $f=g$, то есть $f(x)=g(x)$ для каждого $x$. Равенство в
+$Y$ симметрично, значит и $g(x)=f(x)$ для каждого $x$, то есть $g=f$. Обратное направление —
+то же рассуждение с переставленными $f$ и $g$.
+
+\prooflabel{Транзитивность} Пусть $f=g$ и $g=h$, то есть $f(x)=g(x)$ и $g(x)=h(x)$ для
+каждого $x$. Равенство в $Y$ транзитивно, значит $f(x)=h(x)$ для каждого $x$, то есть $f=h$.
+
+\prooflabel{Композиция сохраняет равенство} Пусть $f=f'$ и $g=g'$. Для любого $x\in X$
+выполняется $(g\circ f)(x) = g(f(x)) = g'(f(x)) = g'(f'(x)) = (g'\circ f')(x)$: второе
+равенство — из $g=g'$, третье — из $f=f'$. Значит $g\circ f = g'\circ f'$.
+\end{proof}
+
+\begin{remark}
+В книге это упражнение выглядит как более общая просьба показать, что отношение равенства
+функций из \taoref{def:3.3.8}{определения 3.3.8} рефлексивно, симметрично и транзитивно. Такое
+доказательство было бы тривиальным: равенство функций в Lean — это обычное равенство
+\code{=}, для которого эти свойства выполняются автоматически для любого типа, как и в
+\taoref{exr:3.1.1}{упражнении 3.1.1} для равенства множеств. Формализация ниже выбирает менее
+тривиальный путь: доказывает те же свойства через поточечную характеризацию
+\code{Function.eq\_iff}, сводя их к равенству значений в $Y$.
+\end{remark}
+
+\begin{exercise}{3.3.2}{}
+Пусть $f:X\to Y$ и $g:Y\to Z$ — функции. Покажите, что если $f$ и $g$ инъективны, то
+$g\circ f$ инъективна. Покажите также, что если $f$ и $g$ сюръективны, то $g\circ f$
+сюръективна.
+\leansource{Function.comp_of_inj}{\leanbreak\{X Y Z : Set\} \{f : Function X Y\} \{g : Function Y Z\}\leanbreak(hf : f.one\_to\_one) (hg : g.one\_to\_one) : (g ○ f).one\_to\_one}
+\leansource{Function.comp_of_surj}{\leanbreak\{X Y Z : Set\} \{f : Function X Y\} \{g : Function Y Z\} (hf : f.onto) (hg : g.onto)\leanbreak: (g ○ f).onto}
+\end{exercise}
+
+\begin{intuition}
+Инъективность можно представлять как «без потерь» (ни один вход не пропадает, склеиваясь
+с другим), а сюръективность — как «без пропусков» (ни один потенциальный выход не остаётся
+недостижимым). Ни одно из этих свойств не может испортиться при добавлении ещё одного
+такого же безупречного шага в конвейер из $f$ и $g$ — это и делает оба доказательства
+короткими: достаточно один раз пройти по определению.
+\end{intuition}
+
+\begin{proof}
+\prooflabel{Инъективность} Пусть $f$ и $g$ инъективны, и $(g\circ f)(x)=(g\circ f)(x')$, то
+есть $g(f(x))=g(f(x'))$. По инъективности $g$ отсюда $f(x)=f(x')$, а по инъективности $f$ —
+$x=x'$.
+
+\prooflabel{Сюръективность} Пусть $f$ и $g$ сюръективны, и $z\in Z$. По сюръективности $g$
+найдётся $y\in Y$ с $g(y)=z$, а по сюръективности $f$ — $x\in X$ с $f(x)=y$. Тогда
+$(g\circ f)(x)=g(f(x))=g(y)=z$.
+\end{proof}
+
+\begin{exercise}{3.3.3}{}
+Пусть $X$ — множество, $f:\varnothing\to X$ — функция (единственная такая, по
+\taoref{ex:3.3.11}{примеру 3.3.11}). Когда $f$ инъективна? Когда сюръективна? Когда
+биективна?
+\leansource{empty_function_one_to_one_iff}{(X : Set) (f : Function ∅ X) : f.one\_to\_one ↔ True}
+\leansource{empty_function_onto_iff}{(X : Set) (f : Function ∅ X) : f.onto ↔ X = ∅}
+\leansource{empty_function_bijective_iff}{(X : Set) (f : Function ∅ X) : f.bijective ↔ X = ∅}
+\end{exercise}
+
+\begin{proof}
+\prooflabel{Инъективность} Всегда. Инъективность требует, чтобы из совпадения значений $f$
+на двух элементах области определения следовало совпадение самих этих элементов. В
+$\varnothing$ элементов нет вовсе, так что условие выполняется тривиально для любых $f$ и $X$.
+
+\prooflabel{Сюръективность} Тогда и только тогда, когда $X=\varnothing$. Если
+$X\neq\varnothing$, возьмём $y\in X$: у него нет прообраза в $\varnothing$, значит $f$ не
+сюръективна. Если же $X=\varnothing$, условие «для каждого $y\in X$ найдётся прообраз»
+выполняется тривиально.
+
+\prooflabel{Биективность} Поскольку $f$ инъективна всегда, $f$ биективна в точности тогда,
+когда она сюръективна, то есть тоже когда $X=\varnothing$.
+\end{proof}
+
+\begin{exercise}{3.3.4}{законы сокращения для композиции}
+Пусть $f,f':X\to Y$ и $g,g':Y\to Z$ — функции. Покажите: если $g\circ f = g\circ f'$ и $g$
+инъективна, то $f=f'$ (сокращение слева). Покажите также: если $g\circ f = g'\circ f$ и $f$
+сюръективна, то $g=g'$ (сокращение справа).
+\leansource{Function.comp_cancel_left}{\leanbreak\{X Y Z : Set\} \{f f' : Function X Y\} \{g : Function Y Z\}\leanbreak(heq : g ○ f = g ○ f') (hg : g.one\_to\_one) : f = f'}
+\leansource{Function.comp_cancel_right}{\leanbreak\{X Y Z : Set\} \{f : Function X Y\} \{g g' : Function Y Z\}\leanbreak(heq : g ○ f = g' ○ f) (hf : f.onto) : g = g'}
+\end{exercise}
+
+\begin{intuition}
+Сокращение слева хочет вывести $f=f'$ из равенства $g(f(x))=g(f'(x))$ — нужна инъективность
+$g$, чтобы одинаковый результат после $g$ гарантировал одинаковый аргумент до неё. Сокращение
+справа хочет вывести $g=g'$ из равенства на образе $f$ — здесь нужна сюръективность $f$,
+чтобы этот образ покрывал весь $Y$, иначе про точки $Y$, до которых $f$ не дотягивается,
+равенство $g\circ f=g'\circ f$ попросту ничего не говорит.
+\end{intuition}
+
+\begin{proof}
+\prooflabel{Сокращение слева} Пусть $g\circ f=g\circ f'$ и $g$ инъективна. Для любого
+$x\in X$ выполняется $g(f(x))=(g\circ f)(x)=(g\circ f')(x)=g(f'(x))$. По инъективности $g$
+отсюда $f(x)=f'(x)$. Значит $f=f'$.
+
+\prooflabel{Сокращение справа} Пусть $g\circ f=g'\circ f$ и $f$ сюръективна. Возьмём
+произвольный $y\in Y$: по сюръективности $f$ найдётся $x\in X$ с $f(x)=y$. Тогда
+$g(y)=g(f(x))=(g\circ f)(x)=(g'\circ f)(x)=g'(f(x))=g'(y)$. Значит $g=g'$.
+\end{proof}
+
+\begin{remark}
+Обе гипотезы существенны. Без инъективности $g$ сокращение слева нарушается. Без
+сюръективности $f$ нарушается сокращение справа. В обоих случаях контрпример строится на
+конечных множествах $\{1\}$, $\{1,2\}$, $\{3\}$.
+\leansource{Function.comp_cancel_left_without_hg}{\leanbreak: Decidable (∀ (X Y Z : Set) (f f' : Function X Y) (g : Function Y Z)\leanbreak  (\_heq : g ○ f = g ○ f'), f = f')}
+\leansource{Function.comp_cancel_right_without_hg}{\leanbreak: Decidable (∀ (X Y Z : Set) (f : Function X Y) (g g' : Function Y Z)\leanbreak  (\_heq : g ○ f = g' ○ f), g = g')}
+\end{remark}
+
+\begin{exercise}{3.3.5}{}
+Пусть $f:X\to Y$ и $g:Y\to Z$ — функции. Покажите: если $g\circ f$ инъективна, то $f$
+инъективна. Покажите также: если $g\circ f$ сюръективна, то $g$ сюръективна.
+\leansource{Function.comp_injective}{\leanbreak\{X Y Z : Set\} \{f : Function X Y\} \{g : Function Y Z\}\leanbreak(hinj : (g ○ f).one\_to\_one) : f.one\_to\_one}
+\leansource{Function.comp_surjective}{\leanbreak\{X Y Z : Set\} \{f : Function X Y\} \{g : Function Y Z\}\leanbreak(hsurj : (g ○ f).onto) : g.onto}
+\end{exercise}
+
+\begin{intuition}
+Если бы $f$ склеивала два входа, эта склейка дошла бы и до конца конвейера — значит,
+инъективность всего $g\circ f$ заставляет уже первый шаг $f$ быть инъективным. Симметрично,
+если бы $g$ не дотягивалась до какого-то $z\in Z$, весь конвейер $g\circ f$ тоже не смог бы
+туда попасть — значит, сюръективность $g\circ f$ заставляет последний шаг $g$ быть
+сюръективным. Про поведение $g$ на входе и $f$ на выходе конвейер в целом при этом ничего не
+гарантирует (см. следующее замечание).
+\end{intuition}
+
+\begin{proof}
+\prooflabel{$f$ инъективна} Пусть $g\circ f$ инъективна и $f(x)=f(x')$. Тогда
+$(g\circ f)(x)=g(f(x))=g(f(x'))=(g\circ f)(x')$. По инъективности $g\circ f$ отсюда $x=x'$.
+
+\prooflabel{$g$ сюръективна} Пусть $g\circ f$ сюръективна и $z\in Z$. Найдётся $x\in X$ с
+$(g\circ f)(x)=z$, то есть $g(f(x))=z$. Значит $f(x)\in Y$ служит прообразом $z$ под $g$.
+\end{proof}
+
+\begin{remark}
+Обратные утверждения неверны. Из инъективности $g\circ f$ не следует инъективность $g$.
+Контрпример: возьмём $X=\{1\}$ — композиция с одноточечной областью определения инъективна
+автоматически, независимо от того, склеивает ли $g$ какие-то точки вне образа $f$.
+\leansource{Function.comp_injective'}{\leanbreak: Decidable (∀ (X Y Z : Set) (f : Function X Y) (g : Function Y Z)\leanbreak  (\_hinj : (g ○ f).one\_to\_one), g.one\_to\_one)}
+\end{remark}
+
+\begin{remark}
+Упражнения 3.3.6 (обратная функция — левая и правая обратная, сохранение биективности,
+инволютивность операции обращения), 3.3.7 (композиция биекций — биекция, обратная к
+композиции) и 3.3.8 (функция включения, тождественная функция, склейка функций на
+непересекающихся и пересекающихся множествах) в этот конспект пока не входят: все
+соответствующие теоремы в Lean всё ещё \code{sorry}.
+\end{remark}

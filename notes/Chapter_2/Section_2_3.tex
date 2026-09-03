@@ -12,6 +12,20 @@ $n{+}{+}$ на $m$ определяем как $(n{+}{+}) \times m := (n \times 
 числа. Дальше $n \times m$ будем сокращённо писать как $nm$, с обычным приоритетом
 умножения над сложением: $ab+c$ значит $(a \times b)+c$. Скобки нужны, чтобы записать
 $a \times (b+c)$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \foreach \r in {0,1,2} {
+    \foreach \c in {0,1,2,3} {
+      \fill (\c*0.5,\r*0.5) circle (1.3pt);
+    }
+  }
+  \node[left] at (-0.4,0.5) {$3$};
+  \node[below] at (0.75,-0.3) {$4$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}$3\times4$ — три строки по четыре точки, то есть
+$4+4+4$}
+\end{center}
 \end{remark}
 
 \begin{lemma}{2.3.2}{умножение коммутативно}
@@ -53,6 +67,25 @@ $nm = n(k{+}{+}) = nk+n$ по определению умножения, а эт
 \leansource{Nat.mul_add}{(a b c : Nat) : a * (b + c) = a * b + a * c}
 \leansource{Nat.add_mul}{(a b c : Nat) : (a + b) * c = a * c + b * c}
 \end{proposition}
+
+\begin{intuition}
+Дистрибутивность — это разбиение прямоугольника $a \times (b+c)$ на два прямоугольника
+$a \times b$ и $a \times c$, поставленных рядом: их площади складываются в площадь целого.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) rectangle (1.6,1);
+  \draw[intuitiongray] (1.6,0) rectangle (2.8,1);
+  \node at (0.8,0.5) {$ab$};
+  \node at (2.2,0.5) {$ac$};
+  \node[left] at (-0.15,0.5) {$a$};
+  \node[below] at (0.8,-0.15) {$b$};
+  \node[below] at (2.2,-0.15) {$c$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}площадь целого прямоугольника $a(b+c)$ равна сумме
+площадей частей $ab+ac$}
+\end{center}
+\end{intuition}
 
 \begin{proof}
 По \taoref{lem:2.3.2}{коммутативности} достаточно доказать первое равенство. Индукция по
@@ -99,6 +132,14 @@ $dc$ положительно, поскольку $d$ и $c$ положител�
 \leansource{Nat.mul_cancel_right}{(h : a * c = b * c) (hc : c.IsPos) : a = b}
 \end{corollary}
 
+\begin{intuition}
+Условие «$c$ положительно» существенно: при $c=0$ равенство $ac=bc$ выполняется всегда,
+для любых $a,b$ (обе части — просто $0$), так что сократить $c$ было бы попросту неверно.
+Доказательство обходит прямую работу со свидетелями сложения — вместо этого оно перебирает
+все три исхода \taoref{prop:2.2.13}{трихотомии} и исключает два из них через
+\taoref{prop:2.3.6}{утверждение 2.3.6} (умножение сохраняет строгий порядок).
+\end{intuition}
+
 \begin{proof}
 По \taoref{prop:2.2.13}{трихотомии} возможны три случая: $a<b$, $a=b$, $a>b$.\\
 \caselabel{$a<b$} Тогда $ac<bc$ по \taoref{prop:2.3.6}{утверждению 2.3.6}, что противоречит
@@ -122,6 +163,27 @@ $ac=bc$.\\
 \begin{remark}
 Это деление $n$ на $q$ с частным $m$ и остатком $r$.
 \end{remark}
+
+\begin{intuition}
+Механику доказательства удобно представлять как счётчик-одометр с окошком $[0,q)$: на шаге
+индукции остаток пытается увеличиться на единицу, и пока он умещается в окошко (случай
+$r{+}{+}<q$), просто увеличивается сам, а частное не трогается. Как только остаток
+«переполняет» окошко и становится равен $q$ (случай $r{+}{+}=q$), он обнуляется, а частное
+увеличивается на единицу — ровно как одометр обнуляет разряд единиц и добавляет единицу в
+разряд десятков.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \foreach \i in {0,1,2} {\draw[intuitiongray] (\i*1.2,0) rectangle ({(\i+1)*1.2},0.5);}
+  \draw[intuitiongray,fill=intuitiongray,fill opacity=0.3] (3.6,0) rectangle (4.3,0.5);
+  \node[below,font=\scriptsize] at (1.8,-0.2) {$m$ блоков по $q$};
+  \node[below,font=\scriptsize] at (3.95,-0.2) {остаток $r$};
+  \node[above,font=\scriptsize] at (4.3,0.65) {$n$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}$n=mq+r$ — целое число блоков длины $q$ плюс неполный
+остаток $r<q$}
+\end{center}
+\end{intuition}
 
 \begin{proof}
 Индукция по $n$ при фиксированном положительном $q$.
@@ -149,6 +211,30 @@ $n{+}{+} = mq+r{+}{+}$.
 $m^{n{+}{+}} := m^n \times m$.
 \leansource{Nat.pow}{(m n : Nat) : Nat}
 \end{definition}
+
+\begin{intuition}
+Три определения главы 2 образуют лестницу итераций: сложение — это повторное «взять
+следующее» (\taoref{def:2.2.1}{определение 2.2.1}), умножение — повторное сложение
+(\taoref{def:2.3.1}{определение 2.3.1}), а возведение в степень — повторное умножение.
+Каждая ступень определена рекурсией по тому же принципу
+(\taoref{prop:2.1.16}{утверждение 2.1.16}), опираясь только на операцию ступенью ниже — и
+на этом лестница останавливается: в главе 2 нет отдельной аксиомы или определения для
+«башни степеней».
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (s) at (0,0) {$+{+}$};
+  \node (p) at (2,0) {$+$};
+  \node (t) at (4,0) {$\times$};
+  \node (e) at (6,0) {$m^n$};
+  \draw[->,intuitiongray] (s) -- node[above,font=\scriptsize]{повторить} (p);
+  \draw[->,intuitiongray] (p) -- node[above,font=\scriptsize]{повторить} (t);
+  \draw[->,intuitiongray] (t) -- node[above,font=\scriptsize]{повторить} (e);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}сложение из ${+}{+}$, умножение из $+$, степень из
+$\times$ — каждая ступень повторяет предыдущую}
+\end{center}
+\end{intuition}
 
 \begin{remark}
 Как умножение — итерированное сложение, возведение в степень — итерированное умножение:

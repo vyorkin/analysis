@@ -11,11 +11,27 @@ $A$ и $B$ имеет смысл вопрос, является ли $A$ эле�
 \leansource{SetTheory.Set.coe_eq}{(h : (X : Object) = (Y : Object)) : X = Y}
 \end{axiom}
 
+\begin{intuition}
+В наивной картине мира «множество» и «то, что лежит внутри множеств» — разные сущности:
+элементы вроде чисел, а контейнеры для них — отдельная категория. Эта аксиома стирает
+границу: раз множество тоже объект, оно само может быть элементом другого множества. Без
+неё нельзя было бы построить множество множеств вроде $\{\{1,2\},\{3\}\}$, а вся дальнейшая
+теория держится именно на такой вложенности.
+\end{intuition}
+
 \begin{axiom}{3.2}{равенство множеств}
 Два множества $A$ и $B$ называются \emph{равными}, $A=B$, если каждый элемент $A$
 является элементом $B$ и наоборот.
 \leansource{SetTheory.Set.ext}{(h : ∀ x, x ∈ X ↔ x ∈ Y) : X = Y}
 \end{axiom}
+
+\begin{intuition}
+Множество определяется исключительно своим содержимым — способ, которым оно было описано,
+роли не играет. $\{x \in \mathbb{N} : x \le 2\}$ и $\{0,1,2\}$ выглядят как разные конструкции, но по этой
+аксиоме — одно и то же множество, раз у них одинаковые элементы. Это и называют
+\emph{экстенсиональностью}: чтобы доказать равенство двух множеств, всегда достаточно (и
+только) проверить, что у них одни и те же элементы, независимо от способа задания.
+\end{intuition}
 
 \begin{remark}
 В книге это определение: равенство множеств устроено так же, как любое другое
@@ -45,6 +61,13 @@ $A$ и $B$ имеет смысл вопрос, является ли $A$ эле�
 \leansource{SetTheory.Set.not_mem_empty}{: ∀ x, x ∉ (∅ : Set)}
 \end{axiom}
 
+\begin{intuition}
+Формально это самое слабое из возможных условий — «нет элементов» ничего не утверждает про
+структуру множества — но именно оно даёт теории отправную точку. Все дальнейшие аксиомы этой
+главы лишь порождают новые множества из уже имеющихся, поэтому без хотя бы одного множества
+в самом начале строить было бы вообще не из чего.
+\end{intuition}
+
 \begin{remark}
 Пустое множество единственно: если бы существовали два пустых множества, они были бы равны
 друг другу по \taoref{ax:3.2}{аксиоме 3.2} (у обоих попросту нет элементов, а значит,
@@ -55,6 +78,14 @@ $A$ и $B$ имеет смысл вопрос, является ли $A$ эле�
 Пусть $A$ — непустое множество. Тогда существует объект $x$ такой, что $x \in A$.
 \leansource{SetTheory.Set.nonempty_def}{(h : X ≠ ∅) : ∃ x, x ∈ X}
 \end{lemma}
+
+\begin{intuition}
+«Непустое» — определение от противного: оно лишь говорит, чем $A$ не является ($A\neq
+\emptyset$), без прямого предъявления элемента. Чтобы превратить такое отрицательное условие
+в настоящего свидетеля $x\in A$, естественный ход — тоже пойти от противного: если бы элемента
+не было вовсе, $A$ по \taoref{ax:3.2}{аксиоме 3.2} совпало бы с $\emptyset$, что противоречит
+условию.
+\end{intuition}
 
 \begin{proof}
 От противного: если бы такого $x$ не было, то $x \notin A$ для всех $x$, а тогда
@@ -72,12 +103,47 @@ $y \in \{a,b\} \iff (y=a \lor y=b)$.
 \leansource{SetTheory.Set.pair_eq}{(a b : Object) : ({a,b} : Set) = {a} ∪ {b}}
 \end{axiom}
 
+\begin{intuition}
+Пустое множество даёт единственную отправную точку, но само по себе не позволяет получить
+из объекта $a$ множество, элементом которого является именно $a$ — для этого нужна отдельная
+аксиома. Одноэлементное и парное множества — простейший способ «упаковать» один или два
+конкретных объекта в множество, и именно из таких минимальных упаковок дальше строятся более
+сложные конструкции (см. \taoref{exr:3.1.2}{упражнение 3.1.2} — уже три вложенных пустых
+множества дают три попарно различных объекта).
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) circle (0.7);
+  \fill (0,0) circle (1.3pt);
+  \node[above,font=\scriptsize] at (0,0.2) {$a$};
+  \node[below] at (0,-0.9) {$\{a\}$};
+  \draw[intuitiongray] (2.6,0) ellipse (0.9 and 0.7);
+  \fill (2.3,0) circle (1.3pt);
+  \fill (2.9,0) circle (1.3pt);
+  \node[above,font=\scriptsize] at (2.3,0.2) {$a$};
+  \node[above,font=\scriptsize] at (2.9,0.2) {$b$};
+  \node[below] at (2.6,-0.9) {$\{a,b\}$};
+\end{tikzpicture}
+\end{center}
+\end{intuition}
+
 \begin{exercise}{3.1.2}{}
 Множества $\emptyset$, $\{\emptyset\}$ и $\{\emptyset,\{\emptyset\}\}$ попарно различны.
 \leansource{SetTheory.Set.emptyset_neq_singleton}{: empty ≠ singleton\_empty}
 \leansource{SetTheory.Set.emptyset_neq_pair}{: empty ≠ pair\_empty}
 \leansource{SetTheory.Set.singleton_empty_neq_pair}{: singleton\_empty ≠ pair\_empty}
 \end{exercise}
+
+\begin{intuition}
+Единственный доступный на этом этапе строительный материал — пустое множество, так что все
+три множества $E,S,P$ различаются только \emph{глубиной вложенности} пустоты: $E$ — пустота,
+$S$ — множество, содержащее пустоту, $P$ — множество, содержащее и пустоту, и множество,
+содержащее пустоту. Каждая проверка различия использует один и тот же трюк: если бы два
+уровня вложенности совпали, элемент более глубокого множества оказался бы элементом самого
+этого множества — для $E$ и $S$ это сразу даёт $\emptyset \in \emptyset$, что противоречит
+\taoref{ax:3.3}{аксиоме пустого множества}, а для $S$ и $P$ — сводится к уже доказанному
+различию $E \neq S$.
+\end{intuition}
 
 \begin{proof}
 Обозначим $\emptyset$, $\{\emptyset\}$, $\{\emptyset,\{\emptyset\}\}$ через $E$, $S$, $P$.
@@ -103,6 +169,33 @@ $x \in A \cup B \iff (x \in A \lor x \in B)$.
 \leansource{SetTheory.Set.mem_union}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X ∪ Y) ↔ (x ∈ X ∨ x ∈ Y)}
 \end{axiom}
 
+\begin{intuition}
+Ни одна из предыдущих аксиом не умеет объединять два уже готовых множества в одно — пара
+$\{a,b\}$ упаковывает только отдельные объекты. Объединение восполняет
+именно этот пробел: $x \in A \cup B$ определяется через $\lor$, а значит все свойства
+объединения (\taoref{lem:3.1.12}{лемма 3.1.12}) будут напрямую наследоваться из свойств
+дизъюнкции в логике высказываний.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \fill[intuitiongray,opacity=0.15] (-0.5,0) circle (1.1);
+  \fill[intuitiongray,opacity=0.15] (0.5,0) circle (1.1);
+  \draw[intuitiongray] (-0.5,0) circle (1.1);
+  \draw[intuitiongray] (0.5,0) circle (1.1);
+  \node at (-1,0) {$A$};
+  \node at (1,0) {$B$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}закрашенная область — $A\cup B$: всё, что лежит хотя бы
+в одном из двух множеств}
+\end{center}
+\end{intuition}
+
+\begin{example}{3.1.10}{}
+Для любых объектов $a,b,c$ выполняется $\{a,b\} \cup \{b,c\} = \{a,b,c\}$ — общий элемент $b$
+входит в результат только один раз.
+\leansource{SetTheory.Set.pair_union_pair}{(a b c : Object) : ({a,b} : Set) ∪ {b,c} = {a,b,c}}
+\end{example}
+
 \begin{lemma}{3.1.12}{базовые свойства объединений}
 Пусть $A,B,C$ — множества. Тогда объединение коммутативно ($A \cup B = B \cup A$) и
 ассоциативно ($(A \cup B) \cup C = A \cup (B \cup C)$). Кроме того,
@@ -110,6 +203,15 @@ $A \cup A = A \cup \emptyset = \emptyset \cup A = A$.
 \leansource{SetTheory.Set.union_comm}{(A B : Set) : A ∪ B = B ∪ A}
 \leansource{SetTheory.Set.union_assoc}{(A B C : Set) : (A ∪ B) ∪ C = A ∪ (B ∪ C)}
 \end{lemma}
+
+\begin{intuition}
+Это первое доказательство равенства множеств, и оно задаёт образец для почти всех
+последующих: поскольку $\in$ для $\cup,\cap,\setminus$ определяется через $\lor,\land,\neg$
+(\taoref{ax:3.5}{аксиома 3.5}), любое равенство множеств, построенных этими операциями,
+раскрывается в утверждение чистой логики высказываний — а оно либо тавтология (тогда
+доказательство готово), либо нет (тогда равенство неверно). Ассоциативность $\cup$ здесь
+дословно наследует ассоциативность $\lor$, и \emph{ничего сверх этого доказывать не нужно}.
+\end{intuition}
 
 \begin{proof}
 Докажем только ассоциативность — остальное устроено проще и доказывается похожим
@@ -134,6 +236,29 @@ $A \cup A = A \cup \emptyset = \emptyset \cup A = A$.
 \leansource{SetTheory.Set.instSSubset}{: HasSSubset Set}
 \end{definition}
 
+\begin{intuition}
+\taoref{ax:3.2}{Аксиома 3.2} требует выполнения двух условий сразу: каждый элемент $A$ —
+элемент $B$, и каждый элемент $B$ — элемент $A$. Определение $A \subseteq B$ берёт только
+первое из них, без обратного. Поэтому подмножеством быть легче, чем быть равным: например,
+$\{1\} \subseteq \{1,2\}$, хотя $\{1\} \neq \{1,2\}$ — элемент $2$ есть в $B$, но его нет
+в $A$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) circle (1.3);
+  \draw[intuitiongray] (-0.35,-0.1) circle (0.55);
+  \node at (-0.35,-0.1) {$A$};
+  \node[above] at (0,1.45) {$B$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}каждая точка $A$ — точка $B$, но не наоборот: $B$
+может содержать что-то ещё}
+\end{center}
+\end{intuition}
+
+\begin{example}{3.1.16}{}
+$\{3,5\} \subseteq \{1,3,5\}$: каждый элемент $\{3,5\}$ является элементом $\{1,3,5\}$.
+\end{example}
+
 \begin{proposition}{3.1.17}{включение частично упорядочивает множества}
 Пусть $A,B,C$ — множества. Если $A \subseteq B$ и $B \subseteq C$, то $A \subseteq C$. Если
 $A \subseteq B$ и $B \subseteq A$, то $A=B$. Наконец, если $A \subsetneq B$ и
@@ -142,6 +267,29 @@ $B \subsetneq C$, то $A \subsetneq C$.
 \leansource{SetTheory.Set.subset_antisymm}{(A B : Set) (hAB : A ⊆ B) (hBA : B ⊆ A) : A = B}
 \leansource{SetTheory.Set.ssubset_trans}{(A B C : Set) (hAB : A ⊂ B) (hBC : B ⊂ C) : A ⊂ C}
 \end{proposition}
+
+\begin{intuition}
+Три пункта — это в точности три свойства, которые делают отношение порядком: транзитивность
+и антисимметричность (плюс очевидная рефлексивность $A \subseteq A$). Антисимметричность
+здесь особенно показательна: она фактически переоткрывает \taoref{ax:3.2}{аксиому 3.2} —
+«одинаковые элементы в обе стороны» это и есть определение равенства множеств, только
+записанное как два включения.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (e) at (0,0) {$\varnothing$};
+  \node (a) at (-1,1.2) {$\{1\}$};
+  \node (b) at (1,1.2) {$\{2\}$};
+  \node (ab) at (0,2.4) {$\{1,2\}$};
+  \draw[->,intuitiongray] (e) -- (a);
+  \draw[->,intuitiongray] (e) -- (b);
+  \draw[->,intuitiongray] (a) -- (ab);
+  \draw[->,intuitiongray] (b) -- (ab);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}стрелка снизу вверх означает $\subseteq$. Элементы
+$\{1\}$ и $\{2\}$ не сравнимы между собой — порядок частичный}
+\end{center}
+\end{intuition}
 
 \begin{proof}
 \prooflabel{Транзитивность} Пусть $A \subseteq B$, $B \subseteq C$ и $x \in A$. Тогда
@@ -166,6 +314,37 @@ $A=B$ — противоречие с $A \subsetneq B$.
 собой: ни одно не содержится в другом.
 \end{remark}
 
+\begin{exercise}{3.1.5}{}
+Пусть $A,B$ — множества. Тогда следующие три утверждения равносильны: $A \subseteq B$,
+$A \cup B = B$ и $A \cap B = A$.
+\leansource{SetTheory.Set.subset_tfae}{(A B : Set) : [A ⊆ B, A ∪ B = B, A ∩ B = A].TFAE}
+\end{exercise}
+
+\begin{intuition}
+Все три условия выражают одну и ту же мысль «$B$ уже содержит всё, что есть в $A$» —
+просто с разных сторон: $A \subseteq B$ говорит об этом напрямую, $A \cup B = B$ — что
+добавление $A$ к $B$ ничего не меняет, а $A \cap B = A$ — что пересечение с $B$ не теряет
+ни одного элемента $A$. Достаточно связать их в цепочку — $A \subseteq B \iff A \cup B = B$
+и $A \cup B = B \iff A \cap B = A$ — а третья равносильность,
+$A \subseteq B \iff A \cap B = A$, следует из этих двух по транзитивности $\iff$ безо
+всякой дополнительной работы.
+\end{intuition}
+
+\begin{proof}
+\prooflabel{$A \subseteq B \iff A \cup B = B$} Если $A \subseteq B$, то $A \cup B \subseteq B$:
+любой $x \in A \cup B$ лежит либо в $A$, а тогда и в $B$ (по $A \subseteq B$), либо сразу в
+$B$. Обратное включение $B \subseteq A \cup B$ верно всегда, по \taoref{ax:3.5}{аксиоме 3.5}.
+По антисимметричности (\taoref{prop:3.1.17}{утверждение 3.1.17}) получаем $A \cup B = B$.
+Обратно, если $A \cup B = B$, то любой $x \in A$ лежит в $A \cup B = B$, то есть $A \subseteq B$.
+
+\prooflabel{$A \cup B = B \iff A \cap B = A$} Пусть $A \cup B = B$. Для любого $x$:
+включение $x \in A \cap B \Rightarrow x \in A$ верно всегда, а обратное — если $x \in A$, то
+$x \in A \cup B = B$ тоже, значит $x \in A \cap B$. Отсюда $A \cap B = A$ по
+\taoref{ax:3.2}{аксиоме 3.2}. Обратно, пусть $A \cap B = A$. Тогда $A \subseteq B$ (для
+$x \in A = A \cap B$ имеем $x \in B$ по определению пересечения), а по уже доказанной первой
+равносильности $A \cup B = B$.
+\end{proof}
+
 \begin{axiom}{3.6}{аксиома спецификации}
 Пусть $A$ — множество, и пусть $P(x)$ — свойство, применимое к элементам $A$. Тогда
 существует множество $\{x \in A : P(x)\text{ истинно}\}$, элементы которого — в точности
@@ -174,10 +353,36 @@ $A=B$ — противоречие с $A \subsetneq B$.
 \leansource{SetTheory.Set.specify_subset}{(P : A → Prop) : A.specify P ⊆ A}
 \end{axiom}
 
+\begin{intuition}
+Естественно захотеть более сильную аксиому — по любому свойству $P$ сразу получать множество
+$\{x : P(x)\}$, без оглядки на объемлющее $A$. Как станет ясно из парадокса Рассела в
+разделе 3.2, такая неограниченная версия противоречива: свойство «$x$ не содержит себя»,
+применённое ко \emph{всем} объектам сразу, разрушает теорию. Требование $x \in A$ здесь —
+именно то, что спасает аксиому: спецификация только вырезает часть уже существующего,
+заведомо непротиворечивого множества.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,0) circle (1.3);
+  \fill[intuitiongray,opacity=0.2] (-0.3,-0.1) ellipse (0.55 and 0.5);
+  \draw[intuitiongray,dashed] (-0.3,-0.1) ellipse (0.55 and 0.5);
+  \node[font=\scriptsize] at (-0.3,-0.1) {$P$};
+  \node[above] at (0,1.45) {$A$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}закрашенная область — $\{x\in A : P(x)\}$, всегда внутри
+$A$}
+\end{center}
+\end{intuition}
+
 \begin{remark}
 Множество, полученное спецификацией, всегда является подмножеством $A$ — оно может
 совпадать с $A$ целиком или оказаться пустым, но не выйти за его пределы.
 \end{remark}
+
+\begin{example}{3.1.17}{}
+$\{x \in \{3,5\} : x \neq 3\} = \{5\}$: из элементов $\{3,5\}$ спецификацией остаётся только
+тот, что удовлетворяет условию $x \neq 3$.
+\end{example}
 
 \begin{definition}{3.1.22}{пересечение}
 \emph{Пересечением} двух множеств $S_1,S_2$ называется множество
@@ -186,6 +391,37 @@ $S_1 \cap S_2 := \{x \in S_1 : x \in S_2\}$, то есть множество э
 \leansource{SetTheory.Set.instIntersection}{: Inter Set}
 \leansource{SetTheory.Set.mem_inter}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X ∩ Y) ↔ (x ∈ X ∧ x ∈ Y)}
 \end{definition}
+
+\begin{intuition}
+В отличие от объединения, пересечению не нужна собственная аксиома существования: $\{x \in
+S_1 : x \in S_2\}$ — это в точности \taoref{ax:3.6}{аксиома спецификации (3.6)}, применённая
+к $S_1$ со свойством «лежать в $S_2$». Объединению такой путь закрыт — оно может выйти за
+пределы любого одного из исходных множеств, а спецификация лишь вырезает подмножество уже
+данного множества, ничего к нему не добавляя.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \begin{scope}
+    \clip (-0.5,0) circle (1.1);
+    \fill[intuitiongray,opacity=0.3] (0.5,0) circle (1.1);
+  \end{scope}
+  \draw[intuitiongray] (-0.5,0) circle (1.1);
+  \draw[intuitiongray] (0.5,0) circle (1.1);
+  \node at (-1,0) {$S_1$};
+  \node at (1,0) {$S_2$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}закрашенная область — $S_1\cap S_2$}
+\end{center}
+\end{intuition}
+
+\begin{example}{3.1.24}{}
+$\{1,2,4\} \cap \{2,3,4\} = \{2,4\}$.
+\end{example}
+
+\begin{example}{3.1.25}{}
+$\{1,2\} \cap \{3,4\} = \varnothing$. Про такие множества говорят, что они
+\emph{не пересекаются}: их пересечение пусто.
+\end{example}
 
 \begin{exercise}{3.1.7}{}
 Пусть $A,B,C$ — множества. Тогда $A \cap B \subseteq A$ и $A \cap B \subseteq B$, причём
@@ -221,6 +457,10 @@ $A \setminus B := \{x \in A : x \notin B\}$, то есть $A$ с удалённ
 \leansource{SetTheory.Set.mem_sdiff}{(x : Object) (X Y : Set)\leanbreak: x ∈ (X \textbackslash{} Y) ↔ (x ∈ X ∧ x ∉ Y)}
 \end{definition}
 
+\begin{example}{3.1.28}{}
+$\{1,2,3,4\} \setminus \{2,4,6\} = \{1,3\}$.
+\end{example}
+
 \begin{proposition}{3.1.27}{множества образуют булеву алгебру}
 Пусть $A,B,C$ — множества, все являющиеся подмножествами некоторого множества $X$. Тогда:
 \begin{itemize}
@@ -238,6 +478,29 @@ $A \setminus B := \{x \in A : x \notin B\}$, то есть $A$ с удалённ
 \leansource{SetTheory.Set.compl_union}{: X \textbackslash{} (A ∪ B) = (X \textbackslash{} A) ∩ (X \textbackslash{} B)}
 \leansource{SetTheory.Set.compl_inter}{: X \textbackslash{} (A ∩ B) = (X \textbackslash{} A) ∪ (X \textbackslash{} B)}
 \end{proposition}
+
+\begin{intuition}
+Тот же приём, что и в \taoref{lem:3.1.12}{лемме 3.1.12}: $\cup,\cap,\setminus$ определены
+через $\lor,\land,\neg$, так что все восемь пунктов — это тавтологии логики высказываний,
+записанные на языке множеств. Пункт (h), законы де Моргана, особенно наглядно это показывает
+— он дословно копирует де-моргановские тождества для $\lor/\land/\neg$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \fill[intuitiongray,opacity=0.2] (0,0) circle (1.6);
+  \fill[white] (-0.5,0) circle (1.05);
+  \fill[white] (0.5,0) circle (1.05);
+  \draw[intuitiongray] (0,0) circle (1.6);
+  \draw[intuitiongray] (-0.5,0) circle (1.05);
+  \draw[intuitiongray] (0.5,0) circle (1.05);
+  \node[above] at (0,1.75) {$X$};
+  \node at (-1.3,0.9) {$A$};
+  \node at (1.3,0.9) {$B$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}закрашенная область — $X\setminus(A\cup B)$, она же
+$(X\setminus A)\cap(X\setminus B)$}
+\end{center}
+\end{intuition}
 
 \begin{remark}
 Между $\cup$ и $\cap$, а также между $X$ и $\emptyset$, здесь просматривается симметрия —
@@ -318,6 +581,14 @@ x \notin A \lor x \notin B$.
 \leansource{SetTheory.Set.partition_right}{(h\_union : A ∪ B = X) (h\_inter : A ∩ B = ∅)\leanbreak: B = X \textbackslash{} A}
 \end{exercise}
 
+\begin{intuition}
+Это обращение пункта (g) \taoref{prop:3.1.27}{утверждения 3.1.27}: там из $A \subseteq X$
+получалось $A \cup (X \setminus A) = X$ и $A \cap (X \setminus A) = \emptyset$ — здесь же,
+имея произвольные $A,B$ с такими двумя свойствами, показывается, что $B$ обязано совпадать
+именно с дополнением $A$ до $X$. Иными словами, условия $A \cup B = X$ и $A \cap B = \emptyset$
+вместе однозначно определяют $B$ по $A$ и $X$.
+\end{intuition}
+
 \begin{proof}
 Докажем $A = X \setminus B$ — для $B = X \setminus A$ рассуждение то же самое с
 переставленными $A$ и $B$.
@@ -337,6 +608,25 @@ $x \notin B$. Из $x \in X = A \cup B$ следует $x \in A$ или $x \in B
 \leansource{SetTheory.Set.union_eq_partition}{(A B : Set)\leanbreak: A ∪ B = (A \textbackslash{} B) ∪ (A ∩ B) ∪ (B \textbackslash{} A)}
 \end{exercise}
 
+\begin{intuition}
+Для каждого $x \in A \cup B$ есть ровно три взаимоисключающих варианта: лежать только в $A$,
+лежать в обоих множествах, или лежать только в $B$. Это утверждение — просто явное
+предъявление этих трёх зон диаграммы Венна как множеств, вместе с проверкой, что они не
+перекрываются и в сумме дают весь $A \cup B$.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (-0.9,0) circle (1.5);
+  \draw[intuitiongray] (0.9,0) circle (1.5);
+  \node at (-1.6,0) {$A \setminus B$};
+  \node at (0,0) {$A \cap B$};
+  \node at (1.6,0) {$B \setminus A$};
+  \node[color=intuitiongray] at (-1.5,1.7) {$A$};
+  \node[color=intuitiongray] at (1.5,1.7) {$B$};
+\end{tikzpicture}
+\end{center}
+\end{intuition}
+
 \begin{proof}
 \prooflabel{Попарная непересекаемость} Если $x \in (A \setminus B) \cap (A \cap B)$, то
 $x \notin B$ (из $A \setminus B$) и $x \in B$ (из $A \cap B$) одновременно — невозможно.
@@ -352,6 +642,65 @@ $x \in B \setminus A$). Если же $x \notin B$, то из $x \in A \cup B$ �
 $A \cap B$, $B \setminus A$ является подмножеством $A \cup B$.
 \end{proof}
 
+\begin{exercise}{3.1.12}{}
+Пусть $A,B,A',B'$ — множества, $A' \subseteq A$ и $B' \subseteq B$. Покажите, что
+$A' \cup B' \subseteq A \cup B$ и $A' \cap B' \subseteq A \cap B$. Приведите контрпример,
+показывающий, что аналогичное утверждение для разности множеств,
+$A' \setminus B' \subseteq A \setminus B$, в общем случае неверно.
+\leansource{SetTheory.Set.subset_union_subset}{(hA'A : A' ⊆ A) (hB'B : B' ⊆ B)\leanbreak: A' ∪ B' ⊆ A ∪ B}
+\leansource{SetTheory.Set.subset_inter_subset}{(hA'A : A' ⊆ A) (hB'B : B' ⊆ B)\leanbreak: A' ∩ B' ⊆ A ∩ B}
+\leansource{SetTheory.Set.subset_diff_subset_counter}{\leanbreak: ∃ (A B A' B' : Set), (A' ⊆ A) ∧ (B' ⊆ B) ∧ ¬((A' \textbackslash{} B') ⊆ (A \textbackslash{} B))}
+\end{exercise}
+
+\begin{intuition}
+Для $\cup$ и $\cap$ всё устроено ожидаемо: если сузить оба аргумента $A,B$ до $A',B'$, то и
+результат операции сузится — $A' \cup B' \subseteq A \cup B$, $A' \cap B' \subseteq A \cap B$.
+С разностью $A \setminus B$ ситуация другая — $B$ входит в формулу как вычитаемое. Сужение
+$B$ до $B'$ означает, что из $A'$ удаляется меньше элементов, поэтому $A' \setminus B'$
+вполне может вырасти по сравнению с $A \setminus B$: по второму аргументу разность ведёт
+себя противоположным образом — чем меньше вычитаемое, тем больше результат (см. следующее
+замечание).
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \draw[intuitiongray] (0,1.6) rectangle (2.6,2.0);
+  \node[right,font=\scriptsize] at (2.7,1.8) {$A\cup B$};
+  \draw[intuitiongray,fill=intuitiongray,fill opacity=0.3] (0,0.9) rectangle (1.6,1.3);
+  \node[right,font=\scriptsize] at (1.7,1.1) {$A'\cup B'$};
+  \draw[intuitiongray] (0,0) rectangle (1.1,0.4);
+  \node[right,font=\scriptsize] at (1.2,0.2) {$A\setminus B$};
+  \draw[intuitiongray,fill=intuitiongray,fill opacity=0.3] (0,-0.7) rectangle (2.6,-0.3);
+  \node[right,font=\scriptsize] at (2.7,-0.5) {$A'\setminus B'$};
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}ширина полоски — размер множества: у $\cup$ сужение
+входов сужает результат, у $\setminus$ то же сужение $B$ может, наоборот, вырастить его}
+\end{center}
+\end{intuition}
+
+\begin{proof}
+\prooflabel{$A' \cup B' \subseteq A \cup B$} Пусть $x \in A' \cup B'$. Если $x \in A'$, то
+$x \in A$ (поскольку $A' \subseteq A$), значит $x \in A \cup B$. Аналогично, если $x \in B'$,
+то $x \in B$ (поскольку $B' \subseteq B$), значит $x \in A \cup B$.
+
+\prooflabel{$A' \cap B' \subseteq A \cap B$} Пусть $x \in A' \cap B'$, то есть $x \in A'$ и
+$x \in B'$. Тогда $x \in A$ (из $A' \subseteq A$) и $x \in B$ (из $B' \subseteq B$), значит
+$x \in A \cap B$.
+
+\prooflabel{Контрпример для разности} Возьмём произвольный объект $x_0$ и положим
+$A = A' = B = \{x_0\}$, $B' = \emptyset$ — включения $A' \subseteq A$ и $B' \subseteq B$
+выполняются тривиально. При этом $A' \setminus B' = \{x_0\} \setminus \emptyset = \{x_0\}$, а
+$A \setminus B = \{x_0\} \setminus \{x_0\} = \emptyset$, так что
+$A' \setminus B' \not\subseteq A \setminus B$.
+\end{proof}
+
+\begin{remark}
+Разумный положительный результат для разности получается, если поменять направление
+включения по второму множеству: из $A' \subseteq A$ и $B \subseteq B'$ следует
+$A' \setminus B' \subseteq A \setminus B$ (если $x \in A'$ и $x \notin B'$, то $x \in A$, и
+$x \notin B$ — иначе из $B \subseteq B'$ было бы $x \in B'$). В Lean эта финальная часть
+\taoref{exr:3.1.12}{Упражнения 3.1.12} пока не сформулирована.
+\end{remark}
+
 \begin{axiom}{3.7}{аксиома замены}
 Пусть $A$ — множество. Для каждого объекта $x \in A$ и объекта $y$ пусть дано утверждение
 $P(x,y)$, такое что для каждого $x \in A$ существует не более одного $y$, для которого
@@ -366,10 +715,45 @@ $P(x,y)$ истинно. Тогда существует множество
   : y ∈ A.replace hP ↔ ∃ x, P x y}
 \end{axiom}
 
+\begin{intuition}
+Спецификация умеет только \emph{отбирать} элементы уже существующего множества, но не может
+заменить их на что-то другое — результат специфицирования $A$ всегда остаётся подмножеством
+$A$. Замена — это шаг в сторону: $P(x,y)$ ведёт себя как (частичная) функция $x \mapsto y$, и
+аксиома утверждает, что «применение» этой функции к каждому элементу $A$ снова даёт
+множество, даже если результат уже не лежит внутри $A$
+(см. \taoref{ex:3.1.30}{пример 3.1.30}).
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node (x1) at (0,1) {$x_1$};
+  \node (x2) at (0,0) {$x_2$};
+  \node (x3) at (0,-1) {$x_3$};
+  \node (y1) at (2.2,0.7) {$y_1$};
+  \node (y2) at (2.2,-0.7) {$y_2$};
+  \node[above] at (0,1.6) {$A$};
+  \node[above] at (2.2,1.6) {результат};
+  \draw[->,intuitiongray] (x1) -- (y1);
+  \draw[->,intuitiongray] (x2) -- (y1);
+  \draw[->,intuitiongray] (x3) -- (y2);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}каждый $x_i\in A$ даёт не более одного $y$ с $P(x_i,y)$
+— результат может оказаться меньше $A$}
+\end{center}
+\end{intuition}
+
 \begin{exercise}{3.1.11}{}
 Аксиома замены влечёт аксиому спецификации.
 \leansource{SetTheory.Set.specification_from_replacement}{\leanbreak: ∃ B, B ⊆ A ∧ ∀ x, x.val ∈ B ↔ P x}
 \end{exercise}
+
+\begin{intuition}
+Замена умеет только «применять функцию» ко всем элементам $A$ сразу, без фильтрации, а
+спецификации как раз нужна фильтрация: оставить только те $x$, для которых $P(x)$ истинно.
+Трюк — «функция», которая элементы с $P(x)$ отображает сами в себя, а остальные никуда не
+отображает: $P'(x,y) :\iff P(x) \land y = x$. Там, где $P$ ложно, у $P'$ вовсе нет подходящего
+$y$, и такой $x$ просто не порождает элемента результата — замена автоматически выполняет
+роль фильтра.
+\end{intuition}
 
 \begin{proof}
 Пусть $A$ — множество и $P$ — свойство на его элементах. Определим утверждение
@@ -390,9 +774,18 @@ $x' \in A$ с $P(x')$, откуда $P(x)$. Обратно, если $P(x)$ ве
 
 \begin{remark}
 Аксиома замены позволяет, имея множество $A$, построить новое множество, «применив»
-$P$ к каждому его элементу — например, взять $A=\{3,5,9\}$ и $P(x,y) :\iff y=x{+}{+}$,
-чтобы получить $\{4,6,10\}$.
+$P$ к каждому его элементу.
 \end{remark}
+
+\begin{example}{3.1.30}{}
+При $A=\{3,5,9\}$ и $P(x,y) :\iff y=x{+}{+}$ аксиома замены даёт множество $\{4,6,10\}$.
+\end{example}
+
+\begin{example}{3.1.31}{}
+При том же $A=\{3,5,9\}$, но с постоянным $P(x,y) :\iff y=1$ (не зависящим от $x$),
+результатом замены будет всего лишь $\{1\}$: результат замены может оказаться меньше
+исходного множества, если разные $x$ отображаются в один и тот же $y$.
+\end{example}
 
 \begin{axiom}{3.8}{бесконечность}
 Существует множество $\mathbb{N}$, элементы которого называются натуральными числами, а
@@ -401,6 +794,29 @@ $P$ к каждому его элементу — например, взять $
 \leansource{SetTheory.Set.nat_equiv}{: ℕ ≃ Nat}
 \end{axiom}
 
+\begin{intuition}
+Все предыдущие аксиомы этой главы — пустое множество, пара, объединение, спецификация,
+замена — берут конечное число уже готовых множеств и производят из них новое множество,
+тоже неизбежно конечное (или, для спецификации, не больше исходного). Сколько бы раз их ни
+применять, из конечных множеств конечными способами бесконечного множества не получить —
+нужен отдельный, явный скачок. Аксиома бесконечности и есть этот скачок: она попросту
+постулирует существование $\mathbb{N}$ со всеми свойствами аксиом Пеано, вместо того чтобы
+пытаться вывести бесконечность из уже имеющихся средств.
+
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \foreach \i/\x in {0/0,1/1.2,2/2.4,3/3.6} {\node (n\i) at (\x,0) {$\i$};}
+  \node at (4.8,0) {$\cdots$};
+  \draw[->,intuitiongray] (n0) -- (n1);
+  \draw[->,intuitiongray] (n1) -- (n2);
+  \draw[->,intuitiongray] (n2) -- (n3);
+  \draw[->,intuitiongray] (n3) -- (4.4,0);
+\end{tikzpicture}\\
+{\footnotesize\color{intuitiongray}цепочка $0,0{+}{+},(0{+}{+}){+}{+},\ldots$ не обрывается
+— конечными аксиомами такое множество не построить}
+\end{center}
+\end{intuition}
+
 \begin{remark}
 Это формальная версия \taoref{assum:2.6}{предположения 2.6}: аксиома бесконечности —
 первая аксиома, дающая заведомо бесконечное множество, и именно она позволяет считать
@@ -408,17 +824,7 @@ $P$ к каждому его элементу — например, взять $
 \end{remark}
 
 \begin{remark}
-В Lean уже доказан дополнительный материал, который в конспект пока не перенесён — везде
-ниже, кроме отдельно оговорённого случая, доказательство есть, просто ещё не переписано:
-\begin{itemize}
-  \item Примеры 3.1.16, 3.1.17, 3.1.24, 3.1.25, 3.1.28, 3.1.30, 3.1.31 — иллюстративные
-        примеры на подмножество, спецификацию, пересечение, разность и замену.
-  \item Упражнение 3.1.5 (\code{subset\_tfae}) — равносильность $A \subseteq B$,
-        $A \cup B = B$ и $A \cap B = A$.
-  \item Упражнение 3.1.12 — как $\subseteq$ ведёт себя относительно объединения и
-        пересечения подмножеств, и контрпример для разности множеств.
-  \item Упражнение 3.1.13 (\code{singleton\_iff}) — характеризация одноэлементных множеств
-        через отсутствие непустых собственных подмножеств. Здесь доказательство в Lean
-        всё ещё \code{sorry}, формулировку добавить пока нельзя.
-\end{itemize}
+Упражнение 3.1.13 (\code{singleton\_iff}) — характеризация одноэлементных множеств через
+отсутствие непустых собственных подмножеств — в этот конспект пока не входит: доказательство
+в Lean всё ещё \code{sorry}.
 \end{remark}
