@@ -333,7 +333,7 @@ theorem Nat.recurse_zero (f : Nat → Nat → Nat) (c : Nat) : Nat.recurse f c 0
 -- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
 /-- Proposition 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_add_one` из Mathlib. -/
-theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) : 
+theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) :
     recurse f c (n++) = f n (recurse f c n) := by rfl
 -- ^ Это второй случай сопоставления с образцом в определении `Nat.recurse`.
 -- Тоже доказывается одной редукцией Nat.recurse.
@@ -364,12 +364,20 @@ theorem Nat.eq_recurse
 /-- Proposition 2.1.16 (рекурсивные определения). -/
 theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) :
     ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
+  -- `ExistsUnique.intro` требует указать "свидетеля" (кандидата на единственность),
+  -- доказательство того, что он удовлетворяет условию, и доказательство того, что
+  -- любой другой элемент, удовлетворяющий условию, совпадает со свидетелем.
+  -- В качестве свидетеля берём `recurse f c` — функцию, уже определённую через рекурсию.
   apply ExistsUnique.intro (recurse f c)
-  . constructor -- также можно использовать `split_ands` или `and_intros`
-    . exact recurse_zero _ _
-    . exact recurse_succ _ _
-  intro a
-  exact (eq_recurse _ _ a).mp
+  . -- Существование: `recurse f c` удовлетворяет обоим условиям сразу —
+    -- значению в нуле и рекурсивному шагу.
+    constructor -- также можно использовать `split_ands` или `and_intros`
+    . exact recurse_zero f c
+    . exact recurse_succ f c
+  · -- Единственность: если какая-то `a` тоже удовлетворяет условию, то она обязана
+    -- совпадать с `recurse f c`. Это в точности прямое направление `eq_recurse`.
+    intro a
+    exact (eq_recurse f c a).mp
 
 /-
 Наше определение натуральных чисел — аксиоматическое, а не конструктивное.

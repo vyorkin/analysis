@@ -32,7 +32,7 @@ export SetTheory (Set Object)
 variable [SetTheory]
 
 /--
-Axiom 3.8 (универсальная спецификация):
+Axiom 3.9 (универсальная спецификация):
 
 Для любого утверждения {lit}`P` существует множество {lit}`A` такое,
 что если элемент {lit}`x` принадлежит этому множеству ({lit}`x ∈ A`),
@@ -97,7 +97,7 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
     contradiction
 
 /--
-Axiom 3.9 (регулярность):
+Axiom 3.10 (регулярность):
 
 То же утверждение, что и {lit}`regularity_axiom` из раздела 3.1,
 но переформулированное в терминах {lit}`Set`/{lit}`∈` вместо {lit}`Object`/{lit}`mem`,

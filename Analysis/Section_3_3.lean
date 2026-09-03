@@ -142,7 +142,7 @@ noncomputable def Function.to_fn {X Y : Set} (f : Function X Y) : X → Y :=
 -- Иными словами, благодаря этому инстансу с `f : Function X Y` можно работать
 -- почти как с обычной Lean-функцией `X → Y`, не выписывая `.to_fn` каждый раз.
 noncomputable instance Function.inst_coefn (X Y : Set) :
-  CoeFun (Function X Y) (fun _ ↦ X → Y) where
+  CoeFun (Function X Y) (fun _fn ↦ X → Y) where
     coe : Function X Y → X.toSubtype → Y.toSubtype :=
       Function.to_fn -- : X → Y := fun x ↦ (f.unique x).choose
 
@@ -217,7 +217,7 @@ theorem Function.eval {X Y : Set} (f : Function X Y) (x : X) (y : Y) :
 
 /--
 Показывает, что `mk_fn` (превращение `f : X → Y` в `Function X Y`)
-согласовано с вызовом через `CoeFun`:
+согласовано с "вызовом" через `CoeFun`:
 если взять `f`, обернуть в `Function` через `mk_fn`,
 а затем вызвать результат как функцию, `(Function.mk_fn f) x`,
 получится в точности `f x` — то есть обёртка `mk_fn` ничего не теряет и не меняет.
@@ -737,7 +737,7 @@ noncomputable abbrev Function.comp {X Y Z : Set}
 
 -- `∘` уже занят в Mathlib для композиции функций Mathlib,
 -- поэтому здесь мы используем `○`, чтобы избежать неоднозначности.
-infix:90 "○" => Function.comp
+infix:90 " ○ " => Function.comp
 
 /--
 Связывает нотацию `g ○ f` из `Function.comp` с обычным применением функций:
@@ -776,19 +776,26 @@ abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat :=
 abbrev SetTheory.Set.g_3_3_14 : Function Nat Nat :=
   Function.mk_fn (fun x ↦ (x+3 : ℕ))
 
--- Вычисляет композицию `g ○ f`: сначала удваиваем, затем прибавляем 3, получаем `2x+3`.
+-- Вычисляет композицию `g ○ f`:
+-- сначала удваиваем, затем прибавляем 3, получаем `2x+3`.
 theorem SetTheory.Set.g_circ_f_3_3_14 :
   g_3_3_14 ○ f_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+3 : ℕ) : Nat)) := by
     -- simp [Function.eq_iff, Function.eval_of]
-    rw [Function.eq_iff]
+    rw [Function.eq_iff] --  f = g ↔ ∀ (x : X.toSubtype), f.to_fn x = g.to_fn x
     intro x
+    unfold g_3_3_14
+    unfold f_3_3_14
     repeat rw [Function.eval_of] -- (Function.mk_fn f).to_fn x = f x
+    -- ⊢ ↑(nat_equiv.symm ↑(2 * nat_equiv.symm x) + 3) = ↑(2 * nat_equiv.symm x + 3)
     rw [nat_equiv_coe_of_coe] -- nat_equiv.symm ↑n = n
+    -- ⊢ (2 * nat_equiv.symm x + 3) = ↑(2 * nat_equiv.symm x + 3)
 
--- Вычисляет композицию в другом порядке, `f ○ g`, получая `2x+6` — не то же самое, что
--- `g ○ f = 2x+3` выше, то есть композиция функций некоммутативна.
+-- Вычисляет композицию в другом порядке, `f ○ g`, получая `2x+6` —
+-- не то же самое, что `g ○ f = 2x+3` выше,
+-- то есть композиция функций некоммутативна.
 theorem SetTheory.Set.f_circ_g_3_3_14 :
   f_3_3_14 ○ g_3_3_14 = Function.mk_fn (fun x ↦ ((2*(x : ℕ)+6 : ℕ) : Nat)) := by
+    -- Сразу упрощаем, уже не церемонимся
     simp [Function.eq_iff, Function.eval_of]
     intros
     ring
@@ -1094,7 +1101,7 @@ example : ¬ Function.Bijective (fun n ↦ n+1) := by
   apply Nat.zero_ne_add_one
 
 /--
-Remark 3.3.27.
+Замечание 3.3.27.
 
 Распространенной ошибкой является утверждение,
 что функция `f : X ↔ Y` является биективной,
