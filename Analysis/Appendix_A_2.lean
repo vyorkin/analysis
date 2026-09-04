@@ -3,7 +3,8 @@ import Mathlib.Tactic
 /-!
 # Analysis I, Appendix A.2: Импликация
 
-Введение в импликации. Демонстрирует некоторые базовые тактики и синтаксис Lean.
+Введение в импликации.
+Демонстрирует некоторые базовые тактики и синтаксис Lean.
 
 -/
 
@@ -49,7 +50,7 @@ example {X Y : Prop} : (X → Y) ↔ ((¬X) ≥ ¬Y) := by simp; tauto
 
 example {John_left_at_five John_here_now : Prop}
   (h1 : John_left_at_five → John_here_now)
-  (h2 : ¬ John_here_now) : 
+  (h2 : ¬ John_here_now) :
   ¬ John_left_at_five := by
   contrapose! h2
   exact h1 h2
@@ -79,7 +80,7 @@ theorem theorem_A_2_4 (n : ℤ) : Even (n * (n+1)) := by
   exact Even.mul_left this _
 
 /-- Следствие A.2.5 -/
-example : 
+example :
   let n : ℤ := (253+142)*123-(423+198)^342+538-213
   Even (n * (n+1)) := theorem_A_2_4 _
 

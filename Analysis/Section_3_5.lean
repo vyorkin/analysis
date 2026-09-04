@@ -46,7 +46,7 @@ structure OrderedPair where
 
 /-- Определение 3.5.1 (Упорядоченная пара) -/
 @[simp]
-theorem OrderedPair.eq (x y x' y' : Object) : 
+theorem OrderedPair.eq (x y x' y' : Object) :
     (⟨ x, y ⟩ : OrderedPair) = (⟨ x', y' ⟩ : OrderedPair) ↔ x = x' ∧ y = y' := by aesop
 
 /-- Вспомогательная лемма для Упражнения 3.5.1 -/
@@ -140,7 +140,7 @@ theorem SetTheory.Set.mk_cartesian_fst_snd_eq {X Y : Set} (z : X ×ˢ Y) :
   снабжённых доказательством того, что {name}`x` лежит в левом множестве, а {name}`y` — в правом.
   Lean-пары вида {lean}`(x, y)` похожи на наш {name}`OrderedPair`, но более общие.
 -/
-noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y : Set) : 
+noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y : Set) :
     ((X ×ˢ Y) : _root_.Set Object) ≃ (X : _root_.Set Object) ×ˢ (Y : _root_.Set Object) where
   toFun z := ⟨(fst z, snd z), by simp⟩
   invFun z := mk_cartesian ⟨z.val.1, z.prop.1⟩ ⟨z.val.2, z.prop.2⟩
@@ -211,7 +211,7 @@ noncomputable abbrev SetTheory.Set.prod_associator (X Y Z : Set) : (X ×ˢ Y) ×
   рассуждения, и они смогут быть определены только неконструктивно, но был бы рад
   контрпримерам.
 -/
-noncomputable abbrev SetTheory.Set.singleton_iProd_equiv (i : Object) (X : Set) : 
+noncomputable abbrev SetTheory.Set.singleton_iProd_equiv (i : Object) (X : Set) :
     iProd (fun _ : ({i} : Set) ↦ X) ≃ X where
   toFun := sorry
   invFun := sorry
@@ -226,7 +226,7 @@ abbrev SetTheory.Set.empty_iProd_equiv (X : (∅ : Set) → Set) : iProd X ≃ U
   right_inv := sorry
 
 /-- Пример 3.5.10 (c) -/
-noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I : Set) (X : Set) : 
+noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I : Set) (X : Set) :
     iProd (fun _ : I ↦ X) ≃ (I → X) where
   toFun := sorry
   invFun := sorry
@@ -234,7 +234,7 @@ noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I : Set) (X : Set) :
   right_inv := sorry
 
 /-- Пример 3.5.10 (d) -/
-noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X : ({0,1} : Set) → Set) : 
+noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X : ({0,1} : Set) → Set) :
     iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) where
   toFun := sorry
   invFun := sorry
@@ -242,7 +242,7 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X : ({0,1} : Set) → Set) 
   right_inv := sorry
 
 /-- Пример 3.5.10 (e) -/
-noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X : ({0,1,2} : Set) → Set) : 
+noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X : ({0,1,2} : Set) → Set) :
     iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) ×ˢ (X ⟨ 2, by simp ⟩) where
   toFun := sorry
   invFun := sorry
@@ -250,7 +250,7 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X : ({0,1,2} : Set) 
   right_inv := sorry
 
 /-- Связи с {name}`Set.pi` из Mathlib -/
-noncomputable abbrev SetTheory.Set.iProd_equiv_pi (I : Set) (X : I → Set) : 
+noncomputable abbrev SetTheory.Set.iProd_equiv_pi (I : Set) (X : I → Set) :
     iProd X ≃ Set.pi .univ (fun i : I ↦ ((X i) : _root_.Set Object)) where
   toFun t := ⟨fun i ↦ ((mem_iProd _).mp t.property).choose i, by simp⟩
   invFun x :=
@@ -401,15 +401,20 @@ structure SetTheory.Set.Tuple (n : ℕ) where
 @[ext]
 lemma SetTheory.Set.Tuple.ext {n : ℕ} {t t' : Tuple n}
     (hX : t.X = t'.X)
-    (hx : ∀ n : Fin n, ((t.x n) : Object) = ((t'.x n) : Object)) : 
+    (hx : ∀ n : Fin n, ((t.x n) : Object) = ((t'.x n) : Object)) :
     t = t' := by
-  have ⟨_, _, _⟩ := t; have ⟨_, _, _⟩ := t'; subst hX; congr; ext; grind
+  have ⟨_, _, _⟩ := t
+  have ⟨_, _, _⟩ := t'
+  subst hX
+  congr
+  ext
+  grind
 
 /-- Упражнение 3.5.2 -/
-theorem SetTheory.Set.Tuple.eq {n : ℕ} (t t' : Tuple n) : 
+theorem SetTheory.Set.Tuple.eq {n : ℕ} (t t' : Tuple n) :
     t = t' ↔ ∀ n : Fin n, ((t.x n) : Object) = ((t'.x n) : Object) := by sorry
 
-noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n : ℕ) (X : Fin n → Set) : 
+noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n : ℕ) (X : Fin n → Set) :
     iProd X ≃ { t : Tuple n // ∀ i, (t.x i : Object) ∈ X i } where
   toFun := sorry
   invFun := sorry
@@ -417,9 +422,11 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n : ℕ) (X : Fin n → S
   right_inv := sorry
 
 /--
-  Упражнение 3.5.3. Суть здесь в том, чтобы избегать прямых переписываний (которые делают все эти
-  утверждения тривиальными), а вместо этого использовать {name}`OrderedPair.eq` или
-  {name}`SetTheory.Set.tuple_inj`
+  Упражнение 3.5.3.
+
+  Суть здесь в том, чтобы избегать прямых переписываний
+  (которые делают все эти утверждения тривиальными),
+  а вместо этого использовать {name}`OrderedPair.eq` или {name}`SetTheory.Set.tuple_inj`
 -/
 theorem OrderedPair.refl (p : OrderedPair) : p = p := by sorry
 
@@ -461,17 +468,17 @@ theorem SetTheory.Set.inter_prod (A B C : Set) : (A ∩ B) ×ˢ C = (A ×ˢ C) �
 theorem SetTheory.Set.diff_prod (A B C : Set) : (A \ B) ×ˢ C = (A ×ˢ C) \ (B ×ˢ C) := by sorry
 
 /-- Упражнение 3.5.5 (a) -/
-theorem SetTheory.Set.inter_of_prod (A B C D : Set) : 
+theorem SetTheory.Set.inter_of_prod (A B C D : Set) :
     (A ×ˢ B) ∩ (C ×ˢ D) = (A ∩ C) ×ˢ (B ∩ D) := by sorry
 
 /-- Упражнение 3.5.5 (b) -/
-def SetTheory.Set.union_of_prod : 
+def SetTheory.Set.union_of_prod :
   Decidable (∀ (A B C D : Set), (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D)) := by
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /-- Упражнение 3.5.5 (c) -/
-def SetTheory.Set.diff_of_prod : 
+def SetTheory.Set.diff_of_prod :
   Decidable (∀ (A B C D : Set), (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D)) := by
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
@@ -480,32 +487,32 @@ def SetTheory.Set.diff_of_prod :
   Упражнение 3.5.6.
 -/
 theorem SetTheory.Set.prod_subset_prod {A B C D : Set}
-  (hA : A ≠ ∅) (hB : B ≠ ∅) (hC : C ≠ ∅) (hD : D ≠ ∅) : 
+  (hA : A ≠ ∅) (hB : B ≠ ∅) (hC : C ≠ ∅) (hD : D ≠ ∅) :
     A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D := by sorry
 
-def SetTheory.Set.prod_subset_prod' : 
+def SetTheory.Set.prod_subset_prod' :
   Decidable (∀ (A B C D : Set), A ×ˢ B ⊆ C ×ˢ D ↔ A ⊆ C ∧ B ⊆ D) := by
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /-- Упражнение 3.5.7 -/
-theorem SetTheory.Set.direct_sum {X Y Z : Set} (f : Z → X) (g : Z → Y) : 
+theorem SetTheory.Set.direct_sum {X Y Z : Set} (f : Z → X) (g : Z → Y) :
     ∃! h : Z → X ×ˢ Y, fst ∘ h = f ∧ snd ∘ h = g := by sorry
 
 /-- Упражнение 3.5.8 -/
 @[simp]
-theorem SetTheory.Set.iProd_empty_iff {n : ℕ} {X : Fin n → Set} : 
+theorem SetTheory.Set.iProd_empty_iff {n : ℕ} {X : Fin n → Set} :
     iProd X = ∅ ↔ ∃ i, X i = ∅ := by sorry
 
 /-- Упражнение 3.5.9 -/
-theorem SetTheory.Set.iUnion_inter_iUnion {I J : Set} (A : I → Set) (B : J → Set) : 
+theorem SetTheory.Set.iUnion_inter_iUnion {I J : Set} (A : I → Set) (B : J → Set) :
     (iUnion I A) ∩ (iUnion J B) = iUnion (I ×ˢ J) (fun p ↦ (A (fst p)) ∩ (B (snd p))) := by sorry
 
 abbrev SetTheory.Set.graph {X Y : Set} (f : X → Y) : Set :=
   (X ×ˢ Y).specify (fun p ↦ (f (fst p) = snd p))
 
 /-- Упражнение 3.5.10 -/
-theorem SetTheory.Set.graph_inj {X Y : Set} (f f' : X → Y) : 
+theorem SetTheory.Set.graph_inj {X Y : Set} (f f' : X → Y) :
     graph f = graph f' ↔ f = f' := by sorry
 
 /-- Множество `G ⊆ X ×ˢ Y`, для каждого `x` содержащее ровно одну пару `⟨x, y⟩`, — это в точности
@@ -518,17 +525,17 @@ theorem SetTheory.Set.is_graph {X Y G : Set} (hG : G ⊆ X ×ˢ Y)
   Упражнение 3.5.11. Это тривиально следует из {name}`SetTheory.Set.powerset_axiom`, но суть
   упражнения в том, чтобы вывести это вместо этого из {name}`SetTheory.Set.exists_powerset`.
 -/
-theorem SetTheory.Set.powerset_axiom' (X Y : Set) : 
+theorem SetTheory.Set.powerset_axiom' (X Y : Set) :
     ∃! S : Set, ∀(F : Object), F ∈ S ↔ ∃ f : Y → X, f = F := sorry
 
 /-- Упражнение 3.5.12, с учётом опечаток с сайта -/
-theorem SetTheory.Set.recursion (X : Set) (f : nat → X → X) (c : X) : 
+theorem SetTheory.Set.recursion (X : Set) (f : nat → X → X) (c : X) :
     ∃! a : nat → X, a 0 = c ∧ ∀ n, a (n + 1 : ℕ) = f n (a n) := by sorry
 
 /-- Упражнение 3.5.13 -/
 theorem SetTheory.Set.nat_unique (nat' : Set) (zero : nat') (succ : nat' → nat')
   (succ_ne : ∀ n : nat', succ n ≠ zero) (succ_of_ne : ∀ n m : nat', n ≠ m → succ n ≠ succ m)
-  (ind : ∀ P : nat' → Prop, P zero → (∀ n, P n → P (succ n)) → ∀ n, P n) : 
+  (ind : ∀ P : nat' → Prop, P zero → (∀ n, P n → P (succ n)) → ∀ n, P n) :
     ∃! f : nat → nat', Function.Bijective f ∧ f 0 = zero
     ∧ ∀ (n : nat) (n' : nat'), f n = n' ↔ f (n+1 : ℕ) = succ n' := by
   have nat_coe_eq {m : nat} {n} : (m : ℕ) = n → m = n := by aesop
