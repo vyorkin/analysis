@@ -72,7 +72,7 @@ theorem AtMostCountable.equiv {X Y : Type} (hXY : EqualCard X Y) :
   AtMostCountable X ↔ AtMostCountable Y := by
   simp [AtMostCountable, CountablyInfinite.equiv hXY, Finite.equiv hXY]
 
-/-- Эквивалентность с понятием {name}`Denumerable` из Mathlib (ср. Remark 8.1.2) -/
+/-- Эквивалентность с понятием {name}`Denumerable` из Mathlib (ср. Замечание 8.1.2) -/
 theorem CountablyInfinite.iff (X : Type) : CountablyInfinite X ↔ Nonempty (Denumerable X) := by
   simp [CountablyInfinite, EqualCard.iff]; constructor
   . intro ⟨ e ⟩; exact ⟨ Denumerable.mk' e ⟩
@@ -113,7 +113,7 @@ theorem CountablyInfinite.iff_image_inj {A : Type} (X : Set A) : CountablyInfini
   . rintro ⟨ x, hx ⟩ ⟨ y, hy ⟩ h; grind
   intro n; use ⟨ f n, by aesop ⟩; grind
 
-/-- Examples 8.1.3 -/
+/-- Примеры 8.1.3 -/
 example : CountablyInfinite ℕ := by sorry
 
 example : CountablyInfinite (.univ \ {0} : Set ℕ) := by sorry
@@ -121,7 +121,7 @@ example : CountablyInfinite (.univ \ {0} : Set ℕ) := by sorry
 example : CountablyInfinite ((fun n : ℕ ↦ 2*n) '' .univ) := by sorry
 
 
-/-- Proposition 8.1.4 (принцип полной упорядоченности) / Exercise 8.1.2 -/
+/-- Утверждение 8.1.4 (принцип полной упорядоченности) / Упражнение 8.1.2 -/
 theorem Nat.exists_unique_min {X : Set ℕ} (hX : X.Nonempty) :
   ∃! m ∈ X, ∀ n ∈ X, m ≤ n := by
   sorry
@@ -161,7 +161,7 @@ open Classical in
 theorem Nat.min_eq_find {X : Set ℕ} (hX : X.Nonempty) : min X = Nat.find hX := by
   symm; rw [Nat.find_eq_iff]; have := min_spec hX; grind
 
-/-- Proposition 8.1.5 -/
+/-- Утверждение 8.1.5 -/
 theorem Nat.monotone_enum_of_infinite (X : Set ℕ) [Infinite X] : ∃! f : ℕ → X, Function.Bijective f ∧ StrictMono f := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let a : ℕ → ℕ := Nat.strongRec (fun n a ↦ min { x ∈ X | ∀ (m : ℕ) (h : m < n), x ≠ a m h })
@@ -205,13 +205,13 @@ theorem Nat.countable_of_infinite (X : Set ℕ) [Infinite X] : CountablyInfinite
   have := (monotone_enum_of_infinite X).exists
   exact EqualCard.symm ⟨ this.choose, this.choose_spec.1 ⟩
 
-/-- Corollary 8.1.6 -/
+/-- Следствие 8.1.6 -/
 theorem Nat.atMostCountable_subset (X : Set ℕ) : AtMostCountable X := by
   obtain _ | _ := finite_or_infinite X
   . tauto
   simp [AtMostCountable, countable_of_infinite]
 
-/-- Corollary 8.1.7 -/
+/-- Следствие 8.1.7 -/
 theorem AtMostCountable.subset {X : Type} (hX : AtMostCountable X) (Y : Set X) : AtMostCountable Y := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   obtain ⟨ f, hf ⟩ | hX := hX
@@ -227,20 +227,20 @@ theorem AtMostCountable.subset' {A : Type} {X Y : Set A} (hX : AtMostCountable X
   . intro ⟨ ⟨ _, _ ⟩, _ ⟩ ⟨ ⟨ _, _ ⟩, _ ⟩ _; simp_all
   intro ⟨ y, hy ⟩; use ⟨ ⟨ y, hY hy ⟩, by aesop ⟩
 
-/-- Proposition 8.1.8 / Exercise 8.1.4 -/
+/-- Утверждение 8.1.8 / Упражнение 8.1.4 -/
 theorem AtMostCountable.image_nat (Y : Type) (f : ℕ → Y) : AtMostCountable (f '' .univ) := by
   sorry
 
-/-- Corollary 8.1.9 / Exercise 8.1.5 -/
+/-- Следствие 8.1.9 / Упражнение 8.1.5 -/
 theorem AtMostCountable.image {X : Type} (hX : CountablyInfinite X) {Y : Type} (f : X → Y) : AtMostCountable (f '' .univ) := by
   sorry
 
-/-- Proposition 8.1.10 / Exercise 8.1.7 -/
+/-- Утверждение 8.1.10 / Упражнение 8.1.7 -/
 theorem CountablyInfinite.union {A : Type} {X Y : Set A} (hX : CountablyInfinite X) (hY : CountablyInfinite Y) : 
   CountablyInfinite (X ∪ Y : Set A) := by
   sorry
 
-/-- Corollary 8.1.11 -/
+/-- Следствие 8.1.11 -/
 theorem Int.countablyInfinite : CountablyInfinite ℤ := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have h1 : CountablyInfinite {n : ℤ | n ≥ 0} := by
@@ -257,7 +257,7 @@ theorem Int.countablyInfinite : CountablyInfinite ℤ := by
     convert h1.union h2; ext; simp; omega
   rwa [←CountablyInfinite.equiv (.univ _)]
 
-/-- Lemma 8.1.12 -/
+/-- Лемма 8.1.12 -/
 theorem CountablyInfinite.lower_diag : CountablyInfinite { n : ℕ × ℕ | n.2 ≤ n.1 } := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let A := { n : ℕ × ℕ | n.2 ≤ n.1 }
@@ -293,7 +293,7 @@ theorem CountablyInfinite.lower_diag : CountablyInfinite { n : ℕ × ℕ | n.2 
     sorry
   simp [AtMostCountable] at this; tauto
 
-/-- Corollary 8.1.13 -/
+/-- Следствие 8.1.13 -/
 theorem CountablyInfinite.prod_nat : CountablyInfinite (ℕ × ℕ) := by
   have upper_diag : CountablyInfinite { n : ℕ × ℕ | n.1 ≤ n.2 } := by
     refine (equiv ⟨ fun ⟨ (n, m), _ ⟩ ↦ ⟨ (m, n), by aesop ⟩, ?_, ?_ ⟩).mp lower_diag
@@ -303,12 +303,12 @@ theorem CountablyInfinite.prod_nat : CountablyInfinite (ℕ × ℕ) := by
     convert union lower_diag upper_diag; ext ⟨ n, m ⟩; simp; omega
   exact (equiv (.univ _)).mp this
 
-/-- Corollary 8.1.14 / Exercise 8.1.8 -/
+/-- Следствие 8.1.14 / Упражнение 8.1.8 -/
 theorem CountablyInfinite.prod {X Y : Type} (hX : CountablyInfinite X) (hY : CountablyInfinite Y) : 
   CountablyInfinite (X × Y) := by
   sorry
 
-/-- Corollary 8.1.15 -/
+/-- Следствие 8.1.15 -/
 theorem Rat.countablyInfinite : CountablyInfinite ℚ := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   have : CountablyInfinite { n : ℤ | n ≠ 0 } := by
@@ -325,19 +325,19 @@ theorem Rat.countablyInfinite : CountablyInfinite ℚ := by
     rw [Set.finite_coe_iff, Set.finite_univ_iff] at h2'
     exact absurd h2' (not_finite_iff_infinite.mpr inferInstance)
 
-/-- Exercise 8.1.1 -/
+/-- Упражнение 8.1.1 -/
 example (X : Type) : Infinite X ↔ ∃ Y : Set X, Y ≠ .univ ∧ EqualCard Y X := by
   sorry
 
-/-- Exercise 8.1.6 -/
+/-- Упражнение 8.1.6 -/
 example (A : Type) : AtMostCountable A ↔ ∃ f : A → ℕ, Function.Injective f := by
   sorry
 
-/-- Exercise 8.1.9 -/
+/-- Упражнение 8.1.9 -/
 example {I X : Type} (hI : AtMostCountable I) (A : I → Set X) (hA : ∀ i, AtMostCountable (A i)) : 
   AtMostCountable (⋃ i, A i) := by sorry
 
-/-- Exercise 8.1.10. Обратите внимание на отсутствие ключевого слова `noncomputable` перед {lit}`abbrev`. -/
+/-- Упражнение 8.1.10. Обратите внимание на отсутствие ключевого слова `noncomputable` перед {lit}`abbrev`. -/
 abbrev explicit_bijection : ℕ → ℚ := sorry
 
 /-- Явно построенное отображение `explicit_bijection` действительно является биекцией `ℕ → ℚ`. -/

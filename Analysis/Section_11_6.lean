@@ -19,7 +19,7 @@ namespace Chapter11
 open Chapter9 BoundedInterval
 
 set_option maxHeartbeats 300000 in
-/-- Proposition 11.6.1 (i) -/
+/-- Утверждение 11.6.1 (i) -/
 theorem integ_of_monotone {a b : ℝ} {f : ℝ → ℝ} (hf : MonotoneOn f (Icc a b)) : 
   IntegrableOn f (Icc a b) := by
   -- Это доказательство адаптировано из структуры оригинального текста.
@@ -129,35 +129,35 @@ theorem integ_of_monotone {a b : ℝ} {f : ℝ → ℝ} (hf : MonotoneOn f (Icc 
   linarith [nonneg_of_le_const_mul_eps this]
 
 
-/-- Proposition 11.6.1 (ii) -/
+/-- Утверждение 11.6.1 (ii) -/
 theorem integ_of_antitone {a b : ℝ} {f : ℝ → ℝ} (hf : AntitoneOn f (Icc a b)) : 
   IntegrableOn f (Icc a b) := by
   rw [←neg_neg f]; apply (integ_of_monotone _).neg.1; convert hf.neg using 1
 
-/-- Corollary 11.6.3 (i) / Exercise 11.6.1 -/
+/-- Следствие 11.6.3 (i) / Упражнение 11.6.1 -/
 theorem integ_of_bdd_monotone {I : BoundedInterval} {f : ℝ → ℝ} (hbound : BddOn f I)
   (hf : MonotoneOn f I) : IntegrableOn f I := by
   sorry
 
-/-- Corollary 11.6.3 (ii) / Exercise 11.6.1 -/
+/-- Следствие 11.6.3 (ii) / Упражнение 11.6.1 -/
 theorem integ_of_bdd_antitone {I : BoundedInterval} {f : ℝ → ℝ} (hbound : BddOn f I)
   (hf : AntitoneOn f I) : IntegrableOn f I := by
   sorry
 
-/-- Proposition 11.6.4 (интегральный признак) -/
+/-- Утверждение 11.6.4 (интегральный признак) -/
 theorem summable_iff_integ_of_antitone {f : ℝ → ℝ} (hnon : ∀ x ≥ 0, f x ≥ 0)
   (hf : AntitoneOn f (.Ici 0)) : 
   Summable (fun n : ℕ ↦ f n) ↔ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
   sorry
 
--- Exercise 11.6.2: сформулируйте разумное понятие кусочно-монотонной функции, а затем
+-- Упражнение 11.6.2: сформулируйте разумное понятие кусочно-монотонной функции, а затем
 -- покажите, что все ограниченные кусочно-монотонные функции интегрируемы по Риману.
 
-/-- Exercise 11.6.4 (a) -/
+/-- Упражнение 11.6.4 (a) -/
 example : ∃ (f : ℝ → ℝ), (∀ x ≥ 0, f x ≥ 0) ∧ Summable (fun n : ℕ ↦ f n) ∧ ¬ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
   sorry
 
-/-- Exercise 11.6.4 (b) -/
+/-- Упражнение 11.6.4 (b) -/
 example : ∃ (f : ℝ → ℝ), (∀ x ≥ 0, f x ≥ 0) ∧ ¬ Summable (fun n : ℕ ↦ f n) ∧ ∃ M, ∀ N ≥ 0, integ f (Icc 0 N) ≤ M := by
   sorry
 

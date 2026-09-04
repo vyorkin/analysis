@@ -11,7 +11,7 @@ import Mathlib.Topology.Instances.Irrational
 
 open BoundedInterval
 
-/-- Exercise 1.2.1 (счётное объединение) -/
+/-- Упражнение 1.2.1 (счётное объединение) -/
 lemma exercise_1_2_1_union :
     ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n))) ∧
@@ -411,7 +411,7 @@ lemma exercise_1_2_1_union :
     rw [h_Q_inner, h_Q_outer] at h_eq
     exact absurd h_eq (by norm_num)
 
-/-- Exercise 1.2.1 (счётное объединение) -/
+/-- Упражнение 1.2.1 (счётное объединение) -/
 example :
     ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n)))
@@ -419,7 +419,7 @@ example :
   obtain ⟨E, hB, hJM, -, h_union⟩ := exercise_1_2_1_union
   exact ⟨E, hB, hJM, h_union⟩
 
-/-- Exercise 1.2.1 (счётное пересечение) -/
+/-- Упражнение 1.2.1 (счётное пересечение) -/
 example : 
     ∃ E : ℕ → Set ℝ, (∀ n, Bornology.IsBounded (E n)) ∧
       (∀ n, JordanMeasurable (Real.equiv_EuclideanSpace' '' (E n))) ∧
@@ -573,7 +573,7 @@ example :
 
 
 
-/-- Exercise 1.2.2 -/
+/-- Упражнение 1.2.2 -/
 -- The pointwise limit of uniformly bounded Riemann integrable functions need not be Riemann integrable.
 example : ∃ f: ℕ → ℝ → ℝ, ∃ F: ℝ → ℝ,
     (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) ∧
@@ -582,7 +582,7 @@ example : ∃ f: ℕ → ℝ → ℝ, ∃ F: ℝ → ℝ,
     ¬ RiemannIntegrableOn F (Icc 0 1) := by
   sorry
 
-/-- Exercise 1.2.2' -/
+/-- Упражнение 1.2.2' -/
 -- Determine whether uniform convergence of uniformly bounded Riemann integrable functions preserves Riemann integrability (true or false).
 def Ex_1_2_2b : Decidable ( ∀ f: ℕ → ℝ → ℝ, ∀ F: ℝ → ℝ,
     (∃ M, ∀ n, ∀ x ∈ Set.Icc 0 1, |f n x| ≤ M) →

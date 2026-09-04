@@ -11,7 +11,7 @@ import Analysis.MeasureTheory.Section_1_3_3
 -- `RCLike` из Mathlib, но мы выберем более простой подход, дублируя определения для вещественного
 -- и комплексного случаев.
 
-/-- Definition 1.3.17 -/
+/-- Определение 1.3.17 -/
 
 def UnsignedAbsolutelyIntegrable {d : ℕ} (f : EuclideanSpace' d → EReal) : Prop := UnsignedMeasurable f ∧ UnsignedLebesgueIntegral f < ⊤
 
@@ -1007,7 +1007,7 @@ theorem L1.dist_eq_zero {d : ℕ} (f g : EuclideanSpace' d → ℂ) (hf : Comple
       exact sub_eq_zero.mp (norm_eq_zero.mp h_norm_zero)
   rw [h_sets_eq]
 
-/-- Exercise 1.3.19 (интегрирование линейно) -/
+/-- Упражнение 1.3.19 (интегрирование линейно) -/
 noncomputable def L1.integ {d : ℕ} : L1 d →ₗ[ℂ] ℂ := {
   toFun := Quotient.lift (fun F ↦ F.integrable.integ) (by sorry)
   map_smul' := by sorry
@@ -1019,7 +1019,7 @@ noncomputable def L1.conj {d : ℕ} : L1 d → L1 d := Quotient.lift (fun F ↦ 
 -- Интеграл от комплексно сопряжённой функции равен сопряжённому значению интеграла
 theorem L1.integ_conj {d : ℕ} (F : L1 d) : L1.integ (L1.conj F) = starRingEnd ℂ (L1.integ F) := by sorry
 
-/-- Exercise 1.3.20(i) (инвариантность относительно сдвига). -/
+/-- Упражнение 1.3.20(i) (инвариантность относительно сдвига). -/
 theorem RealAbsolutelyIntegrable.trans {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) (a : EuclideanSpace' d) : RealAbsolutelyIntegrable (fun x ↦ f (x + a)) := by sorry
 
 -- Значение интеграла инвариантно относительно сдвига области интегрирования (вещественный случай)
@@ -1031,7 +1031,7 @@ theorem ComplexAbsolutelyIntegrable.trans {d : ℕ} {f : EuclideanSpace' d → �
 -- Значение интеграла инвариантно относительно сдвига области интегрирования (комплексный случай)
 theorem ComplexAbsolutelyIntegrable.integ_trans {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) (a : EuclideanSpace' d) : (hf.trans a).integ = hf.integ  := by sorry
 
-/-- Exercise 1.3.20(ii) (линейная замена переменных). -/
+/-- Упражнение 1.3.20(ii) (линейная замена переменных). -/
 theorem RealAbsolutelyIntegrable.comp_linear {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) : 
     RealAbsolutelyIntegrable (fun x ↦ f (A x)) := by sorry
 
@@ -1047,14 +1047,14 @@ theorem ComplexAbsolutelyIntegrable.comp_linear {d : ℕ} {f : EuclideanSpace' d
 theorem ComplexAbsolutelyIntegrable.integ_comp_linear {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f) {A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d} (hA : A.det ≠ 0) :
     (hf.comp_linear hA).integ = |A.det|⁻¹ * hf.integ := by sorry
 
-/-- Exercise 1.3.20(iii) (согласованность с интегралом Римана). -/
+/-- Упражнение 1.3.20(iii) (согласованность с интегралом Римана). -/
 theorem RiemannIntegrableOn.realAbsolutelyIntegrable {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) : RealAbsolutelyIntegrable ((fun x ↦ (f x) * (I.toSet.indicator' x)) ∘ EuclideanSpace'.equiv_Real) := by sorry
 
 -- Значение интеграла Римана совпадает со значением интеграла Лебега от того же продолжения `f`, отождествляемого по `RiemannIntegrableOn.realAbsolutelyIntegrable`
 theorem RiemannIntegral.eq_integ {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) :
     riemannIntegral f I  = hf.realAbsolutelyIntegrable.integ := by sorry
 
-/-- Exercise 1.3.21 (абсолютная суммируемость — частный случай абсолютной интегрируемости) -/
+/-- Упражнение 1.3.21 (абсолютная суммируемость — частный случай абсолютной интегрируемости) -/
 theorem AbsolutelySummable.realAbsolutelyIntegrable_iff {a : ℤ → ℝ} : ∑' n, |a n|.toEReal < ⊤ ↔ RealAbsolutelyIntegrable (fun x ↦ a ⌊EuclideanSpace'.equiv_Real x⌋) := by sorry
 
 -- Абсолютная суммируемость эквивалентна абсолютной интегрируемости кусочно-постоянного продолжения (комплексный случай)
@@ -1065,7 +1065,7 @@ def ComplexAbsolutelyIntegrableOn {d : ℕ} (f : EuclideanSpace' d → ℂ) (E :
 noncomputable def ComplexAbsolutelyIntegrableOn.integ {d : ℕ} {f : EuclideanSpace' d → ℂ} {E : Set (EuclideanSpace' d)} (hf : ComplexAbsolutelyIntegrableOn f E) : ℂ :=
   ComplexAbsolutelyIntegrable.integ hf
 
-/-- Exercise 1.3.22 -/
+/-- Упражнение 1.3.22 -/
 theorem ComplexAbsolutelyIntegrableOn.glue {d : ℕ} {f : EuclideanSpace' d → ℂ} {E F : Set (EuclideanSpace' d)}
     (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) (hdisj : Disjoint E F)
     (hf : ComplexAbsolutelyIntegrableOn f (E ∪ F)) : 
@@ -1078,7 +1078,7 @@ def ComplexAbsolutelyIntegrableOn.mono {d : ℕ} {f : EuclideanSpace' d → ℂ}
 -- Интеграл `f` по подмножеству `F ⊆ E` совпадает с интегралом `f`, обнулённой вне `F`, по всему `E`
 theorem ComplexAbsolutelyIntegrableOn.integ_restrict {d : ℕ} {f : EuclideanSpace' d → ℂ} {E F : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) (hsub : F ⊆ E) (hf : ComplexAbsolutelyIntegrableOn f E) : (hf.mono hE hF hsub).integ = (hf.restrict hF).integ:= by sorry
 
-/-- Lemma 1.3.19 (неравенство треугольника) -/
+/-- Лемма 1.3.19 (неравенство треугольника) -/
 
 -- Вспомогательная лемма: |∫f| ≤ ∫|f| для вещественных абсолютно интегрируемых функций
 lemma RealAbsolutelyIntegrable.abs_integ_le {d : ℕ} {f : EuclideanSpace' d → ℝ}

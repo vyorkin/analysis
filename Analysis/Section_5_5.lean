@@ -25,7 +25,7 @@ import Analysis.Section_5_4
 
 namespace Chapter5
 
-/-- Definition 5.5.1 (верхние грани). Здесь мы используем множество {name}`upperBounds`, определённое в Mathlib. -/
+/-- Определение 5.5.1 (верхние грани). Здесь мы используем множество {name}`upperBounds`, определённое в Mathlib. -/
 theorem Real.upperBound_def (E : Set Real) (M : Real) : M ∈ upperBounds E ↔ ∀ x ∈ E, x ≤ M :=
   mem_upperBounds
 
@@ -33,29 +33,29 @@ theorem Real.upperBound_def (E : Set Real) (M : Real) : M ∈ upperBounds E ↔ 
 theorem Real.lowerBound_def (E : Set Real) (M : Real) : M ∈ lowerBounds E ↔ ∀ x ∈ E, x ≥ M :=
   mem_lowerBounds
 
-/-- API для Example 5.5.2 -/
+/-- API для Примера 5.5.2 -/
 theorem Real.Icc_def (x y : Real) : .Icc x y = { z | x ≤ z ∧ z ≤ y } := rfl
 
-/-- API для Example 5.5.2 -/
+/-- API для Примера 5.5.2 -/
 theorem Real.mem_Icc (x y z : Real) : z ∈ Set.Icc x y ↔ x ≤ z ∧ z ≤ y := by simp [Real.Icc_def]
 
-/-- Example 5.5.2 -/
+/-- Пример 5.5.2 -/
 example (M : Real) : M ∈ upperBounds (.Icc 0 1) ↔ M ≥ 1 := by sorry
 
-/-- API для Example 5.5.3 -/
+/-- API для Примера 5.5.3 -/
 theorem Real.Ioi_def (x : Real) : .Ioi x = { z | z > x } := rfl
 
-/-- Example 5.5.3 -/
+/-- Пример 5.5.3 -/
 example : ¬ ∃ M : Real, M ∈ upperBounds (.Ioi 0) := by sorry
 
-/-- Example 5.5.4 -/
+/-- Пример 5.5.4 -/
 example : ∀ M, M ∈ upperBounds (∅ : Set Real) := by sorry
 
 -- любая величина `M' ≥ M`, где `M` — верхняя грань `E`, тоже является верхней гранью `E`
 theorem Real.upperBound_upper {M M' : Real} (h : M ≤ M') {E : Set Real} (hb : M ∈ upperBounds E) :
     M' ∈ upperBounds E := by sorry
 
-/-- Definition 5.5.5 (точная верхняя грань). Здесь мы используем предикат {name}`IsLUB`, определённый в Mathlib. -/
+/-- Определение 5.5.5 (точная верхняя грань). Здесь мы используем предикат {name}`IsLUB`, определённый в Mathlib. -/
 theorem Real.isLUB_def (E : Set Real) (M : Real) : 
     IsLUB E M ↔ M ∈ upperBounds E ∧ ∀ M' ∈ upperBounds E, M' ≥ M := by rfl
 
@@ -63,13 +63,13 @@ theorem Real.isLUB_def (E : Set Real) (M : Real) :
 theorem Real.isGLB_def (E : Set Real) (M : Real) :
     IsGLB E M ↔ M ∈ lowerBounds E ∧ ∀ M' ∈ lowerBounds E, M' ≤ M := by rfl
 
-/-- Example 5.5.6 -/
+/-- Пример 5.5.6 -/
 example : IsLUB (.Icc 0 1) (1 : Real) := by sorry
 
-/-- Example 5.5.7 -/
+/-- Пример 5.5.7 -/
 example : ¬∃ M, IsLUB (∅ : Set Real) M := by sorry
 
-/-- Proposition 5.5.8 (единственность точной верхней грани). -/
+/-- Утверждение 5.5.8 (единственность точной верхней грани). -/
 theorem Real.LUB_unique {E : Set Real} {M M' : Real} (h1 : IsLUB E M) (h2 : IsLUB E M') : M = M' := by
   grind [Real.isLUB_def]
 
@@ -79,7 +79,7 @@ theorem Real.bddAbove_def (E : Set Real) : BddAbove E ↔ ∃ M, M ∈ upperBoun
 -- множество `E` ограничено снизу, если у него есть нижняя грань
 theorem Real.bddBelow_def (E : Set Real) : BddBelow E ↔ ∃ M, M ∈ lowerBounds E := Set.nonempty_def
 
-/-- Exercise 5.5.2 -/
+/-- Упражнение 5.5.2 -/
 theorem Real.upperBound_between {E : Set Real} {n : ℕ} {L K : ℤ} (hLK : L < K)
   (hK : K*((1/(n+1) : ℚ) : Real) ∈ upperBounds E) (hL : L*((1/(n+1) : ℚ) : Real) ∉ upperBounds E) : 
     ∃ m, L < m
@@ -87,7 +87,7 @@ theorem Real.upperBound_between {E : Set Real} {n : ℕ} {L K : ℤ} (hLK : L < 
     ∧ m*((1/(n+1) : ℚ) : Real) ∈ upperBounds E
     ∧ (m-1)*((1/(n+1) : ℚ) : Real) ∉ upperBounds E := by sorry
 
-/-- Exercise 5.5.3 -/
+/-- Упражнение 5.5.3 -/
 theorem Real.upperBound_discrete_unique {E : Set Real} {n : ℕ} {m m' : ℤ}
   (hm1 : (((m : ℚ) / (n+1) : ℚ) : Real) ∈ upperBounds E)
   (hm2 : (((m : ℚ) / (n+1) - 1 / (n+1) : ℚ) : Real) ∉ upperBounds E)
@@ -114,7 +114,7 @@ theorem Real.LIM_abs {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : |LIM a| 
 theorem Real.LIM_of_le' {x : Real} {a : ℕ → ℚ} (hcauchy : (a : Sequence).IsCauchy)
     (h : ∃ N, ∀ n ≥ N, a n ≤ x) : LIM a ≤ x := by sorry
 
-/-- Exercise 5.5.4 -/
+/-- Упражнение 5.5.4 -/
 theorem Real.LIM_of_Cauchy {q : ℕ → ℚ} (hq : ∀ M, ∀ n ≥ M, ∀ n' ≥ M, |q n - q n'| ≤ 1 / (M+1)) : 
     (q : Sequence).IsCauchy ∧ ∀ M, |q M - LIM q| ≤ 1 / (M+1) := by sorry
 
@@ -171,7 +171,7 @@ lemma Real.LUB_claim2 {E : Set Real} (N : ℕ) {a b : ℕ → ℚ}
     have bound3 : 1/((n+1) : ℚ) ≤ 1/(N+1) := by gcongr
     linarith
 
-/-- Theorem 5.5.9 (существование точной верхней грани). -/
+/-- Теорема 5.5.9 (существование точной верхней грани). -/
 theorem Real.LUB_exist {E : Set Real} (hE : Set.Nonempty E) (hbound : BddAbove E) : ∃ S, IsLUB E S := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set x₀ := hE.some
@@ -232,19 +232,19 @@ theorem ExtendedReal.finite_eq_coe {X : ExtendedReal} (hX : X.IsFinite) :
   simp
 
 open Classical in
-/-- Definition 5.5.10 (супремум). -/
+/-- Определение 5.5.10 (супремум). -/
 noncomputable abbrev ExtendedReal.sup (E : Set Real) : ExtendedReal :=
   if h1 : E.Nonempty then (if h2 : BddAbove E then ((Real.LUB_exist h1 h2).choose : Real) else ⊤) else ⊥
 
-/-- Definition 5.5.10 (супремум пустого множества). -/
+/-- Определение 5.5.10 (супремум пустого множества). -/
 theorem ExtendedReal.sup_of_empty : sup ∅ = ⊥ := by simp [sup]
 
-/-- Definition 5.5.10 (супремум неограниченного множества). -/
+/-- Определение 5.5.10 (супремум неограниченного множества). -/
 theorem ExtendedReal.sup_of_unbounded {E : Set Real} (hb : ¬ BddAbove E) : sup E = ⊤ := by
   have hE : E.Nonempty := by contrapose! hb; simp [hb]
   simp [sup, hE, hb]
 
-/-- Definition 5.5.10 (супремум ограниченного множества). -/
+/-- Определение 5.5.10 (супремум ограниченного множества). -/
 theorem ExtendedReal.sup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) : 
     IsLUB E (sup E) := by
   simp [hnon, hb, sup]; exact (Real.LUB_exist hnon hb).choose_spec
@@ -253,7 +253,7 @@ theorem ExtendedReal.sup_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : Bdd
 theorem ExtendedReal.sup_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddAbove E) :
     (sup E).IsFinite := by simp [sup, hnon, hb, IsFinite]
 
-/-- Proposition 5.5.12 -/
+/-- Утверждение 5.5.12 -/
 theorem Real.exist_sqrt_two : ∃ x : Real, x^2 = 2 := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set E := { y : Real | y ≥ 0 ∧ y^2 < 2 }
@@ -309,13 +309,13 @@ theorem Real.exist_sqrt_two : ∃ x : Real, x^2 = 2 := by
     linarith
   assumption
 
-/-- Remark 5.5.13 -/
+/-- Замечание 5.5.13 -/
 theorem Real.exist_irrational : ∃ x : Real, ¬ ∃ q : ℚ, x = (q : Real) := by sorry
 
-/-- Вспомогательная лемма для Exercise 5.5.1. -/
+/-- Вспомогательная лемма для Упражнения 5.5.1. -/
 theorem Real.mem_neg (E : Set Real) (x : Real) : x ∈ -E ↔ -x ∈ E := Set.mem_neg
 
-/-- Exercise 5.5.1 -/
+/-- Упражнение 5.5.1 -/
 theorem Real.inf_neg {E : Set Real} {M : Real} (h : IsLUB E M) : IsGLB (-E) (-M) := by sorry
 
 -- у любого непустого ограниченного снизу множества существует точная нижняя грань
@@ -342,7 +342,7 @@ theorem ExtendedReal.inf_of_bounded {E : Set Real} (hnon : E.Nonempty) (hb : Bdd
 theorem ExtendedReal.inf_of_bounded_finite {E : Set Real} (hnon : E.Nonempty) (hb : BddBelow E) :
     (inf E).IsFinite := by simp [inf, hnon, hb, IsFinite]
 
-/-- Exercise 5.5.5 -/
+/-- Упражнение 5.5.5 -/
 theorem Real.irrat_between {x y : Real} (hxy : x < y) : 
     ∃ z, x < z ∧ z < y ∧ ¬ ∃ q : ℚ, z = (q : Real) := by sorry
 

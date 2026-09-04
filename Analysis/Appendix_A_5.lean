@@ -96,7 +96,7 @@ example : ¬ ∃ m : ℤ, ∀ n : ℤ, m > n := by
   specialize hm (m+1)
   linarith
 
-/-- Exercise A.5.1 -/
+/-- Упражнение A.5.1 -/
 def Exercise_A_5_1a : Decidable (∀ x > (0 : ℝ), ∀ y > (0 : ℝ), y^2 = x ) := by
   -- первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry

@@ -21,7 +21,7 @@ import Analysis.Section_8_2
 
 namespace Chapter8
 
-/-- Theorem 8.3.1 -/
+/-- Теорема 8.3.1 -/
 theorem EqualCard.power_set_false (X : Type) : ¬ EqualCard X (Set X) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra!; choose f hf using this
@@ -42,7 +42,7 @@ theorem Uncountable.equiv {X Y : Type} (hXY : EqualCard X Y) :
   Uncountable X ↔ Uncountable Y := by
     simp [Uncountable.iff, AtMostCountable.equiv hXY]
 
-/-- Corollary 8.3.3 -/
+/-- Следствие 8.3.3 -/
 theorem Uncountable.power_set_nat : Uncountable (Set ℕ) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   rw [Uncountable.iff]
@@ -63,7 +63,7 @@ theorem Uncountable.power_set_nat : Uncountable (Set ℕ) := by
   tauto
 
 open Real in
-/-- Corollary 8.3.4 -/
+/-- Следствие 8.3.4 -/
 theorem Uncountable.real : Uncountable ℝ := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set a : ℕ → ℝ := fun n ↦ (10 : ℝ)^(-(n : ℝ))
@@ -157,12 +157,12 @@ theorem Uncountable.real : Uncountable ℝ := by
   rw [not_uncountable_iff] at this ⊢
   apply SetCoe.countable
 
-/-- Exercise 8.3.1 -/
+/-- Упражнение 8.3.1 -/
 example {X : Type} [Finite X] : Nat.card (Set X) = 2 ^ Nat.card X := by
   sorry
 
 open Classical in
-/-- Exercise 8.3.2. Из-за того, как множества реализованы в Mathlib, встречаются некоторые тонкие смены типа. Также мы сдвигаем последовательность {lit}`D` на единицу, чтобы работать в {lean}`Set A`, а не в {lean}`Set B`. -/
+/-- Упражнение 8.3.2. Из-за того, как множества реализованы в Mathlib, встречаются некоторые тонкие смены типа. Также мы сдвигаем последовательность {lit}`D` на единицу, чтобы работать в {lean}`Set A`, а не в {lean}`Set B`. -/
 theorem Schroder_Bernstein_lemma {X : Type} {A B C : Set X} (hAB : A ⊆ B) (hBC : B ⊆ C) (f : C ↪ A) : 
   let D : ℕ → Set A := Nat.rec ((f.image ∘ ((B.embeddingOfSubset _ hBC).image)) {x : B | ↑x ∉ A}) (fun _ ↦ (f.image ∘ ((B.embeddingOfSubset _ hBC).image) ∘ (A.embeddingOfSubset _ hAB).image))
   Set.univ.PairwiseDisjoint D ∧
@@ -173,13 +173,13 @@ theorem Schroder_Bernstein_lemma {X : Type} {A B C : Set X} (hAB : A ⊆ B) (hBC
 
 abbrev LeCard (X Y : Type) : Prop := ∃ f : X → Y, Function.Injective f
 
-/-- Exercise 8.3.3 -/
+/-- Упражнение 8.3.3 -/
 theorem Schroder_Bernstein {X Y : Type} (hXY : LeCard X Y) (hYX : LeCard Y X) : EqualCard X Y := by
   sorry
 
 abbrev LtCard (X Y : Type) : Prop := LeCard X Y ∧ ¬ EqualCard X Y
 
-/-- Exercise 8.3.4 -/
+/-- Упражнение 8.3.4 -/
 example {X : Type} : LtCard X (Set X) := by sorry
 
 example {A B C : Type} (hAB : LtCard A B) (hBC : LtCard B C) : 
@@ -197,7 +197,7 @@ abbrev CardOrder : Preorder Type := {
     sorry
 }
 
-/-- Exercise 8.3.5 -/
+/-- Упражнение 8.3.5 -/
 example (X : Type) : ¬ CountablyInfinite (Set X) := by
   sorry
 

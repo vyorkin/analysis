@@ -20,13 +20,13 @@ import Analysis.Section_5_epilogue
 -/
 
 
-/- Definition 6.1.1 (расстояние). Здесь мы используем расстояние из Mathlib. -/
+/- Определение 6.1.1 (расстояние). Здесь мы используем расстояние из Mathlib. -/
 #check Real.dist_eq
 
 abbrev Real.Close (ε x y : ℝ) : Prop := dist x y ≤ ε
 
 /--
-  Definition 6.1.2 (ε-близость). Это похоже на предыдущее понятие ε-близости, но здесь все
+  Определение 6.1.2 (ε-близость). Это похоже на предыдущее понятие ε-близости, но здесь все
   величины вещественные, а не рациональные.
 -/
 theorem Real.close_def (ε x y : ℝ) : ε.Close x y ↔ dist x y ≤ ε := by rfl
@@ -34,7 +34,7 @@ theorem Real.close_def (ε x y : ℝ) : ε.Close x y ↔ dist x y ≤ ε := by r
 namespace Chapter6
 
 /--
-  Definition 6.1.3 (последовательность).
+  Определение 6.1.3 (последовательность).
   Это похоже на последовательность из Главы 5, за исключением того,
   что теперь последовательность принимает вещественные значения.
   Как и в Главе 5, по умолчанию последовательности начинаются с 0.
@@ -89,19 +89,19 @@ lemma Sequence.from_eval (a : Sequence) {m₁ n : ℤ} (hn : n ≥ m₁) :
 
 end Chapter6
 
-/-- Definition 6.1.3 (ε-устойчивость) -/
+/-- Определение 6.1.3 (ε-устойчивость) -/
 abbrev Real.Steady (ε : ℝ) (a : Chapter6.Sequence) : Prop :=
   ∀ n ≥ a.m, ∀ m ≥ a.m, ε.Close (a n) (a m)
 
-/-- Definition 6.1.3 (ε-устойчивость, определение) -/
+/-- Определение 6.1.3 (ε-устойчивость, определение) -/
 lemma Real.steady_def (ε : ℝ) (a : Chapter6.Sequence) :
   ε.Steady a ↔ ∀ n ≥ a.m, ∀ m ≥ a.m, ε.Close (a n) (a m) := by rfl
 
-/-- Definition 6.1.3 (в конце концов ε-устойчивость) -/
+/-- Определение 6.1.3 (в конце концов ε-устойчивость) -/
 abbrev Real.EventuallySteady (ε : ℝ) (a : Chapter6.Sequence) : Prop :=
   ∃ N ≥ a.m, ε.Steady (a.from N)
 
-/-- Definition 6.1.3 (в конце концов ε-устойчивость, определение) -/
+/-- Определение 6.1.3 (в конце концов ε-устойчивость, определение) -/
 lemma Real.eventuallySteady_def (ε : ℝ) (a : Chapter6.Sequence) :
   ε.EventuallySteady a ↔ ∃ N, (N ≥ a.m) ∧ ε.Steady (a.from N) := by rfl
 
@@ -116,10 +116,10 @@ theorem Real.EventuallySteady.mono {a : Chapter6.Sequence} {ε₁ ε₂ : ℝ} (
 
 namespace Chapter6
 
-/-- Definition 6.1.3 (последовательность Коши) -/
+/-- Определение 6.1.3 (последовательность Коши) -/
 abbrev Sequence.IsCauchy (a : Sequence) : Prop := ∀ ε > (0 : ℝ), ε.EventuallySteady a
 
-/-- Definition 6.1.3 (последовательность Коши, определение) -/
+/-- Определение 6.1.3 (последовательность Коши, определение) -/
 lemma Sequence.isCauchy_def (a : Sequence) :
   a.IsCauchy ↔ ∀ ε > (0 : ℝ), ε.EventuallySteady a := by rfl
 
@@ -180,7 +180,7 @@ theorem Sequence.is_steady_of_rat (ε : ℚ) (a : Chapter5.Sequence) :
 theorem Sequence.is_eventuallySteady_of_rat (ε : ℚ) (a : Chapter5.Sequence) :
     ε.EventuallySteady a ↔ (ε : ℝ).EventuallySteady (a : Sequence) := by sorry
 
-/-- Proposition 6.1.4 -/
+/-- Утверждение 6.1.4 -/
 theorem Sequence.isCauchy_of_rat (a : Chapter5.Sequence) : a.IsCauchy ↔ (a : Sequence).IsCauchy := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   constructor
@@ -201,18 +201,18 @@ theorem Sequence.isCauchy_of_rat (a : Chapter5.Sequence) : a.IsCauchy ↔ (a : S
 
 end Chapter6
 
-/-- Definition 6.1.5 (CloseSeq) -/
+/-- Определение 6.1.5 (CloseSeq) -/
 abbrev Real.CloseSeq (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) : Prop := ∀ n ≥ a.m, ε.Close (a n) L
 
-/-- Definition 6.1.5 (CloseSeq, определение) -/
+/-- Определение 6.1.5 (CloseSeq, определение) -/
 theorem Real.closeSeq_def (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) :
   ε.CloseSeq a L ↔ ∀ n ≥ a.m, dist (a n) L ≤ ε := by rfl
 
-/-- Definition 6.1.5 (EventuallyClose) -/
+/-- Определение 6.1.5 (EventuallyClose) -/
 abbrev Real.EventuallyClose (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) : Prop :=
   ∃ N ≥ a.m, ε.CloseSeq (a.from N) L
 
-/-- Definition 6.1.5 (EventuallyClose, определение) -/
+/-- Определение 6.1.5 (EventuallyClose, определение) -/
 theorem Real.eventuallyClose_def (ε : ℝ) (a : Chapter6.Sequence) (L : ℝ) :
   ε.EventuallyClose a L ↔ ∃ N, (N ≥ a.m) ∧ ε.CloseSeq (a.from N) L := by rfl
 
@@ -241,13 +241,13 @@ abbrev Sequence.TendsTo (a : Sequence) (L : ℝ) : Prop :=
 theorem Sequence.tendsTo_def (a : Sequence) (L : ℝ) :
   a.TendsTo L ↔ ∀ ε > (0 : ℝ), ε.EventuallyClose a L := by rfl
 
-/-- Exercise 6.1.2 -/
+/-- Упражнение 6.1.2 -/
 theorem Sequence.tendsTo_iff (a : Sequence) (L : ℝ) :
   a.TendsTo L ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, |a n - L| ≤ ε := by sorry
 
 noncomputable def seq_6_1_6 : Sequence := (fun (n : ℕ) ↦ 1-(10 : ℝ)^(-(n : ℤ)-1) : Sequence)
 
-/-- Examples 6.1.6 (0.1-близость) -/
+/-- Примеры 6.1.6 (0.1-близость) -/
 example : (0.1 : ℝ).CloseSeq seq_6_1_6 1 := by
   rw [seq_6_1_6, Real.CloseSeq.coe]
   intro n
@@ -260,17 +260,17 @@ example : (0.1 : ℝ).CloseSeq seq_6_1_6 1 := by
   gcongr <;> grind
 
 
-/-- Examples 6.1.6 (0.01-неблизость) -/
+/-- Примеры 6.1.6 (0.01-неблизость) -/
 example : ¬ (0.01 : ℝ).CloseSeq seq_6_1_6 1 := by
   intro h; specialize h 0 (by positivity); simp [seq_6_1_6] at h; norm_num at h
 
-/-- Examples 6.1.6 (0.01-близость в конце концов) -/
+/-- Примеры 6.1.6 (0.01-близость в конце концов) -/
 example : (0.01 : ℝ).EventuallyClose seq_6_1_6 1 := by sorry
 
-/-- Examples 6.1.6 (стремится к 1) -/
+/-- Примеры 6.1.6 (стремится к 1) -/
 example : seq_6_1_6.TendsTo 1 := by sorry
 
-/-- Proposition 6.1.7 (единственность пределов) -/
+/-- Утверждение 6.1.7 (единственность пределов) -/
 theorem Sequence.tendsTo_unique (a : Sequence) {L L' : ℝ} (h : L ≠ L') :
     ¬ (a.TendsTo L ∧ a.TendsTo L') := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -293,30 +293,30 @@ theorem Sequence.tendsTo_unique (a : Sequence) {L L' : ℝ} (h : L ≠ L') :
     _ = 2 * |L-L'|/3 := by grind
   linarith
 
-/-- Definition 6.1.8 (Convergent) -/
+/-- Определение 6.1.8 (Convergent) -/
 abbrev Sequence.Convergent (a : Sequence) : Prop := ∃ L, a.TendsTo L
 
-/-- Definition 6.1.8 (Convergent, определение) -/
+/-- Определение 6.1.8 (Convergent, определение) -/
 theorem Sequence.convergent_def (a : Sequence) : a.Convergent ↔ ∃ L, a.TendsTo L := by rfl
 
-/-- Definition 6.1.8 (Divergent) -/
+/-- Определение 6.1.8 (Divergent) -/
 abbrev Sequence.Divergent (a : Sequence) : Prop := ¬ a.Convergent
 
-/-- Definition 6.1.8 (Divergent, определение) -/
+/-- Определение 6.1.8 (Divergent, определение) -/
 theorem Sequence.divergent_def (a : Sequence) : a.Divergent ↔ ¬ a.Convergent := by rfl
 
 open Classical in
 /--
-  Definition 6.1.8. Мы придаём пределу последовательности мусорное значение {lean}`0`, если она
+  Определение 6.1.8. Мы придаём пределу последовательности мусорное значение {lean}`0`, если она
   не сходится.
 -/
 noncomputable abbrev lim (a : Sequence) : ℝ := if h : a.Convergent then h.choose else 0
 
-/-- Definition 6.1.8 (lim, определение) -/
+/-- Определение 6.1.8 (lim, определение) -/
 theorem Sequence.lim_def {a : Sequence} (h : a.Convergent) : a.TendsTo (lim a) := by
   simp [lim, h]; exact h.choose_spec
 
-/-- Definition 6.1.8 (lim, характеризация) -/
+/-- Определение 6.1.8 (lim, характеризация) -/
 theorem Sequence.lim_eq {a : Sequence} {L : ℝ} :
 a.TendsTo L ↔ a.Convergent ∧ lim a = L := by
   constructor
@@ -327,7 +327,7 @@ a.TendsTo L ↔ a.Convergent ∧ lim a = L := by
   intro ⟨ h, rfl ⟩; convert lim_def h
 
 
-/-- Proposition 6.1.11 -/
+/-- Утверждение 6.1.11 -/
 theorem Sequence.lim_harmonic :
     ((fun (n : ℕ) ↦ (n+1 : ℝ)⁻¹) : Sequence).Convergent ∧ lim ((fun (n : ℕ) ↦ (n+1 : ℝ)⁻¹) : Sequence) = 0 := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -351,35 +351,35 @@ theorem Sequence.lim_harmonic :
       rw [inv_le_comm₀] <;> try positivity
       rw [←inv_eq_one_div _] at hN; order
 
-/-- Proposition 6.1.12 / Exercise 6.1.5 -/
+/-- Утверждение 6.1.12 / Упражнение 6.1.5 -/
 theorem Sequence.IsCauchy.convergent {a : Sequence} (h : a.Convergent) : a.IsCauchy := by
   sorry
 
-/-- Example 6.1.13 (не устойчива в конце концов) -/
+/-- Пример 6.1.13 (не устойчива в конце концов) -/
 example : ¬ (0.1 : ℝ).EventuallySteady ((fun n ↦ (-1 : ℝ)^n) : Sequence) := by sorry
 
-/-- Example 6.1.13 (не Коши) -/
+/-- Пример 6.1.13 (не Коши) -/
 example : ¬ ((fun n ↦ (-1 : ℝ)^n) : Sequence).IsCauchy := by sorry
 
-/-- Example 6.1.13 (не сходится) -/
+/-- Пример 6.1.13 (не сходится) -/
 example : ¬ ((fun n ↦ (-1 : ℝ)^n) : Sequence).Convergent := by sorry
 
-/-- Proposition 6.1.15 / Exercise 6.1.6 (формальные пределы являются настоящими пределами) -/
+/-- Утверждение 6.1.15 / Упражнение 6.1.6 (формальные пределы являются настоящими пределами) -/
 theorem Sequence.lim_eq_LIM {a : ℕ → ℚ} (h : (a : Chapter5.Sequence).IsCauchy) :
     ((a : Chapter5.Sequence) : Sequence).TendsTo (Chapter5.Real.equivR (Chapter5.LIM a)) := by sorry
 
-/-- Definition 6.1.16 (BoundedBy) -/
+/-- Определение 6.1.16 (BoundedBy) -/
 abbrev Sequence.BoundedBy (a : Sequence) (M : ℝ) : Prop :=
   ∀ n, |a n| ≤ M
 
-/-- Definition 6.1.16 (BoundedBy, определение) -/
+/-- Определение 6.1.16 (BoundedBy, определение) -/
 lemma Sequence.boundedBy_def (a : Sequence) (M : ℝ) :
   a.BoundedBy M ↔ ∀ n, |a n| ≤ M := by rfl
 
-/-- Definition 6.1.16 (IsBounded) -/
+/-- Определение 6.1.16 (IsBounded) -/
 abbrev Sequence.IsBounded (a : Sequence) : Prop := ∃ M ≥ 0, a.BoundedBy M
 
-/-- Definition 6.1.16 (IsBounded, определение) -/
+/-- Определение 6.1.16 (IsBounded, определение) -/
 lemma Sequence.isBounded_def (a : Sequence) :
   a.IsBounded ↔ ∃ M ≥ 0, a.BoundedBy M := by rfl
 
@@ -387,14 +387,14 @@ lemma Sequence.isBounded_def (a : Sequence) :
 theorem Sequence.bounded_of_cauchy {a : Sequence} (h : a.IsCauchy) : a.IsBounded := by
   sorry
 
-/-- Corollary 6.1.17 -/
+/-- Следствие 6.1.17 -/
 theorem Sequence.bounded_of_convergent {a : Sequence} (h : a.Convergent) : a.IsBounded := by
   sorry
 
-/-- Example 6.1.18 (не ограничена) -/
+/-- Пример 6.1.18 (не ограничена) -/
 example : ¬ ((fun (n : ℕ) ↦ (n+1 : ℝ)) : Sequence).IsBounded := by sorry
 
-/-- Example 6.1.18 (не сходится) -/
+/-- Пример 6.1.18 (не сходится) -/
 example : ¬ ((fun (n : ℕ) ↦ (n+1 : ℝ)) : Sequence).Convergent := by sorry
 
 instance Sequence.inst_add : Add Sequence where
@@ -413,7 +413,7 @@ theorem Sequence.add_coe (a b : ℕ → ℝ) : (a : Sequence) + (b : Sequence) =
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(a) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(a) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_add {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) :
   (a+b).TendsTo (L+M) := by
@@ -440,7 +440,7 @@ theorem Sequence.mul_coe (a b : ℕ → ℝ) : (a : Sequence) * (b : Sequence) =
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(b) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(b) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_mul {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) :
     (a * b).TendsTo (L * M) := by
@@ -468,7 +468,7 @@ theorem Sequence.smul_coe (c : ℝ) (a : ℕ → ℝ) : (c • (a : Sequence)) =
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h, HSMul.hSMul, SMul.smul]
 
-/-- Theorem 6.1.19(c) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(c) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_smul (c : ℝ) {a : Sequence} {L : ℝ} (ha : a.TendsTo L) :
     (c • a).TendsTo (c * L) := by
@@ -495,7 +495,7 @@ theorem Sequence.sub_coe (a b : ℕ → ℝ) : (a : Sequence) - (b : Sequence) =
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(d) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(d) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_sub {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) :
     (a - b).TendsTo (L - M) := by
@@ -522,7 +522,7 @@ theorem Sequence.inv_coe (a : ℕ → ℝ) : (a : Sequence)⁻¹ = (fun n ↦ (a
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(e) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(e) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_inv {a : Sequence} {L : ℝ} (ha : a.TendsTo L) (hnon : L ≠ 0) :
     (a⁻¹).TendsTo (L⁻¹) := by
@@ -549,7 +549,7 @@ theorem Sequence.div_coe (a b : ℕ → ℝ) : (a : Sequence) / (b : Sequence) =
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(f) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(f) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_div {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) (hnon : M ≠ 0) :
     (a / b).TendsTo (L / M) := by
@@ -576,7 +576,7 @@ theorem Sequence.max_coe (a b : ℕ → ℝ) : (a : Sequence) ⊔ (b : Sequence)
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(g) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
+/-- Теорема 6.1.19(g) (законы предела). Версия {name}`Sequence.TendsTo` удобнее в использовании, чем версия
     через {name}`lim`, в приложениях. -/
 theorem Sequence.tendsTo_max {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) :
     (max a b).TendsTo (max L M) := by
@@ -603,7 +603,7 @@ theorem Sequence.min_coe (a b : ℕ → ℝ) : (a : Sequence) ⊓ (b : Sequence)
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Theorem 6.1.19(h) (законы предела) -/
+/-- Теорема 6.1.19(h) (законы предела) -/
 theorem Sequence.tendsTo_min {a b : Sequence} {L M : ℝ} (ha : a.TendsTo L) (hb : b.TendsTo M) :
     (min a b).TendsTo (min L M) := by
   sorry
@@ -613,26 +613,26 @@ theorem Sequence.lim_min {a b : Sequence} (ha : a.Convergent) (hb : b.Convergent
     (min a b).Convergent ∧ lim (min a b) = min (lim a) (lim b) := by
   sorry
 
-/-- Exercise 6.1.1 -/
+/-- Упражнение 6.1.1 -/
 theorem Sequence.mono_if {a : ℕ → ℝ} (ha : ∀ n, a (n+1) > a n) {n m : ℕ} (hnm : m > n) : a m > a n := by
   sorry
 
-/-- Exercise 6.1.3 -/
+/-- Упражнение 6.1.3 -/
 theorem Sequence.tendsTo_of_from {a : Sequence} {c : ℝ} (m : ℤ) :
     a.TendsTo c ↔ (a.from m).TendsTo c := by
   sorry
 
-/-- Exercise 6.1.4 -/
+/-- Упражнение 6.1.4 -/
 theorem Sequence.tendsTo_of_shift {a : Sequence} {c : ℝ} (k : ℕ) :
     a.TendsTo c ↔ (Sequence.mk' a.m (fun n : {n // n ≥ a.m} ↦ a (n+k))).TendsTo c := by
   sorry
 
-/-- Exercise 6.1.7 -/
+/-- Упражнение 6.1.7 -/
 theorem Sequence.isBounded_of_rat (a : Chapter5.Sequence) :
     a.IsBounded ↔ (a : Sequence).IsBounded := by
   sorry
 
-/-- Exercise 6.1.9 -/
+/-- Упражнение 6.1.9 -/
 theorem Sequence.lim_div_fail :
     ∃ a b, a.Convergent
     ∧ b.Convergent
@@ -658,7 +658,7 @@ abbrev Chapter5.Sequence.RatEquiv (a b : ℕ → ℚ) : Prop :=
   ∀ (ε : ℝ), ε > 0 → ε.SeqEventuallyClose (a : Chapter5.Sequence) (b : Chapter5.Sequence)
 
 namespace Chapter6
-/-- Exercise 6.1.10 -/
+/-- Упражнение 6.1.10 -/
 theorem Chapter5.Sequence.equiv_rat (a b : ℕ → ℚ) :
   Chapter5.Sequence.Equiv a b ↔ Chapter5.Sequence.RatEquiv a b := by sorry
 

@@ -7,11 +7,11 @@ import Analysis.MeasureTheory.Section_1_3_2
 
 -/
 
-/-- Definition 1.3.12 (нижний беззнаковый интеграл Лебега) -/
+/-- Определение 1.3.12 (нижний беззнаковый интеграл Лебега) -/
 noncomputable def LowerUnsignedLebesgueIntegral {d : ℕ} (f : EuclideanSpace' d → EReal) : EReal :=
   sSup { R | ∃ g : EuclideanSpace' d → EReal, ∃ hg : UnsignedSimpleFunction g, ∀ x, g x ≤ f x ∧ R = hg.integ}
 
-/-- Definition 1.3.12 (верхний беззнаковый интеграл Лебега) -/
+/-- Определение 1.3.12 (верхний беззнаковый интеграл Лебега) -/
 noncomputable def UpperUnsignedLebesgueIntegral {d : ℕ} (f : EuclideanSpace' d → EReal) : EReal :=
   sInf { R | ∃ g : EuclideanSpace' d → EReal, ∃ hg : UnsignedSimpleFunction g, ∀ x, g x ≥ f x ∧ R = hg.integ}
 
@@ -114,7 +114,7 @@ theorem LowerUnsignedLebesgueIntegral.eq {d : ℕ} {f : EuclideanSpace' d → ER
             ≤ Lebesgue_outer_measure N := Lebesgue_outer_measure.mono hsub
           _ = 0 := hN_null
       exact le_antisymm hle (Lebesgue_outer_measure.nonneg _)
-    -- По Exercise 1.3.1(iv), интегралы совпадают
+    -- По Упражнению 1.3.1(iv), интегралы совпадают
     have hinteg_eq : hg'_simple.integ = hg.integ :=
       UnsignedSimpleFunction.integral_eq_integral_of_aeEqual hg'_simple hg hg'_ae
     -- Теперь строим искомого свидетеля
@@ -124,63 +124,63 @@ theorem LowerUnsignedLebesgueIntegral.eq {d : ℕ} {f : EuclideanSpace' d → ER
     · exact hg'_le_f x
     · rw [hReq, ← hinteg_eq]
 
-/-- Exercise 1.3.10(i) (согласованность с интегралом простой функции) -/
+/-- Упражнение 1.3.10(i) (согласованность с интегралом простой функции) -/
 theorem LowerUnsignedLebesgueIntegral.eq_simpleIntegral {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) : 
     LowerUnsignedLebesgueIntegral f = hf.integ := by sorry
 
-/-- Exercise 1.3.10(ii) (монотонность) -/
+/-- Упражнение 1.3.10(ii) (монотонность) -/
 theorem LowerUnsignedLebesgueIntegral.mono {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g)
     (hfg : AlmostAlways (fun x ↦ f x ≤ g x)) : 
     LowerUnsignedLebesgueIntegral f ≤ LowerUnsignedLebesgueIntegral g := by sorry
 
-/-- Exercise 1.3.10(iii) (однородность) -/
+/-- Упражнение 1.3.10(iii) (однородность) -/
 theorem LowerUnsignedLebesgueIntegral.hom {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) {c : ℝ} (hc : 0 ≤ c) : 
     LowerUnsignedLebesgueIntegral ((c : EReal) • f) = c * LowerUnsignedLebesgueIntegral f := by sorry
 
-/-- Exercise 1.3.10(iv) (эквивалентность) -/
+/-- Упражнение 1.3.10(iv) (эквивалентность) -/
 theorem LowerUnsignedLebesgueIntegral.integral_eq_integral_of_aeEqual {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g)
     (heq : AlmostEverywhereEqual f g) : 
     LowerUnsignedLebesgueIntegral f = LowerUnsignedLebesgueIntegral g := by sorry
 
-/-- Exercise 1.3.10(v) (супераддитивность) -/
+/-- Упражнение 1.3.10(v) (супераддитивность) -/
 theorem LowerUnsignedLebesgueIntegral.superadditive {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g) : 
     LowerUnsignedLebesgueIntegral (f + g) ≥ LowerUnsignedLebesgueIntegral f + LowerUnsignedLebesgueIntegral g := by sorry
 
-/-- Exercise 1.3.10(vi) (субаддитивность верхнего интеграла). -/
+/-- Упражнение 1.3.10(vi) (субаддитивность верхнего интеграла). -/
 theorem UpperUnsignedLebesgueIntegral.subadditive {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g) : 
     UpperUnsignedLebesgueIntegral (f + g) ≤ UpperUnsignedLebesgueIntegral f + UpperUnsignedLebesgueIntegral g := by sorry
 
-/-- Exercise 1.3.10(vii) (делимость) -/
+/-- Упражнение 1.3.10(vii) (делимость) -/
 theorem LowerUnsignedLebesgueIntegral.eq_add {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : 
     LowerUnsignedLebesgueIntegral f = LowerUnsignedLebesgueIntegral (f * Real.toEReal ∘ E.indicator') +
       LowerUnsignedLebesgueIntegral (f * Real.toEReal ∘ Eᶜ.indicator') := by sorry
 
-/-- Exercise 1.3.10(viii) (вертикальное усечение). -/
+/-- Упражнение 1.3.10(viii) (вертикальное усечение). -/
 theorem LowerUnsignedLebesgueIntegral.eq_lim_vert_trunc {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : Filter.atTop.Tendsto (fun n : ℕ ↦ LowerUnsignedLebesgueIntegral (fun x ↦ min (f x) n)) (nhds (LowerUnsignedLebesgueIntegral f)) := by sorry
 
 def UpperUnsignedLebesgueIntegral.eq_lim_vert_trunc : Decidable (∀ (d : ℕ) (f : EuclideanSpace' d → EReal) (hf : UnsignedMeasurable f), Filter.atTop.Tendsto (fun n : ℕ ↦ UpperUnsignedLebesgueIntegral (fun x ↦ min (f x) n)) (nhds (UpperUnsignedLebesgueIntegral f))) := by
   -- первой строкой этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
-/-- Exercise 1.3.10(ix) (горизонтальное усечение). -/
+/-- Упражнение 1.3.10(ix) (горизонтальное усечение). -/
 theorem LowerUnsignedLebesgueIntegral.eq_lim_horiz_trunc {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : Filter.atTop.Tendsto (fun n : ℕ ↦ LowerUnsignedLebesgueIntegral (f * Real.toEReal ∘ (Metric.ball 0 n).indicator')) (nhds (LowerUnsignedLebesgueIntegral f)) := by sorry
 
 def UpperUnsignedLebesgueIntegral.eq_lim_horiz_trunc : Decidable (∀ (d : ℕ) (f : EuclideanSpace' d → EReal) (hf : UnsignedMeasurable f), Filter.atTop.Tendsto (fun n : ℕ ↦ UpperUnsignedLebesgueIntegral (f * Real.toEReal ∘ (Metric.ball 0 n).indicator')) (nhds (UpperUnsignedLebesgueIntegral f))) := by
   -- первой строкой этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
-/-- Exercise 1.3.10(x) (отражение) -/
+/-- Упражнение 1.3.10(x) (отражение) -/
 theorem LowerUnsignedLebesgueIntegral.sum_of_reflect_eq {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g)
     (hfg : UnsignedSimpleFunction (f+g)) (hbound : EReal.BoundedFunction (f + g)) (hsupport : FiniteMeasureSupport (f + g)) : 
     hfg.integ = LowerUnsignedLebesgueIntegral f + LowerUnsignedLebesgueIntegral g := by sorry
 
-/-- Definition 1.3.13 (беззнаковый интеграл Лебега). Для целей Lean удобно присвоить этому интегралу
+/-- Определение 1.3.13 (беззнаковый интеграл Лебега). Для целей Lean удобно присвоить этому интегралу
     "мусорное" значение, когда f не является беззнаково измеримой. -/
 noncomputable def UnsignedLebesgueIntegral {d : ℕ} (f : EuclideanSpace' d → EReal) : EReal := LowerUnsignedLebesgueIntegral f
 
 noncomputable def UnsignedMeasurable.integ {d : ℕ} (f : EuclideanSpace' d → EReal) (_ : UnsignedMeasurable f) : EReal := UnsignedLebesgueIntegral f
 
-/-- Exercise 1.3.11 -/
+/-- Упражнение 1.3.11 -/
 theorem LowerUnsignedLebesgueIntegral.eq_upperIntegral {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hbound : EReal.BoundedFunction f) (hsupp : FiniteMeasureSupport f) : 
     LowerUnsignedLebesgueIntegral f = UpperUnsignedLebesgueIntegral f := by sorry
 
@@ -193,7 +193,7 @@ def LowerUnsignedLebesgueIntegral.eq_upperIntegral_infinite_supp : Decidable (�
   sorry
 
 /-- Умножение беззнаково измеримой функции на индикатор шара сохраняет измеримость.
-    Это ключевая вспомогательная лемма для рассуждения с горизонтальным усечением в Corollary 1.3.14. -/
+    Это ключевая вспомогательная лемма для рассуждения с горизонтальным усечением в Следствии 1.3.14. -/
 lemma UnsignedMeasurable.mul_indicator_ball {d : ℕ} {f : EuclideanSpace' d → EReal}
     (hf : UnsignedMeasurable f) (n : ℕ) :
     UnsignedMeasurable (f * Real.toEReal ∘ (Metric.ball (0 : EuclideanSpace' d) n).indicator') := by
@@ -244,7 +244,7 @@ lemma LowerUnsignedLebesgueIntegral.add_of_finiteSupport {d : ℕ}
   · -- направление ≥ : напрямую из супераддитивности
     exact LowerUnsignedLebesgueIntegral.superadditive hf hg
 
-/-- Corollary 1.3.14 (конечная аддитивность интеграла Лебега). -/
+/-- Следствие 1.3.14 (конечная аддитивность интеграла Лебега). -/
 theorem LowerUnsignedLebesgueIntegral.add {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g)
     (hfg : UnsignedMeasurable (f + g)) :
     LowerUnsignedLebesgueIntegral (f + g) = LowerUnsignedLebesgueIntegral f + LowerUnsignedLebesgueIntegral g := by
@@ -298,12 +298,12 @@ theorem LowerUnsignedLebesgueIntegral.add {d : ℕ} {f g : EuclideanSpace' d →
   · -- ≥ : из супераддитивности
     exact LowerUnsignedLebesgueIntegral.superadditive hf hg
 
-/-- Exercise 1.3.12 (верхний интеграл Лебега и внешняя мера). -/
+/-- Упражнение 1.3.12 (верхний интеграл Лебега и внешняя мера). -/
 theorem UpperUnsignedLebesgueIntegral.eq_outer_measure_integral {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : 
     UpperUnsignedLebesgueIntegral (Real.toEReal ∘ E.indicator') = Lebesgue_outer_measure E := by sorry
 
 /-- Контрпример: существуют беззнаковые, но не обязательно измеримые функции `f, g`, для которых
-    нижний интеграл суммы не равен сумме нижних интегралов — измеримость `f + g` в Corollary 1.3.14
+    нижний интеграл суммы не равен сумме нижних интегралов — измеримость `f + g` в Следствии 1.3.14
     существенна -/
 theorem LowerUnsignedLebesgueIntegral.not_additive : ∃ (d : ℕ) (f g : EuclideanSpace' d → EReal) (hf : Unsigned f) (hg : Unsigned g), (LowerUnsignedLebesgueIntegral (f + g) ≠ LowerUnsignedLebesgueIntegral f + LowerUnsignedLebesgueIntegral g) := by
     sorry
@@ -312,11 +312,11 @@ theorem LowerUnsignedLebesgueIntegral.not_additive : ∃ (d : ℕ) (f g : Euclid
 theorem UpperUnsignedLebesgueIntegral.not_additive : ∃ (d : ℕ) (f g : EuclideanSpace' d → EReal) (hf : Unsigned f) (hg : Unsigned g), (UpperUnsignedLebesgueIntegral (f + g) ≠ UpperUnsignedLebesgueIntegral f + UpperUnsignedLebesgueIntegral g) := by
     sorry
 
-/-- Exercise 1.3.13 (интерпретация интеграла как площади). -/
+/-- Упражнение 1.3.13 (интерпретация интеграла как площади). -/
 theorem LowerUnsignedLebesgueIntegral.eq_area {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : 
     LowerUnsignedLebesgueIntegral f = Lebesgue_measure { p | ∃ x, ∃ t : ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by sorry
 
-/-- Exercise 1.3.14 (единственность) -/
+/-- Упражнение 1.3.14 (единственность) -/
 theorem UnsignedLebesgueIntegral.unique {d : ℕ} (integ : (EuclideanSpace' d → EReal) → EReal)
   (hsimple : ∀ f (hf : UnsignedSimpleFunction f), integ f = hf.integ)
   (hadd : ∀ f g (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g), integ (f + g) = integ f + integ g)
@@ -324,30 +324,30 @@ theorem UnsignedLebesgueIntegral.unique {d : ℕ} (integ : (EuclideanSpace' d �
   (hhoriz : ∀ f (hf : UnsignedMeasurable f), Filter.atTop.Tendsto (fun n : ℕ ↦ integ (f * Real.toEReal ∘ (Metric.ball 0 n).indicator')) (nhds (integ f)))
   : ∀ f, UnsignedMeasurable f → integ f = UnsignedLebesgueIntegral f := by sorry
 
-/-- Exercise 1.3.15 (инвариантность относительно сдвигов). -/
+/-- Упражнение 1.3.15 (инвариантность относительно сдвигов). -/
 theorem UnsignedLebesgueIntegral.trans {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (a : EuclideanSpace' d) : 
     UnsignedLebesgueIntegral (fun x ↦ f (x + a)) = hf.integ := by sorry
 
-/-- Exercise 1.3.16 (линейная замена переменных). -/
+/-- Упражнение 1.3.16 (линейная замена переменных). -/
 theorem UnsignedLebesgueIntegral.comp_linear {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (A : EuclideanSpace' d →ₗ[ℝ] EuclideanSpace' d) (hA : A.det ≠ 0) : 
     UnsignedLebesgueIntegral (fun x ↦ f (A x)) = |A.det|⁻¹ * hf.integ := by sorry
 
-/-- Exercise 1.3.17 (согласованность с интегралом Римана). -/
+/-- Упражнение 1.3.17 (согласованность с интегралом Римана). -/
 theorem RiemannIntegral.eq_UnsignedLebesgueIntegral {I : BoundedInterval} {f : ℝ → ℝ} (hf : RiemannIntegrableOn f I) : 
     (riemannIntegral f I : EReal) = UnsignedLebesgueIntegral (Real.toEReal ∘ (fun x ↦ (f x) * (I.toSet.indicator' x)) ∘ EuclideanSpace'.equiv_Real) := by sorry
 
-/-- Lemma 1.3.15 (неравенство Маркова) -/
+/-- Лемма 1.3.15 (неравенство Маркова) -/
 theorem UnsignedLebesgueIntegral.markov_inequality {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) {t : ℝ} (ht : 0 < t) : 
     Lebesgue_measure { x | f x ≥ t } ≤ hf.integ / (t : EReal) := by
   sorry
 
-/-- Exercise 1.3.18 (ii) -/
+/-- Упражнение 1.3.18 (ii) -/
 theorem UnsignedLebesgueIntegral.ae_finite {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hfin : UnsignedLebesgueIntegral f < ⊤) : 
     AlmostAlways (fun x ↦ f x < ⊤) := by sorry
 
--- Контрпример к обращению Exercise 1.3.18(ii): существует измеримая функция `f`, конечная почти всюду, но с бесконечным интегралом Лебега
+-- Контрпример к обращению Упражнения 1.3.18(ii): существует измеримая функция `f`, конечная почти всюду, но с бесконечным интегралом Лебега
 theorem UnsignedLebesgueIntegral.ae_finite_no_converse : ∃ (d : ℕ) (f : EuclideanSpace' d → EReal) (hf : UnsignedMeasurable f) (hfin : AlmostAlways (fun x ↦ f x < ⊤)), UnsignedLebesgueIntegral f = ⊤ := by sorry
 
-/-- Exercise 1.3.18 (iii) -/
+/-- Упражнение 1.3.18 (iii) -/
 theorem UnsignedLebesgueIntegral.eq_zero_aeZero {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : 
      hf.integ = 0 ↔ AlmostAlways (fun x ↦ f x = 0) := by sorry

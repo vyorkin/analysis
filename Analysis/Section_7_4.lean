@@ -19,7 +19,7 @@ theorem Series.sum_eq_sum (b : ℕ → ℝ) {N : ℤ} (hN : N ≥ 0) : ∑ n ∈
       . intro ⟨ _, _ ⟩; use x.toNat; omega
       grind
 
-/-- Proposition 7.4.1 -/
+/-- Утверждение 7.4.1 -/
 theorem Series.converges_of_permute_nonneg {a : ℕ → ℝ} (ha : (a : Series).nonneg) (hconv : (a : Series).converges)
   {f : ℕ → ℕ} (hf : Function.Bijective f) : 
     (fun n ↦ a (f n) : Series).converges ∧ (a : Series).sum = (fun n ↦ a (f n) : Series).sum := by
@@ -107,7 +107,7 @@ theorem Series.converges_of_permute_nonneg {a : ℕ → ℝ} (ha : (a : Series).
       _ ≤ L' := by apply le_ciSup _ (M : ℤ); simp [BddAbove, Set.Nonempty, upperBounds, hTbound]
   linarith [ciSup_le hSL', ciSup_le hTL]
 
-/-- Example 7.4.2 -/
+/-- Пример 7.4.2 -/
 theorem Series.zeta_2_converges : (fun n : ℕ ↦ 1/(n+1 : ℝ)^2 : Series).converges := by sorry
 
 -- Пример 7.4.2: переставленный ряд (чётные и нечётные члены ряда `∑ 1/n²` в другом порядке) сходится
@@ -120,7 +120,7 @@ theorem Series.permuted_zeta_2_eq_zeta_2 :
   (fun n : ℕ ↦ if Even n then 1/(n+2 : ℝ)^2 else 1/(n : ℝ)^2 : Series).sum = (fun n : ℕ ↦ 1/(n+1 : ℝ)^2 : Series).sum := by
     sorry
 
-/-- Proposition 7.4.3 (перестановка ряда) -/
+/-- Утверждение 7.4.3 (перестановка ряда) -/
 theorem Series.absConverges_of_permute {a : ℕ → ℝ} (ha : (a : Series).absConverges)
   {f : ℕ → ℕ} (hf : Function.Bijective f) : 
     (fun n ↦ a (f n) : Series).absConverges  ∧ (a : Series).sum = (fun n ↦ a (f n) : Series).sum := by
@@ -190,7 +190,7 @@ theorem Series.absConverges_of_permute {a : ℕ → ℝ} (ha : (a : Series).absC
     _ = ε := by ring
 
 
-/-- Example 7.4.4 -/
+/-- Пример 7.4.4 -/
 noncomputable abbrev Series.a_7_4_4 : ℕ → ℝ := fun n ↦ (-1 : ℝ)^n / (n+2)
 
 -- Пример 7.4.4: ряд `∑ (-1)ⁿ/(n+2)` сходится
@@ -210,13 +210,13 @@ theorem Series.ex_7_4_4'_conv : (fun n ↦ a_7_4_4 (f_7_4_4 n) : Series).converg
 -- Пример 7.4.4: сумма переставленного ряда отрицательна — перестановка условно сходящегося ряда меняет его сумму
 theorem Series.ex_7_4_4'_sum : (fun n ↦ a_7_4_4 (f_7_4_4 n) : Series).sum < 0 := by sorry
 
-/-- Exercise 7.4.1 -/
+/-- Упражнение 7.4.1 -/
 theorem Series.absConverges_of_subseries {a : ℕ → ℝ} (ha : (a : Series).absConverges) {f : ℕ → ℕ} (hf : StrictMono f) : 
   (fun n ↦ a (f n) : Series).absConverges := by sorry
 
 /--
 {given -show}`n : ℕ`
-Exercise 7.4.2: докажите Proposition 7.4.3 заново, используя Proposition 7.4.1, Proposition 7.2.14,
+Упражнение 7.4.2: докажите Утверждение 7.4.3 заново, используя Утверждение 7.4.1, Утверждение 7.2.14,
 и представив {lean}`a n` как разность {lean}`a n + |a n|` и {lean}`|a n|`.
 -/
 theorem Series.absConverges_of_permute' {a : ℕ → ℝ} (ha : (a : Series).absConverges)

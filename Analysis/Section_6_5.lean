@@ -49,7 +49,7 @@ lemma Sequence.pow_succ (a : Sequence) (k : ℕ) : a^(k+1) = a^k * a := by
     · rw [a.vanish x (by grind), mul_zero]
       exact vanish _ _ (by simp at h; exact h)
 
-/-- Corollary 6.5.1 -/
+/-- Следствие 6.5.1 -/
 theorem Sequence.lim_of_power_decay {k : ℕ} : 
     ((fun (n : ℕ) ↦ 1/((n : ℝ)+1)^(1/(k+1 : ℝ))) : Sequence).TendsTo 0 := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -73,30 +73,30 @@ theorem Sequence.lim_of_power_decay {k : ℕ} :
     · simp
   simp [lim_eq, ha', eq_zero_of_pow_eq_zero hlim]
 
-/-- Lemma 6.5.2 (модуль отношения меньше единицы) / Exercise 6.5.2 -/
+/-- Лемма 6.5.2 (модуль отношения меньше единицы) / Упражнение 6.5.2 -/
 theorem Sequence.lim_of_geometric {x : ℝ} (hx : |x| < 1) : ((fun (n : ℕ) ↦ x^n) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Lemma 6.5.2 (отношение равно единице) / Exercise 6.5.2 -/
+/-- Лемма 6.5.2 (отношение равно единице) / Упражнение 6.5.2 -/
 theorem Sequence.lim_of_geometric' {x : ℝ} (hx : x = 1) : ((fun (n : ℕ) ↦ x^n) : Sequence).TendsTo 1 := by
   sorry
 
-/-- Lemma 6.5.2 (отношение минус единица или модуль больше единицы) / Exercise 6.5.2 -/
+/-- Лемма 6.5.2 (отношение минус единица или модуль больше единицы) / Упражнение 6.5.2 -/
 theorem Sequence.lim_of_geometric'' {x : ℝ} (hx : x = -1 ∨ |x| > 1) :
     ((fun (n : ℕ) ↦ x^n) : Sequence).Divergent := by
   sorry
 
-/-- Lemma 6.5.3 / Exercise 6.5.3 -/
+/-- Лемма 6.5.3 / Упражнение 6.5.3 -/
 theorem Sequence.lim_of_roots {x : ℝ} (hx : x > 0) : 
     ((fun (n : ℕ) ↦ x^(1/(n+1 : ℝ))) : Sequence).TendsTo 1 := by
   sorry
 
-/-- Exercise 6.5.1 (i) -/
+/-- Упражнение 6.5.1 (i) -/
 theorem Sequence.lim_of_rat_power_decay {q : ℚ} (hq : q > 0) : 
     (fun (n : ℕ) ↦ 1/((n+1 : ℝ)^(q : ℝ)) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Exercise 6.5.1 (ii) -/
+/-- Упражнение 6.5.1 (ii) -/
 theorem Sequence.lim_of_rat_power_growth {q : ℚ} (hq : q > 0) : 
     (fun (n : ℕ) ↦ ((n+1 : ℝ)^(q : ℝ)) : Sequence).Divergent := by
   sorry

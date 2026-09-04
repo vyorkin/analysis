@@ -24,7 +24,7 @@ example : 8 = (7 : Nat).succ := rfl
 example : 9 = (8 : Nat).succ := rfl
 example : 10 = (9 : Nat).succ := rfl
 
-/-- Definition B.1.1 -/
+/-- Определение B.1.1 -/
 def Digit := Fin 10
 
 instance Digit.instZero : Zero Digit := ⟨0, by decide⟩
@@ -80,7 +80,7 @@ theorem Digit.mk_eq_iff (d : Digit) {n : ℕ} (h : n < 10) : d = mk h ↔ (d : �
 theorem Digit.eq (n : Digit) : n = 0 ∨ n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 ∨ n = 5 ∨ n = 6 ∨ n = 7 ∨ n = 8 ∨ n = 9 := by
   fin_cases n <;> simp +decide
 
-/-- Definition B.1.2 -/
+/-- Определение B.1.2 -/
 structure PosintDecimal where
   digits : List Digit
   nonempty : digits ≠ []
@@ -140,7 +140,7 @@ instance PosintDecimal.instCoeNat : Coe PosintDecimal Nat where
 
 example : (PosintDecimal.mk' 3 [1, 4] (by decide) : ℕ) = 314 := by decide
 
-/-- Remark B.1.3 -/
+/-- Замечание B.1.3 -/
 @[simp]
 theorem PosintDecimal.ten_eq_ten : (mk' 1 [0] (by decide) : ℕ) = 10 := by
   decide
@@ -164,7 +164,7 @@ theorem PosintDecimal.pos (p : PosintDecimal) : 0 < (p : ℕ) := by
       . infer_instance
       grind
 
-/-- Операция, неявно используемая в доказательстве Theorem B.1.4: -/
+/-- Операция, неявно используемая в доказательстве Теоремы B.1.4: -/
 abbrev PosintDecimal.append (p : PosintDecimal) (d : Digit) : PosintDecimal :=
   mk' p.head (p.digits.tail ++ [d]) p.head_ne_zero
 
@@ -207,7 +207,7 @@ theorem PosintDecimal.eq_append {p : PosintDecimal} (h : 2 ≤ p.digits.length) 
   convert (List.dropLast_append_getLast _).symm using 2; grind
   simp [←List.length_pos_iff]; omega
 
-/-- Theorem B.1.4 (единственность и существование десятичных представлений) -/
+/-- Теорема B.1.4 (единственность и существование десятичных представлений) -/
 theorem PosintDecimal.exists_unique (n : ℕ) : n > 0 → ∃! p : PosintDecimal, (p : ℕ) = n := by
   -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   apply n.case_strong_induction_on
@@ -337,7 +337,7 @@ abbrev PosintDecimal.sum_digit (p q : PosintDecimal) (i : ℕ) : ℕ :=
   else
     p.digit i + q.digit i + (p.carry q) i - 10
 
-/-- Exercise B.1.1 -/
+/-- Упражнение B.1.1 -/
 theorem PosintDecimal.sum_digit_lt (p q : PosintDecimal) (i : ℕ) :
   p.sum_digit q i < 10 := by sorry
 

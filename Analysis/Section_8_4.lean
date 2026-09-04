@@ -33,7 +33,7 @@ set_option doc.verso.suggestions false
 
 namespace Chapter8
 
-/-- Definition 8.4.1 (бесконечное декартово произведение). Мы будем избегать использования этого
+/-- Определение 8.4.1 (бесконечное декартово произведение). Мы будем избегать использования этого
 определения в пользу формы Mathlib {lean}`∀ α, X α`, которая, как мы вскоре покажем, эквивалентна
 (точнее, обобщает) это определение.
 
@@ -52,7 +52,7 @@ def CartesianProduct.equiv {I U : Type} (X : I → Set U) :
   right_inv x := by aesop
   }
 
-/-- Example 8.4.2. -/
+/-- Пример 8.4.2. -/
 def Function.equiv {I X : Type} : (∀ _ : I, X) ≃ (I → X) := {
   toFun f := f
   invFun f := f
@@ -93,7 +93,7 @@ def product_three_equiv {X : Fin 3 → Type} : (∀ i : Fin 3, X i) ≃ (X 0 × 
   right_inv f := rfl
 }
 
-/-- Axiom 8.1 (выбор) -/
+/-- Аксиома 8.1 (выбор) -/
 theorem axiom_of_choice {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) : 
   Nonempty (∀ i, X i) := by use fun i ↦ (h i).some
 
@@ -101,7 +101,7 @@ theorem axiom_of_choice {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) 
 theorem axiom_of_countable_choice {I : Type} {X : I → Type} [Countable I] (h : ∀ i, Nonempty (X i)) :
   Nonempty (∀ i, X i) := axiom_of_choice h
 
-/-- Lemma 8.4.5 -/
+/-- Лемма 8.4.5 -/
 theorem exist_tendsTo_sup {E : Set ℝ} (hnon : E.Nonempty) (hbound : BddAbove E) : 
   ∃ a : ℕ → ℝ, (∀ n, a n ∈ E) ∧ Filter.atTop.Tendsto a (nhds (sSup E)) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -120,7 +120,7 @@ theorem exist_tendsTo_sup {E : Set ℝ} (hnon : E.Nonempty) (hbound : BddAbove E
   . exact tendsto_const_nhds
   all_goals intro n; have := (a n).property; simp_all [X]
 
-/-- Remark 8.4.6. Этот частный случай Lemma 8.4.5 обходится без (счётной) аксиомы выбора. -/
+/-- Замечание 8.4.6. Этот частный случай Леммы 8.4.5 обходится без (счётной) аксиомы выбора. -/
 theorem exist_tendsTo_sup_of_closed {E : Set ℝ} (hnon : E.Nonempty) (hbound : BddAbove E) (hclosed : IsClosed E) : 
   ∃ a : ℕ → ℝ, (∀ n, a n ∈ E) ∧ Filter.atTop.Tendsto a (nhds (sSup E)) := by
   set X : ℕ → Set ℝ := fun n ↦ { x ∈ E | sSup E - 1 / (n+1 : ℝ) ≤ x ∧ x ≤ sSup E }
@@ -143,37 +143,37 @@ theorem exist_tendsTo_sup_of_closed {E : Set ℝ} (hnon : E.Nonempty) (hbound : 
   . exact tendsto_const_nhds
   all_goals intro _; simp_all [X]
 
-/-- Proposition 8.4.7 / Exercise 8.4.1 -/
+/-- Утверждение 8.4.7 / Упражнение 8.4.1 -/
 theorem exists_function {X Y : Type} {P : X → Y → Prop} (h : ∀ x, ∃ y, P x y) : 
   ∃ f : X → Y, ∀ x, P x (f x) := by
   sorry
 
-/-- Exercise 8.4.1. Дух этого вопроса — установить данный результат непосредственно
+/-- Упражнение 8.4.1. Дух этого вопроса — установить данный результат непосредственно
 из {name}`exists_function`, избегая предыдущих результатов, которые более явно опирались
 на аксиому выбора. -/
 theorem axiom_of_choice_from_exists_function {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) : 
   Nonempty (∀ i, X i) := by
   sorry
 
-/-- Exercise 8.4.2 -/
+/-- Упражнение 8.4.2 -/
 theorem exists_set_singleton_intersect {I U : Type} {X : I → Set U} (h : Set.PairwiseDisjoint .univ X)
   (hnon : ∀ α, Nonempty (X α)) : 
   ∃ Y : Set U, ∀ α, Nat.card (Y ∩ X α : Set U) = 1 := by
   sorry
 
-/-- Exercise 8.4.2. Дух этого вопроса — установить данный результат непосредственно
+/-- Упражнение 8.4.2. Дух этого вопроса — установить данный результат непосредственно
 из {name}`exists_set_singleton_intersect`, избегая предыдущих результатов, которые более явно
 опирались на аксиому выбора. -/
 theorem axiom_of_choice_from_exists_set_singleton_intersect {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) : 
   Nonempty (∀ i, X i) := by
   sorry
 
-/-- Exercise 8.4.3 -/
+/-- Упражнение 8.4.3 -/
 theorem Function.Injective.inv_surjective {A B : Type} {g : B → A} (hg : Function.Surjective g) : 
   ∃ f : A → B, Function.Injective f ∧ Function.RightInverse f g := by
   sorry
 
-/-- Exercise 8.4.3. Дух этого вопроса — установить данный результат непосредственно
+/-- Упражнение 8.4.3. Дух этого вопроса — установить данный результат непосредственно
 из {name}`Function.Injective.inv_surjective`, избегая предыдущих результатов, которые более явно
 опирались на аксиому выбора. -/
 theorem axiom_of_choice_from_function_injective_inv_surjective {I : Type} {X : I → Type} (h : ∀ i, Nonempty (X i)) : 

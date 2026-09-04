@@ -138,12 +138,12 @@ lemma Chapter2.Nat.pow_eq_pow (n m : Chapter2.Nat) :
 @[ext]
 structure PeanoAxioms where
   Nat : Type
-  zero : Nat -- Axiom 2.1
-  succ : Nat → Nat -- Axiom 2.2
-  succ_ne : ∀ n : Nat, succ n ≠ zero -- Axiom 2.3
-  succ_cancel : ∀ {n m : Nat}, succ n = succ m → n = m -- Axiom 2.4
+  zero : Nat -- Аксиома 2.1
+  succ : Nat → Nat -- Аксиома 2.2
+  succ_ne : ∀ n : Nat, succ n ≠ zero -- Аксиома 2.3
+  succ_cancel : ∀ {n m : Nat}, succ n = succ m → n = m -- Аксиома 2.4
   induction : ∀ (P : Nat → Prop),
-    P zero → (∀ n : Nat, P n → P (succ n)) → ∀ n : Nat, P n -- Axiom 2.5
+    P zero → (∀ n : Nat, P n → P (succ n)) → ∀ n : Nat, P n -- Аксиома 2.5
 
 namespace PeanoAxioms
 

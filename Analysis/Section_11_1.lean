@@ -66,10 +66,10 @@ theorem BoundedInterval.set_Ioc (a b : ℝ) : (Ioc a b : Set ℝ) = .Ioc a b := 
 @[simp]
 theorem BoundedInterval.set_Ico (a b : ℝ) : (Ico a b : Set ℝ) = .Ico a b := by rfl
 
--- Definition 11.1.1
+-- Определение 11.1.1
 #check Set.ordConnected_def
 
-/-- Examples 11.1.3 -/
+/-- Примеры 11.1.3 -/
 example : (Set.Icc 1 2 : Set ℝ).OrdConnected := by sorry
 
 example : (Set.Ioo 1 2 : Set ℝ).OrdConnected := by sorry
@@ -80,7 +80,7 @@ example : (∅ : Set ℝ).OrdConnected := by sorry
 
 example (x : ℝ) : ({x} : Set ℝ).OrdConnected := by sorry
 
-/-- Lemma 11.1.4 / Exercise 11.1.1 -/
+/-- Лемма 11.1.4 / Упражнение 11.1.1 -/
 theorem Bornology.IsBounded.of_boundedInterval (I : BoundedInterval) : Bornology.IsBounded (I : Set ℝ) := by
   sorry
 
@@ -88,7 +88,7 @@ theorem Bornology.IsBounded.of_boundedInterval (I : BoundedInterval) : Bornology
 theorem BoundedInterval.ordConnected_iff (X : Set ℝ) : Bornology.IsBounded X ∧ X.OrdConnected ↔ ∃ I : BoundedInterval, X = I := by
   sorry
 
-/-- Corollary 11.1.6 / Exercise 11.1.2 -/
+/-- Следствие 11.1.6 / Упражнение 11.1.2 -/
 theorem BoundedInterval.inter (I J : BoundedInterval) : ∃ K : BoundedInterval, (I : Set ℝ) ∩ (J : Set ℝ) = (K : Set ℝ) := by
   sorry
 
@@ -328,14 +328,14 @@ example : ¬∃ P : Partition (Ioo 1 5), P.intervals = {Ioo 0 3, Ico 3 5} := by
   sorry
 
 
-/-- Exercise 11.1.3. В упражнении утверждается лишь c ≤ b, но более сильное утверждение c < b тоже
+/-- Упражнение 11.1.3. В упражнении утверждается лишь c ≤ b, но более сильное утверждение c < b тоже
 верно и полезно. -/
 theorem Partition.exist_right {I : BoundedInterval} (hI : I.a < I.b) (hI' : I.b ∉ I)
   {P : Partition I}
   : ∃ c ∈ Set.Ico I.a I.b, Ioo c I.b ∈ P ∨ Ico c I.b ∈ P := by
   sorry
 
-/-- Theorem 11.1.13 (длина конечно-аддитивна). -/
+/-- Теорема 11.1.13 (длина конечно-аддитивна). -/
 theorem Partition.sum_of_length  (I : BoundedInterval) (P : Partition I) : 
   ∑ J ∈ P.intervals, |J|ₗ = |I|ₗ := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -419,7 +419,7 @@ theorem Partition.sum_of_length  (I : BoundedInterval) (P : Partition I) :
   rw [h3, ←Finset.add_sum_erase _ _ hK, ←hP', add_comm]; congr
   apply hn; simp [hP', Finset.card_erase_of_mem hK, hcard]
 
-/-- Definition 11.1.14 (более мелкие и более грубые разбиения) -/
+/-- Определение 11.1.14 (более мелкие и более грубые разбиения) -/
 instance Partition.instLE (I : BoundedInterval) : LE (Partition I) where
   le P P' := ∀ J ∈ P'.intervals, ∃ K ∈ P, J ⊆ K
 
@@ -433,7 +433,7 @@ instance Partition.instOrderBot (I : BoundedInterval) : OrderBot (Partition I) w
   bot_le := by
     sorry
 
-/-- Example 11.1.15 -/
+/-- Пример 11.1.15 -/
 example : ∃ P P' : Partition (Icc 1 4),
   P.intervals = {Ico 1 2, Icc 2 2, Ioo 2 3,
                  Icc 3 4} ∧
@@ -441,7 +441,7 @@ example : ∃ P P' : Partition (Icc 1 4),
   P' ≤ P := by
   sorry
 
-/-- Definition 11.1.16 (общее измельчение). -/
+/-- Определение 11.1.16 (общее измельчение). -/
 noncomputable instance Partition.instMax (I : BoundedInterval) : Max (Partition I) where
   max P P' := {
     intervals := Finset.image₂ (fun J K ↦ J ∩ K) P.intervals P'.intervals
@@ -459,7 +459,7 @@ noncomputable instance Partition.instMax (I : BoundedInterval) : Max (Partition 
     }
 
 
-/-- Example 11.1.17. -/
+/-- Пример 11.1.17. -/
 example : ∃ P P' : Partition (Icc 1 4),
     P.intervals = {Ico 1 3, Icc 3 4} ∧
     P'.intervals = {Icc 1 2, Ioc 2 4} ∧
@@ -467,7 +467,7 @@ example : ∃ P P' : Partition (Icc 1 4),
       {Set.Icc 1 2, Set.Ioo 2 3, Set.Icc 3 4, ∅} := by
   sorry
 
-/-- Lemma 11.1.8 / Exercise 11.1.4 -/
+/-- Лемма 11.1.8 / Упражнение 11.1.4 -/
 theorem BoundedInterval.le_max {I : BoundedInterval} (P P' : Partition I) : 
   P ≤ P ⊔ P' ∧ P' ≤ P ⊔ P' := by
   sorry

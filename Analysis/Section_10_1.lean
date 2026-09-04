@@ -22,7 +22,7 @@ namespace Chapter10
 
 variable (x₀ : ℝ)
 
-/-- Definition 10.1.1 (дифференцируемость в точке). Для понятия {name}`HasDerivWithinAt` из Mathlib
+/-- Определение 10.1.1 (дифференцируемость в точке). Для понятия {name}`HasDerivWithinAt` из Mathlib
 гипотеза о том, что {name}`x₀` — предельная точка, не нужна. -/
 theorem _root_.HasDerivWithinAt.iff (X : Set ℝ) (x₀ : ℝ) (f : ℝ → ℝ)
   (L : ℝ) : 
@@ -63,7 +63,7 @@ theorem derivative_unique' (X : Set ℝ) {x₀ : ℝ}
   solve_by_elim [derivative_unique, DifferentiableWithinAt.hasDerivWithinAt]
 
 
-/-- Example 10.1.3 -/
+/-- Пример 10.1.3 -/
 example (x₀ : ℝ) : HasDerivWithinAt (fun x ↦ x^2) (2 * x₀) .univ x₀ := by
   sorry
 
@@ -73,7 +73,7 @@ example (x₀ : ℝ) : DifferentiableWithinAt ℝ (fun x ↦ x^2) .univ x₀ := 
 example (x₀ : ℝ) : derivWithin (fun x ↦ x^2) .univ x₀ = 2 * x₀ := by
   sorry
 
-/-- Remark 10.1.4 -/
+/-- Замечание 10.1.4 -/
 example (X : Set ℝ) (x₀ : ℝ) {f g : ℝ → ℝ} (hfg : f = g) : 
   DifferentiableWithinAt ℝ f X x₀ ↔ DifferentiableWithinAt ℝ g X x₀ := by rw [hfg]
 
@@ -85,7 +85,7 @@ example : ∃ (X : Set ℝ) (x₀ : ℝ) (f g : ℝ → ℝ) (L : ℝ) (hfg : f 
   HasDerivWithinAt f L X x₀ ∧ ¬ HasDerivWithinAt g L X x₀ := by
   sorry
 
-/-- Example 10.1.6 -/
+/-- Пример 10.1.6 -/
 
 abbrev f_10_1_6 : ℝ → ℝ := abs
 
@@ -113,66 +113,66 @@ example : DifferentiableWithinAt ℝ f_10_1_6 (.Iio 0) 0 := by
 example : derivWithin f_10_1_6 (.Iio 0) 0 = -1 := by
   sorry
 
-/-- Proposition 10.1.7 (приближение Ньютона) / Exercise 10.1.2 -/
+/-- Утверждение 10.1.7 (приближение Ньютона) / Упражнение 10.1.2 -/
 theorem _root_.HasDerivWithinAt.iff_approx_linear (X : Set ℝ) (x₀ : ℝ) (f : ℝ → ℝ) (L : ℝ) : 
   HasDerivWithinAt f L X x₀ ↔
   ∀ ε > 0, ∃ δ > 0, ∀ x ∈ X, |x - x₀| < δ → |f x - f x₀ - L * (x - x₀)| ≤ ε * |x - x₀| := by
   sorry
 
-/-- Proposition 10.1.10 / Exercise 10.1.3 -/
+/-- Утверждение 10.1.10 / Упражнение 10.1.3 -/
 theorem _root_.ContinuousWithinAt.of_differentiableWithinAt {X : Set ℝ} {x₀ : ℝ} {f : ℝ → ℝ}
   (h : DifferentiableWithinAt ℝ f X x₀) : 
   ContinuousWithinAt f X x₀ := by
   sorry
 
--- Definition 10.1.11 (дифференцируемость на области определения)
+-- Определение 10.1.11 (дифференцируемость на области определения)
 #check DifferentiableOn.eq_1
 
-/-- Corollary 10.1.12 -/
+/-- Следствие 10.1.12 -/
 theorem _root_.ContinuousOn.of_differentiableOn {X : Set ℝ} {f : ℝ → ℝ}
   (h : DifferentiableOn ℝ f X) : 
   ContinuousOn f X := by
   solve_by_elim [ContinuousWithinAt.of_differentiableWithinAt]
 
-/-- Theorem 10.1.13 (a) (дифференциальное исчисление) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (a) (дифференциальное исчисление) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_const (X : Set ℝ) (x₀ : ℝ) (c : ℝ) : 
   HasDerivWithinAt (fun x ↦ c) 0 X x₀ := by sorry
 
-/-- Theorem 10.1.13 (b) (дифференциальное исчисление) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (b) (дифференциальное исчисление) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_id (X : Set ℝ) (x₀ : ℝ) : 
   HasDerivWithinAt (fun x ↦ x) 1 X x₀ := by sorry
 
-/-- Theorem 10.1.13 (c) (правило суммы) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (c) (правило суммы) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_add {X : Set ℝ} {x₀ f'x₀ g'x₀ : ℝ}
   {f g : ℝ → ℝ} (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : HasDerivWithinAt g g'x₀ X x₀) : 
   HasDerivWithinAt (f + g) (f'x₀ + g'x₀) X x₀ := by
   sorry
 
-/-- Theorem 10.1.13 (d) (правило произведения) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (d) (правило произведения) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_mul {X : Set ℝ} {x₀ f'x₀ g'x₀ : ℝ}
   {f g : ℝ → ℝ} (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : HasDerivWithinAt g g'x₀ X x₀) : 
   HasDerivWithinAt (f * g) (f'x₀ * (g x₀) + (f x₀) * g'x₀) X x₀ := by
   sorry
 
-/-- Theorem 10.1.13 (e) (дифференциальное исчисление) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (e) (дифференциальное исчисление) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_smul {X : Set ℝ} {x₀ f'x₀ : ℝ} (c : ℝ)
   {f : ℝ → ℝ} (hf : HasDerivWithinAt f f'x₀ X x₀) : 
   HasDerivWithinAt (c • f) (c * f'x₀) X x₀ := by
   sorry
 
-/-- Theorem 10.1.13 (f) (правило разности) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (f) (правило разности) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_sub {X : Set ℝ} {x₀ f'x₀ g'x₀ : ℝ}
   {f g : ℝ → ℝ} (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : HasDerivWithinAt g g'x₀ X x₀) : 
   HasDerivWithinAt (f - g) (f'x₀ - g'x₀) X x₀ := by
   sorry
 
-/-- Theorem 10.1.13 (g) (дифференциальное исчисление) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (g) (дифференциальное исчисление) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_inv {X : Set ℝ} {x₀ g'x₀ : ℝ}
   {g : ℝ → ℝ} (hgx₀ : g x₀ ≠ 0) (hg : HasDerivWithinAt g g'x₀ X x₀) : 
   HasDerivWithinAt (1/g) (-g'x₀ / (g x₀)^2) X x₀ := by
   sorry
 
-/-- Theorem 10.1.13 (h) (правило частного) / Exercise 10.1.4 -/
+/-- Теорема 10.1.13 (h) (правило частного) / Упражнение 10.1.4 -/
 theorem _root_.HasDerivWithinAt.of_div {X : Set ℝ} {x₀ f'x₀ g'x₀ : ℝ}
   {f g : ℝ → ℝ} (hgx₀ : g x₀ ≠ 0) (hf : HasDerivWithinAt f f'x₀ X x₀)
   (hg : HasDerivWithinAt g g'x₀ X x₀) : 
@@ -182,19 +182,19 @@ theorem _root_.HasDerivWithinAt.of_div {X : Set ℝ} {x₀ f'x₀ g'x₀ : ℝ}
 example (x₀ : ℝ) (hx₀ : x₀ ≠ 1) : HasDerivWithinAt (fun x ↦ (x-2)/(x-1)) (1 /(x₀-1)^2) (.univ \ {1}) x₀ := by
   sorry
 
-/-- Theorem 10.1.15 (цепное правило) / Exercise 10.1.7 -/
+/-- Теорема 10.1.15 (цепное правило) / Упражнение 10.1.7 -/
 theorem _root_.HasDerivWithinAt.of_comp {X Y : Set ℝ} {x₀ y₀ f'x₀ g'y₀ : ℝ}
   {f g : ℝ → ℝ} (hfx₀ : f x₀ = y₀) (hfX : ∀ x ∈ X, f x ∈ Y)
   (hf : HasDerivWithinAt f f'x₀ X x₀) (hg : HasDerivWithinAt g g'y₀ Y y₀) : 
   HasDerivWithinAt (g ∘ f) (g'y₀ * f'x₀) X x₀ := by
   sorry
 
-/-- Exercise 10.1.5 -/
+/-- Упражнение 10.1.5 -/
 theorem _root_.HasDerivWithinAt.of_pow (n : ℕ) (x₀ : ℝ) : HasDerivWithinAt (fun x ↦ x^n)
 (n * x₀^((n : ℤ)-1)) .univ x₀ := by
   sorry
 
-/-- Exercise 10.1.6 -/
+/-- Упражнение 10.1.6 -/
 theorem _root_.HasDerivWithinAt.of_zpow (n : ℤ) (x₀ : ℝ) (hx₀ : x₀ ≠ 0) : 
   HasDerivWithinAt (fun x ↦ x^n) (n * x₀^(n-1)) (.univ \ {0}) x₀ := by
   sorry

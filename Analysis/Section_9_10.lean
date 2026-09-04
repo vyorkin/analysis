@@ -13,7 +13,7 @@ import Mathlib.Tactic
 
 namespace Chapter9
 
-/-- Definition 9.10.1 (бесконечная точка прикосновения). Мы используем {lean}`¬ BddAbove X` как нашу нотацию для того, что `+∞` является точкой прикосновения -/
+/-- Определение 9.10.1 (бесконечная точка прикосновения). Мы используем {lean}`¬ BddAbove X` как нашу нотацию для того, что `+∞` является точкой прикосновения -/
 theorem BddAbove.unbounded_iff (X : Set ℝ) : ¬ BddAbove X ↔ ∀ M, ∃ x ∈ X, x > M := by
   simp [bddAbove_def]
 
@@ -38,19 +38,19 @@ theorem BddBelow.unbounded_iff' (X : Set ℝ) : ¬ BddBelow X ↔ sInf ((fun x :
     use x, hx; revert M; simp [EReal.forall]
   intro h M; specialize h (M : EReal) ?_ <;>simp_all
 
-/-- Definition 9.10.13 (предел на бесконечности) -/
+/-- Определение 9.10.13 (предел на бесконечности) -/
 theorem Filter.Tendsto.AtTop.iff {X : Set ℝ} (f : ℝ → ℝ) (L : ℝ) : Filter.Tendsto f (.atTop ⊓ .principal X) (nhds L) ↔ ∀ ε > (0 : ℝ), ∃ M, ∀ x ∈ X ∩ .Ici M, |f x - L| < ε := by
   rw [LinearOrderedAddCommGroup.tendsto_nhds]
   peel with ε hε
   simp [Filter.eventually_inf_principal]
   aesop
 
-/-- Exercise 9.10.4 -/
+/-- Упражнение 9.10.4 -/
 example : Filter.Tendsto (fun x : ℝ ↦ 1/x) (.atTop ⊓ .principal (.Ioi 0)) (nhds 0) := by
   sorry
 
 open Classical in
-/-- Exercise 9.10.1 -/
+/-- Упражнение 9.10.1 -/
 example (a : ℕ → ℝ) (L : ℝ) : Filter.Tendsto (fun x : ℝ ↦ (if h : (∃ n : ℕ, x = n) then a h.choose else 0)) (.atTop ⊓ .principal ((fun n : ℕ ↦ (n : ℝ)) '' .univ)) (nhds L) ↔ Filter.atTop.Tendsto a (nhds L) := by
   sorry
 

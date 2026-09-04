@@ -7,7 +7,7 @@ import Analysis.MeasureTheory.Section_1_4_1
 
 -/
 
-/-- Definition 1.4.12 (сигма-алгебра) -/
+/-- Определение 1.4.12 (сигма-алгебра) -/
 class ConcreteSigmaAlgebra (X : Type*) extends ConcreteBooleanAlgebra X where
   countable_union_mem : ∀ E : ℕ → Set X, (∀ n, measurable (E n)) → measurable (⋃ n, E n)
 
@@ -25,11 +25,11 @@ theorem ConcreteSigmaAlgebra.isSigmaAlgebra {X : Type*} (B : ConcreteSigmaAlgebr
 def ConcreteBooleanAlgebra.isSigmaAlgebra.toSigmaAlgebra {X : Type*} {B : ConcreteBooleanAlgebra X} (h : B.isSigmaAlgebra) : ConcreteSigmaAlgebra X :=
   { countable_union_mem := h }
 
-/-- Exercise 1.4.10 -/
+/-- Упражнение 1.4.10 -/
 def ConcreteBooleanAlgebra.isAtomic.isSigmaAlgebra {X : Type*} {B : ConcreteBooleanAlgebra X} (h : B.isAtomic) : B.isSigmaAlgebra :=
   by sorry
 
-/-- Exercise 1.4.11 -/
+/-- Упражнение 1.4.11 -/
 theorem LebesgueMeasurable.boolean_algebra.isSigmaAlgebra (d : ℕ) : (LebesgueMeasurable.boolean_algebra d).isSigmaAlgebra :=
   by sorry
 
@@ -48,7 +48,7 @@ theorem JordanMeasurable.boolean_algebra.not_isSigmaAlgebra (d:ℕ) (hd: d ≥ 1
   ¬ (JordanMeasurable.boolean_algebra d).isSigmaAlgebra :=
   by sorry
 
-/-- Exercise 1.4.12 -/
+/-- Упражнение 1.4.12 -/
 theorem ConcreteSigmaAlgebra.restrict_is_sigma {X : Type*} (B : ConcreteSigmaAlgebra X) (A : Set X) : (B.restrict A).isSigmaAlgebra := by sorry
 
 def ConcreteSigmaAlgebra.restrict {X : Type*} (B : ConcreteSigmaAlgebra X) (A : Set X) : ConcreteSigmaAlgebra A := (B.restrict_is_sigma A).toSigmaAlgebra
@@ -87,7 +87,7 @@ instance ConcreteSigmaAlgebra.instOrderBot {X : Type*} : OrderBot (ConcreteSigma
     bot_le := sorry
   }
 
-/-- Exercise 1.4.13 (пересечение сигма-алгебр) -/
+/-- Упражнение 1.4.13 (пересечение сигма-алгебр) -/
 instance ConcreteSigmaAlgebra.instInfSet {X : Type*} : InfSet (ConcreteSigmaAlgebra X) :=
   {
       sInf S :=
@@ -103,7 +103,7 @@ instance ConcreteSigmaAlgebra.instInfSet {X : Type*} : InfSet (ConcreteSigmaAlge
 def ConcreteSigmaAlgebra.generated_by {X : Type*} (F : Set (Set X)) : ConcreteSigmaAlgebra X :=
   sInf { B | ∀ E ∈ F, B.measurable E }
 
-/-- Definition 1.4.14 (порождение σ-алгебр) -/
+/-- Определение 1.4.14 (порождение σ-алгебр) -/
 instance ConcreteSigmaAlgebra.instSupSet {X : Type*} : SupSet (ConcreteSigmaAlgebra X) :=
   {
       sSup S := ConcreteSigmaAlgebra.generated_by (⋃ B ∈ S, B.measurableSets)
@@ -130,43 +130,43 @@ theorem ConcreteSigmaAlgebra.generated_by_le {X : Type*} (F : Set (Set X)) : Con
 
 example : ∃ (X : Type*) (F : Set (Set X)), ConcreteBooleanAlgebra.generated_by F ≠ (ConcreteSigmaAlgebra.generated_by F).toConcreteBooleanAlgebra := by sorry
 
-/-- Remark 1.4.15 -/
+/-- Замечание 1.4.15 -/
 theorem ConcreteSigmaAlgebra.induction {X : Type*} {F : Set (Set X)} {P : Set X → Prop}
   (h1 : P ∅) (h2 : ∀ E ∈ F, P E) (h3 : ∀ E, P E → P Eᶜ)
   (h4 : ∀ (E : ℕ → Set X), (∀ n, P (E n)) → P (⋃ n, E n)) : ∀ E, (ConcreteSigmaAlgebra.generated_by F).measurable E → P E :=
   by sorry
 
-/-- Definition 1.4.16 (борелевская σ-алгебра) -/
+/-- Определение 1.4.16 (борелевская σ-алгебра) -/
 def BorelSigmaAlgebra (X : Type*) [TopologicalSpace X] : ConcreteSigmaAlgebra X :=
   ConcreteSigmaAlgebra.generated_by { U : Set X | IsOpen U }
 
-/-- Exercise 1.4.14 (i) -/
+/-- Упражнение 1.4.14 (i) -/
 theorem BorelSigmaAlgebra.generated_by_open (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { U : Set (EuclideanSpace' d) | IsOpen U } := rfl
 
-/-- Exercise 1.4.14 (ii) -/
+/-- Упражнение 1.4.14 (ii) -/
 theorem BorelSigmaAlgebra.generated_by_closed (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { F : Set (EuclideanSpace' d) | IsClosed F } := by sorry
 
-/-- Exercise 1.4.14 (iii) -/
+/-- Упражнение 1.4.14 (iii) -/
 theorem BorelSigmaAlgebra.generated_by_compact (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { K : Set (EuclideanSpace' d) | IsCompact K } := by sorry
 
-/-- Exercise 1.4.14 (iv) -/
+/-- Упражнение 1.4.14 (iv) -/
 theorem BorelSigmaAlgebra.generated_by_open_balls (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { B : Set (EuclideanSpace' d) | ∃ x₀ r, B = Metric.ball x₀ r } := by sorry
 
-/-- Exercise 1.4.14 (v) -/
+/-- Упражнение 1.4.14 (v) -/
 theorem BorelSigmaAlgebra.generated_by_boxes (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by (Box.toSet '' Set.univ) := by sorry
 
-/-- Exercise 1.4.14 (vi) -/
+/-- Упражнение 1.4.14 (vi) -/
 theorem BorelSigmaAlgebra.generated_by_elementary (d : ℕ) : BorelSigmaAlgebra (EuclideanSpace' d) = ConcreteSigmaAlgebra.generated_by { E : Set (EuclideanSpace' d) | IsElementary E }  := by sorry
 
 open Ordinal in
-/-- Exercise 1.4.15 (рекурсивное определение порождённой сигма-алгебры). -/
+/-- Упражнение 1.4.15 (рекурсивное определение порождённой сигма-алгебры). -/
 def ConcreteSigmaAlgebra.generated_by_eq {X : Type*} (F : Set (Set X)) : 
   (ConcreteSigmaAlgebra.generated_by F).measurableSets =
   ⋃ α < ω₁,
   Ordinal.limitRecOn (motive := fun _ ↦ Set (Set X)) α F (fun n G ↦ { E : Set X | (∃ S : Set G, Countable S ∧ E = ⋃ (H : S), H) ∨ (∃ S : Set G, Countable S ∧ E = (⋃ (H : S), H)ᶜ) }) (fun α _ G ↦ ⋃ (β : Ordinal) (h : β < α), G β h) := by sorry
 
 open Cardinal in
-/-- Exercise 1.4.16 -/
+/-- Упражнение 1.4.16 -/
 theorem ConcreteSigmaAlgebra.card_of_generated_by {X : Type*} {F : Set (Set X)} [Infinite F] : 
   Cardinal.mk (ConcreteSigmaAlgebra.generated_by F).measurableSets ≤ (Cardinal.mk F) ^ ℵ₀ :=
   by sorry
@@ -180,7 +180,7 @@ theorem BorelSigmaAlgebra.card (d : ℕ) : Cardinal.mk (BorelSigmaAlgebra (Eucli
 theorem JordanMeasurable.not_borel {d : ℕ} (hd : d ≥ 1) : ∃ E : Set (EuclideanSpace' d), JordanMeasurable E ∧ ¬ (BorelSigmaAlgebra (EuclideanSpace' d)).measurable E :=
   by sorry
 
-/-- Exercise 1.4.17 -/
+/-- Упражнение 1.4.17 -/
 theorem BorelSigmaAlgebra.prod {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' d₁)} {F : Set (EuclideanSpace' d₂)}
   (hE : (BorelSigmaAlgebra (EuclideanSpace' d₁)).measurable E)
   (hF : (BorelSigmaAlgebra (EuclideanSpace' d₂)).measurable F) : 
@@ -188,7 +188,7 @@ theorem BorelSigmaAlgebra.prod {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' d₁)
   :=
   by sorry
 
-/-- Exercise 1.4.18(i) (срез вдоль первого множителя). -/
+/-- Упражнение 1.4.18(i) (срез вдоль первого множителя). -/
 theorem BorelSigmaAlgebra.slice_fst {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' (d₁+d₂))}
   (hE : (BorelSigmaAlgebra (EuclideanSpace' (d₁+d₂))).measurable E)
   (x₂ : EuclideanSpace' d₂ ) : 
@@ -196,7 +196,7 @@ theorem BorelSigmaAlgebra.slice_fst {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' 
   :=
   by sorry
 
-/-- Exercise 1.4.18(i) (срез вдоль второго множителя). -/
+/-- Упражнение 1.4.18(i) (срез вдоль второго множителя). -/
 theorem BorelSigmaAlgebra.slice_snd {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' (d₁+d₂))}
   (hE : (BorelSigmaAlgebra (EuclideanSpace' (d₁+d₂))).measurable E)
   (x₁ : EuclideanSpace' d₁ ) : 
@@ -204,12 +204,12 @@ theorem BorelSigmaAlgebra.slice_snd {d₁ d₂ : ℕ} {E : Set (EuclideanSpace' 
   :=
   by sorry
 
-/-- Exercise 1.4.18(ii) -/
+/-- Упражнение 1.4.18(ii) -/
 example : ∃ (d₁ d₂ : ℕ) (E : Set (EuclideanSpace' (d₁+d₂))) (x₂ : EuclideanSpace' d₂),
   LebesgueMeasurable E ∧
   ¬ LebesgueMeasurable { x₁ | (EuclideanSpace'.prod_equiv d₁ d₂).symm ⟨ x₁, x₂ ⟩ ∈ E } := by sorry
 
-/-- Exercise 1.4.19 -/
+/-- Упражнение 1.4.19 -/
 theorem LebesgueMeasurable.sigmaAlgebra_generated_by {d : ℕ} : 
   LebesgueMeasurable.sigmaAlgebra d = ConcreteSigmaAlgebra.generated_by ( (BorelSigmaAlgebra (EuclideanSpace' d)).measurableSets ∪ (IsNull.sigmaAlgebra d).measurableSets) :=
   by sorry

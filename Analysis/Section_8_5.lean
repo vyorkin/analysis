@@ -21,7 +21,7 @@ set_option doc.verso.suggestions false
 
 namespace Chapter8
 
-/-- Definition 8.5.1 — здесь мы просто повторяем класс {name}`PartialOrder` из Mathlib. -/
+/-- Определение 8.5.1 — здесь мы просто повторяем класс {name}`PartialOrder` из Mathlib. -/
 
 example {X : Type} [PartialOrder X] (x : X) : x ≤ x := le_refl x
 example {X : Type} [PartialOrder X] {x y : X} (h₁ : x ≤ y) (h₂ : y ≤ x) : x = y := antisymm h₁ h₂
@@ -42,7 +42,7 @@ example {X : Type} [PartialOrder X] (x y : X) : x < y ↔ x ≤ y ∧ x ≠ y :=
 example {X : Type} : PartialOrder (Set X) := by infer_instance
 example {X : Type} (A B : Set X) : A ≤ B ↔ A ⊆ B := by rfl
 
-/-- Definition 8.5.3. Здесь мы просто повторяем класс {name}`LinearOrder` из Mathlib. -/
+/-- Определение 8.5.3. Здесь мы просто повторяем класс {name}`LinearOrder` из Mathlib. -/
 example {X : Type} [LinearOrder X] : PartialOrder X := by infer_instance
 def IsTotal (X : Type) [PartialOrder X] : Prop := ∀ x y : X, x ≤ y ∨ y ≤ x
 example {X : Type} [LinearOrder X] : IsTotal X := le_total
@@ -55,7 +55,7 @@ open Classical in
    toDecidableLE := decRel LE.le
 }
 
-/- Examples 8.5.4 -/
+/- Примеры 8.5.4 -/
 #check (inferInstance : LinearOrder ℕ)
 #check (inferInstance : LinearOrder ℚ)
 #check (inferInstance : LinearOrder ℝ)
@@ -80,7 +80,7 @@ theorem IsTotal.subset {X : Type} [PartialOrder X] {A B : Set X} (hA : IsTotal A
 abbrev X_8_5_4 : Set (Set ℕ) := { {1,2}, {2}, {2,3}, {2,3,4}, {5} }
 example : ¬ IsTotal X_8_5_4 := by sorry
 
-/-- Definition 8.5.5 (максимальные и минимальные элементы). Здесь мы используем {name}`IsMax` и {name}`IsMin` из Mathlib. -/
+/-- Определение 8.5.5 (максимальные и минимальные элементы). Здесь мы используем {name}`IsMax` и {name}`IsMin` из Mathlib. -/
 theorem IsMax.iff {X : Type} [PartialOrder X] (x : X) : 
   IsMax x ↔ ¬ ∃ y, x < y := by rw [isMax_iff_forall_not_lt]; grind
 
@@ -88,19 +88,19 @@ theorem IsMax.iff {X : Type} [PartialOrder X] (x : X) :
 theorem IsMin.iff {X : Type} [PartialOrder X] (x : X) : 
   IsMin x ↔ ¬ ∃ y, x > y := by rw [isMin_iff_forall_not_lt]; grind
 
-/-- Examples 8.5.6 -/
+/-- Примеры 8.5.6 -/
 example : IsMin (⟨ {2}, by aesop ⟩ : X_8_5_4) := by sorry
 example : IsMax (⟨ {1,2}, by aesop ⟩ : X_8_5_4) := by sorry
 example : IsMax (⟨ {2,3,4}, by aesop ⟩ : X_8_5_4) := by sorry
 example : IsMin (⟨ {5}, by aesop ⟩ : X_8_5_4) ∧ IsMax (⟨ {5}, by aesop ⟩ : X_8_5_4) := by sorry
 example : ¬ IsMin (⟨ {2,3}, by aesop ⟩ : X_8_5_4) ∧ ¬ IsMax (⟨ {2,3}, by aesop ⟩ : X_8_5_4) := by sorry
 
-/-- Example 8.5.7 -/
+/-- Пример 8.5.7 -/
 example : IsMin (0 : ℕ) := by sorry
 example (n : ℕ) : ¬ IsMax n := by sorry
 example (n : ℤ) : ¬ IsMin n ∧ ¬ IsMax n := by sorry
 
-/-- Definition 8.5.8. Мы используем `[LinearOrder X] [WellFoundedLT X]` для описания вполне упорядоченных множеств. -/
+/-- Определение 8.5.8. Мы используем `[LinearOrder X] [WellFoundedLT X]` для описания вполне упорядоченных множеств. -/
 theorem WellFoundedLT.iff (X : Type) [LinearOrder X] : 
   WellFoundedLT X ↔ ∀ A : Set X, A.Nonempty → ∃ x : A, IsMin x := by
   unfold WellFoundedLT IsMin
@@ -115,24 +115,24 @@ theorem WellFoundedLT.iff (X : Type) [LinearOrder X] :
 theorem WellFoundedLT.iff' {X : Type} [PartialOrder X] (h : IsTotal X) : 
   WellFoundedLT X ↔ ∀ A : Set X, A.Nonempty → ∃ x : A, IsMin x := @iff X (LinearOrder.mk h)
 
-/-- Example 8.5.9 -/
+/-- Пример 8.5.9 -/
 example : WellFoundedLT ℕ := by
   rw [WellFoundedLT.iff]
   intro A hA; use ⟨ _, (Nat.min_spec hA).1 ⟩
   simp [IsMin]; grind [Nat.min_spec]
 
-/-- Exercise 8.1.2 -/
+/-- Упражнение 8.1.2 -/
 example : ¬ WellFoundedLT ℤ := by sorry
 example : ¬ WellFoundedLT ℚ := by sorry
 example : ¬ WellFoundedLT ℝ := by sorry
 
-/-- Exercise 8.5.8 (i) -/
+/-- Упражнение 8.5.8 (i) -/
 theorem IsMax.ofFinite {X : Type} [LinearOrder X] [Finite X] [Nonempty X] : ∃ x : X, IsMax x := by sorry
 
-/-- Exercise 8.5.8 (ii) -/
+/-- Упражнение 8.5.8 (ii) -/
 theorem IsMin.ofFinite {X : Type} [LinearOrder X] [Finite X] [Nonempty X] : ∃ x : X, IsMin x := by sorry
 
-/-- Exercise 8.5.8 (iii) -/
+/-- Упражнение 8.5.8 (iii) -/
 theorem WellFoundedLT.ofFinite {X : Type} [LinearOrder X] [Finite X] : WellFoundedLT X := by sorry
 
 example {X : Type} [LinearOrder X] [WellFoundedLT X] (A : Set X) : WellFoundedLT A := by sorry
@@ -148,12 +148,12 @@ theorem WellFoundedLT.subset {X : Type} [PartialOrder X] {A B : Set X} (hA : IsT
   intro a ha_B ha_C
   apply hmin _ (hAB ha_B) <;> trivial
 
-/-- Proposition 8.5.10 / Exercise 8.5.10 -/
+/-- Утверждение 8.5.10 / Упражнение 8.5.10 -/
 theorem WellFoundedLT.strong_induction {X : Type} [LinearOrder X] [WellFoundedLT X] {P : X → Prop}
   (h : ∀ n, (∀ m < n, P m) → P n) : ∀ n, P n := by
   sorry
 
-/-- Definition 8.5.12 (верхние и строгие верхние границы) -/
+/-- Определение 8.5.12 (верхние и строгие верхние границы) -/
 abbrev IsUpperBound {X : Type} [PartialOrder X] (A : Set X) (x : X) : Prop :=
   ∀ y ∈ A, y ≤ x
 
@@ -194,10 +194,10 @@ theorem IsMin.iff_lowerbound' {X : Type} [PartialOrder X] {Y : Set X} (hY : IsTo
     rw [iff_lowerbound hY x₀] at this; use x₀
   intro ⟨ x₀, hx₀, hmin ⟩; choose hx₀ _ using (iff_lowerbound hY x₀).mpr ⟨ hx₀, hmin ⟩; use ⟨ _, hx₀ ⟩
 
-/-- Exercise 8.5.11 -/
+/-- Упражнение 8.5.11 -/
 example {X : Type} [PartialOrder X] {Y Y' : Set X} (hY : IsTotal Y) (hY' : IsTotal Y') (hY_well : WellFoundedLT Y) (hY'_well : WellFoundedLT Y') (hYY' : IsTotal (Y ∪ Y' : Set X)) : WellFoundedLT (Y ∪ Y' : Set X) := by sorry
 
-/-- Lemma 8.5.14 -/
+/-- Лемма 8.5.14 -/
 theorem WellFoundedLT.partialOrder {X : Type} [PartialOrder X] (x₀ : X) : ∃ Y : Set X, IsTotal Y ∧ WellFoundedLT Y ∧ (∃ hx₀ : x₀ ∈ Y, IsMin (⟨ x₀, hx₀ ⟩ : Y)) ∧ ¬ ∃ x, IsStrictUpperBound Y x := by
   -- Это доказательство основано на оригинальном тексте с некоторыми техническими упрощениями.
 
@@ -238,7 +238,7 @@ theorem WellFoundedLT.partialOrder {X : Type} [PartialOrder X] (x₀ : X) : ∃ 
   have hΩ : pt ∈ Ω := by
     sorry
 
-  -- Exercise 8.5.13
+  -- Упражнение 8.5.13
   have ex_8_5_13 {Y Y' : Ω} (x : X) (h : x ∈ (Y' : Set X) \ Y) : IsStrictUpperBound Y x := by
     sorry
 
@@ -314,12 +314,12 @@ theorem WellFoundedLT.partialOrder {X : Type} [PartialOrder X] (x₀ : X) : ∃ 
   specialize hs _ hs_mem; order
 
 
-/-- Lemma 8.5.15 (лемма Цорна) / Exercise 8.5.14 -/
+/-- Лемма 8.5.15 (лемма Цорна) / Упражнение 8.5.14 -/
 theorem Zorns_lemma {X : Type} [PartialOrder X] [Nonempty X]
   (hchain : ∀ Y : Set X, IsTotal Y ∧ Y.Nonempty → ∃ x, IsUpperBound Y x) : ∃ x : X, IsMax x := by
   sorry
 
-/-- Exercise 8.5.1 -/
+/-- Упражнение 8.5.1 -/
 def empty_set_partial_order [h₀ : LE Empty] : Decidable (∃ h : PartialOrder Empty, h.le = h₀.le) := by
   sorry
 
@@ -329,14 +329,14 @@ def empty_set_linear_order [h₀ : LE Empty] : Decidable (∃ h : LinearOrder Em
 def empty_set_well_order [h₀ : LT Empty] : Decidable (Nonempty (WellFoundedLT Empty)) := by
   sorry
 
-/-- Exercise 8.5.2 -/
+/-- Упражнение 8.5.2 -/
 example : ∃ (X : Type) (h₀ : LE X), (∀ x : X, x ≤ x) ∧ (∀ x y : X, x ≤ y → y ≤ x → x = y) ∧ ¬ (∀ x y z : X, x ≤ y → y ≤ z → x ≤ z) := by sorry
 
 example : ∃ (X : Type) (h₀ : LE X), (∀ x : X, x ≤ x) ∧ (∀ x y z : X, x ≤ y → y ≤ z → x ≤ z) ∧ ¬ (∀ x y : X, x ≤ y → y ≤ x → x = y) := by sorry
 
 example : ∃ (X : Type) (h₀ : LE X), (∀ x y : X, x ≤ y → y ≤ x → x = y) ∧ (∀ x y z : X, x ≤ y → y ≤ z → x ≤ z) ∧ ¬ (∀ x : X, x ≤ x) := by sorry
 
-/-- Exercise 8.5.3: отношение делимости на PNat. -/
+/-- Упражнение 8.5.3: отношение делимости на PNat. -/
 @[reducible] def PNat.divOrder : PartialOrder PNat where
   le x y := ∃ n : PNat, y = n * x
   lt x y := (∃ n : PNat, y = n * x) ∧ ¬∃ n : PNat, x = n * y
@@ -355,18 +355,18 @@ theorem PNat.divOrder_not_linear :
     ¬∃ (h₀ : LinearOrder PNat), h₀.le = (fun x y ↦ ∃ n, y = n * x) := by
   sorry
 
-/-- Exercise 8.5.4 -/
+/-- Упражнение 8.5.4 -/
 example : ¬ ∃ x : {x : ℝ| x > 0}, IsMin x := by sorry
 
-/-- Exercise 8.5.5 -/
+/-- Упражнение 8.5.5 -/
 example {X Y : Type} [PartialOrder Y] (f : X → Y) : ∃ h₀ : PartialOrder X, h₀.le = (fun x y ↦ f x < f y ∨ x = y) := by sorry
 
 def Ex_8_5_5_b : Decidable (∀ (X Y : Type) (h : LinearOrder Y) (f : X → Y), ∃ h₀ : LinearOrder X, h₀.le = (fun x y ↦ f x < f y ∨ x = y)) := by
   sorry
 
--- Заключительная часть Exercise 8.5.5; если ответ на предыдущую часть "нет", измените гипотезы так, чтобы утверждение стало верным.
+-- Заключительная часть Упражнения 8.5.5; если ответ на предыдущую часть "нет", измените гипотезы так, чтобы утверждение стало верным.
 
-/-- Exercise 8.5.6 -/
+/-- Упражнение 8.5.6 -/
 abbrev OrderIdeals (X : Type) [PartialOrder X] : Set (Set X) := .Iic '' (.univ : Set X)
 
 def OrderIdeals.iso {X : Type} [PartialOrder X] : X ≃o OrderIdeals X := {
@@ -377,18 +377,18 @@ def OrderIdeals.iso {X : Type} [PartialOrder X] : X ≃o OrderIdeals X := {
   map_rel_iff' := by sorry
   }
 
-/-- Exercise 8.5.7 -/
+/-- Упражнение 8.5.7 -/
 example {Y : Type} [LinearOrder Y] {x y : Y} (hx : IsMin x) (hy : IsMin y) : x = y := by
   sorry
 
 example {Y : Type} [LinearOrder Y] {x y : Y} (hx : IsMax x) (hy : IsMax y) : x = y := by
  sorry
 
-/-- Exercise 8.5.9 -/
+/-- Упражнение 8.5.9 -/
 example {X : Type} [LinearOrder X] (hmin : ∀ Y : Set X, Y.Nonempty → ∃ x : Y, IsMin x) (hmax : ∀ Y : Set X, Y.Nonempty → ∃ x : Y, IsMax x) : Finite X := by sorry
 
 
-/-- Exercise 8.5.12. Здесь мы делаем копию обёртки {name}`Lex` из Mathlib для лексикографических
+/-- Упражнение 8.5.12. Здесь мы делаем копию обёртки {name}`Lex` из Mathlib для лексикографических
 порядков. Эта обёртка нужна, поскольку произведениям `X × Y` упорядоченных множеств по умолчанию
 присваивается инстанс произведения частичных порядков, а не лексикографический порядок. -/
 def Lex' (α : Type) := α
@@ -406,12 +406,12 @@ instance Lex'.WellFoundedLT {X Y : Type} [LinearOrder X] [WellFoundedLT X] [Line
   WellFoundedLT (Lex' (X × Y)) := by sorry
 
 
-/-- Exercise 8.5.15 -/
+/-- Упражнение 8.5.15 -/
 theorem inj_trichotomy {X Y : Type}
     (h : ¬∃ f : X → Y, Function.Injective f) : 
     ∃ g : Y → X, Function.Injective g := by sorry
 
-/-- Exercise 8.5.16: множество частичных порядков на X, упорядоченное отношением "грубее чем",
+/-- Упражнение 8.5.16: множество частичных порядков на X, упорядоченное отношением "грубее чем",
 само является частичным порядком. -/
 instance PartialOrder.coarserOrder (X : Type) : PartialOrder (PartialOrder X) where
   le p1 p2 := ∀ x y : X, p1.le x y → p2.le x y
@@ -456,12 +456,12 @@ theorem PartialOrder.isMax_iff_isTotal (X : Type) (p : PartialOrder X) :
 theorem PartialOrder.extends_to_total (X : Type) (p : PartialOrder X) : 
     ∃ q : PartialOrder X, p ≤ q ∧ @IsTotal X q := by sorry
 
-/-- Exercise 8.5.17: докажите Exercise 8.4.2 заново с помощью леммы Цорна -/
+/-- Упражнение 8.5.17: докажите Упражнение 8.4.2 заново с помощью леммы Цорна -/
 theorem exists_set_singleton_intersect' {I U : Type} {X : I → Set U}
     (h : Set.PairwiseDisjoint .univ X) (hne : ∀ α, Nonempty (X α)) : 
     ∃ Y : Set U, ∀ α, Nat.card (Y ∩ X α : Set U) = 1 := by sorry
 
-/-- Exercise 8.5.18 -/
+/-- Упражнение 8.5.18 -/
 theorem hausdorff_of_zorns_lemma {X : Type} [PartialOrder X] : 
     ∃ M : Set X, Maximal (fun (S : Set X) => IsTotal S) M := by sorry
 
@@ -471,7 +471,7 @@ theorem zorns_lemma_of_hausdorff {X : Type} [PartialOrder X] [Nonempty X]
     (hchain : ∀ Y : Set X, IsTotal Y ∧ Y.Nonempty → ∃ x, IsUpperBound Y x) : 
     ∃ x : X, IsMax x := by sorry
 
-/-- Exercise 8.5.19: вполне упорядоченное подмножество X — подмножество с линейным порядком и
+/-- Упражнение 8.5.19: вполне упорядоченное подмножество X — подмножество с линейным порядком и
 условием фундированности. -/
 structure WellOrderedSubset (X : Type) where
   carrier : Set X
@@ -535,12 +535,12 @@ theorem axiom_of_choice_of_well_ordering
     {I : Type} {X : I → Type} (hne : ∀ i, Nonempty (X i)) : 
     Nonempty (∀ i, X i) := by sorry
 
-/-- Exercise 8.5.20 -/
+/-- Упражнение 8.5.20 -/
 theorem maximal_disjoint_subcollection {X : Type} (Ω : Set (Set X)) (hne : ∅ ∉ Ω) : 
     ∃ Ω' ⊆ Ω, Ω'.Pairwise Disjoint ∧
       (∀ C ∈ Ω, ∃ A ∈ Ω', (C ∩ A).Nonempty) := by sorry
 
-/-- Свойство максимального непересекающегося подсемейства влечёт Exercise 8.4.2, а значит,
+/-- Свойство максимального непересекающегося подсемейства влечёт Упражнение 8.4.2, а значит,
 эквивалентно аксиоме выбора. -/
 theorem exists_set_singleton_intersect_of_maximal_disjoint
     (hmds : ∀ (X : Type) (Ω : Set (Set X)), ∅ ∉ Ω →

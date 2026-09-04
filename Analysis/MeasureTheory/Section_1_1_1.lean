@@ -8,7 +8,7 @@ import Analysis.Section_9_1
 
 -/
 
-/- Definition 1.1.1.  (Интервалы) Мы используем ту же формализацию интервалов, что и в
+/- Определение 1.1.1.  (Интервалы) Мы используем ту же формализацию интервалов, что и в
 Chapter 11 "Analysis I". Следуя обычному в Lean предпочтению допускать "мусорные" значения,
 мы допускаем возможность `b < a`. -/
 inductive BoundedInterval where
@@ -510,7 +510,7 @@ theorem BoundedInterval.Ioo_subset (I : BoundedInterval) : Ioo I.a I.b ⊆ I := 
   | Ioc _ _ => by simp [subset_iff, Set.Ioo_subset_Ioc_self]
   | Ico _ _ => by simp [subset_iff, Set.Ioo_subset_Ico_self]
 
-/-- Definition 1.1.1 (боксы): длина интервала равна max(b - a, 0). -/
+/-- Определение 1.1.1 (боксы): длина интервала равна max(b - a, 0). -/
 abbrev BoundedInterval.length (I : BoundedInterval) : ℝ := max (I.b - I.a) 0
 
 /-- Длина всегда неотрицательна -/
@@ -566,7 +566,7 @@ theorem BoundedInterval.coe_of_box (I : BoundedInterval) : (I : Box 1).toSet = R
   have : i = 0 := Fin.ext_iff.mpr (by omega)
   subst this; exact hy
 
-/-- Definition 1.1.1 (боксы): объём бокса — это произведение длин его сторон. -/
+/-- Определение 1.1.1 (боксы): объём бокса — это произведение длин его сторон. -/
 abbrev Box.volume {d : ℕ} (B : Box d) : ℝ := ∏ i, |B.side i|ₗ
 
 /-- Используем здесь нижний индекс ||ᵥ, чтобы не переопределять || -/
@@ -687,7 +687,7 @@ theorem IsElementary.box {d : ℕ} (B : Box d) : IsElementary B.toSet := by
   use {B}
   simp
 
-/-- Exercise 1.1.1 (Boolean closure): The union of two elementary sets is elementary. -/
+/-- Упражнение 1.1.1 (Boolean closure): The union of two elementary sets is elementary. -/
 theorem IsElementary.union {d:ℕ} {E F: Set (EuclideanSpace' d)}
   (hE: IsElementary E) (hF: IsElementary F) : IsElementary (E ∪ F) := by
   classical
@@ -695,11 +695,11 @@ theorem IsElementary.union {d:ℕ} {E F: Set (EuclideanSpace' d)}
   obtain ⟨T, rfl⟩ := hF
   exact ⟨S ∪ T, (Finset.set_biUnion_union S T _).symm⟩
 
-/-- The empty set is elementary. -/
+/-- Пустое множество элементарно. -/
 theorem IsElementary.empty (d:ℕ) : IsElementary (∅: Set (EuclideanSpace' d)) := by
   exact ⟨∅, by simp⟩
 
-/-- The union of a finset of elementary sets is elementary. -/
+/-- Объединение finset'а элементарных множеств элементарно. -/
 lemma IsElementary.union' {d:ℕ} {S: Finset (Set (EuclideanSpace' d))}
 (hE: ∀ E ∈ S, IsElementary E) : IsElementary (⋃ E ∈ S, E) := by
   classical
@@ -711,7 +711,7 @@ lemma IsElementary.union' {d:ℕ} {S: Finset (Set (EuclideanSpace' d))}
     have ha' : IsElementary a := hE a (Finset.mem_insert_self a S')
     simpa using ha'.union hrest
 
-/-- The intersection of two boxes is a box: intersect the sides coordinatewise. -/
+/-- Пересечение двух боксов — снова бокс: пересекаем стороны покоординатно. -/
 lemma Box.inter {d:ℕ} (B₁ B₂ : Box d) :
     ∃ B : Box d, B.toSet = B₁.toSet ∩ B₂.toSet := by
   refine ⟨⟨fun i ↦ B₁.side i ∩ B₂.side i⟩, ?_⟩
@@ -725,7 +725,7 @@ lemma Box.inter {d:ℕ} (B₁ B₂ : Box d) :
     have : x i ∈ (B₁.side i:Set ℝ) ∩ (B₂.side i:Set ℝ) := ⟨h₁ i, h₂ i⟩
     rwa [← BoundedInterval.inter_eq] at this
 
-/-- Exercise 1.1.1 (Boolean closure): The intersection of two elementary sets is elementary. -/
+/-- Упражнение 1.1.1 (Boolean closure): The intersection of two elementary sets is elementary. -/
 theorem IsElementary.inter {d:ℕ} {E F: Set (EuclideanSpace' d)}
   (hE: IsElementary E) (hF: IsElementary F) : IsElementary (E ∩ F) := by
   classical
@@ -744,7 +744,7 @@ theorem IsElementary.inter {d:ℕ} {E F: Set (EuclideanSpace' d)}
     rw [hf (B, C)] at hxD
     exact ⟨⟨B, hB, hxD.1⟩, ⟨C, hC, hxD.2⟩⟩
 
-/-- The bounded interval with the given endpoints, open or closed at each end as specified. -/
+/-- Ограниченный интервал с заданными концами, открытый или закрытый на каждом конце согласно параметрам. -/
 def BoundedInterval.mk' (a b : ℝ) (lclosed uclosed : Bool) : BoundedInterval :=
   match lclosed, uclosed with
   | true, true => Icc a b
@@ -752,14 +752,14 @@ def BoundedInterval.mk' (a b : ℝ) (lclosed uclosed : Bool) : BoundedInterval :
   | false, true => Ioc a b
   | false, false => Ioo a b
 
-/-- Whether a bounded interval contains its left endpoint. -/
+/-- Содержит ли ограниченный интервал свой левый конец. -/
 def BoundedInterval.lclosed : BoundedInterval → Bool
   | Icc _ _ => true
   | Ico _ _ => true
   | Ioo _ _ => false
   | Ioc _ _ => false
 
-/-- Whether a bounded interval contains its right endpoint. -/
+/-- Содержит ли ограниченный интервал свой правый конец. -/
 def BoundedInterval.uclosed : BoundedInterval → Bool
   | Icc _ _ => true
   | Ioc _ _ => true
@@ -792,8 +792,8 @@ theorem BoundedInterval.mem_iff' (I: BoundedInterval) (x:ℝ) :
       ((if I.lclosed then I.a ≤ x else I.a < x) ∧ (if I.uclosed then x ≤ I.b else x < I.b)) := by
   cases I <;> simp [toSet, lclosed, uclosed]
 
-/-- The set difference of two bounded intervals is the union of two bounded intervals: the
-part of the first below the second, and the part above it. -/
+/-- Разность двух ограниченных интервалов — объединение двух ограниченных интервалов: части
+первого ниже второго и части выше него. -/
 theorem BoundedInterval.sdiff (I J: BoundedInterval) :
     ∃ K₁ K₂ : BoundedInterval, (I:Set ℝ) \ (J:Set ℝ) = (K₁:Set ℝ) ∪ (K₂:Set ℝ) := by
   obtain ⟨K₁, hK₁⟩ := BoundedInterval.inter I (mk' I.a J.a I.lclosed (!J.lclosed))
@@ -810,9 +810,9 @@ theorem BoundedInterval.sdiff (I J: BoundedInterval) :
     intro h <;>
     grind
 
-/-- The difference of two boxes is elementary: a point of the difference leaves the second box
-in some coordinate, and in that coordinate the difference of the two sides is a union of two
-intervals. -/
+/-- Разность двух боксов элементарна: точка разности покидает второй бокс в какой-то координате,
+а в этой координате разность двух сторон — объединение двух
+интервалов. -/
 theorem Box.sdiff {d:ℕ} (B C: Box d) : IsElementary (B.toSet \ C.toSet) := by
   classical
   choose K₁ K₂ hK using fun i ↦ BoundedInterval.sdiff (B.side i) (C.side i)
@@ -861,7 +861,7 @@ theorem Box.sdiff {d:ℕ} (B C: Box d) : IsElementary (B.toSet \ C.toSet) := by
     · intro hxC
       exact hxi.2 (hxC i)
 
-/-- Exercise 1.1.1 (Boolean closure): The set difference of two elementary sets is elementary. -/
+/-- Упражнение 1.1.1 (Boolean closure): The set difference of two elementary sets is elementary. -/
 theorem IsElementary.sdiff {d:ℕ} {E F: Set (EuclideanSpace' d)}
   (hE: IsElementary E) (hF: IsElementary F) : IsElementary (E \ F) := by
   classical
@@ -893,7 +893,7 @@ theorem IsElementary.sdiff {d:ℕ} {E F: Set (EuclideanSpace' d)}
     obtain ⟨B, -, rfl⟩ := hX
     exact Box.sdiff B C
 
-/-- Exercise 1.1.1 (Boolean closure): The symmetric difference of two elementary sets is elementary. -/
+/-- Упражнение 1.1.1 (Boolean closure): The symmetric difference of two elementary sets is elementary. -/
 theorem IsElementary.symmDiff {d:ℕ} {E F: Set (EuclideanSpace' d)}
   (hE: IsElementary E) (hF: IsElementary F) : IsElementary (symmDiff E F) := by
   have := (hE.sdiff hF).union (hF.sdiff hE)
@@ -901,7 +901,7 @@ theorem IsElementary.symmDiff {d:ℕ} {E F: Set (EuclideanSpace' d)}
 
 open Pointwise
 
-/-- Translating a bounded interval gives a bounded interval with the same open/closed ends. -/
+/-- Сдвиг ограниченного интервала даёт ограниченный интервал с теми же открытыми/закрытыми концами. -/
 theorem BoundedInterval.translate (I: BoundedInterval) (c:ℝ) :
     ((mk' (I.a + c) (I.b + c) I.lclosed I.uclosed : BoundedInterval) : Set ℝ)
       = (I:Set ℝ) + {c} := by
@@ -919,7 +919,7 @@ theorem BoundedInterval.translate (I: BoundedInterval) (c:ℝ) :
     cases I.lclosed <;> cases I.uclosed <;> simp only [if_true, if_false,
       Bool.false_eq_true] <;> grind
 
-/-- Translating a box gives a box. -/
+/-- Сдвиг бокса даёт бокс. -/
 theorem Box.translate {d:ℕ} (B: Box d) (x: EuclideanSpace' d) :
     ∃ B' : Box d, (B':Set (EuclideanSpace' d)) = (B:Set (EuclideanSpace' d)) + {x} := by
   let I' : Fin d → BoundedInterval := fun i ↦
@@ -948,7 +948,7 @@ theorem Box.translate {d:ℕ} (B: Box d) (x: EuclideanSpace' d) :
     exact Set.mem_add.mpr ⟨a i, ha i, x i, rfl,
       by have := congr_fun (congrArg WithLp.ofLp hab) i; simpa using this⟩
 
-/-- Exercise 1.1.1 (Boolean closure): Translation of an elementary set is elementary. -/
+/-- Упражнение 1.1.1 (Boolean closure): Translation of an elementary set is elementary. -/
 theorem IsElementary.translate {d:ℕ} {E: Set (EuclideanSpace' d)}
   (hE: IsElementary E) (x: EuclideanSpace' d) : IsElementary (E + {x}) := by
   classical
@@ -971,7 +971,7 @@ theorem IsElementary.translate {d:ℕ} {E: Set (EuclideanSpace' d)}
     rw [Set.mem_singleton_iff.mp hw] at hzw
     exact Set.mem_add.mpr ⟨z, by simpa using Set.mem_biUnion hB hzB, x, rfl, hzw⟩
 
-/-- Вспомогательная лемма для доказательства Lemma 1.1.2(i): любой finset интервалов допускает
+/-- Вспомогательная лемма для доказательства Леммы 1.1.2(i): любой finset интервалов допускает
 общее измельчение (refinement) в попарно непересекающиеся подынтервалы. -/
 theorem BoundedInterval.partition (S : Finset BoundedInterval) : ∃ T : Finset BoundedInterval, (T : Set _).PairwiseDisjoint BoundedInterval.toSet ∧ ∀ I ∈ S, ∃ U : Set T, I = ⋃ J ∈ U, J.val.toSet := by
   let endpoints : Finset ℝ := S.image BoundedInterval.a ∪ S.image BoundedInterval.b
@@ -1048,7 +1048,7 @@ theorem BoundedInterval.partition (S : Finset BoundedInterval) : ∃ T : Finset 
     exact ⟨h3, by order⟩
   rintro ⟨a, ha_sub, _, ha_mem⟩; exact ha_sub ha_mem
 
-/-- Lemma 1.1.2(i): любой finset боксов допускает общее измельчение в попарно непересекающиеся
+/-- Лемма 1.1.2(i): любой finset боксов допускает общее измельчение в попарно непересекающиеся
 подбоксы. -/
 theorem Box.partition {d : ℕ} (S : Finset (Box d)) : ∃ T : Finset (Box d), (T : Set (Box d)).PairwiseDisjoint Box.toSet ∧ ∀ I ∈ S, ∃ U : Set T, I = ⋃ J ∈ U, J.val.toSet := by
   choose T hTdisj hT using BoundedInterval.partition
@@ -1100,7 +1100,7 @@ theorem IsElementary.partition {d : ℕ} {E : Set (EuclideanSpace' d)}
   . apply hT'.subset; intro _; simp; tauto
   ext; simp; grind
 
-/-- Вспомогательная лемма для Lemma 1.1.2(ii): множество узлов решётки (кратных 1/N)
+/-- Вспомогательная лемма для Леммы 1.1.2(ii): множество узлов решётки (кратных 1/N)
     в интервале конечно. -/
 theorem BoundedInterval.sample_finite (I : BoundedInterval) {N : ℕ} (hN : N ≠ 0) : 
   Finite ↥(I.toSet ∩ (Set.range (fun n : ℤ ↦ (N : ℝ)⁻¹*n))) := by
@@ -1129,7 +1129,7 @@ theorem BoundedInterval.sample_finite (I : BoundedInterval) {N : ℕ} (hN : N �
       exact Int.le_floor.mpr this
   exact Set.Finite.subset ((Finset.finite_toSet _).image _) this
 
-/-- Exercise для Lemma 1.1.2(ii): длина интервала равна пределу числа узлов решётки,
+/-- Упражнение для Леммы 1.1.2(ii): длина интервала равна пределу числа узлов решётки,
     масштабированного на 1/N. -/
 theorem BoundedInterval.length_eq (I : BoundedInterval) : 
   Filter.atTop.Tendsto (fun N : ℕ ↦ (N : ℝ)⁻¹ * Nat.card ↥(I.toSet ∩ (Set.range (fun n : ℤ ↦ (N : ℝ)⁻¹*n))))
@@ -1154,13 +1154,13 @@ def Box.sample_congr {d : ℕ} (B : Box d) (N : ℕ) :
     right_inv x := by ext; simp
   }
 
-/-- Вспомогательная лемма для Lemma 1.1.2(ii): множество узлов решётки в боксе конечно. -/
+/-- Вспомогательная лемма для Леммы 1.1.2(ii): множество узлов решётки в боксе конечно. -/
 theorem Box.sample_finite {d : ℕ} (B : Box d) {N : ℕ} (hN : N ≠ 0) : 
   Finite ↥(B.toSet ∩ (Set.range (fun (n : Fin d → ℤ) ↦ .toLp 2 (fun i ↦ (N : ℝ)⁻¹*(n i))))) := by
     rw [Equiv.finite_iff (B.sample_congr N)]
     apply @Pi.finite _ _ _ (fun i ↦ (B.side i).sample_finite hN)
 
-/-- Вспомогательная лемма для Lemma 1.1.2(ii): объём бокса равен пределу числа узлов решётки,
+/-- Вспомогательная лемма для Леммы 1.1.2(ii): объём бокса равен пределу числа узлов решётки,
     масштабированного на N^(-d). -/
 theorem Box.vol_eq {d : ℕ} (B : Box d) : 
   Filter.atTop.Tendsto (fun N : ℕ ↦ (N : ℝ)^(-d : ℝ) * Nat.card ↥(B.toSet ∩ (Set.range (fun (n : Fin d → ℤ) ↦ .toLp 2 (fun i ↦ (N : ℝ)⁻¹*(n i))))))
@@ -1173,7 +1173,7 @@ theorem Box.vol_eq {d : ℕ} (B : Box d) :
   apply Nat.card_congr (B.sample_congr N)
 
 
-/-- Lemma 1.1.2(ii), вспомогательная лемма: сумма объёмов равна пределу числа узлов решётки
+/-- Лемма 1.1.2(ii), вспомогательная лемма: сумма объёмов равна пределу числа узлов решётки
     по непересекающемуся объединению. -/
 theorem Box.sum_vol_eq {d : ℕ} {T : Finset (Box d)}
  (hT : (T : Set (Box d)).PairwiseDisjoint Box.toSet) : 
@@ -1209,7 +1209,7 @@ theorem Box.sum_vol_eq {d : ℕ} {T : Finset (Box d)}
   intro ⟨ B, _ ⟩; convert B.sample_finite ?_
   omega
 
-/-- Lemma 1.1.2(ii): два непересекающихся разбиения одного и того же множества имеют равные
+/-- Лемма 1.1.2(ii): два непересекающихся разбиения одного и того же множества имеют равные
     суммы объёмов. -/
 theorem Box.measure_uniq {d : ℕ} {T₁ T₂ : Finset (Box d)}
  (hT₁ : (T₁ : Set (Box d)).PairwiseDisjoint Box.toSet)
@@ -1233,7 +1233,7 @@ theorem IsElementary.measure_eq {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Is
   apply Box.measure_uniq hE.partition.choose_spec.1 hT _
   rw [←heq, ←hE.partition.choose_spec.2]
 
-/-- Exercise 1.1.2: приведите альтернативное доказательство этого утверждения, показав, что
+/-- Упражнение 1.1.2: приведите альтернативное доказательство этого утверждения, показав, что
 два разбиения {lean}`T₁`, {lean}`T₂` допускают общее измельчение на боксы, возникающие как
 декартовы произведения элементов из конечных наборов непересекающихся интервалов. -/
 theorem Box.measure_uniq' {d : ℕ} {T₁ T₂ : Finset (Box d)}
@@ -1602,9 +1602,9 @@ lemma IsElementary.measure_mono  {d : ℕ} {E F : Set (EuclideanSpace' d)}
 lemma IsElementary.measure_of_union {d : ℕ} {E F : Set (EuclideanSpace' d)}
 (hE : IsElementary E) (hF : IsElementary F) :
   (hE.union hF).measure ≤ hE.measure + hF.measure := by
-  -- Стратегия (используя Exercise 1.1.1):
+  -- Стратегия (используя Упражнение 1.1.1):
   -- 1. Раскладываем E ∪ F = E ∪ (F \ E) (непересекающееся объединение)
-  -- 2. Используем IsElementary.sdiff (Exercise 1.1.1), чтобы показать, что F \ E элементарно
+  -- 2. Используем IsElementary.sdiff (Упражнение 1.1.1), чтобы показать, что F \ E элементарно
   -- 3. Применяем measure_of_disjUnion:
   --    (hE.union hF_sdiff_E).measure = hE.measure + (F \ E).measure
   -- 4. Показываем, что (hE.union hF) и (hE.union hF_sdiff_E) представляют одно и то же
@@ -1859,7 +1859,7 @@ lemma IsElementary.measure_of_translate {d : ℕ} {E : Set (EuclideanSpace' d)}
       exact Finset.sum_congr rfl fun B hB => (hf_spec B hB).2
     rw [h_translate_measure, h_sum_eq, hE.measure_eq hT_disj hE_eq]
 
-/-- Exercise 1.1.3 (единственность элементарной меры): любая неотрицательная, аддитивная,
+/-- Упражнение 1.1.3 (единственность элементарной меры): любая неотрицательная, аддитивная,
 инвариантная относительно сдвига функция на элементарных множествах является скалярным кратным
 стандартной элементарной меры. -/
 theorem IsElementary.measure_uniq {d : ℕ} {m' : (E : Set (EuclideanSpace' d)) → (IsElementary E) → ℝ}
@@ -1889,7 +1889,7 @@ abbrev Box.prod {d₁ d₂ : ℕ} (B₁ : Box d₁) (B₂ : Box d₂) : Box (d�
     obtain ⟨ i, hi ⟩ := i
     exact if h : i < d₁ then B₁.side ⟨i, h⟩ else (B₂.side ⟨i - d₁, by omega⟩)
 
-/-- Exercise 1.1.4: декартово произведение двух элементарных множеств элементарно. -/
+/-- Упражнение 1.1.4: декартово произведение двух элементарных множеств элементарно. -/
 theorem IsElementary.prod {d₁ d₂ : ℕ} {E₁ : Set (EuclideanSpace' d₁)} {E₂ : Set (EuclideanSpace' d₂)}
   (hE₁ : IsElementary E₁) (hE₂ : IsElementary E₂) : IsElementary (EuclideanSpace'.prod E₁ E₂) := by sorry
 

@@ -17,7 +17,7 @@ import Analysis.Section_9_4
 
 namespace Chapter9
 
-/-- Theorem 9.7.1 (Теорема о промежуточном значении) -/
+/-- Теорема 9.7.1 (Теорема о промежуточном значении) -/
 theorem intermediate_value {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) {y : ℝ} (hy : y ∈ Set.Icc (f a) (f b) ∨ y ∈ Set.Icc (f b) (f a)) : 
   ∃ c ∈ Set.Icc a b, f c = y := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -99,7 +99,7 @@ noncomputable abbrev f_9_7_1 : ℝ → ℝ := fun x ↦ if x ≤ 0 then -1 else 
 example : 0 ∈ Set.Icc (f_9_7_1 (-1)) (f_9_7_1 1) ∧ ¬ ∃ x ∈ Set.Icc (-1) 1, f_9_7_1 x = 0 := by
   sorry
 
-/-- Remark 9.7.2 -/
+/-- Замечание 9.7.2 -/
 abbrev f_9_7_2 : ℝ → ℝ := fun x ↦ x^3 - x
 
 example : f_9_7_2 (-2) = -6 := by sorry
@@ -108,10 +108,10 @@ example : f_9_7_2 (-1) = 0 := by sorry
 example : f_9_7_2 0 = 0 := by sorry
 example : f_9_7_2 1 = 0 := by sorry
 
-/-- Remark 9.7.3 -/
+/-- Замечание 9.7.3 -/
 example : ∃ x : ℝ, 0 ≤ x ∧ x ≤ 2 ∧ x^2 = 2 := by sorry
 
-/-- Corollary 9.7.4 (Образы непрерывных функций) / Exercise 9.7.1 -/
+/-- Следствие 9.7.4 (Образы непрерывных функций) / Упражнение 9.7.1 -/
 theorem continuous_image_Icc {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) {y : ℝ} (hy : sInf (f '' .Icc a b) ≤ y ∧ y ≤ sSup (f '' .Icc a b)) : ∃ c ∈ Set.Icc a b, f c = y := by
   sorry
 
@@ -119,7 +119,7 @@ theorem continuous_image_Icc {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : C
 theorem continuous_image_Icc' {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : f '' .Icc a b = .Icc (sInf (f '' .Icc a b)) (sSup (f '' .Icc a b)) := by
   sorry
 
-/-- Exercise 9.7.2 -/
+/-- Упражнение 9.7.2 -/
 theorem exists_fixed_pt {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc 0 1)) (hmap : f '' .Icc 0 1 ⊆ .Icc 0 1) : ∃ x ∈ Set.Icc 0 1, f x = x := by
   sorry
 

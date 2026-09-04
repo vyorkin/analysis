@@ -192,7 +192,7 @@ example : ∃ (x y : ℕ → ENNReal) (_hx : Antitone x) (_hy : Antitone y)
 
 #check Equiv.tsum_eq
 
-/-- Exercise 0.0.1 -/
+/-- Упражнение 0.0.1 -/
 example {A : Type} {x : A → ENNReal} (hx : ∑' α, x α < ⊤) : 
   ∃ E : Set A, Countable E ∧ ∀ α ∉ E, x α = 0 := by
   refine ⟨{a | x a ≠ 0}, ?_, ?_⟩
@@ -200,7 +200,7 @@ example {A : Type} {x : A → ENNReal} (hx : ∑' α, x α < ⊤) :
       (Summable.countable_support_ennreal (ne_of_lt hx))
   · aesop
 
-/-- Theorem 0.0.2 (Tonelli's theorem for series)  -/
+/-- Теорема 0.0.2 (Tonelli's theorem for series)  -/
 theorem ENNReal.tsum_of_tsum (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := by
   -- Это доказательство написано так, чтобы в основном следовать структуре оригинального текста.
   refine' le_antisymm _ _
@@ -231,7 +231,7 @@ theorem ENNReal.tsum_of_tsum (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ
     _ = ∑ p ∈ .range N ×ˢ .range M, x p.1 p.2 := by symm; apply Finset.sum_product
     _ ≤ _ := ENNReal.sum_le_tsum _
 
-/-- Theorem 0.0.2 -/
+/-- Теорема 0.0.2 -/
 theorem ENNReal.tsum_of_tsum' (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' m, ∑' n, x n m := by
   calc
     ∑' p : ℕ × ℕ, x p.1 p.2 = ∑' n, ∑' m, x n m := ENNReal.tsum_of_tsum x
@@ -239,7 +239,7 @@ theorem ENNReal.tsum_of_tsum' (x : ℕ → ℕ → ENNReal) : ∑' p : ℕ × �
 
 #check ENNReal.tsum_comm
 
-/-- Exercise 0.0.2 (Tonelli's theorem for series over arbitrary sets). -/
+/-- Упражнение 0.0.2 (Tonelli's theorem for series over arbitrary sets). -/
 example {A B : Type*} (x : A → B → ENNReal) : ∑' p : A × B, x p.1 p.2 = ∑' a, ∑' b, x a b := by
   simpa using ENNReal.tsum_prod (f := x)
 
@@ -254,10 +254,10 @@ noncomputable instance EReal.inst_posPart : PosPart EReal where
 noncomputable instance EReal.inst_negPart : NegPart EReal where
   negPart := fun x ↦ if x ≤ 0 then -x else 0
 
-/-- Axiom 0.0.4 (аксиома выбора). -/
+/-- Аксиома 0.0.4 (аксиома выбора). -/
 noncomputable def Set.choose {A : Type*} {E : A → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := fun n ↦ (hE n).some
 
-/-- Corollary 0.0.5 (аксиома счётного выбора) -/
+/-- Следствие 0.0.5 (аксиома счётного выбора) -/
 noncomputable def Countable.choose {E : ℕ → Type*} (hE : ∀ n, Nonempty (E n)) : 
 ∀ n, E n := Set.choose hE

@@ -18,7 +18,7 @@ import Analysis.Section_11_4
 namespace Chapter11
 open BoundedInterval Chapter9
 
-/-- Proposition 11.7.1 -/
+/-- Утверждение 11.7.1 -/
 theorem not_integrable : BddOn f_9_3_21 (Icc 0 1) ∧ ¬ IntegrableOn f_9_3_21 (Icc 0 1) := by
   -- Это доказательство адаптировано из структуры оригинального текста.
   have hbdd : BddOn f_9_3_21 (Icc 0 1):= by

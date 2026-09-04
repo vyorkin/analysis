@@ -7,7 +7,7 @@ import Analysis.MeasureTheory.Section_1_2_1
 
 -/
 
-/-- Lemma 1.2.13(i) (всякое открытое множество измеримо по Лебегу). -/
+/-- Лемма 1.2.13(i) (всякое открытое множество измеримо по Лебегу). -/
 theorem IsOpen.measurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsOpen E) : LebesgueMeasurable E := by
   -- Стратегия: для любого ε > 0 выбираем U = E
   -- Поскольку E уже открыто, U \ E = E \ E = ∅, и m*(∅) = 0 ≤ ε
@@ -75,7 +75,7 @@ private lemma Lebesgue_outer_measure.sum_of_almost_disjoint_finset {d : ℕ} (_h
   exact EReal.coe_finset_sum (fun i _ => Box.volume_nonneg _)
 
 
-/-- Вспомогательная лемма: ограниченные замкнутые множества измеримы (Lemma 1.2.13(ii) для
+/-- Вспомогательная лемма: ограниченные замкнутые множества измеримы (Лемма 1.2.13(ii) для
     ограниченного случая). Для ограниченного замкнутого E (компактного по теореме Гейне–Бореля)
     покажем, что для любого ε > 0 найдётся открытое U ⊇ E с m\*(U \ E) ≤ ε. -/
 private lemma IsClosed.measurable_of_bounded {d : ℕ} {E : Set (EuclideanSpace' d)}
@@ -282,7 +282,7 @@ private lemma IsClosed.measurable_of_bounded {d : ℕ} {E : Set (EuclideanSpace'
           rw [show (2 : EReal) = (2 : ℝ) from rfl, ← EReal.coe_div r 2]
           exact EReal.coe_le_coe_iff.mpr (half_le_self (le_of_lt hr_pos))
 
-/-- Lemma 1.2.13(ii) (всякое замкнутое множество измеримо по Лебегу). -/
+/-- Лемма 1.2.13(ii) (всякое замкнутое множество измеримо по Лебегу). -/
 theorem IsClosed.measurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsClosed E) : LebesgueMeasurable E := by
   -- Запишем E = ⋃_{n=0}^∞ (E ∩ closedBall 0 n)
   have h_union : E = ⋃ n : ℕ, E ∩ Metric.closedBall 0 n := (Metric.iUnion_inter_closedBall_nat E 0).symm
@@ -295,7 +295,7 @@ theorem IsClosed.measurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsClos
   -- Применяем IsClosed.measurable_of_bounded к каждому кусочку
   have h_meas : ∀ n : ℕ, LebesgueMeasurable (E ∩ Metric.closedBall 0 n) :=
     fun n => IsClosed.measurable_of_bounded (h_closed n) (h_bounded n)
-  -- Доказательство для счётного объединения приведено прямо здесь (Lemma 1.2.13(vi) определена далее в этом файле)
+  -- Доказательство для счётного объединения приведено прямо здесь (Лемма 1.2.13(vi) определена далее в этом файле)
   intro ε hε
   -- Переводим EReal ε в вещественное число ε' с 0 < ε' ≤ ε
   obtain ⟨ε', hε'_pos, hε'_le⟩ : ∃ ε' : ℝ, 0 < ε' ∧ (ε' : EReal) ≤ ε := by
@@ -356,7 +356,7 @@ theorem IsClosed.measurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsClos
 
 abbrev IsNull {d : ℕ} (E : Set (EuclideanSpace' d)) : Prop := Lebesgue_outer_measure E = 0
 
-/-- Lemma 1.2.13(iii) (всякое нуль-множество измеримо по Лебегу). -/
+/-- Лемма 1.2.13(iii) (всякое нуль-множество измеримо по Лебегу). -/
 theorem IsNull.measurable {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : IsNull E) : LebesgueMeasurable E := by
   -- Стратегия: для любого ε > 0, поскольку m*(E) = 0, найдём покрытие боксами с суммарным объёмом < ε,
   -- затем раздуем боксы до открытых множеств. Их объединение открыто и содержит E.
@@ -519,7 +519,7 @@ lemma IsNull.subset {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE : IsNull E) (h
   rw [hE] at this
   exact le_antisymm this (Lebesgue_outer_measure.nonneg F)
 
-/-- Lemma 1.2.13(iv) (пустое множество измеримо). -/
+/-- Лемма 1.2.13(iv) (пустое множество измеримо). -/
 theorem LebesgueMeasurable.empty {d : ℕ} : LebesgueMeasurable (∅ : Set (EuclideanSpace' d)) :=
 -- используем (i) напрямую
   IsOpen.measurable isOpen_empty
@@ -538,7 +538,7 @@ theorem LebesgueMeasurable.empty' {d : ℕ} : LebesgueMeasurable (∅ : Set (Euc
     rw [Lebesgue_outer_measure.of_empty d]
     exact le_of_lt hε
 
-/-- Lemma 1.2.13(vi) (счётное объединение измеримых множеств измеримо). -/
+/-- Лемма 1.2.13(vi) (счётное объединение измеримых множеств измеримо). -/
 theorem LebesgueMeasurable.countable_union {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) : LebesgueMeasurable (⋃ n, E n) := by
   -- Используем трюк ε/2^n: пусть ε > 0 произвольно
   intro ε hε
@@ -607,7 +607,7 @@ theorem LebesgueMeasurable.countable_union {d : ℕ} {E : ℕ → Set (Euclidean
           rw [← EReal.coe_tsum_of_nonneg h_nonneg h_summable, h_sum]
       _ ≤ ε := hε'_le
 
-/-- Lemma 1.2.13(v) (дополнение измеримого множества измеримо). -/
+/-- Лемма 1.2.13(v) (дополнение измеримого множества измеримо). -/
 theorem LebesgueMeasurable.complement {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : LebesgueMeasurable (Eᶜ) := by
   -- Стратегия: для каждого n находим открытое Uₙ ⊇ E с m*(Uₙ \ E) ≤ 1/(n+1).
   -- Пусть Fₙ = Uₙᶜ (замкнуто). Тогда Eᶜ ⊇ Fₙ и m*(Eᶜ \ Fₙ) = m*(Uₙ \ E) ≤ 1/(n+1).
@@ -732,7 +732,7 @@ theorem LebesgueMeasurable.complement {d : ℕ} {E : Set (EuclideanSpace' d)} (h
   rw [h_eq]
   exact LebesgueMeasurable.countable_union hS_meas
 
-/-- Конечное объединение измеримых по Лебегу множеств измеримо (аналог Lemma 1.2.13(vi) для конечных объединений). -/
+/-- Конечное объединение измеримых по Лебегу множеств измеримо (аналог Леммы 1.2.13(vi) для конечных объединений). -/
 theorem LebesgueMeasurable.finite_union {d n : ℕ} {E : Fin n → Set (EuclideanSpace' d)} (hE : ∀ i, LebesgueMeasurable (E i)) : LebesgueMeasurable (⋃ i, E i) := by
   -- Расширяем E до семейства, индексированного ℕ, дополняя пустыми множествами
   let E' : ℕ → Set (EuclideanSpace' d) := fun k => if h : k < n then E ⟨k, h⟩ else ∅
@@ -773,7 +773,7 @@ theorem LebesgueMeasurable.union {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE :
   rw [h_eq]
   exact LebesgueMeasurable.finite_union hS
 
-/-- Lemma 1.2.13(vii) (счётное пересечение измеримых множеств измеримо). -/
+/-- Лемма 1.2.13(vii) (счётное пересечение измеримых множеств измеримо). -/
 theorem LebesgueMeasurable.countable_inter {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) : LebesgueMeasurable (⋂ n, E n) := by
   -- По формуле де Моргана: ⋂ Eₙ = (⋃ Eₙᶜ)ᶜ
   have h_eq : (⋂ n, E n) = (⋃ n, (E n)ᶜ)ᶜ := by
@@ -787,7 +787,7 @@ theorem LebesgueMeasurable.countable_inter {d : ℕ} {E : ℕ → Set (Euclidean
   -- (⋃ Eₙᶜ)ᶜ измеримо снова по (v)
   exact h_union.complement
 
-/-- Конечное пересечение измеримых по Лебегу множеств измеримо (аналог Lemma 1.2.13(vii) для конечных пересечений). -/
+/-- Конечное пересечение измеримых по Лебегу множеств измеримо (аналог Леммы 1.2.13(vii) для конечных пересечений). -/
 theorem LebesgueMeasurable.finite_inter {d n : ℕ} {E : Fin n → Set (EuclideanSpace' d)} (hE : ∀ i, LebesgueMeasurable (E i)) : LebesgueMeasurable (⋂ i, E i) := by
   -- Расширяем семейство, индексированное Fin n, до семейства, индексированного ℕ, полагая univ при k ≥ n
   let E' : ℕ → Set (EuclideanSpace' d) := fun k => if h : k < n then E ⟨k, h⟩ else Set.univ
@@ -907,7 +907,7 @@ lemma LebesgueMeasurable.closedBall {d : ℕ} (c : EuclideanSpace' d) (r : ℝ) 
     LebesgueMeasurable (Metric.closedBall c r) :=
   Metric.isClosed_closedBall.measurable
 
-/-- Exercise 1.2.7 (Критерии измеримости). -/
+/-- Упражнение 1.2.7 (Критерии измеримости). -/
 theorem LebesgueMeasurable.TFAE {d : ℕ} (E : Set (EuclideanSpace' d)) : 
     [
       LebesgueMeasurable E,
@@ -919,7 +919,7 @@ theorem LebesgueMeasurable.TFAE {d : ℕ} (E : Set (EuclideanSpace' d)) :
     ].TFAE
   := by sorry
 
-  /-- Exercise 1.2.8 -/
+  /-- Упражнение 1.2.8 -/
 theorem Jordan_measurable.lebesgue {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : JordanMeasurable E) : LebesgueMeasurable E := by
   sorry
 
@@ -929,7 +929,7 @@ abbrev CantorInterval (n : ℕ) : Set ℝ := ⋃ a : Fin n → ({0, 2} : Set ℕ
 
 abbrev CantorSet : Set ℝ := ⋂ n : ℕ, CantorInterval n
 
-/-- Exercise 1.2.9 (канторово множество средних третей) -/
+/-- Упражнение 1.2.9 (канторово множество средних третей) -/
 theorem CantorSet.compact : IsCompact CantorSet := by
   sorry
 
@@ -940,11 +940,11 @@ theorem CantorSet.uncountable : Uncountable CantorSet := by
 /-- Образ канторова множества в `EuclideanSpace' 1` — нуль-множество, то есть имеет лебегову меру нуль. -/
 theorem CantorSet.null : IsNull (Real.equiv_EuclideanSpace' '' CantorSet) := by sorry
 
-/-- Exercise 1.2.10 (\[0,1) не является счётным объединением попарно непересекающихся замкнутых интервалов). -/
+/-- Упражнение 1.2.10 (\[0,1) не является счётным объединением попарно непересекающихся замкнутых интервалов). -/
 example : ¬ ∃ (I : ℕ → BoundedInterval), (∀ n, IsClosed (I n).toSet) ∧ (Set.univ.PairwiseDisjoint (fun n ↦ (I n).toSet) ) ∧ (⋃ n, (I n).toSet = Set.Ico 0 1) := by
   sorry
 
-/-- Exercise 1.2.10, усложнённая версия -/
+/-- Упражнение 1.2.10, усложнённая версия -/
 example : ¬ ∃ (E : ℕ → Set ℝ), (∀ n, IsClosed (E n)) ∧ (Set.univ.PairwiseDisjoint (fun n ↦ (E n)) ) ∧ (⋃ n, (E n) = Set.Ico 0 1) := by
   sorry
 
@@ -952,7 +952,7 @@ example : ¬ ∃ (E : ℕ → Set ℝ), (∀ n, IsClosed (E n)) ∧ (Set.univ.Pa
 theorem Jordan_measurable.Lebesgue_measure {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : JordanMeasurable E) : Lebesgue_measure E = hE.measure := by
   sorry
 
-/-- Lemma 1.2.15(a) (мера Лебега пустого множества равна нулю). Доказательство отсутствует. -/
+/-- Лемма 1.2.15(a) (мера Лебега пустого множества равна нулю). Доказательство отсутствует. -/
 @[simp]
 theorem Lebesgue_measure.empty {d : ℕ} : Lebesgue_measure (∅ : Set (EuclideanSpace' d)) = 0 :=
   -- Прямое применение Lebesgue_outer_measure.of_empty, поскольку Lebesgue_measure = Lebesgue_outer_measure
@@ -961,7 +961,7 @@ theorem Lebesgue_measure.empty {d : ℕ} : Lebesgue_measure (∅ : Set (Euclidea
 /-- Вспомогательная лемма: счётная аддитивность для компактных множеств.
     Если все $`E_n` компактны и попарно не пересекаются, то $`m(⋃ E_n) = ∑' m(E_n)`.
     Ключевой момент: непересекающиеся компактные множества имеют положительное расстояние друг от
-    друга, что позволяет применить Lemma 1.2.5. -/
+    друга, что позволяет применить Лемму 1.2.5. -/
 private lemma Lebesgue_measure.countable_union_compact {d : ℕ} (hd : 0 < d)
     {E : ℕ → Set (EuclideanSpace' d)}
     (hcompact : ∀ n, IsCompact (E n))
@@ -1067,7 +1067,7 @@ private lemma Lebesgue_measure.countable_union_compact {d : ℕ} (hd : 0 < d)
   exact le_antisymm h_le h_ge
 
 /-- Вспомогательная лемма: счётная аддитивность для ограниченных множеств.
-    Следуем подходу учебника: применяем трюк с ε/2ⁿ и внутренней регулярностью (Exercise 1.2.7).
+    Следуем подходу учебника: применяем трюк с ε/2ⁿ и внутренней регулярностью (Упражнение 1.2.7).
     Для ограниченного измеримого $`E_n` найдём компактное $`K_n ⊆ E_n` с $`m(E_n) ≤ m(K_n) + ε/2^(n+1)`.
     Множества $`K_n` попарно не пересекаются (поскольку $`K_n ⊆ E_n`), поэтому $`m(⋃ K_n) = ∑' m(K_n)`
     по компактному случаю, и $`m(⋃ E_n) ≥ m(⋃ K_n) = ∑' m(K_n) ≥ ∑' m(E_n) - ε`. Устремим ε → 0. -/
@@ -1262,7 +1262,7 @@ private lemma Lebesgue_measure.countable_union_bounded {d : ℕ} (hd : 0 < d)
       _ ≤ Lebesgue_measure (⋃ n, E n) + ε := add_le_add_left h_union_mono ε
   exact le_antisymm h_le h_ge
 
-/-- Lemma 1.2.15(b) (счётная аддитивность).
+/-- Лемма 1.2.15(b) (счётная аддитивность).
     Стратегия: `m(⋃ E_n) = ∑' m(E_n)` для попарно непересекающихся измеримых множеств.
     - Направление ≤: счётная субаддитивность ({name}`Lebesgue_outer_measure.union_le`)
     - Направление ≥: разложим ℝᵈ на кольца Aₘ, представим каждое `E_n = ⋃_m (E_n ∩ Aₘ)`,
@@ -1652,49 +1652,49 @@ theorem Lebesgue_measure.union {d : ℕ} {E F : Set (EuclideanSpace' d)} (hE : L
   rw [tsum_fintype]
   simp only [S, Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one]
 
-/-- Exercise 1.2.11(a) (монотонная сходимость вверх). -/
+/-- Упражнение 1.2.11(a) (монотонная сходимость вверх). -/
 theorem Lebesgue_measure.upward_monotone_convergence {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) (hmono : ∀ n, E n ⊆ E (n + 1)) : Filter.atTop.Tendsto (fun n ↦ Lebesgue_measure (E n)) (nhds (Lebesgue_measure (⋃ n, E n))) := by
   sorry
 
-/-- Exercise 1.2.11(b) (монотонная сходимость вниз). -/
+/-- Упражнение 1.2.11(b) (монотонная сходимость вниз). -/
 theorem Lebesgue_measure.downward_monotone_convergence {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) (hmono : ∀ n, E (n+1) ⊆ E n) (hfin : ∃ n, Lebesgue_measure (E n) < ⊤) : Filter.atTop.Tendsto (fun n ↦ Lebesgue_measure (E n)) (nhds (Lebesgue_measure (⋂ n, E n))) := by
   sorry
 
-/-- Exercise 1.2.11 (c) (контрпример). -/
+/-- Упражнение 1.2.11 (c) (контрпример). -/
 example : ∃ (d : ℕ) (E : ℕ → Set (EuclideanSpace' d)) (hE : ∀ n, LebesgueMeasurable (E n)) (hmono : ∀ n, E (n+1) ⊆ E n), ¬ Filter.atTop.Tendsto (fun n ↦ Lebesgue_measure (E n)) (nhds (Lebesgue_measure (⋂ n, E n))) := by sorry
 
-/-- Exercise 1.2.12(i) (монотонность) -/
+/-- Упражнение 1.2.12(i) (монотонность) -/
 example {d : ℕ} (m : Set (EuclideanSpace' d) → EReal) (h_empty : m ∅ = 0) (h_pos : ∀ E, 0 ≤ m E) (hadd : ∀ E : ℕ → Set (EuclideanSpace' d), (Set.univ.PairwiseDisjoint E) → (∀ n, LebesgueMeasurable (E n)) → m (⋃ n, E n) = ∑' n, m (E n)) {E F : Set (EuclideanSpace' d)}
 (hsub : E ⊆ F) (hE : LebesgueMeasurable E) (hF : LebesgueMeasurable F) : m E ≤ m F := by
   sorry
 
-/-- Exercise 1.2.12(ii) (σ-субаддитивность) -/
+/-- Упражнение 1.2.12(ii) (σ-субаддитивность) -/
 example {d : ℕ} (m : Set (EuclideanSpace' d) → EReal) (h_empty : m ∅ = 0) (h_pos : ∀ E, 0 ≤ m E) (hadd : ∀ E : ℕ → Set (EuclideanSpace' d), (Set.univ.PairwiseDisjoint E) → (∀ n, LebesgueMeasurable (E n)) → m (⋃ n, E n) = ∑' n, m (E n)) {E : ℕ → Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) :  m (⋃ n, E n) ≤ ∑' n, m (E n) := by
   sorry
 
-/-- Exercise 1.2.13(i) -/
+/-- Упражнение 1.2.13(i) -/
 example {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} {E₀ : Set (EuclideanSpace' d)} (hE : ∀ n, LebesgueMeasurable (E n)) (hpoint : ∀ x, Filter.atTop.Tendsto (fun n ↦ (E n).indicator' x) (nhds (E₀.indicator' x))) : LebesgueMeasurable E₀ := by sorry
 
-/-- Exercise 1.2.13(ii) -/
+/-- Упражнение 1.2.13(ii) -/
 example {d : ℕ} {E : ℕ → Set (EuclideanSpace' d)} {E₀ F : Set (EuclideanSpace' d)}
   (hE : ∀ n, LebesgueMeasurable (E n))
   (hpoint : ∀ x, Filter.atTop.Tendsto (fun n ↦ (E n).indicator' x) (nhds (E₀.indicator' x)))
   (hsub : ∀ n, E n ⊆ F) (hFmes : LebesgueMeasurable F) (hfin : Lebesgue_measure F < ⊤) : Filter.atTop.Tendsto (fun n ↦ Lebesgue_measure (E n)) (nhds (Lebesgue_measure E₀)) := by sorry
 
-/-- Exercise 1.2.13(iii) -/
+/-- Упражнение 1.2.13(iii) -/
 example : ∃ (d : ℕ) (E : ℕ → Set (EuclideanSpace' d)) (E₀ F : Set (EuclideanSpace' d))
   (hE : ∀ n, LebesgueMeasurable (E n))
   (hpoint : ∀ x, Filter.atTop.Tendsto (fun n ↦ (E n).indicator' x) (nhds (E₀.indicator' x)))
   (hsub : ∀ n, E n ⊆ F) (hFmes : LebesgueMeasurable F), ¬ Filter.atTop.Tendsto (fun n ↦ Lebesgue_measure (E n)) (nhds (Lebesgue_measure E₀)) := by sorry
 
-/-- Exercise 1.2.14 -/
+/-- Упражнение 1.2.14 -/
 example {d : ℕ} (E : Set (EuclideanSpace' d)) : ∃ (F : Set (EuclideanSpace' d)), E ⊆ F ∧ LebesgueMeasurable F ∧ Lebesgue_measure F = Lebesgue_outer_measure E := by sorry
 
-/-- Exercise 1.2.15 (внутренняя регулярность). -/
+/-- Упражнение 1.2.15 (внутренняя регулярность). -/
 theorem Lebesgue_measure.eq {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : LebesgueMeasurable E) : Lebesgue_measure E = sSup { M | ∃ K, K ⊆ E ∧ IsCompact K ∧ M = Lebesgue_measure K} := by
   sorry
 
-/-- Exercise 1.2.16 (критерии конечности меры). -/
+/-- Упражнение 1.2.16 (критерии конечности меры). -/
 theorem LebesgueMeasurable.finite_TFAE {d : ℕ} (E : Set (EuclideanSpace' d)) : 
     [
       LebesgueMeasurable E ∧ Lebesgue_measure E < ⊤,
@@ -1709,7 +1709,7 @@ theorem LebesgueMeasurable.finite_TFAE {d : ℕ} (E : Set (EuclideanSpace' d)) :
     ].TFAE
   := by sorry
 
-/-- Exercise 1.2.17 (одно направление критерия Каратеодори). -/
+/-- Упражнение 1.2.17 (одно направление критерия Каратеодори). -/
 theorem LebesgueMeasurable.caratheodory {d : ℕ} (E : Set (EuclideanSpace' d)) : 
     [
       LebesgueMeasurable E,
@@ -1723,17 +1723,17 @@ theorem Bornology.IsBounded.inElementary {d : ℕ} {E : Set (EuclideanSpace' d)}
 
 noncomputable def inner_measure {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E) : ℝ := (Lebesgue_measure hE.inElementary.choose).toReal - (Lebesgue_measure (hE.inElementary.choose \ E)).toReal
 
-/-- Exercise 1.2.18(i) (внутренняя мера). -/
+/-- Упражнение 1.2.18(i) (внутренняя мера). -/
 theorem inner_measure.eq {d : ℕ} {E A : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E)
   (hA : IsElementary A) (hsub : E ⊆ A) : inner_measure hE = Lebesgue_measure A - Lebesgue_outer_measure (A \ E) := by
   sorry
 
-/-- Exercise 1.2.18(ii) (внутренняя мера). -/
+/-- Упражнение 1.2.18(ii) (внутренняя мера). -/
 theorem inner_measure.le {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E)
   : inner_measure hE ≤ Lebesgue_outer_measure E := by
   sorry
 
-/-- Exercise 1.2.18(ii') (внутренняя мера). -/
+/-- Упражнение 1.2.18(ii') (внутренняя мера). -/
 theorem inner_measure.eq_iff {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Bornology.IsBounded E)
   : inner_measure hE = Lebesgue_outer_measure E ↔ LebesgueMeasurable E := by
   sorry
@@ -1741,7 +1741,7 @@ theorem inner_measure.eq_iff {d : ℕ} {E : Set (EuclideanSpace' d)} (hE : Borno
 def IsFσ  {X : Type*} [TopologicalSpace X] (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsClosed t) ∧ T.Countable ∧ s = ⋃₀ T
 
-/-- Exercise 1.2.19 -/
+/-- Упражнение 1.2.19 -/
 theorem LebesgueMeasurable.TFAE' {d : ℕ} (E : Set (EuclideanSpace' d)) : 
     [
       LebesgueMeasurable E,
@@ -1752,7 +1752,7 @@ theorem LebesgueMeasurable.TFAE' {d : ℕ} (E : Set (EuclideanSpace' d)) :
 
 open Pointwise
 
-/-- Exercise 1.2.20 (инвариантность относительно сдвигов) -/
+/-- Упражнение 1.2.20 (инвариантность относительно сдвигов) -/
 theorem LebesgueMeasurable.translate {d : ℕ} (E : Set (EuclideanSpace' d)) (x : EuclideanSpace' d) : 
     LebesgueMeasurable E ↔ LebesgueMeasurable (E + {x}) := by
   sorry
@@ -1762,30 +1762,30 @@ theorem Lebesgue_measure.translate {d : ℕ} {E : Set (EuclideanSpace' d)} (x : 
    (hE : LebesgueMeasurable E) : Lebesgue_measure (E + {x}) = Lebesgue_measure E := by
   sorry
 
-/-- Exercise 1.2.21 (Change of variables, measurability) -/
+/-- Упражнение 1.2.21 (Change of variables, measurability) -/
 lemma LebesgueMeasurable.linear {d:ℕ} (T: EuclideanSpace' d ≃ₗ[ℝ] EuclideanSpace' d)
 {E: Set (EuclideanSpace' d)} (hE: LebesgueMeasurable E): LebesgueMeasurable (T '' E) := by
   sorry
 
-/-- Exercise 1.2.21 (Change of variables, the measure scales by the determinant) -/
+/-- Упражнение 1.2.21 (Change of variables, the measure scales by the determinant) -/
 lemma Lebesgue_measure.linear {d:ℕ} (A: Matrix (Fin d) (Fin d) ℝ) [Invertible A]
  {E: Set (EuclideanSpace' d)} (hE: LebesgueMeasurable E): Lebesgue_measure (A.linear_equiv '' E) = |A.det| * Lebesgue_measure E := by
   sorry
 
-/-- Exercise 1.2.22(i) (оценка внешней меры произведения) -/
+/-- Упражнение 1.2.22(i) (оценка внешней меры произведения) -/
 theorem Lebesgue_outer_measure.prod {d₁ d₂ : ℕ} {E₁ : Set (EuclideanSpace' d₁)} {E₂ : Set (EuclideanSpace' d₂)}
   : Lebesgue_outer_measure (EuclideanSpace'.prod E₁ E₂) ≤ Lebesgue_outer_measure E₁ * Lebesgue_outer_measure E₂ := by sorry
 
-/-- Exercise 1.2.22(ii) (измеримость произведения) -/
+/-- Упражнение 1.2.22(ii) (измеримость произведения) -/
 theorem LebesgueMeasurable.prod {d₁ d₂ : ℕ} {E₁ : Set (EuclideanSpace' d₁)} {E₂ : Set (EuclideanSpace' d₂)}
   (hE₁ : LebesgueMeasurable E₁) (hE₂ : LebesgueMeasurable E₂) : LebesgueMeasurable (EuclideanSpace'.prod E₁ E₂) := by sorry
 
-/-- Exercise 1.2.22(ii') (формула меры произведения) -/
+/-- Упражнение 1.2.22(ii') (формула меры произведения) -/
 theorem Lebesgue_measure.prod {d₁ d₂ : ℕ} {E₁ : Set (EuclideanSpace' d₁)} {E₂ : Set (EuclideanSpace' d₂)}
   (hE₁ : LebesgueMeasurable E₁) (hE₂ : LebesgueMeasurable E₂)
   : Lebesgue_measure (EuclideanSpace'.prod E₁ E₂) = Lebesgue_measure E₁ * Lebesgue_measure E₂ := by sorry
 
-/-- Exercise 1.2.23 (единственность меры Лебега) -/
+/-- Упражнение 1.2.23 (единственность меры Лебега) -/
 theorem Lebesgue_measure.unique {d : ℕ} (m : Set (EuclideanSpace' d) → EReal)
   (h_empty : m ∅ = 0) (h_pos : ∀ E, 0 ≤ m E)
   (h_add : ∀ E : ℕ → Set (EuclideanSpace' d), (Set.univ.PairwiseDisjoint E) → (∀ n, LebesgueMeasurable (E n)) → m (⋃ n, E n) = ∑' n, m (E n))
@@ -1793,7 +1793,7 @@ theorem Lebesgue_measure.unique {d : ℕ} (m : Set (EuclideanSpace' d) → EReal
   (hnorm : m (Box.unit_cube d) = 1)
   : ∀ E, LebesgueMeasurable E → m E = Lebesgue_measure E := by sorry
 
-/-- Exercise 1.2.24(i) (мера Лебега как пополнение элементарной меры). -/
+/-- Упражнение 1.2.24(i) (мера Лебега как пополнение элементарной меры). -/
 instance IsElementary.ae_equiv {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) : 
 Setoid (Set A) := {
    r E F := IsNull (Subtype.val '' (_root_.symmDiff E F))
@@ -1804,7 +1804,7 @@ def IsElementary.ae_subsets {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElem
 
 def IsElementary.ae_quot {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) (E : Set A) : hA.ae_subsets := Quotient.mk' (s := hA.ae_equiv) E
 
-/-- Exercise 1.2.24(ii) (мера Лебега как пополнение элементарной меры). -/
+/-- Упражнение 1.2.24(ii) (мера Лебега как пополнение элементарной меры). -/
 noncomputable def IsElementary.dist {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) : hA.ae_subsets → hA.ae_subsets → ℝ := Quotient.lift₂ (fun E F ↦ (Lebesgue_outer_measure (Subtype.val '' (_root_.symmDiff E F))).toReal) (by sorry)
 
 noncomputable instance IsElementary.metric {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) : MetricSpace hA.ae_subsets := {
@@ -1822,7 +1822,7 @@ noncomputable def IsElementary.ae_elem {d : ℕ} {A : Set (EuclideanSpace' d)} (
 
 noncomputable def IsElementary.ae_measurable {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) : Set hA.ae_subsets := { E | ∃ F : Set A, LebesgueMeasurable (Subtype.val '' F) ∧ hA.ae_quot F = E }
 
-/-- Exercise 1.2.24(iii) (мера Лебега как пополнение элементарной меры). -/
+/-- Упражнение 1.2.24(iii) (мера Лебега как пополнение элементарной меры). -/
 theorem IsElementary.measurable_eq_closure_elem {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) : closure hA.ae_elem = hA.ae_measurable := by
   sorry
 
@@ -1830,19 +1830,19 @@ noncomputable def IsElementary.ae_measure {d : ℕ} {A : Set (EuclideanSpace' d)
 
 noncomputable def IsElementary.ae_elem_measure {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) (E : hA.ae_elem) : ℝ := E.property.choose_spec.1.measure
 
-/-- Exercise 1.2.24(iv) (мера Лебега как пополнение элементарной меры). -/
+/-- Упражнение 1.2.24(iv) (мера Лебега как пополнение элементарной меры). -/
 theorem IsElementary.ae_measure_eq_completion {d : ℕ} {A : Set (EuclideanSpace' d)} (hA : IsElementary A) (m : hA.ae_subsets → ℝ) : 
 ContinuousOn m hA.ae_measurable ∧ (∀ (E : hA.ae_elem), m E.val = hA.ae_elem_measure E)
 ↔ (∀ (E : hA.ae_measurable), m E.val = hA.ae_measure E) := by sorry
 
 noncomputable abbrev IsCurve {d : ℕ} (C : Set (EuclideanSpace' d)) : Prop := ∃ (a b : ℝ) (γ : ℝ → EuclideanSpace' d), C = γ '' (Set.Icc a b) ∧ ContDiffOn ℝ 1 γ (Set.Icc a b)
 
-/-- Exercise 1.2.25(i) -/
+/-- Упражнение 1.2.25(i) -/
 theorem IsCurve.null {d : ℕ} (hd : d ≥ 2) {C : Set (EuclideanSpace' d)} (hC : IsCurve C) : IsNull C := by sorry
 
 example : ∃ (d : ℕ) (C : Set (EuclideanSpace' d)) (hC : IsCurve C), ¬ IsNull C := by
   sorry
 
-/-- Exercise 1.2.25 -/
+/-- Упражнение 1.2.25 -/
 example {d : ℕ} (hd : d ≥ 2) : ¬ ∃ C : ℕ → Set (EuclideanSpace' d), (∀ n, IsCurve (C n)) ∧ (⋃ n, C n = (Box.unit_cube d).toSet) := by
   sorry

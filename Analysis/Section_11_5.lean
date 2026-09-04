@@ -20,7 +20,7 @@ namespace Chapter11
 open BoundedInterval
 open Chapter9
 
-/-- Theorem 11.5.1 -/
+/-- Теорема 11.5.1 -/
 theorem integ_of_uniform_cts {I : BoundedInterval} {f : ℝ → ℝ} (hf : UniformContinuousOn f I) : 
   IntegrableOn f I := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -78,19 +78,19 @@ theorem integ_of_uniform_cts {I : BoundedInterval} {f : ℝ → ℝ} (hf : Unifo
     linarith
   linarith
 
-/-- Corollary 11.5.2 -/
+/-- Следствие 11.5.2 -/
 theorem integ_of_cts {a b : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc a b)) : 
   IntegrableOn f (Icc a b) := integ_of_uniform_cts (UniformContinuousOn.of_continuousOn hf)
 
-/-- Corollary 11.5.2 (sharpness) (a) -/
+/-- Следствие 11.5.2 (sharpness) (a) -/
 example : ¬ ContinuousOn (fun x : ℝ ↦ 1/x) (Icc 0 1) := by sorry
 
-/-- Corollary 11.5.2 (sharpness) (b) -/
+/-- Следствие 11.5.2 (sharpness) (b) -/
 example : ¬ IntegrableOn (fun x : ℝ ↦ 1/x) (Icc 0 1) := by sorry
 
 open PiecewiseConstantOn ConstantOn in
 set_option maxHeartbeats 300000 in
-/-- Proposition 11.5.3 -/
+/-- Утверждение 11.5.3 -/
 theorem integ_of_bdd_cts {I : BoundedInterval} {f : ℝ → ℝ} (hbound : BddOn f I)
   (hf : ContinuousOn f I) : IntegrableOn f I := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -194,37 +194,37 @@ theorem integ_of_bdd_cts {I : BoundedInterval} {f : ℝ → ℝ} (hbound : BddOn
     grind
   exact ⟨ hbound, by linarith [nonneg_of_le_const_mul_eps this] ⟩
 
-/-- Definition 11.5.4 -/
+/-- Определение 11.5.4 -/
 abbrev PiecewiseContinuousOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop :=
   ∃ P : Partition I, ∀ J ∈ P.intervals, ContinuousOn f J
 
-/-- Example 11.5.5 -/
+/-- Пример 11.5.5 -/
 noncomputable abbrev f_11_5_5 : ℝ → ℝ := fun x ↦
   if x < 2 then x^2
   else if x = 2 then 7
   else x^3
 
-/-- Example 11.5.5 (a) -/
+/-- Пример 11.5.5 (a) -/
 example : ¬ ContinuousOn f_11_5_5 (Icc 1 3) := by sorry
 
-/-- Example 11.5.5 (b) -/
+/-- Пример 11.5.5 (b) -/
 example : ContinuousOn f_11_5_5 (Ico 1 2) := by sorry
 
-/-- Example 11.5.5 (c) -/
+/-- Пример 11.5.5 (c) -/
 example : ContinuousOn f_11_5_5 (Icc 2 2) := by sorry
 
-/-- Example 11.5.5 (d) -/
+/-- Пример 11.5.5 (d) -/
 example : ContinuousOn f_11_5_5 (Ioc 2 3) := by sorry
 
-/-- Example 11.5.5 (e) -/
+/-- Пример 11.5.5 (e) -/
 example : PiecewiseContinuousOn f_11_5_5 (Icc 1 3) := by sorry
 
-/-- Proposition 11.5.6 / Exercise 11.5.1 -/
+/-- Утверждение 11.5.6 / Упражнение 11.5.1 -/
 theorem integ_of_bdd_piecewise_cts {I : BoundedInterval} {f : ℝ → ℝ}
   (hbound : BddOn f I) (hf : PiecewiseContinuousOn f I) : IntegrableOn f I := by
   sorry
 
-/-- Exercise 11.5.2 -/
+/-- Упражнение 11.5.2 -/
 theorem integ_zero {a b : ℝ} (hab : a < b) (f : ℝ → ℝ) (hf : ContinuousOn f (Icc a b))
   (hnonneg : MajorizesOn f (fun _ ↦ 0) (Icc a b)) (hinteg : integ f (Icc a b) = 0) : 
   ∀ x ∈ Icc a b, f x = 0 := by

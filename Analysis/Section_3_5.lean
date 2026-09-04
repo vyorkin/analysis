@@ -35,7 +35,7 @@ variable [SetTheory]
 
 open SetTheory.Set
 
-/-- Definition 3.5.1 (Упорядоченная пара). Здесь для определения {name}`OrderedPair` можно
+/-- Определение 3.5.1 (Упорядоченная пара). Здесь для определения {name}`OrderedPair` можно
 было бы также использовать {lean}`Object × Object`. -/
 @[ext]
 structure OrderedPair where
@@ -44,17 +44,17 @@ structure OrderedPair where
 
 #check OrderedPair.ext
 
-/-- Definition 3.5.1 (Упорядоченная пара) -/
+/-- Определение 3.5.1 (Упорядоченная пара) -/
 @[simp]
 theorem OrderedPair.eq (x y x' y' : Object) : 
     (⟨ x, y ⟩ : OrderedPair) = (⟨ x', y' ⟩ : OrderedPair) ↔ x = x' ∧ y = y' := by aesop
 
-/-- Вспомогательная лемма для Exercise 3.5.1 -/
+/-- Вспомогательная лемма для Упражнения 3.5.1 -/
 lemma SetTheory.Set.pair_eq_singleton_iff {a b c : Object} : {a, b} = ({c} : Set) ↔
     a = c ∧ b = c := by
   sorry
 
-/-- Exercise 3.5.1, first part -/
+/-- Упражнение 3.5.1, first part -/
 def OrderedPair.toObject : OrderedPair ↪ Object where
   toFun p := ({ (({p.fst} : Set) : Object), (({p.fst, p.snd} : Set) : Object) } : Set)
   inj' := by sorry
@@ -74,7 +74,7 @@ abbrev SetTheory.Set.slice (x : Object) (Y : Set) : Set :=
 theorem SetTheory.Set.mem_slice (x z : Object) (Y : Set) :
     z ∈ (SetTheory.Set.slice x Y) ↔ ∃ y : Y, z = (⟨x, y⟩ : OrderedPair) := replacement_axiom _ _
 
-/-- Definition 3.5.4 (Декартово произведение) -/
+/-- Определение 3.5.4 (Декартово произведение) -/
 abbrev SetTheory.Set.cartesian (X Y : Set) : Set :=
   union (X.replace (P := fun x z ↦ z = slice x Y) (by intro _ _ _ ⟨h1, h2⟩; exact h1.trans h2.symm))
 
@@ -147,7 +147,7 @@ noncomputable abbrev SetTheory.Set.prod_equiv_prod (X Y : Set) :
   left_inv _ := by simp
   right_inv _ := by simp
 
-/-- Example 3.5.5 -/
+/-- Пример 3.5.5 -/
 example : ({1, 2} : Set) ×ˢ ({3, 4, 5} : Set) = ({
   ((mk_cartesian (1 : Nat) (3 : Nat)) : Object),
   ((mk_cartesian (1 : Nat) (4 : Nat)) : Object),
@@ -157,31 +157,31 @@ example : ({1, 2} : Set) ×ˢ ({3, 4, 5} : Set) = ({
   ((mk_cartesian (2 : Nat) (5 : Nat)) : Object)
 } : Set) := by ext; aesop
 
-/-- Example 3.5.5 / Exercise 3.6.5. Между {lean}`X ×ˢ Y` и {lean}`Y ×ˢ X` существует биекция. -/
+/-- Пример 3.5.5 / Упражнение 3.6.5. Между {lean}`X ×ˢ Y` и {lean}`Y ×ˢ X` существует биекция. -/
 noncomputable abbrev SetTheory.Set.prod_commutator (X Y : Set) : X ×ˢ Y ≃ Y ×ˢ X where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
-/-- Example 3.5.5. Функцию от двух переменных можно рассматривать как функцию от пары. -/
+/-- Пример 3.5.5. Функцию от двух переменных можно рассматривать как функцию от пары. -/
 noncomputable abbrev SetTheory.Set.curry_equiv {X Y Z : Set} : (X → Y → Z) ≃ (X ×ˢ Y → Z) where
   toFun f z := f (fst z) (snd z)
   invFun f x y := f (mk_cartesian x y)
   left_inv _ := by ext; simp
   right_inv _ := by simp
 
-/-- Definition 3.5.6. Индексирующее множество {name}`I` играет роль $`{ i : 1 ≤ i ≤ n }` в тексте
+/-- Определение 3.5.6. Индексирующее множество {name}`I` играет роль $`{ i : 1 ≤ i ≤ n }` в тексте
     учебника. Некоторые связи между этим понятием и предыдущими понятиями декартова произведения
-    и упорядоченной пары см. в Exercise 3.5.10 ниже. -/
+    и упорядоченной пары см. в Упражнении 3.5.10 ниже. -/
 abbrev SetTheory.Set.tuple {I : Set} {X : I → Set} (x : ∀ i, X i) : Object :=
   ((fun i ↦ ⟨ x i, by rw [mem_iUnion]; use i; exact (x i).property ⟩) : I → iUnion I X)
 
-/-- Definition 3.5.6 (indexed product) -/
+/-- Определение 3.5.6 (indexed product) -/
 abbrev SetTheory.Set.iProd {I : Set} (X : I → Set) : Set :=
   ((iUnion I X)^I).specify (fun t ↦ ∃ x : ∀ i, X i, t = tuple x)
 
-/-- Definition 3.5.6 (membership in an indexed product) -/
+/-- Определение 3.5.6 (membership in an indexed product) -/
 theorem SetTheory.Set.mem_iProd {I : Set} {X : I → Set} (t : Object) :
     t ∈ iProd X ↔ ∃ x : ∀ i, X i, t = tuple x := by
   simp only [iProd, specification_axiom'']; constructor
@@ -199,7 +199,7 @@ theorem SetTheory.Set.tuple_mem_iProd {I : Set} {X : I → Set} (x : ∀ i, X i)
 theorem SetTheory.Set.tuple_inj {I : Set} {X : I → Set} (x y : ∀ i, X i) :
     tuple x = tuple y ↔ x = y := by sorry
 
-/-- Example 3.5.8. Между {lean}`(X ×ˢ Y) ×ˢ Z` и {lean}`X ×ˢ (Y ×ˢ Z)` существует биекция. -/
+/-- Пример 3.5.8. Между {lean}`(X ×ˢ Y) ×ˢ Z` и {lean}`X ×ˢ (Y ×ˢ Z)` существует биекция. -/
 noncomputable abbrev SetTheory.Set.prod_associator (X Y Z : Set) : (X ×ˢ Y) ×ˢ Z ≃ X ×ˢ (Y ×ˢ Z) where
   toFun p := mk_cartesian (fst (fst p)) (mk_cartesian (snd (fst p)) (snd p))
   invFun p := mk_cartesian (mk_cartesian (fst p) (fst (snd p))) (snd (snd p))
@@ -207,7 +207,7 @@ noncomputable abbrev SetTheory.Set.prod_associator (X Y Z : Set) : (X ×ˢ Y) ×
   right_inv _ := by simp
 
 /--
-  Example 3.5.10 (a). Подозреваю, что большинству эквивалентностей понадобятся классические
+  Пример 3.5.10 (a). Подозреваю, что большинству эквивалентностей понадобятся классические
   рассуждения, и они смогут быть определены только неконструктивно, но был бы рад
   контрпримерам.
 -/
@@ -218,14 +218,14 @@ noncomputable abbrev SetTheory.Set.singleton_iProd_equiv (i : Object) (X : Set) 
   left_inv := sorry
   right_inv := sorry
 
-/-- Example 3.5.10 (b) -/
+/-- Пример 3.5.10 (b) -/
 abbrev SetTheory.Set.empty_iProd_equiv (X : (∅ : Set) → Set) : iProd X ≃ Unit where
   toFun := sorry
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
 
-/-- Example 3.5.10 (c) -/
+/-- Пример 3.5.10 (c) -/
 noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I : Set) (X : Set) : 
     iProd (fun _ : I ↦ X) ≃ (I → X) where
   toFun := sorry
@@ -233,7 +233,7 @@ noncomputable abbrev SetTheory.Set.iProd_of_const_equiv (I : Set) (X : Set) :
   left_inv := sorry
   right_inv := sorry
 
-/-- Example 3.5.10 (d) -/
+/-- Пример 3.5.10 (d) -/
 noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X : ({0,1} : Set) → Set) : 
     iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) where
   toFun := sorry
@@ -241,7 +241,7 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_prod (X : ({0,1} : Set) → Set) 
   left_inv := sorry
   right_inv := sorry
 
-/-- Example 3.5.10 (e) -/
+/-- Пример 3.5.10 (e) -/
 noncomputable abbrev SetTheory.Set.iProd_equiv_prod_triple (X : ({0,1,2} : Set) → Set) : 
     iProd X ≃ (X ⟨ 0, by simp ⟩) ×ˢ (X ⟨ 1, by simp ⟩) ×ˢ (X ⟨ 2, by simp ⟩) where
   toFun := sorry
@@ -354,7 +354,7 @@ noncomputable abbrev SetTheory.Set.Fin.Fin_equiv_Fin (n : ℕ) : Fin n ≃ _root
   left_inv m := (toNat_spec m).2.symm
   right_inv m := by simp
 
-/-- Lemma 3.5.11 (конечный выбор) -/
+/-- Лемма 3.5.11 (конечный выбор) -/
 theorem SetTheory.Set.finite_choice {n : ℕ} {X : Fin n → Set} (h : ∀ i, X i ≠ ∅) : iProd X ≠ ∅ := by
   -- Это доказательство в целом следует тексту учебника
   -- (хотя удобнее вести индукцию от 0, а не от 1)
@@ -381,19 +381,19 @@ theorem SetTheory.Set.finite_choice {n : ℕ} {X : Fin n → Set} (h : ∀ i, X 
       ⟨x' i', by grind⟩
   exact nonempty_of_inhabited (tuple_mem_iProd x)
 
-/-- Exercise 3.5.1, вторая часть (требует аксиому регулярности) -/
+/-- Упражнение 3.5.1, вторая часть (требует аксиому регулярности) -/
 abbrev OrderedPair.toObject' : OrderedPair ↪ Object where
   toFun p := ({ p.fst, (({p.fst, p.snd} : Set) : Object) } : Set)
   inj' := by sorry
 
-/-- Альтернативное определение кортежа, используемое в Exercise 3.5.2 -/
+/-- Альтернативное определение кортежа, используемое в Упражнении 3.5.2 -/
 structure SetTheory.Set.Tuple (n : ℕ) where
   X : Set
   x : Fin n → X
   surj : Function.Surjective x
 
 /--
-  Пользовательская лемма экстенсиональности для Exercise 3.5.2.
+  Пользовательская лемма экстенсиональности для Упражнения 3.5.2.
   Если разместить {attr}`@[ext]` прямо на структуре, это сгенерировало бы лемму, требующую
   доказательства {lit}`t.x = t'.x`, но эти функции имеют разные типы, когда {lean}`t.X ≠ t'.X`.
   Данная лемма как раз и решает эту часть.
@@ -405,7 +405,7 @@ lemma SetTheory.Set.Tuple.ext {n : ℕ} {t t' : Tuple n}
     t = t' := by
   have ⟨_, _, _⟩ := t; have ⟨_, _, _⟩ := t'; subst hX; congr; ext; grind
 
-/-- Exercise 3.5.2 -/
+/-- Упражнение 3.5.2 -/
 theorem SetTheory.Set.Tuple.eq {n : ℕ} (t t' : Tuple n) : 
     t = t' ↔ ∀ n : Fin n, ((t.x n) : Object) = ((t'.x n) : Object) := by sorry
 
@@ -417,7 +417,7 @@ noncomputable abbrev SetTheory.Set.iProd_equiv_tuples (n : ℕ) (X : Fin n → S
   right_inv := sorry
 
 /--
-  Exercise 3.5.3. Суть здесь в том, чтобы избегать прямых переписываний (которые делают все эти
+  Упражнение 3.5.3. Суть здесь в том, чтобы избегать прямых переписываний (которые делают все эти
   утверждения тривиальными), а вместо этого использовать {name}`OrderedPair.eq` или
   {name}`SetTheory.Set.tuple_inj`
 -/
@@ -442,42 +442,42 @@ theorem SetTheory.Set.tuple_trans {I : Set} {X : I → Set} {a b c : ∀ i, X i}
   (hab : tuple a = tuple b) (hbc : tuple b = tuple c) :
     tuple a = tuple c := by sorry
 
-/-- Exercise 3.5.4 (a) -/
+/-- Упражнение 3.5.4 (a) -/
 theorem SetTheory.Set.prod_union (A B C : Set) : A ×ˢ (B ∪ C) = (A ×ˢ B) ∪ (A ×ˢ C) := by sorry
 
-/-- Exercise 3.5.4 (b) -/
+/-- Упражнение 3.5.4 (b) -/
 theorem SetTheory.Set.prod_inter (A B C : Set) : A ×ˢ (B ∩ C) = (A ×ˢ B) ∩ (A ×ˢ C) := by sorry
 
-/-- Exercise 3.5.4 (c) -/
+/-- Упражнение 3.5.4 (c) -/
 theorem SetTheory.Set.prod_diff (A B C : Set) : A ×ˢ (B \ C) = (A ×ˢ B) \ (A ×ˢ C) := by sorry
 
-/-- Exercise 3.5.4 (d) -/
+/-- Упражнение 3.5.4 (d) -/
 theorem SetTheory.Set.union_prod (A B C : Set) : (A ∪ B) ×ˢ C = (A ×ˢ C) ∪ (B ×ˢ C) := by sorry
 
-/-- Exercise 3.5.4 (e) -/
+/-- Упражнение 3.5.4 (e) -/
 theorem SetTheory.Set.inter_prod (A B C : Set) : (A ∩ B) ×ˢ C = (A ×ˢ C) ∩ (B ×ˢ C) := by sorry
 
-/-- Exercise 3.5.4 (f) -/
+/-- Упражнение 3.5.4 (f) -/
 theorem SetTheory.Set.diff_prod (A B C : Set) : (A \ B) ×ˢ C = (A ×ˢ C) \ (B ×ˢ C) := by sorry
 
-/-- Exercise 3.5.5 (a) -/
+/-- Упражнение 3.5.5 (a) -/
 theorem SetTheory.Set.inter_of_prod (A B C D : Set) : 
     (A ×ˢ B) ∩ (C ×ˢ D) = (A ∩ C) ×ˢ (B ∩ D) := by sorry
 
-/-- Exercise 3.5.5 (b) -/
+/-- Упражнение 3.5.5 (b) -/
 def SetTheory.Set.union_of_prod : 
   Decidable (∀ (A B C D : Set), (A ×ˢ B) ∪ (C ×ˢ D) = (A ∪ C) ×ˢ (B ∪ D)) := by
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Exercise 3.5.5 (c) -/
+/-- Упражнение 3.5.5 (c) -/
 def SetTheory.Set.diff_of_prod : 
   Decidable (∀ (A B C D : Set), (A ×ˢ B) \ (C ×ˢ D) = (A \ C) ×ˢ (B \ D)) := by
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
 
 /--
-  Exercise 3.5.6.
+  Упражнение 3.5.6.
 -/
 theorem SetTheory.Set.prod_subset_prod {A B C D : Set}
   (hA : A ≠ ∅) (hB : B ≠ ∅) (hC : C ≠ ∅) (hD : D ≠ ∅) : 
@@ -488,23 +488,23 @@ def SetTheory.Set.prod_subset_prod' :
   -- первой строкой этой конструкции должно быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Exercise 3.5.7 -/
+/-- Упражнение 3.5.7 -/
 theorem SetTheory.Set.direct_sum {X Y Z : Set} (f : Z → X) (g : Z → Y) : 
     ∃! h : Z → X ×ˢ Y, fst ∘ h = f ∧ snd ∘ h = g := by sorry
 
-/-- Exercise 3.5.8 -/
+/-- Упражнение 3.5.8 -/
 @[simp]
 theorem SetTheory.Set.iProd_empty_iff {n : ℕ} {X : Fin n → Set} : 
     iProd X = ∅ ↔ ∃ i, X i = ∅ := by sorry
 
-/-- Exercise 3.5.9 -/
+/-- Упражнение 3.5.9 -/
 theorem SetTheory.Set.iUnion_inter_iUnion {I J : Set} (A : I → Set) (B : J → Set) : 
     (iUnion I A) ∩ (iUnion J B) = iUnion (I ×ˢ J) (fun p ↦ (A (fst p)) ∩ (B (snd p))) := by sorry
 
 abbrev SetTheory.Set.graph {X Y : Set} (f : X → Y) : Set :=
   (X ×ˢ Y).specify (fun p ↦ (f (fst p) = snd p))
 
-/-- Exercise 3.5.10 -/
+/-- Упражнение 3.5.10 -/
 theorem SetTheory.Set.graph_inj {X Y : Set} (f f' : X → Y) : 
     graph f = graph f' ↔ f = f' := by sorry
 
@@ -515,17 +515,17 @@ theorem SetTheory.Set.is_graph {X Y G : Set} (hG : G ⊆ X ×ˢ Y)
     ∃! f : X → Y, G = graph f := by sorry
 
 /--
-  Exercise 3.5.11. Это тривиально следует из {name}`SetTheory.Set.powerset_axiom`, но суть
+  Упражнение 3.5.11. Это тривиально следует из {name}`SetTheory.Set.powerset_axiom`, но суть
   упражнения в том, чтобы вывести это вместо этого из {name}`SetTheory.Set.exists_powerset`.
 -/
 theorem SetTheory.Set.powerset_axiom' (X Y : Set) : 
     ∃! S : Set, ∀(F : Object), F ∈ S ↔ ∃ f : Y → X, f = F := sorry
 
-/-- Exercise 3.5.12, с учётом опечаток с сайта -/
+/-- Упражнение 3.5.12, с учётом опечаток с сайта -/
 theorem SetTheory.Set.recursion (X : Set) (f : nat → X → X) (c : X) : 
     ∃! a : nat → X, a 0 = c ∧ ∀ n, a (n + 1 : ℕ) = f n (a n) := by sorry
 
-/-- Exercise 3.5.13 -/
+/-- Упражнение 3.5.13 -/
 theorem SetTheory.Set.nat_unique (nat' : Set) (zero : nat') (succ : nat' → nat')
   (succ_ne : ∀ n : nat', succ n ≠ zero) (succ_of_ne : ∀ n m : nat', n ≠ m → succ n ≠ succ m)
   (ind : ∀ P : nat' → Prop, P zero → (∀ n, P n → P (succ n)) → ∀ n, P n) : 

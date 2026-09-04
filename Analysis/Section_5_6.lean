@@ -27,7 +27,7 @@ import Analysis.Section_5_5
 
 namespace Chapter5
 
-/-- Definition 5.6.1 (возведение вещественного числа в натуральную степень). Здесь мы используем
+/-- Определение 5.6.1 (возведение вещественного числа в натуральную степень). Здесь мы используем
     определение из Mathlib, происходящее от {name}`Monoid`. -/
 
 lemma Real.pow_zero (x : Real) : x ^ 0 = 1 := rfl
@@ -39,37 +39,37 @@ lemma Real.pow_succ (x : Real) (n : ℕ) : x ^ (n+1) = (x ^ n) * x := rfl
 lemma Real.pow_of_coe (q : ℚ) (n : ℕ) : (q : Real) ^ n = (q ^ n : ℚ) := by induction' n with n hn <;> simp
 
 /- Утверждения ниже легко доказываются с помощью существующего API Mathlib (так как `Real` уже
-известно как `Field`), но дух этих упражнений — адаптировать доказательства Proposition 4.3.10,
+известно как `Field`), но дух этих упражнений — адаптировать доказательства Утверждения 4.3.10,
 которые вы установили ранее. -/
 
-/-- Аналог Proposition 4.3.10(a) (сумма показателей) -/
+/-- Аналог Утверждения 4.3.10(a) (сумма показателей) -/
 theorem Real.pow_add (x : Real) (m n : ℕ) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Аналог Proposition 4.3.10(a) (произведение показателей) -/
+/-- Аналог Утверждения 4.3.10(a) (произведение показателей) -/
 theorem Real.pow_mul (x : Real) (m n : ℕ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Аналог Proposition 4.3.10(a) (степень произведения) -/
+/-- Аналог Утверждения 4.3.10(a) (степень произведения) -/
 theorem Real.mul_pow (x y : Real) (n : ℕ) : (x*y)^n = x^n * y^n := by sorry
 
-/-- Аналог Proposition 4.3.10(b) -/
+/-- Аналог Утверждения 4.3.10(b) -/
 theorem Real.pow_eq_zero (x : Real) (n : ℕ) (hn : 0 < n) : x^n = 0 ↔ x = 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) (неотрицательность) -/
+/-- Аналог Утверждения 4.3.10(c) (неотрицательность) -/
 theorem Real.pow_nonneg {x : Real} (n : ℕ) (hx : x ≥ 0) : x^n ≥ 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) (положительность) -/
+/-- Аналог Утверждения 4.3.10(c) (положительность) -/
 theorem Real.pow_pos {x : Real} (n : ℕ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Аналог Proposition 4.3.10(c) (монотонность, нестрогая) -/
+/-- Аналог Утверждения 4.3.10(c) (монотонность, нестрогая) -/
 theorem Real.pow_ge_pow (x y : Real) (n : ℕ) (hxy : x ≥ y) (hy : y ≥ 0) : x^n ≥ y^n := by sorry
 
-/-- Аналог Proposition 4.3.10(c) (монотонность, строгая) -/
+/-- Аналог Утверждения 4.3.10(c) (монотонность, строгая) -/
 theorem Real.pow_gt_pow (x y : Real) (n : ℕ) (hxy : x > y) (hy : y ≥ 0) (hn : n > 0) : x^n > y^n := by sorry
 
-/-- Аналог Proposition 4.3.10(d) -/
+/-- Аналог Утверждения 4.3.10(d) -/
 theorem Real.pow_abs (x : Real) (n : ℕ) : |x|^n = |x^n| := by sorry
 
-/-- Definition 5.6.2 (возведение вещественного числа в целую степень). Здесь мы используем определение из Mathlib, происходящее от {name}`DivInvMonoid`. -/
+/-- Определение 5.6.2 (возведение вещественного числа в целую степень). Здесь мы используем определение из Mathlib, происходящее от {name}`DivInvMonoid`. -/
 lemma Real.pow_eq_pow (x : Real) (n : ℕ) : x ^ (n : ℤ) = x ^ n := by rfl
 
 /-- Любое вещественное число в нулевой целой степени равно единице. -/
@@ -79,38 +79,38 @@ lemma Real.zpow_zero (x : Real) : x ^ (0 : ℤ) = 1 := by rfl
 /-- Отрицательная целая степень — обратная величина от степени с противоположным натуральным показателем: `x^(-n) = 1/x^n`. -/
 lemma Real.zpow_neg {x : Real} (n : ℕ) : x^(-n : ℤ) = 1 / (x^n) := by simp
 
-/-- Аналог Proposition 4.3.12(a) (сумма показателей) -/
+/-- Аналог Утверждения 4.3.12(a) (сумма показателей) -/
 theorem Real.zpow_add (x : Real) (n m : ℤ) (hx : x ≠ 0) : x^n * x^m = x^(n+m) := by sorry
 
-/-- Аналог Proposition 4.3.12(a) (произведение показателей) -/
+/-- Аналог Утверждения 4.3.12(a) (произведение показателей) -/
 theorem Real.zpow_mul (x : Real) (n m : ℤ) : (x^n)^m = x^(n*m) := by sorry
 
-/-- Аналог Proposition 4.3.12(a) (степень произведения) -/
+/-- Аналог Утверждения 4.3.12(a) (степень произведения) -/
 theorem Real.mul_zpow (x y : Real) (n : ℤ) : (x*y)^n = x^n * y^n := by sorry
 
-/-- Аналог Proposition 4.3.12(b) (положительность) -/
+/-- Аналог Утверждения 4.3.12(b) (положительность) -/
 theorem Real.zpow_pos {x : Real} (n : ℤ) (hx : x > 0) : x^n > 0 := by sorry
 
-/-- Аналог Proposition 4.3.12(b) (монотонность) -/
+/-- Аналог Утверждения 4.3.12(b) (монотонность) -/
 theorem Real.zpow_ge_zpow {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n > 0) : x^n ≥ y^n := by sorry
 
-/-- Аналог Proposition 4.3.12(b) (монотонность для отрицательного показателя): при отрицательном `n` неравенство между основаниями обращается. -/
+/-- Аналог Утверждения 4.3.12(b) (монотонность для отрицательного показателя): при отрицательном `n` неравенство между основаниями обращается. -/
 theorem Real.zpow_ge_zpow_ofneg {x y : Real} {n : ℤ} (hxy : x ≥ y) (hy : y > 0) (hn : n < 0) : x^n ≤ y^n := by
   sorry
 
-/-- Аналог Proposition 4.3.12(c) -/
+/-- Аналог Утверждения 4.3.12(c) -/
 theorem Real.zpow_inj {x y : Real} {n : ℤ} (hx : x > 0) (hy : y > 0) (hn : n ≠ 0) (hxy : x^n = y^n) : x = y := by
   sorry
 
-/-- Аналог Proposition 4.3.12(d) -/
+/-- Аналог Утверждения 4.3.12(d) -/
 theorem Real.zpow_abs (x : Real) (n : ℤ) : |x|^n = |x^n| := by sorry
 
-/-- Definition 5.6.2. Мы допускаем "мусорные значения", когда {lean}`x` отрицательно или {lean}`n` равно нулю. -/
+/-- Определение 5.6.2. Мы допускаем "мусорные значения", когда {lean}`x` отрицательно или {lean}`n` равно нулю. -/
 noncomputable abbrev Real.root (x : Real) (n : ℕ) : Real := sSup { y : Real | y ≥ 0 ∧ y^n ≤ x }
 
 noncomputable abbrev Real.sqrt (x : Real) := x.root 2
 
-/-- Lemma 5.6.5 (существование корней n-й степени) -/
+/-- Лемма 5.6.5 (существование корней n-й степени) -/
 theorem Real.rootset_nonempty {x : Real} (hx : x ≥ 0) (n : ℕ) (hn : n ≥ 1) : { y : Real | y ≥ 0 ∧ y^n ≤ x }.Nonempty := by
   use 0
   sorry
@@ -131,14 +131,14 @@ theorem Real.rootset_bddAbove {x : Real} (n : ℕ) (hn : n ≥ 1) : BddAbove { y
     sorry
   linarith
 
-/-- Lemma 5.6.6 (ab) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (ab) / Упражнение 5.6.1 -/
 theorem Real.eq_root_iff_pow_eq {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn : n ≥ 1) : 
   y = x.root n ↔ y^n = x := by sorry
 
-/-- Lemma 5.6.6 (c) (неотрицательность) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (c) (неотрицательность) / Упражнение 5.6.1 -/
 theorem Real.root_nonneg {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.root n ≥ 0 := by sorry
 
-/-- Lemma 5.6.6 (c) (положительность) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (c) (положительность) / Упражнение 5.6.1 -/
 theorem Real.root_pos {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) : x.root n > 0 ↔ x > 0 := by sorry
 
 /-- Корень n-й степени из `x`, возведённый в n-ю степень, снова даёт `x`: `(x.root n)^n = x`. -/
@@ -149,22 +149,22 @@ theorem Real.pow_of_root {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) :
 theorem Real.root_of_pow {x : Real} (hx : x ≥ 0) {n : ℕ} (hn : n ≥ 1) :
   (x^n).root n = x := by sorry
 
-/-- Lemma 5.6.6 (d) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (d) / Упражнение 5.6.1 -/
 theorem Real.root_mono {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn : n ≥ 1) : x > y ↔ x.root n > y.root n := by sorry
 
-/-- Lemma 5.6.6 (e) (основание больше единицы) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (e) (основание больше единицы) / Упражнение 5.6.1 -/
 theorem Real.root_mono_of_gt_one {x : Real} (hx : x > 1) {k l : ℕ} (hkl : k > l) (hl : l ≥ 1) : x.root k < x.root l := by sorry
 
-/-- Lemma 5.6.6 (e) (основание меньше единицы) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (e) (основание меньше единицы) / Упражнение 5.6.1 -/
 theorem Real.root_mono_of_lt_one {x : Real} (hx0 : 0 < x) (hx : x < 1) {k l : ℕ} (hkl : k > l) (hl : l ≥ 1) : x.root k > x.root l := by sorry
 
-/-- Lemma 5.6.6 (e) (основание единица) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (e) (основание единица) / Упражнение 5.6.1 -/
 theorem Real.root_of_one {k : ℕ} (hk : k ≥ 1) : (1 : Real).root k = 1 := by sorry
 
-/-- Lemma 5.6.6 (f) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (f) / Упражнение 5.6.1 -/
 theorem Real.root_mul {x y : Real} (hx : x ≥ 0) (hy : y ≥ 0) {n : ℕ} (hn : n ≥ 1) : (x*y).root n = (x.root n) * (y.root n) := by sorry
 
-/-- Lemma 5.6.6 (g) / Exercise 5.6.1 -/
+/-- Лемма 5.6.6 (g) / Упражнение 5.6.1 -/
 theorem Real.root_root {x : Real} (hx : x ≥ 0) {n m : ℕ} (hn : n ≥ 1) (hm : m ≥ 1) : (x.root n).root m = x.root (n*m) := by sorry
 
 /-- Корень первой степени из положительного `x` равен самому `x`. -/
@@ -177,7 +177,7 @@ theorem Real.pow_cancel {y z : Real} (hy : y > 0) (hz : z > 0) {n : ℕ} (hn : n
 example : ¬(∀ (y : Real) (z : Real) (n : ℕ) (_ : n ≥ 1) (_ : y^n = z^n), y = z) := by
   simp; refine ⟨ (-3), 3, 2, ?_, ?_, ?_ ⟩ <;> norm_num
 
-/-- Definition 5.6.7 -/
+/-- Определение 5.6.7 -/
 noncomputable abbrev Real.ratPow (x : Real) (q : ℚ) : Real := (x.root q.den)^(q.num)
 
 noncomputable instance Real.instRatPow : Pow Real ℚ where
@@ -188,7 +188,7 @@ theorem Rat.eq_quot (q : ℚ) : ∃ a : ℤ, ∃ b : ℕ, b > 0 ∧ q = a / b :=
   use q.num, q.den; have := q.den_nz
   refine ⟨ by omega, (Rat.num_div_den q).symm ⟩
 
-/-- Lemma 5.6.8 -/
+/-- Лемма 5.6.8 -/
 theorem Real.pow_root_eq_pow_root {a a' : ℤ} {b b' : ℕ} (hb : b > 0) (hb' : b' > 0)
   (hq : (a/b : ℚ) = (a'/b' : ℚ)) {x : Real} (hx : x > 0) : 
     (x.root b')^(a') = (x.root b)^(a) := by
@@ -227,51 +227,51 @@ theorem Real.ratPow_eq_root {x : Real} (hx : x > 0) {n : ℕ} (hn : n ≥ 1) : x
 /-- Рациональная степень с целочисленным показателем `n` совпадает с обычной целой степенью `x^n`. -/
 theorem Real.ratPow_eq_pow {x : Real} (hx : x > 0) (n : ℤ) : x^(n : ℚ) = x^n := by sorry
 
-/-- Lemma 5.6.9(a) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(a) / Упражнение 5.6.2 -/
 theorem Real.ratPow_pos {x : Real} (hx : x > 0) (q : ℚ) : x^q > 0 := by
   sorry
 
-/-- Lemma 5.6.9(b) (сумма показателей) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(b) (сумма показателей) / Упражнение 5.6.2 -/
 theorem Real.ratPow_add {x : Real} (hx : x > 0) (q r : ℚ) : x^(q+r) = x^q * x^r := by
   sorry
 
-/-- Lemma 5.6.9(b) (произведение показателей) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(b) (произведение показателей) / Упражнение 5.6.2 -/
 theorem Real.ratPow_ratPow {x : Real} (hx : x > 0) (q r : ℚ) : (x^q)^r = x^(q*r) := by
   sorry
 
-/-- Lemma 5.6.9(c) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(c) / Упражнение 5.6.2 -/
 theorem Real.ratPow_neg {x : Real} (hx : x > 0) (q : ℚ) : x^(-q) = 1 / x^q := by
   sorry
 
-/-- Lemma 5.6.9(d) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(d) / Упражнение 5.6.2 -/
 theorem Real.ratPow_mono {x y : Real} (hx : x > 0) (hy : y > 0) {q : ℚ} (h : q > 0) : x > y ↔ x^q > y^q := by
   sorry
 
-/-- Lemma 5.6.9(e) (основание больше единицы) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(e) (основание больше единицы) / Упражнение 5.6.2 -/
 theorem Real.ratPow_mono_of_gt_one {x : Real} (hx : x > 1) {q r : ℚ} : x^q > x^r ↔ q > r := by
   sorry
 
-/-- Lemma 5.6.9(e) (основание меньше единицы) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(e) (основание меньше единицы) / Упражнение 5.6.2 -/
 theorem Real.ratPow_mono_of_lt_one {x : Real} (hx0 : 0 < x) (hx : x < 1) {q r : ℚ} : x^q > x^r ↔ q < r := by
   sorry
 
-/-- Lemma 5.6.9(f) / Exercise 5.6.2 -/
+/-- Лемма 5.6.9(f) / Упражнение 5.6.2 -/
 theorem Real.ratPow_mul {x y : Real} (hx : x > 0) (hy : y > 0) (q : ℚ) : (x*y)^q = x^q * y^q := by
   sorry
 
-/-- Exercise 5.6.3 -/
+/-- Упражнение 5.6.3 -/
 theorem Real.pow_even (x : Real) {n : ℕ} (hn : Even n) : x^n ≥ 0 := by sorry
 
-/-- Exercise 5.6.5 (a) -/
+/-- Упражнение 5.6.5 (a) -/
 theorem Real.max_ratPow {x y : Real} (hx : x > 0) (hy : y > 0) {q : ℚ} (hq : q > 0) : 
   max (x^q) (y^q) = (max x y)^q := by
   sorry
 
-/-- Exercise 5.6.5 (b) -/
+/-- Упражнение 5.6.5 (b) -/
 theorem Real.min_ratPow {x y : Real} (hx : x > 0) (hy : y > 0) {q : ℚ} (hq : q > 0) : 
   min (x^q) (y^q) = (min x y)^q := by
   sorry
 
--- Заключительная часть Exercise 5.6.5: сформулируйте и докажите варианты приведённых выше лемм, покрывающие случай отрицательного q.
+-- Заключительная часть Упражнения 5.6.5: сформулируйте и докажите варианты приведённых выше лемм, покрывающие случай отрицательного q.
 
 end Chapter5

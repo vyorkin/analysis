@@ -26,45 +26,45 @@ set_option doc.verso.suggestions false
 вне интересующей нас области `X` им присваиваются "мусорные" значения).
 -/
 
-/-- Definition 9.3.1
+/-- Определение 9.3.1
 Заметьте, что в книге используется ≤ вместо <, но < соответствует определению окрестности в mathlib.
 -/
 abbrev Real.CloseFn (ε : ℝ) (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) : Prop :=
   ∀ x ∈ X, |f x - L| < ε
 
-/-- Definition 9.3.3 -/
+/-- Определение 9.3.3 -/
 abbrev Real.CloseNear (ε : ℝ) (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀ : ℝ) : Prop :=
   ∃ δ > 0, ε.CloseFn (X ∩ .Ioo (x₀-δ) (x₀+δ)) f L
 
 namespace Chapter9
 
-/-- Example 9.3.2
+/-- Пример 9.3.2
 Небольшое отличие от книги, связанное с изменением {lean}`Real.CloseFn`
 -/
 example : (5.1 : ℝ).CloseFn (.Icc 1 3) (fun x ↦ x^2) 4 := by sorry
 
-/-- Example 9.3.2
+/-- Пример 9.3.2
 Небольшое отличие от книги, связанное с изменением {lean}`Real.CloseFn`
 -/
 example : (0.42 : ℝ).CloseFn (.Icc 1.9 2.1) (fun x ↦ x^2) 4 := by sorry
 
-/-- Example 9.3.4 -/
+/-- Пример 9.3.4 -/
 example : ¬(0.1 : ℝ).CloseFn (.Icc 1 3) (fun x ↦ x^2) 4 := by
   sorry
 
-/-- Example 9.3.4 -/
+/-- Пример 9.3.4 -/
 example : (0.1 : ℝ).CloseNear (.Icc 1 3) (fun x ↦ x^2) 4 2 := by
   sorry
 
-/-- Example 9.3.5 -/
+/-- Пример 9.3.5 -/
 example : ¬(0.1 : ℝ).CloseFn (.Icc 1 3) (fun x ↦ x^2) 9 := by
   sorry
 
-/-- Example 9.3.5 -/
+/-- Пример 9.3.5 -/
 example : (0.1 : ℝ).CloseNear (.Icc 1 3) (fun x ↦ x^2) 9 3 := by
   sorry
 
-/-- Definition 9.3.6 (Сходимость функций в точке). -/
+/-- Определение 9.3.6 (Сходимость функций в точке). -/
 abbrev Convergesto (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀ : ℝ) : Prop := ∀ ε > (0 : ℝ), ε.CloseNear X f L x₀
 
 /-- Связь с понятиями сходимости по фильтру из Mathlib -/
@@ -88,11 +88,11 @@ theorem Convergesto.iff (X : Set ℝ) (f : ℝ → ℝ) (L : ℝ) (x₀ : ℝ) :
   specialize h (show x ∈ .Ioo l u by simp; grind)
   simpa [hxX] using h
 
-/-- Example 9.3.8 -/
+/-- Пример 9.3.8 -/
 example : Convergesto (.Icc 1 3) (fun x ↦ x^2) 4 2 := by
   sorry
 
-/-- Proposition 9.3.9 / Exercise 9.3.1 -/
+/-- Утверждение 9.3.9 / Упражнение 9.3.1 -/
 theorem Convergesto.iff_conv {E : Set ℝ} (f : ℝ → ℝ) (L : ℝ) {x₀ : ℝ} : 
   Convergesto E f L x₀ ↔ ∀ a : ℕ → ℝ, (∀ n : ℕ, a n ∈ E) →
   Filter.atTop.Tendsto a (nhds x₀) →
@@ -105,17 +105,17 @@ theorem Convergesto.comp {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ} 
   Filter.atTop.Tendsto (fun n ↦ f (a n)) (nhds L) := by
   rw [iff_conv f L] at hf; solve_by_elim
 
--- Remark 9.3.11 не вполне верно для Lean: гипотезу `AdherentPt x₀ E` можно безопасно убрать
+-- Замечание 9.3.11 не вполне верно для Lean: гипотезу `AdherentPt x₀ E` можно безопасно убрать
 -- из большинства теорем (за исключением Convergesto.uniq).
 
-/-- Corollary 9.3.13 -/
+/-- Следствие 9.3.13 -/
 theorem Convergesto.uniq {E : Set ℝ} {f : ℝ → ℝ} {L L' : ℝ} {x₀ : ℝ} (h : AdherentPt x₀ E)
   (hf : Convergesto E f L x₀) (hf' : Convergesto E f L' x₀) : L = L' := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   let ⟨ a, ha, hconv ⟩ := (limit_of_AdherentPt _ _).mp h
   exact tendsto_nhds_unique (hf.comp ha hconv) (hf'.comp ha hconv)
 
-/-- Proposition 9.3.14 (Законы пределов для функций, сложение) -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, сложение) -/
 theorem Convergesto.add {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f + g) (L + M) x₀ := by
@@ -124,37 +124,37 @@ theorem Convergesto.add {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : �
     intro a ha hconv; specialize hf a ha hconv; specialize hg a ha hconv
     convert hf.add hg using 1
 
-/-- Proposition 9.3.14 (Законы пределов для функций, вычитание) / Exercise 9.3.2 -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, вычитание) / Упражнение 9.3.2 -/
 theorem Convergesto.sub {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f - g) (L - M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Законы пределов для функций, максимум) / Exercise 9.3.2 -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, максимум) / Упражнение 9.3.2 -/
 theorem Convergesto.max {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (max f g) (max L M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Законы пределов для функций, минимум) / Exercise 9.3.2 -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, минимум) / Упражнение 9.3.2 -/
 theorem Convergesto.min {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (min f g) (min L M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Законы пределов для функций, умножение на скаляр) / Exercise 9.3.2 -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, умножение на скаляр) / Упражнение 9.3.2 -/
 theorem Convergesto.smul {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (c : ℝ) : 
   Convergesto E (c • f) (c * L) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Законы пределов для функций, умножение) / Exercise 9.3.2 -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, умножение) / Упражнение 9.3.2 -/
 theorem Convergesto.mul {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ}
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f * g) (L * M) x₀ := by
     sorry
 
-/-- Proposition 9.3.14 (Законы пределов для функций, деление) / Exercise 9.3.2. Гипотезу из книги о том, что g не обращается в ноль на E, можно опустить. -/
+/-- Утверждение 9.3.14 (Законы пределов для функций, деление) / Упражнение 9.3.2. Гипотезу из книги о том, что g не обращается в ноль на E, можно опустить. -/
 theorem Convergesto.div {E : Set ℝ} {f g : ℝ → ℝ} {L M : ℝ} {x₀ : ℝ} (hM : M ≠ 0)
   (hf : Convergesto E f L x₀) (hg : Convergesto E g M x₀) : 
   Convergesto E (f / g) (L / M) x₀ := by
@@ -192,13 +192,13 @@ theorem Convergesto.restrict {X Y : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ :
 -- Явная формула для функции знака: `-1` при `x < 0`, `1` при `x > 0`, `0` при `x = 0`
 theorem Real.sign_def (x : ℝ) : Real.sign x = if x < 0 then -1 else if x > 0 then 1 else 0 := rfl
 
-/-- Example 9.3.16 (a) -/
+/-- Пример 9.3.16 (a) -/
 theorem Convergesto.sign_right : Convergesto (.Ioi 0) Real.sign 1 0 := by sorry
 
-/-- Example 9.3.16 (b) -/
+/-- Пример 9.3.16 (b) -/
 theorem Convergesto.sign_left : Convergesto (.Iio 0) Real.sign (-1) 0 := by sorry
 
-/-- Example 9.3.16 (c) -/
+/-- Пример 9.3.16 (c) -/
 theorem Convergesto.sign_all : ¬ ∃ L, Convergesto (.univ) Real.sign L 0 := by sorry
 
 noncomputable abbrev f_9_3_17 : ℝ → ℝ := fun x ↦ if x = 0 then 1 else 0
@@ -209,19 +209,19 @@ theorem Convergesto.f_9_3_17_remove : Convergesto (.univ \ {0}) f_9_3_17 0 0 := 
 -- На всей прямой (включая точку `0`) у `f_9_3_17` нет предела в `0`
 theorem Convergesto.f_9_3_17_all : ¬ ∃ L, Convergesto .univ f_9_3_17 L 0 := by sorry
 
-/-- Proposition 9.3.18 / Exercise 9.3.3 -/
+/-- Утверждение 9.3.18 / Упражнение 9.3.3 -/
 theorem Convergesto.local {E : Set ℝ} {f : ℝ → ℝ} {L : ℝ} {x₀ : ℝ} {δ : ℝ} (hδ : δ > 0) : 
   Convergesto E f L x₀ ↔ Convergesto (E ∩ .Ioo (x₀-δ) (x₀+δ)) f L x₀ := by
     sorry
 
-/-- Example 9.3.19.  Смысл этого примера несколько теряется из-за того, что мы можем убрать гипотезу о ненулевости {lit}`g` из соответствующей части Proposition 9.3.14 -/
+/-- Пример 9.3.19.  Смысл этого примера несколько теряется из-за того, что мы можем убрать гипотезу о ненулевости {lit}`g` из соответствующей части Утверждения 9.3.14 -/
 example : Convergesto .univ (fun x ↦ (x+2)/(x+1)) (4/3 : ℝ) 2 := by sorry
 
-/-- Example 9.3.20 -/
+/-- Пример 9.3.20 -/
 example : Convergesto (.univ \ {1}) (fun x ↦ (x^2-1)/(x-1)) 2 1 := by sorry
 
 open Classical in
-/-- Example 9.3.21 -/
+/-- Пример 9.3.21 -/
 noncomputable abbrev f_9_3_21 : ℝ → ℝ := fun x ↦ if x ∈ (fun q : ℚ ↦ (q : ℝ)) '' .univ then 1 else 0
 
 example : Filter.atTop.Tendsto (fun (n : ℕ) ↦ f_9_3_21 (1/(n : ℝ))) (nhds 1) := by sorry
@@ -230,9 +230,9 @@ example : Filter.atTop.Tendsto (fun (n : ℕ) ↦ f_9_3_21 ((Real.sqrt 2)/n : �
 
 example : ¬ ∃ L, Convergesto .univ f_9_3_21 L 0 := by sorry
 
-/- Exercise 9.3.4: Сформулируйте определение верхнего и нижнего предела для функций и докажите аналог Proposition 9.3.9 для этих определений. -/
+/- Упражнение 9.3.4: Сформулируйте определение верхнего и нижнего предела для функций и докажите аналог Утверждения 9.3.9 для этих определений. -/
 
-/-- Exercise 9.3.5 (Непрерывная версия теоремы о двух милиционерах) -/
+/-- Упражнение 9.3.5 (Непрерывная версия теоремы о двух милиционерах) -/
 theorem Convergesto.squeeze {E : Set ℝ} {f g h : ℝ → ℝ} {L : ℝ} {x₀ : ℝ}
   (hfg : ∀ x ∈ E, f x ≤ g x) (hgh : ∀ x ∈ E, g x ≤ h x)
   (hf : Convergesto E f L x₀) (hh : Convergesto E h L x₀) : 

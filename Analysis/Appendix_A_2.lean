@@ -62,7 +62,7 @@ example {NYC_capital_US : Prop} : (2+2=3) → NYC_capital_US := by
   intro h
   simp at h
 
-/-- Proposition A.2.2 -/
+/-- Утверждение A.2.2 -/
 example : ((2+2 : ℤ)=5) → (4=(10-4 : ℤ)) := by
   intro h
   have : (4 + 4 : ℤ) = 10 := by
@@ -70,7 +70,7 @@ example : ((2+2 : ℤ)=5) → (4=(10-4 : ℤ)) := by
     convert h using 1
   rwa [←eq_sub_iff_add_eq] at this
 
-/-- Theorem A.2.4 -/
+/-- Теорема A.2.4 -/
 theorem theorem_A_2_4 (n : ℤ) : Even (n * (n+1)) := by
   have : Even n ∨ Odd n := Int.even_or_odd n
   obtain heven | hodd := this  -- можно также использовать `rcases this with heven | hodd`
@@ -78,7 +78,7 @@ theorem theorem_A_2_4 (n : ℤ) : Even (n * (n+1)) := by
   have : Even (n+1) := Odd.add_one hodd
   exact Even.mul_left this _
 
-/-- Corollary A.2.5 -/
+/-- Следствие A.2.5 -/
 example : 
   let n : ℤ := (253+142)*123-(423+198)^342+538-213
   Even (n * (n+1)) := theorem_A_2_4 _
@@ -129,7 +129,7 @@ theorem imp_example (x : ℝ) : (x = 2) → (x^2 = 4) := by
 theorem imp_contrapositive (x : ℝ) : (x^2 ≠ 4) → (x ≠ 2) := by
   convert contrapositive (imp_example x)
 
-/-- Proposition A.2.6 -/
+/-- Утверждение A.2.6 -/
 example {x : ℝ} (h : x>0) (hsin : Real.sin x = 1) : x ≥ Real.pi / 2 := by
   by_contra! h'
   have h1 : Real.sin 0 < Real.sin x := by

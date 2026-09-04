@@ -68,11 +68,11 @@ theorem CauchySequence.coe_to_sequence (a : CauchySequence) :
 @[simp]
 theorem CauchySequence.coe_coe {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) : mk' ha = a := by rfl
 
-/-- Proposition 5.3.3 / Exercise 5.3.1 -/
+/-- Утверждение 5.3.3 / Упражнение 5.3.1 -/
 theorem Sequence.equiv_trans {a b c : ℕ → ℚ} (hab : Equiv a b) (hbc : Equiv b c) : 
   Equiv a c := by sorry
 
-/-- Proposition 5.3.3 / Exercise 5.3.1 -/
+/-- Утверждение 5.3.3 / Упражнение 5.3.1 -/
 instance CauchySequence.instSetoid : Setoid CauchySequence where
   r := fun a b ↦ Sequence.Equiv a b
   iseqv := {
@@ -106,7 +106,7 @@ theorem LIM_def {a : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) :
     LIM a = Quotient.mk _ (CauchySequence.mk' ha) := by
   rw [LIM, dif_pos ha]
 
-/-- Definition 5.3.1 (Вещественные числа) -/
+/-- Определение 5.3.1 (Вещественные числа) -/
 theorem Real.eq_lim (x : Real) : ∃ (a : ℕ → ℚ), (a : Sequence).IsCauchy ∧ x = LIM a := by
   apply Quotient.ind _ x; intro a; use (a : ℕ → ℚ)
   observe : ((a : ℕ → ℚ) : Sequence) = a.toSequence
@@ -114,7 +114,7 @@ theorem Real.eq_lim (x : Real) : ∃ (a : ℕ → ℚ), (a : Sequence).IsCauchy 
   refine ⟨ a.cauchy, ?_ ⟩
   congr; ext n; simp; replace := congr($this n); simp_all
 
-/-- Definition 5.3.1 (Вещественные числа) -/
+/-- Определение 5.3.1 (Вещественные числа) -/
 theorem Real.LIM_eq_LIM {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) : 
   LIM a = LIM b ↔ Sequence.Equiv a b := by
   constructor
@@ -123,7 +123,7 @@ theorem Real.LIM_eq_LIM {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb :
   intro h; apply Quotient.sound
   rwa [dif_pos ha, dif_pos hb, CauchySequence.equiv_iff]
 
-/-- Lemma 5.3.6 (Сумма последовательностей Коши является последовательностью Коши). -/
+/-- Лемма 5.3.6 (Сумма последовательностей Коши является последовательностью Коши). -/
 theorem Sequence.IsCauchy.add {a b : ℕ → ℚ}  (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) :
     (a + b : Sequence).IsCauchy := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -139,7 +139,7 @@ theorem Sequence.IsCauchy.add {a b : ℕ → ℚ}  (ha : (a : Sequence).IsCauchy
   convert Section_4_3.add_close h1 h2
   linarith
 
-/-- Lemma 5.3.7 (Сумма эквивалентных последовательностей эквивалентна, слева). -/
+/-- Лемма 5.3.7 (Сумма эквивалентных последовательностей эквивалентна, слева). -/
 theorem Sequence.add_equiv_left {a a' : ℕ → ℚ} (b : ℕ → ℚ) (haa' : Equiv a a') :
     Equiv (a + b) (a' + b) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -153,17 +153,17 @@ theorem Sequence.add_equiv_left {a a' : ℕ → ℚ} (b : ℕ → ℚ) (haa' : E
   convert Section_4_3.add_close haa' (Section_4_3.close_refl (b n.toNat))
   simp
 
-/-- Lemma 5.3.7 (Сумма эквивалентных последовательностей эквивалентна, справа). -/
+/-- Лемма 5.3.7 (Сумма эквивалентных последовательностей эквивалентна, справа). -/
 theorem Sequence.add_equiv_right {b b' : ℕ → ℚ} (a : ℕ → ℚ) (hbb' : Equiv b b') : 
     Equiv (a + b) (a + b') := by simp_rw [add_comm]; exact add_equiv_left _ hbb'
 
-/-- Lemma 5.3.7 (Сумма эквивалентных последовательностей эквивалентна). -/
+/-- Лемма 5.3.7 (Сумма эквивалентных последовательностей эквивалентна). -/
 theorem Sequence.add_equiv {a b a' b' : ℕ → ℚ} (haa' : Equiv a a')
   (hbb' : Equiv b b') : 
     Equiv (a + b) (a' + b') :=
   equiv_trans (add_equiv_left _ haa') (add_equiv_right _ hbb')
 
-/-- Definition 5.3.4 (Сложение вещественных чисел) -/
+/-- Определение 5.3.4 (Сложение вещественных чисел) -/
 noncomputable instance Real.add_inst : Add Real where
   add := fun x y ↦
     Quotient.liftOn₂ x y (fun a b ↦ LIM (a + b)) (by
@@ -174,7 +174,7 @@ noncomputable instance Real.add_inst : Add Real where
       all_goals apply Sequence.IsCauchy.add <;> rw [CauchySequence.coe_to_sequence] <;> convert @CauchySequence.cauchy ?_
       )
 
-/-- Definition 5.3.4 (Сложение вещественных чисел) -/
+/-- Определение 5.3.4 (Сложение вещественных чисел) -/
 theorem Real.LIM_add {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) : 
   LIM a + LIM b = LIM (a + b) := by
   simp_rw [LIM_def ha, LIM_def hb, LIM_def (Sequence.IsCauchy.add ha hb)]
@@ -182,21 +182,21 @@ theorem Real.LIM_add {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b
   simp [LIM]; grind
 
 
-/-- Proposition 5.3.10 (Произведение последовательностей Коши является последовательностью Коши) -/
+/-- Утверждение 5.3.10 (Произведение последовательностей Коши является последовательностью Коши) -/
 theorem Sequence.IsCauchy.mul {a b : ℕ → ℚ}  (ha : (a : Sequence).IsCauchy) (hb : (b : Sequence).IsCauchy) : 
     (a * b : Sequence).IsCauchy := by
   sorry
 
-/-- Proposition 5.3.10 (Произведение эквивалентных последовательностей эквивалентно, слева) / Exercise 5.3.2. -/
+/-- Утверждение 5.3.10 (Произведение эквивалентных последовательностей эквивалентно, слева) / Упражнение 5.3.2. -/
 theorem Sequence.mul_equiv_left {a a' : ℕ → ℚ} (b : ℕ → ℚ) (hb : (b : Sequence).IsCauchy) (haa' : Equiv a a') : 
   Equiv (a * b) (a' * b) := by
   sorry
 
-/-- Proposition 5.3.10 (Произведение эквивалентных последовательностей эквивалентно, справа) / Exercise 5.3.2. -/
+/-- Утверждение 5.3.10 (Произведение эквивалентных последовательностей эквивалентно, справа) / Упражнение 5.3.2. -/
 theorem Sequence.mul_equiv_right {b b' : ℕ → ℚ} (a : ℕ → ℚ)  (ha : (a : Sequence).IsCauchy)  (hbb' : Equiv b b') : 
   Equiv (a * b) (a * b') := by simp_rw [mul_comm]; exact mul_equiv_left a ha hbb'
 
-/-- Proposition 5.3.10 (Произведение эквивалентных последовательностей эквивалентно) / Exercise 5.3.2. -/
+/-- Утверждение 5.3.10 (Произведение эквивалентных последовательностей эквивалентно) / Упражнение 5.3.2. -/
 theorem Sequence.mul_equiv
   {a b a' b' : ℕ → ℚ}
   (ha : (a : Sequence).IsCauchy)
@@ -205,7 +205,7 @@ theorem Sequence.mul_equiv
   (hbb' : Equiv b b') : Equiv (a * b) (a' * b') :=
     equiv_trans (mul_equiv_right _ ha hbb') (mul_equiv_left _ hb' haa')
 
-/-- Definition 5.3.9 (Произведение вещественных чисел) -/
+/-- Определение 5.3.9 (Произведение вещественных чисел) -/
 noncomputable instance Real.mul_inst : Mul Real where
   mul := fun x y ↦
     Quotient.liftOn₂ x y (fun a b ↦ LIM (a * b)) (by
@@ -230,7 +230,7 @@ instance Real.instRatCast : RatCast Real where
 -- приведение рационального `q` к `Real` совпадает с `LIM` постоянной последовательности `q`
 theorem Real.ratCast_def (q : ℚ) : (q : Real) = LIM (fun _ ↦ q) := by rw [LIM_def]; rfl
 
-/-- Exercise 5.3.3 -/
+/-- Упражнение 5.3.3 -/
 @[simp]
 theorem Real.ratCast_inj (q r : ℚ) : (q : Real) = (r : Real) ↔ q = r := by
   sorry
@@ -267,7 +267,7 @@ theorem Real.neg_LIM (a : ℕ → ℚ) (ha : (a : Sequence).IsCauchy) : -LIM a =
 theorem Sequence.IsCauchy.neg (a : ℕ → ℚ) (ha : (a : Sequence).IsCauchy) :
     ((-a : ℕ → ℚ) : Sequence).IsCauchy := by sorry
 
-/-- Proposition 5.3.11 (законы алгебры) -/
+/-- Утверждение 5.3.11 (законы алгебры) -/
 noncomputable instance Real.addGroup_inst : AddGroup Real :=
   AddGroup.ofLeftAxioms (by sorry) (by sorry) (by sorry)
 
@@ -285,18 +285,18 @@ theorem Real.LIM_sub {a b : ℕ → ℚ} (ha : (a : Sequence).IsCauchy) (hb : (b
 /-- {name (full := RatCast.ratCast)}`ratCast` дистрибутивен относительно вычитания -/
 theorem Real.ratCast_sub (a b : ℚ) : (a : Real) - (b : Real) = (a-b : ℚ) := by sorry
 
-/-- Proposition 5.3.11 (законы алгебры) -/
+/-- Утверждение 5.3.11 (законы алгебры) -/
 noncomputable instance Real.instAddCommGroup : AddCommGroup Real where
   add_comm := by sorry
 
-/-- Proposition 5.3.11 (законы алгебры) -/
+/-- Утверждение 5.3.11 (законы алгебры) -/
 noncomputable instance Real.instCommMonoid : CommMonoid Real where
   mul_comm := by sorry
   mul_assoc := by sorry
   one_mul := by sorry
   mul_one := by sorry
 
-/-- Proposition 5.3.11 (законы алгебры) -/
+/-- Утверждение 5.3.11 (законы алгебры) -/
 noncomputable instance Real.instCommRing : CommRing Real where
   left_distrib := by sorry
   right_distrib := by sorry
@@ -314,7 +314,7 @@ abbrev Real.ratCast_hom : ℚ →+* Real where
   map_mul' := by sorry
 
 /--
-  Definition 5.3.12 (последовательности, отделённые от нуля). Последовательности индексируются
+  Определение 5.3.12 (последовательности, отделённые от нуля). Последовательности индексируются
   начиная с нуля, поскольку это удобнее для целей Mathlib.
 -/
 abbrev BoundedAwayZero (a : ℕ → ℚ) : Prop :=
@@ -324,26 +324,26 @@ abbrev BoundedAwayZero (a : ℕ → ℚ) : Prop :=
 theorem bounded_away_zero_def (a : ℕ → ℚ) : BoundedAwayZero a ↔
   ∃ (c : ℚ), c > 0 ∧ ∀ n, |a n| ≥ c := by rfl
 
-/-- Examples 5.3.13 -/
+/-- Примеры 5.3.13 -/
 example : BoundedAwayZero (fun n ↦ (-1)^n) := by use 1; simp
 
-/-- Examples 5.3.13 -/
+/-- Примеры 5.3.13 -/
 example : ¬ BoundedAwayZero (fun n ↦ 10^(-(n : ℤ)-1)) := by sorry
 
-/-- Examples 5.3.13 -/
+/-- Примеры 5.3.13 -/
 example : ¬ BoundedAwayZero (fun n ↦ 1 - 10^(-(n : ℤ))) := by sorry
 
-/-- Examples 5.3.13 -/
+/-- Примеры 5.3.13 -/
 example : BoundedAwayZero (fun n ↦ 10^(n+1)) := by
   use 1, by norm_num
   intro n; dsimp
   rw [abs_of_nonneg (by positivity), show (1 : ℚ) = 10^0 by norm_num]
   gcongr <;> grind
 
-/-- Examples 5.3.13 -/
+/-- Примеры 5.3.13 -/
 example : ¬ ((fun (n : ℕ) ↦ (10 : ℚ)^(n+1)) : Sequence).IsBounded := by sorry
 
-/-- Lemma 5.3.14 -/
+/-- Лемма 5.3.14 -/
 theorem Real.boundedAwayZero_of_nonzero {x : Real} (hx : x ≠ 0) :
     ∃ a : ℕ → ℚ, (a : Sequence).IsCauchy ∧ BoundedAwayZero a ∧ x = LIM a := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -376,7 +376,7 @@ theorem Real.lim_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAwayZero a)
 theorem Real.nonzero_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAwayZero a) (n : ℕ) : a n ≠ 0 := by
    choose c hc ha using ha; specialize ha n; contrapose! ha; simp [ha, hc]
 
-/-- Lemma 5.3.15 -/
+/-- Лемма 5.3.15 -/
 theorem Real.inv_isCauchy_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAwayZero a)
   (ha_cauchy : (a : Sequence).IsCauchy) :
     ((a⁻¹ : ℕ → ℚ) : Sequence).IsCauchy := by
@@ -395,7 +395,7 @@ theorem Real.inv_isCauchy_of_boundedAwayZero {a : ℕ → ℚ} (ha : BoundedAway
     _ ≤ (c^2 * ε) / c^2 := by gcongr
     _ = ε := by field_simp [hc]
 
-/-- Lemma 5.3.17 (Обращение определено корректно) -/
+/-- Лемма 5.3.17 (Обращение определено корректно) -/
 theorem Real.inv_of_equiv {a b : ℕ → ℚ} (ha : BoundedAwayZero a)
   (ha_cauchy : (a : Sequence).IsCauchy) (hb : BoundedAwayZero b)
   (hb_cauchy : (b : Sequence).IsCauchy) (hlim : LIM a = LIM b) :
@@ -416,7 +416,7 @@ theorem Real.inv_of_equiv {a b : ℕ → ℚ} (ha : BoundedAwayZero a)
 
 open Classical in
 /--
-  Definition 5.3.16 (Обращение вещественных чисел). Требует классической логики, потому что нам
+  Определение 5.3.16 (Обращение вещественных чисел). Требует классической логики, потому что нам
   нужно присвоить "мусорное" значение обратной величине к 0.
 -/
 noncomputable instance Real.instInv : Inv Real where
@@ -474,20 +474,20 @@ theorem Real.mul_right_cancel₀ {x y z : Real} (hz : z ≠ 0) (h : x * z = y * 
 theorem Real.mul_right_nocancel : ¬ ∀ (x y z : Real), (hz : z = 0) → (x * z = y * z) → x = y := by
   sorry
 
-/-- Exercise 5.3.4 -/
+/-- Упражнение 5.3.4 -/
 theorem Real.IsBounded.equiv {a b : ℕ → ℚ} (ha : (a : Sequence).IsBounded) (hab : Sequence.Equiv a b) : 
     (b : Sequence).IsBounded := by sorry
 
 /--
   То же, что и {name}`Sequence.IsCauchy.harmonic`, но с переиндексацией последовательности как
-  a₀ = 1, a₁ = 1/2, ... Эта форма удобнее для предстоящего доказательства Theorem 5.5.9.
+  a₀ = 1, a₁ = 1/2, ... Эта форма удобнее для предстоящего доказательства Теоремы 5.5.9.
 -/
 theorem Sequence.IsCauchy.harmonic' : ((fun n ↦ 1/((n : ℚ)+1) : ℕ → ℚ) : Sequence).IsCauchy := by
   rw [coe]; intro ε hε; choose N h1 h2 using (mk _).mp harmonic ε hε
   use N.toNat; intro j _ k _; specialize h2 (j+1) _ (k+1) _ <;> try omega
   simp_all
 
-/-- Exercise 5.3.5 -/
+/-- Упражнение 5.3.5 -/
 theorem Real.LIM.harmonic : LIM (fun n ↦ 1/((n : ℚ)+1)) = 0 := by sorry
 
 end Chapter5

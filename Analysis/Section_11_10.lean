@@ -21,7 +21,7 @@ namespace Chapter11
 
 open BoundedInterval Chapter9 Chapter10
 
-/-- Proposition 11.10.1 (формула интегрирования по частям) / Exercise 11.10.1 -/
+/-- Утверждение 11.10.1 (формула интегрирования по частям) / Упражнение 11.10.1 -/
 theorem integ_of_mul_deriv {a b : ℝ} (hab : a ≤ b) {F G : ℝ → ℝ}
   (hF : DifferentiableOn ℝ F (Icc a b)) (hG : DifferentiableOn ℝ G (Icc a b))
   (hF' : IntegrableOn (derivWithin F (Icc a b)) (Icc a b))
@@ -30,7 +30,7 @@ theorem integ_of_mul_deriv {a b : ℝ} (hab : a ≤ b) {F G : ℝ → ℝ}
     integ (G * derivWithin F (Icc a b)) (Icc a b) := by
     sorry
 
-/-- Theorem 11.10.2. Нужно добавить непрерывность α из-за наших соглашений относительно {name}`α_length` -/
+/-- Теорема 11.10.2. Нужно добавить непрерывность α из-за наших соглашений относительно {name}`α_length` -/
 theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
   {a b : ℝ} {α f : ℝ → ℝ}
   (hα_diff : DifferentiableOn ℝ α (Icc a b)) (hαcont : Continuous α)
@@ -74,7 +74,7 @@ theorem PiecewiseConstantOn.RS_integ_eq_integ_of_mul_deriv
             intros; solve_by_elim [DifferentiableWithinAt.hasDerivWithinAt]
       all_goals linarith
 
-/-- Corollary 11.10.3 -/
+/-- Следствие 11.10.3 -/
 theorem RS_integ_eq_integ_of_mul_deriv
   {a b : ℝ} (hab : a < b) {α f : ℝ → ℝ} (hα : Monotone α)
   (hα_diff : DifferentiableOn ℝ α (Icc a b)) (hαcont : Continuous α)
@@ -124,7 +124,7 @@ theorem RS_integ_eq_integ_of_mul_deriv
     upper_integral (f * α') (Icc a b) := lower_integral_le_upper hfα'_bound
   refine ⟨ ⟨ hfα'_bound, ?_ ⟩, ?_ ⟩ <;> linarith
 
-/-- Lemma 11.10.5 / Exercise 11.10.2 -/
+/-- Лемма 11.10.5 / Упражнение 11.10.2 -/
 theorem PiecewiseConstantOn.RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : PiecewiseConstantOn f (Icc (φ a) (φ b))) : 
   PiecewiseConstantOn (f ∘ φ) (Icc a b) ∧ RS_integ (f ∘ φ) (Icc a b) φ =
@@ -174,7 +174,7 @@ theorem PiecewiseConstantOn.RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : �
     exact this h1.2
   ext; apply (P.exists_unique _ h3).unique <;> simp [J.property, K.property, mem_iff, h1, h2]
 
-/-- Proposition 11.10.6 (формула замены переменной II). -/
+/-- Утверждение 11.10.6 (формула замены переменной II). -/
 theorem RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ) (hf : IntegrableOn f (Icc (φ a) (φ b))) : 
   RS_IntegrableOn (f ∘ φ) (Icc a b) φ ∧
@@ -204,7 +204,7 @@ theorem RS_integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
     lower_RS_integral_le_upper hfφ_bdd hφ_mono
   refine ⟨ ⟨ hfφ_bdd, ?_ ⟩, ?_ ⟩ <;> linarith
 
-/-- Proposition 11.10.7 (формула замены переменной III). -/
+/-- Утверждение 11.10.7 (формула замены переменной III). -/
 theorem integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
   (hφ_diff : DifferentiableOn ℝ φ (Icc a b))
   (hφ_cont : Continuous φ) (hφ_mono : Monotone φ)
@@ -217,13 +217,13 @@ theorem integ_of_comp {a b : ℝ} (hab : a < b) {φ f : ℝ → ℝ}
  have h2 := RS_integ_eq_integ_of_mul_deriv hab hφ_mono hφ_diff hφ_cont hφ' h1.1
  refine ⟨ h2.1, by aesop ⟩
 
-/-- Exercise 11.10.3 -/
+/-- Упражнение 11.10.3 -/
 example {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b)) : 
   IntegrableOn (fun x ↦ f (-x)) (Icc (-b) (-a)) ∧
   integ (fun x ↦ f (-x)) (Icc (-b) (-a)) = integ f (Icc a b) := by
   sorry
 
-/- Exercise 11.10.4: сформулируйте и докажите вариант `integ_of_comp`, в котором `φ` является
+/- Упражнение 11.10.4: сформулируйте и докажите вариант `integ_of_comp`, в котором `φ` является
 `Antitone`, а не `Monotone`. -/
 
 end Chapter11

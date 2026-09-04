@@ -7,7 +7,7 @@ import Mathlib.Tactic
 Демонстрирует некоторые базовые тактики и синтаксис Lean.
 -/
 
--- Example A.1.1. То, что учебник называет "утверждениями" — это объекты
+-- Пример A.1.1. То, что учебник называет "утверждениями" — это объекты
 -- типа `Prop` в Lean. Кроме того, в Lean принято присваивать "мусорные" значения
 -- выражениям, которые в обычной математике считались бы неопределёнными,
 -- так что рассуждения об неопределённых термах в учебнике нужно корректировать соответственно.
@@ -229,11 +229,11 @@ example {X Y Z : Prop} (hXY : X ↔ Y) (hXZ : X ↔ Z) : [X,Y,Z].TFAE := by
 example {X Y Z : Prop} (h : [X,Y,Z].TFAE) : X ↔ Y := by
   exact h.out 0 1
 
-/-- Exercise A.1.1. Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
+/-- Упражнение A.1.1. Заполните первый {syntax term}`sorry` чем-нибудь разумным. -/
 example {X Y : Prop} : ¬((X ∨ Y) ∧ ¬(X ∧ Y)) ↔ (¬(X ∨ Y) ∨ (X ∧ Y)) := by tauto
 
 /--
-Exercise A.1.2.
+Упражнение A.1.2.
 Заполните первый {syntax term}`sorry` чем-нибудь разумным.
 
 ¬(X ↔ Y) означает, что они различаются — ровно одно из двух истинно, а другое ложно.
@@ -241,14 +241,14 @@ Exercise A.1.2.
 -/
 example {X Y : Prop} : ¬(X ↔ Y) ↔ ((¬X ∧ Y) ∨ (¬Y ∧ X)) := by tauto
 
-/-- Exercise A.1.3. -/
+/-- Упражнение A.1.3. -/
 def Exercise_A_1_3 : Decidable (∀ (X Y : Prop), (X → Y) → (¬X → ¬Y) → (X ↔ Y)) := by
   -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`,
   -- в зависимости от того, считаете ли вы данное утверждение истинным или ложным.
   apply isTrue
   tauto
 
-/-- Exercise A.1.4. -/
+/-- Упражнение A.1.4. -/
 def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬X) → (X ↔ Y)) := by
   -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   apply isFalse
@@ -258,7 +258,7 @@ def Exercise_A_1_4 : Decidable (∀ (X Y : Prop), (X → Y) → (¬Y → ¬X) �
   tauto
 
 /--
-Exercise A.1.5.
+Упражнение A.1.5.
 TFAE: The Following (propositions) Are Equivalent.
 -/
 def Exercise_A_1_5 : Decidable (∀ (X Y Z : Prop), (X ↔ Y) → (Y ↔ Z) → [X,Y,Z].TFAE) := by
@@ -269,7 +269,7 @@ def Exercise_A_1_5 : Decidable (∀ (X Y Z : Prop), (X ↔ Y) → (Y ↔ Z) → 
   tfae_have 2 ↔ 3 := hYZ
   tfae_finish
 
-/-- Exercise A.1.6. -/
+/-- Упражнение A.1.6. -/
 def Exercise_A_1_6 : Decidable (∀ (X Y Z : Prop), (X → Y) → (Y → Z) → (Z → X) → [X,Y,Z].TFAE) := by
   -- Первая строка этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.
   apply isTrue

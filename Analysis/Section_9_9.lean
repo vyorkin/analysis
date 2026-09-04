@@ -26,7 +26,7 @@ example : ContinuousOn (fun x : ℝ ↦ 1/x) (.Ioo 0 2) := by
 example : ¬ BddOn (fun x : ℝ ↦ 1/x) (.Ioo 0 2) := by
   sorry
 
-/-- Example 9.9.1 -/
+/-- Пример 9.9.1 -/
 example (x : ℝ) : 
   let f : ℝ → ℝ := fun x ↦ 1/x
   let ε : ℝ := 0.1
@@ -62,7 +62,7 @@ example (x₀ x : ℝ) :
   extract_lets g ε δ
   sorry
 
-/-- Definition 9.9.2.  Здесь мы используем термин {name}`UniformContinuousOn` из Mathlib -/
+/-- Определение 9.9.2.  Здесь мы используем термин {name}`UniformContinuousOn` из Mathlib -/
 theorem UniformContinuousOn.iff (f : ℝ → ℝ) (X : Set ℝ) : UniformContinuousOn f X  ↔
   ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ x₀ ∈ X, ∀ x ∈ X, δ.Close x x₀ → ε.Close (f x) (f x₀) := by
   simp_rw [Metric.uniformContinuousOn_iff_le, Real.Close]
@@ -79,7 +79,7 @@ example : ¬ UniformContinuousOn (fun x : ℝ ↦ 1/x) (Set.Ioo 0 2) := by
 end Chapter9
 
 /--
-Definition 9.9.5.  Это похоже, но не идентично {name}`Real.CloseSeq` из
+Определение 9.9.5.  Это похоже, но не идентично {name}`Real.CloseSeq` из
 раздела 6.1.
 -/
 abbrev Real.CloseSeqs (ε : ℝ) (a b : Chapter6.Sequence) : Prop :=
@@ -91,12 +91,12 @@ abbrev Real.EventuallyCloseSeqs (ε : ℝ) (a b : Chapter6.Sequence) : Prop :=
 abbrev Chapter6.Sequence.equiv (a b : Sequence) : Prop :=
   ∀ ε > (0 : ℝ), ε.EventuallyCloseSeqs a b
 
-/-- Remark 9.9.6 -/
+/-- Замечание 9.9.6 -/
 theorem Chapter6.Sequence.equiv_iff_rat (a b : Sequence) : 
   a.equiv b ↔ ∀ ε > (0 : ℚ), (ε : ℝ).EventuallyCloseSeqs a b := by
   sorry
 
-/-- Lemma 9.9.7 / Exercise 9.9.1 -/
+/-- Лемма 9.9.7 / Упражнение 9.9.1 -/
 theorem Chapter6.Sequence.equiv_iff (a b : Sequence) : 
   a.equiv b ↔ atTop.Tendsto (fun n ↦ a n - b n) (nhds 0) := by
   sorry
@@ -105,7 +105,7 @@ theorem Chapter6.Sequence.equiv_iff (a b : Sequence) :
 namespace Chapter9
 
 
-/-- Proposition 9.9.8 / Exercise 9.9.2 -/
+/-- Утверждение 9.9.8 / Упражнение 9.9.2 -/
 theorem UniformContinuousOn.iff_preserves_equiv {X : Set ℝ} (f : ℝ → ℝ) : 
   UniformContinuousOn f X ↔
   ∀ x y : ℕ → ℝ, (∀ n, x n ∈ X) → (∀ n, y n ∈ X) →
@@ -113,12 +113,12 @@ theorem UniformContinuousOn.iff_preserves_equiv {X : Set ℝ} (f : ℝ → ℝ) 
   (f ∘ x : Sequence).equiv (f ∘ y : Sequence) := by
   sorry
 
-/-- Remark 9.9.9 -/
+/-- Замечание 9.9.9 -/
 theorem Chapter6.Sequence.equiv_const (x₀ : ℝ) (x : ℕ → ℝ) : atTop.Tendsto x (nhds x₀) ↔
   (x : Sequence).equiv (fun n : ℕ ↦ x₀ : Sequence) := by
   sorry
 
-/-- Example 9.9.10 -/
+/-- Пример 9.9.10 -/
 noncomputable abbrev f_9_9_10 : ℝ → ℝ := fun x ↦ 1/x
 
 example : (fun n : ℕ ↦ 1/(n+1 : ℝ) : Sequence).equiv (fun n : ℕ ↦ 1/(2*(n+1) : ℝ) : Sequence) := by sorry
@@ -132,7 +132,7 @@ example : ¬ (fun n : ℕ ↦ f_9_9_10 (1/(n+1 : ℝ)) : Sequence).equiv (fun n 
 example : ¬ UniformContinuousOn f_9_9_10 (.Ioo 0 2) := by
   sorry
 
-/-- Example 9.9.11 -/
+/-- Пример 9.9.11 -/
 abbrev f_9_9_11 : ℝ → ℝ := fun x ↦ x^2
 
 example : ((fun n : ℕ ↦ (n+1 : ℝ)) : Sequence).equiv ((fun n : ℕ ↦ (n+1)+1/(n+1 : ℝ)) : Sequence) := by
@@ -144,13 +144,13 @@ example : ¬ ((fun n : ℕ ↦ f_9_9_11 (n+1 : ℝ)) : Sequence).equiv ((fun n :
 example : ¬ UniformContinuousOn f_9_9_11 .univ := by
   sorry
 
-/-- Proposition 9.9.12 / Exercise 9.9.3  -/
+/-- Утверждение 9.9.12 / Упражнение 9.9.3  -/
 theorem UniformContinuousOn.ofCauchy  {X : Set ℝ} (f : ℝ → ℝ)
   (hf : UniformContinuousOn f X) {x : ℕ → ℝ} (hx : (x : Sequence).IsCauchy) (hmem : ∀ n, x n ∈ X) : 
   (f ∘ x : Sequence).IsCauchy := by
   sorry
 
-/-- Example 9.9.13 -/
+/-- Пример 9.9.13 -/
 example : ((fun n : ℕ ↦ 1/(n+1 : ℝ)) : Sequence).IsCauchy := by
   sorry
 
@@ -163,19 +163,19 @@ example : ¬ ((fun n : ℕ ↦ f_9_9_10 (1/(n+1 : ℝ))) : Sequence).IsCauchy :=
 example : ¬ UniformContinuousOn f_9_9_10 (Set.Ioo 0 2) := by
   sorry
 
-/-- Corollary 9.9.14 / Exercise 9.9.4 -/
+/-- Следствие 9.9.14 / Упражнение 9.9.4 -/
 theorem UniformContinuousOn.limit_at_adherent  {X : Set ℝ} (f : ℝ → ℝ)
   (hf : UniformContinuousOn f X) {x₀ : ℝ} (hx₀ : AdherentPt x₀ X) : 
   ∃ L : ℝ, (nhdsWithin x₀ X).Tendsto f (nhds L) := by
   sorry
 
-/-- Proposition 9.9.15 / Exercise 9.9.5 -/
+/-- Утверждение 9.9.15 / Упражнение 9.9.5 -/
 theorem UniformContinuousOn.of_bounded {E X : Set ℝ} {f : ℝ → ℝ}
   (hf : UniformContinuousOn f X) (hEX : E ⊆ X) (hE : Bornology.IsBounded E) : 
   Bornology.IsBounded (f '' E) := by
   sorry
 
-/-- Theorem 9.9.16 -/
+/-- Теорема 9.9.16 -/
 theorem UniformContinuousOn.of_continuousOn {a b : ℝ} {f : ℝ → ℝ}
   (hcont : ContinuousOn f (.Icc a b)) : 
   UniformContinuousOn f (.Icc a b) := by
@@ -221,7 +221,7 @@ theorem UniformContinuousOn.of_continuousOn {a b : ℝ} {f : ℝ → ℝ}
   sorry
 
 
-/-- Exercise 9.9.6 -/
+/-- Упражнение 9.9.6 -/
 theorem UniformContinuousOn.comp {X Y : Set ℝ} {f g : ℝ → ℝ}
   (hf : UniformContinuousOn f X) (hg : UniformContinuousOn g Y)
   (hrange : f '' X ⊆ Y) : UniformContinuousOn (g ∘ f) X := by

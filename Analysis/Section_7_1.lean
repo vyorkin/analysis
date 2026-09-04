@@ -40,12 +40,12 @@ namespace Finset
 -- стандартный инструмент Mathlib для проверки принадлежности такому интервалу.
 #check mem_Icc
 
-/-- Definition 7.1.1 -/
+/-- Определение 7.1.1 -/
 theorem sum_of_empty {n m : ℤ} (h : n < m) (a : ℤ → ℝ) : ∑ i ∈ Icc m n, a i = 0 := by
   rw [sum_eq_zero]; intro _; rw [mem_Icc]; grind
 
 /--
-  Definition 7.1.1. Похоже на {name}`Finset.sum_Icc_succ_top` из Mathlib, за исключением того, что
+  Определение 7.1.1. Похоже на {name}`Finset.sum_Icc_succ_top` из Mathlib, за исключением того, что
   последняя суммирует по натуральным числам, а не по целым.
 -/
 theorem sum_of_nonempty {n m : ℤ} (h : n ≥ m-1) (a : ℤ → ℝ) : 
@@ -66,30 +66,30 @@ example (a : ℤ → ℝ) (m : ℤ) : ∑ i ∈ Icc m (m+1), a i = a m + a (m+1)
 
 example (a : ℤ → ℝ) (m : ℤ) : ∑ i ∈ Icc m (m+2), a i = a m + a (m+1) + a (m+2) := by sorry
 
-/-- Remark 7.1.3 -/
+/-- Замечание 7.1.3 -/
 example (a : ℤ → ℝ) (m n : ℤ) : ∑ i ∈ Icc m n, a i = ∑ j ∈ Icc m n, a j := rfl
 
-/-- Lemma 7.1.4(a) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(a) / Упражнение 7.1.1 -/
 theorem concat_finite_series {m n p : ℤ} (hmn : m ≤ n+1) (hpn : n ≤ p) (a : ℤ → ℝ) : 
   ∑ i ∈ Icc m n, a i + ∑ i ∈ Icc (n+1) p, a i = ∑ i ∈ Icc m p, a i := by sorry
 
-/-- Lemma 7.1.4(b) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(b) / Упражнение 7.1.1 -/
 theorem shift_finite_series {m n k : ℤ} (a : ℤ → ℝ) : 
   ∑ i ∈ Icc m n, a i = ∑ i ∈ Icc (m+k) (n+k), a (i-k) := by sorry
 
-/-- Lemma 7.1.4(c) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(c) / Упражнение 7.1.1 -/
 theorem finite_series_add {m n : ℤ} (a b : ℤ → ℝ) : 
   ∑ i ∈ Icc m n, (a i + b i) = ∑ i ∈ Icc m n, a i + ∑ i ∈ Icc m n, b i := by sorry
 
-/-- Lemma 7.1.4(d) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(d) / Упражнение 7.1.1 -/
 theorem finite_series_const_mul {m n : ℤ} (a : ℤ → ℝ) (c : ℝ) : 
   ∑ i ∈ Icc m n, c * a i = c * ∑ i ∈ Icc m n, a i := by sorry
 
-/-- Lemma 7.1.4(e) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(e) / Упражнение 7.1.1 -/
 theorem abs_finite_series_le {m n : ℤ} (a : ℤ → ℝ) : 
   |∑ i ∈ Icc m n, a i| ≤ ∑ i ∈ Icc m n, |a i| := by sorry
 
-/-- Lemma 7.1.4(f) / Exercise 7.1.1 -/
+/-- Лемма 7.1.4(f) / Упражнение 7.1.1 -/
 theorem finite_series_of_le {m n : ℤ}  {a b : ℤ → ℝ} (h : ∀ i, m ≤ i → i ≤ n → a i ≤ b i) : 
   ∑ i ∈ Icc m n, a i ≤ ∑ i ∈ Icc m n, b i := by sorry
 
@@ -97,7 +97,7 @@ theorem finite_series_of_le {m n : ℤ}  {a b : ℤ → ℝ} (h : ∀ i, m ≤ i
 
 set_option maxHeartbeats 210000 in
 /--
-  Proposition 7.1.8.
+  Утверждение 7.1.8.
 -/
 theorem finite_series_of_rearrange {n : ℕ} {X' : Type*} (X : Finset X') (hcard : X.card = n)
   (f : X' → ℝ) (g h : Icc (1 : ℤ) n → X) (hg : Function.Bijective g) (hh : Function.Bijective h) : 
@@ -170,7 +170,7 @@ theorem finite_series_of_rearrange {n : ℕ} {X' : Type*} (X : Finset X') (hcard
     _ = _ := by apply sum_congr rfl; grind
 
 /--
-  Этот факт гарантирует, что Definition 7.1.6 было бы корректно определено, даже если бы мы не
+  Этот факт гарантирует, что Определение 7.1.6 было бы корректно определено, даже если бы мы не
   обращались к существующему методу {name}`Finset.sum`.
 -/
 theorem exist_bijection {n : ℕ} {Y : Type*} (X : Finset Y) (hcard : X.card = n) : 
@@ -178,7 +178,7 @@ theorem exist_bijection {n : ℕ} {Y : Type*} (X : Finset Y) (hcard : X.card = n
   have := Finset.equivOfCardEq (show (Icc (1 : ℤ) n).card = X.card by simp [hcard])
   exact ⟨ this, this.bijective ⟩
 
-/-- Definition 7.1.6 -/
+/-- Определение 7.1.6 -/
 theorem finite_series_eq {n : ℕ} {Y : Type*} (X : Finset Y) (f : Y → ℝ) (g : Icc (1 : ℤ) n → X)
   (hg : Function.Bijective g) : 
     ∑ i ∈ X, f i = ∑ i ∈ Icc (1 : ℤ) n, (if hi : i ∈ Icc (1 : ℤ) n then f (g ⟨ i, hi ⟩) else 0) := by
@@ -189,10 +189,10 @@ theorem finite_series_eq {n : ℕ} {Y : Type*} (X : Finset Y) (f : Y → ℝ) (g
   . intro b hb; have := hg.surjective ⟨ b, hb ⟩; grind
   intros; simp_all
 
-/-- Proposition 7.1.11(a) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(a) / Упражнение 7.1.2 -/
 theorem finite_series_of_empty {X' : Type*} (f : X' → ℝ) : ∑ i ∈ ∅, f i = 0 := by sorry
 
-/-- Proposition 7.1.11(b) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(b) / Упражнение 7.1.2 -/
 theorem finite_series_of_singleton {X' : Type*} (f : X' → ℝ) (x₀ : X') : ∑ i ∈ {x₀}, f i = f x₀ := by
   sorry
 
@@ -203,34 +203,34 @@ theorem finite_series_of_singleton {X' : Type*} (f : X' → ℝ) (x₀ : X') : �
 theorem finite_series_of_fintype {X' : Type*} (f : X' → ℝ) (X : Finset X') : 
     ∑ x ∈ X, f x = ∑ x : X, f x.val := (sum_coe_sort X f).symm
 
-/-- Proposition 7.1.11(c) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(c) / Упражнение 7.1.2 -/
 theorem map_finite_series {X : Type*} [Fintype X] [Fintype Y] (f : X → ℝ) {g : Y → X}
   (hg : Function.Bijective g) : 
     ∑ x, f x = ∑ y, f (g y) := by sorry
 
--- Proposition 7.1.11(d) в нашей формализации — это `rfl`, поэтому она опущена.
+-- Утверждение 7.1.11(d) в нашей формализации — это `rfl`, поэтому она опущена.
 
-/-- Proposition 7.1.11(e) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(e) / Упражнение 7.1.2 -/
 theorem finite_series_of_disjoint_union {Z : Type*} {X Y : Finset Z} (hdisj : Disjoint X Y) (f : Z → ℝ) : 
     ∑ z ∈ X ∪ Y, f z = ∑ z ∈ X, f z + ∑ z ∈ Y, f z := by sorry
 
-/-- Proposition 7.1.11(f) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(f) / Упражнение 7.1.2 -/
 theorem finite_series_of_add {X' : Type*} (f g : X' → ℝ) (X : Finset X') : 
     ∑ x ∈ X, (f + g) x = ∑ x ∈ X, f x + ∑ x ∈ X, g x := by sorry
 
-/-- Proposition 7.1.11(g) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(g) / Упражнение 7.1.2 -/
 theorem finite_series_of_const_mul {X' : Type*} (f : X' → ℝ) (X : Finset X') (c : ℝ) : 
     ∑ x ∈ X, c * f x = c * ∑ x ∈ X, f x := by sorry
 
-/-- Proposition 7.1.11(h) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(h) / Упражнение 7.1.2 -/
 theorem finite_series_of_le' {X' : Type*} (f g : X' → ℝ) (X : Finset X') (h : ∀ x ∈ X, f x ≤ g x) : 
     ∑ x ∈ X, f x ≤ ∑ x ∈ X, g x := by sorry
 
-/-- Proposition 7.1.11(i) / Exercise 7.1.2 -/
+/-- Утверждение 7.1.11(i) / Упражнение 7.1.2 -/
 theorem abs_finite_series_le' {X' : Type*} (f : X' → ℝ) (X : Finset X') : 
     |∑ x ∈ X, f x| ≤ ∑ x ∈ X, |f x| := by sorry
 
-/-- Lemma 7.1.13 -/
+/-- Лемма 7.1.13 -/
 theorem finite_series_of_finite_series {XX YY : Type*} (X : Finset XX) (Y : Finset YY)
   (f : XX × YY → ℝ) : 
     ∑ x ∈ X, ∑ y ∈ Y, f (x, y) = ∑ z ∈ X.product Y, f z := by
@@ -267,7 +267,7 @@ theorem finite_series_of_finite_series {XX YY : Type*} (X : Finset XX) (Y : Fins
       . sorry
       sorry
 
-/-- Corollary 7.1.14 (Fubini's theorem for finite series). -/
+/-- Следствие 7.1.14 (Fubini's theorem for finite series). -/
 theorem finite_series_refl {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : XX × YY → ℝ) : 
     ∑ z ∈ X.product Y, f z = ∑ z ∈ Y.product X, f (z.2, z.1) := by
   set h : Y.product X → X.product Y :=
@@ -289,14 +289,14 @@ theorem finite_series_comm {XX YY : Type*} (X : Finset XX) (Y : Finset YY) (f : 
       finite_series_of_finite_series _ _ (fun z ↦ f (z.2, z.1))]
 
 
--- Exercise 7.1.3: разработайте как можно больше аналогов приведённой выше теории для конечных
+-- Упражнение 7.1.3: разработайте как можно больше аналогов приведённой выше теории для конечных
 -- произведений вместо конечных сумм.
 
 #check Nat.factorial_zero
 #check Nat.factorial_succ
 
 /--
-  Exercise 7.1.4. Замечание: при переходе туда-обратно между натуральными и целыми числами могут
+  Упражнение 7.1.4. Замечание: при переходе туда-обратно между натуральными и целыми числами могут
   возникнуть технические трудности. Обратите внимание на тактики {tactic}`zify`, {tactic}`norm_cast`
   и {tactic}`omega`
 -/
@@ -306,13 +306,13 @@ theorem binomial_theorem (x y : ℝ) (n : ℕ) :
     n.factorial / (j.toNat.factorial * (n-j).toNat.factorial) * x^j * y^(n - j) := by
   sorry
 
-/-- Exercise 7.1.5 -/
+/-- Упражнение 7.1.5 -/
 theorem lim_of_finite_series {X : Type*} [Fintype X] (a : X → ℕ → ℝ) (L : X → ℝ)
   (h : ∀ x, Filter.atTop.Tendsto (a x) (nhds (L x))) : 
     Filter.atTop.Tendsto (fun n ↦ ∑ x, a x n) (nhds (∑ x, L x)) := by
   sorry
 
-/-- Exercise 7.1.6 -/
+/-- Упражнение 7.1.6 -/
 theorem sum_union_disjoint {n : ℕ} {S : Type*} [Fintype S]
     (E : Fin n → Finset S)
     (disj : ∀ i j : Fin n, i ≠ j → Disjoint (E i) (E j))
@@ -321,7 +321,7 @@ theorem sum_union_disjoint {n : ℕ} {S : Type*} [Fintype S]
     ∑ s, f s = ∑ i, ∑ s ∈ E i, f s := by
   sorry
 
-/-- {given}`aᵢ` Exercise 7.1.7. Использует {lean}`Fin m` (то есть {lean}`aᵢ < m`) вместо {lean}`aᵢ ≤ m`
+/-- {given}`aᵢ` Упражнение 7.1.7. Использует {lean}`Fin m` (то есть {lean}`aᵢ < m`) вместо {lean}`aᵢ ≤ m`
   из книги; граница здесь "зашита" в сам тип, а {kw (of := «term_<_»)}`<` заменяет
   {kw (of := «term_≤_»)}`≤`, чтобы соответствовать сдвигу на индексацию с нуля. -/
 theorem sum_finite_col_row_counts {n m : ℕ} (a : Fin n → Fin m) : 

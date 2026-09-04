@@ -267,7 +267,7 @@ theorem SetTheory.Set.image_f_3_4_2'' : image f_3_4_2 {1,2,3} = {2,4,6} := by
     · exact ⟨2, Or.inr (Or.inl rfl), by rw [h]; norm_num⟩
     · exact ⟨3, Or.inr (Or.inr rfl), by rw [h]; norm_num⟩
 
-/-- Example 3.4.3 записан с использованием понятия образа из Mathlib. -/
+/-- Пример 3.4.3 записан с использованием понятия образа из Mathlib. -/
 -- Пусть ℤ – множество целых чисел (которое мы определим строго в следующем разделе).
 -- И пусть `f : ℤ → ℤ` – отображение `f(x) = x^2`,
 -- тогда `f({-1, 0, 1, 2}) = {0, 1, 4}`
@@ -551,7 +551,7 @@ theorem SetTheory.Set.image_preimage_f_3_4_2 :
     -- `omega` видит, что такого `x` не существует.
     omega
 
-/-- Example 3.4.7 (с использованием понятия прообраза из Mathlib) -/
+/-- Пример 3.4.7 (с использованием понятия прообраза из Mathlib) -/
 -- Нотация ⁻¹' это preimage (прообраз)
 example : (fun n : ℤ ↦ n^2) ⁻¹' {0,1,4} = {-2,-1,0,1,2} := by
   ext x
@@ -653,7 +653,7 @@ theorem SetTheory.Set.powerset_axiom {X Y : Set} (F : Object) :
 --     ∃ f : (Subtype (mem . Y) → Subtype (mem . X)),
 --     function_to_object Y X f = F
 
-/-- Example 3.4.9 -/
+/-- Пример 3.4.9 -/
 abbrev f_3_4_9_a : ({4,7} : Set) → ({0,1} : Set) := fun x ↦ ⟨0, by simp⟩
 
 open Classical in
@@ -742,19 +742,19 @@ def SetTheory.Set.powerset (X : Set) : Set :=
     )
 
 open Classical in
-/-- Exercise 3.4.6 (i) -/
+/-- Упражнение 3.4.6 (i) -/
 @[simp]
 theorem SetTheory.Set.mem_powerset {X : Set} (x : Object) :
     x ∈ powerset X ↔ ∃ Y : Set, x = Y ∧ Y ⊆ X := by sorry
 
-/-- Lemma 3.4.10 -/
+/-- Лемма 3.4.10 -/
 theorem SetTheory.Set.exists_powerset (X : Set) :
    ∃ (Z : Set), ∀ x, x ∈ Z ↔ ∃ Y : Set, x = Y ∧ Y ⊆ X := by
   use powerset X; apply mem_powerset
 
-/- Как отмечено в списке опечаток, Exercise 3.4.6 (ii) заменено на Exercise 3.5.11. -/
+/- Как отмечено в списке опечаток, Упражнение 3.4.6 (ii) заменено на Упражнение 3.5.11. -/
 
-/-- Remark 3.4.11 -/
+/-- Замечание 3.4.11 -/
 theorem SetTheory.Set.powerset_of_triple (a b c x : Object) :
     x ∈ powerset {a,b,c}
     ↔ x = (∅ : Set)
@@ -778,11 +778,11 @@ theorem SetTheory.Set.powerset_of_triple (a b c x : Object) :
   on_goal 1 => right; right; right; right; right; right; right
   all_goals congr; ext; simp; grind
 
-/-- Axiom 3.12 (Объединение) -/
+/-- Аксиома 3.12 (Объединение) -/
 theorem SetTheory.Set.union_axiom (A : Set) (x : Object) :
     x ∈ union A ↔ ∃ (S : Set), x ∈ S ∧ (S : Object) ∈ A := SetTheory.union_axiom A x
 
-/-- Example 3.4.12 -/
+/-- Пример 3.4.12 -/
 theorem SetTheory.Set.example_3_4_12 :
     union { (({2,3} : Set) : Object), (({3,4} : Set) : Object), (({4,5} : Set) : Object) } = {2,3,4,5} := by
   sorry
@@ -839,24 +839,24 @@ theorem SetTheory.Set.mem_iInter {I : Set} (hI : I ≠ ∅) (A : I → Set) (x :
     x ∈ iInter I hI A ↔ ∀ α : I, x ∈ A α := by
   sorry
 
-/-- Exercise 3.4.1 -/
+/-- Упражнение 3.4.1 -/
 theorem SetTheory.Set.preimage_eq_image_of_inv {X Y V : Set} (f : X → Y) (f_inv : Y → X)
   (hf : Function.LeftInverse f_inv f ∧ Function.RightInverse f_inv f) (hV : V ⊆ Y) :
     image f_inv V = preimage f V := by sorry
 
-/- Exercise 3.4.2.  Сформулируйте и докажите утверждение, связывающее `preimage f (image f S)` и `S`. -/
+/- Упражнение 3.4.2.  Сформулируйте и докажите утверждение, связывающее `preimage f (image f S)` и `S`. -/
 -- theorem SetTheory.Set.preimage_of_image {X Y:Set} (f:X → Y) (S: Set) (hS: S ⊆ X) : sorry := by sorry
 
-/- Exercise 3.4.2.  Сформулируйте и докажите утверждение, связывающее `image f (preimage f U)` и `U`.
+/- Упражнение 3.4.2.  Сформулируйте и докажите утверждение, связывающее `image f (preimage f U)` и `U`.
 Интересно, что здесь не требуется, чтобы U было подмножеством Y. -/
 -- theorem SetTheory.Set.image_of_preimage {X Y:Set} (f:X → Y) (U: Set) : sorry := by sorry
 
-/- Exercise 3.4.2.  Сформулируйте и докажите утверждение, связывающее `preimage f (image f (preimage f U))` и `preimage f U`.
+/- Упражнение 3.4.2.  Сформулируйте и докажите утверждение, связывающее `preimage f (image f (preimage f U))` и `preimage f U`.
 Интересно, что здесь не требуется, чтобы U было подмножеством Y. -/
 -- theorem SetTheory.Set.preimage_of_image_of_preimage {X Y:Set} (f:X → Y) (U: Set) : sorry := by sorry
 
 /--
-  Exercise 3.4.3.
+  Упражнение 3.4.3.
 -/
 theorem SetTheory.Set.image_of_inter {X Y : Set} (f : X → Y) (A B : Set) :
     image f (A ∩ B) ⊆ (image f A) ∩ (image f B) := by sorry
@@ -877,7 +877,7 @@ def SetTheory.Set.image_of_diff' : Decidable (∀ X Y : Set, ∀ f : X → Y, �
   -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`
   sorry
 
-/-- Exercise 3.4.4 -/
+/-- Упражнение 3.4.4 -/
 theorem SetTheory.Set.preimage_of_inter {X Y : Set} (f : X → Y) (A B : Set) :
     preimage f (A ∩ B) = (preimage f A) ∩ (preimage f B) := by sorry
 
@@ -889,61 +889,61 @@ theorem SetTheory.Set.preimage_of_union {X Y : Set} (f : X → Y) (A B : Set) :
 theorem SetTheory.Set.preimage_of_diff {X Y : Set} (f : X → Y) (A B : Set) :
     preimage f (A \ B) = (preimage f A) \ (preimage f B)  := by sorry
 
-/-- Exercise 3.4.5 (image of a preimage) -/
+/-- Упражнение 3.4.5 (image of a preimage) -/
 theorem SetTheory.Set.image_preimage_of_surj {X Y : Set} (f : X → Y) :
     (∀ S, S ⊆ Y → image f (preimage f S) = S) ↔ Function.Surjective f := by sorry
 
-/-- Exercise 3.4.5 (preimage of an image) -/
+/-- Упражнение 3.4.5 (preimage of an image) -/
 theorem SetTheory.Set.preimage_image_of_inj {X Y : Set} (f : X → Y) :
     (∀ S, S ⊆ X → preimage f (image f S) = S) ↔ Function.Injective f := by sorry
 
-/-- Вспомогательная лемма для Exercise 3.4.7. -/
+/-- Вспомогательная лемма для Упражнения 3.4.7. -/
 @[simp]
 lemma SetTheory.Set.mem_powerset' {S S' : Set} : (S' : Object) ∈ S.powerset ↔ S' ⊆ S := by
   simp [mem_powerset]
 
-/-- Ещё одна вспомогательная лемма для Exercise 3.4.7. -/
+/-- Ещё одна вспомогательная лемма для Упражнения 3.4.7. -/
 lemma SetTheory.Set.mem_union_powerset_replace_iff {S : Set} {P : S.powerset → Object → Prop} {hP : _} {x : Object} :
     x ∈ union (S.powerset.replace (P := P) hP) ↔
     ∃ (S' : S.powerset) (U : Set), P S' U ∧ x ∈ U := by
   grind [union_axiom, replacement_axiom]
 
-/-- Exercise 3.4.7 -/
+/-- Упражнение 3.4.7 -/
 theorem SetTheory.Set.partial_functions {X Y : Set} :
     ∃ Z : Set, ∀ F : Object, F ∈ Z ↔ ∃ X' Y' : Set, X' ⊆ X ∧ Y' ⊆ Y ∧ ∃ f : X' → Y', F = f := by
   sorry
 
 /--
-  Exercise 3.4.8. Суть этого упражнения — доказать утверждение, не используя
+  Упражнение 3.4.8. Суть этого упражнения — доказать утверждение, не используя
   операцию попарного объединения {kw (of := «term_∪_»)}`∪`.
 -/
 theorem SetTheory.Set.union_pair_exists (X Y : Set) : ∃ Z : Set, ∀ x, x ∈ Z ↔ (x ∈ X ∨ x ∈ Y) := by
   sorry
 
-/-- Exercise 3.4.9 -/
+/-- Упражнение 3.4.9 -/
 theorem SetTheory.Set.iInter'_insensitive {I : Set} (β β' : I) (A : I → Set) :
     iInter' I β A = iInter' I β' A := by sorry
 
-/-- Exercise 3.4.10 (union over a union of index sets) -/
+/-- Упражнение 3.4.10 (union over a union of index sets) -/
 theorem SetTheory.Set.union_iUnion {I J : Set} (A : (I ∪ J : Set) → Set) :
     iUnion I (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
     ∪ iUnion J (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
     = iUnion (I ∪ J) A := by sorry
 
-/-- Exercise 3.4.10 (a union of nonempty index sets is nonempty) -/
+/-- Упражнение 3.4.10 (a union of nonempty index sets is nonempty) -/
 theorem SetTheory.Set.union_of_nonempty {I J : Set} (hI : I ≠ ∅) (hJ : J ≠ ∅) : I ∪ J ≠ ∅ := by sorry
 
-/-- Exercise 3.4.10 (intersection over a union of index sets) -/
+/-- Упражнение 3.4.10 (intersection over a union of index sets) -/
 theorem SetTheory.Set.inter_iInter {I J : Set} (hI : I ≠ ∅) (hJ : J ≠ ∅) (A : (I ∪ J : Set) → Set) :
     iInter I hI (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
     ∩ iInter J hJ (fun α ↦ A ⟨ α.val, by simp [α.property]⟩)
     = iInter (I ∪ J) (union_of_nonempty hI hJ) A := by sorry
 
-/-- Exercise 3.4.11 (complement of a union) -/
+/-- Упражнение 3.4.11 (complement of a union) -/
 theorem SetTheory.Set.compl_iUnion {X I : Set} (hI : I ≠ ∅) (A : I → Set) :
     X \ iUnion I A = iInter I hI (fun α ↦ X \ A α) := by sorry
 
-/-- Exercise 3.4.11 (complement of an intersection) -/
+/-- Упражнение 3.4.11 (complement of an intersection) -/
 theorem SetTheory.Set.compl_iInter {X I : Set} (hI : I ≠ ∅) (A : I → Set) :
     X \ iInter I hI A = iUnion I (fun α ↦ X \ A α) := by sorry
 

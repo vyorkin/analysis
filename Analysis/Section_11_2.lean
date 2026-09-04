@@ -18,7 +18,7 @@ import Analysis.Section_11_1
 namespace Chapter11
 open BoundedInterval
 
-/-- Definition 11.2.1 -/
+/-- Определение 11.2.1 -/
 abbrev Constant {X Y : Type} (f : X → Y) : Prop := ∃ c, ∀ x, f x = c
 
 open Classical in
@@ -100,7 +100,7 @@ theorem constant_value_on_congr {f g : ℝ → ℝ} {X : Set ℝ} (h : ∀ x ∈
   constant_value_on f X = constant_value_on g X := by
   simp [constant_value_on]; congr; grind
 
-/-- Definition 11.2.3 (кусочно-постоянные функции I) -/
+/-- Определение 11.2.3 (кусочно-постоянные функции I) -/
 abbrev PiecewiseConstantWith (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I) : Prop := ∀ J ∈ P, ConstantOn f (J : Set ℝ)
 
 -- Разворачивает определение `PiecewiseConstantWith f P`: на каждом интервале `J` разбиения `P` функция `f` принимает единственное значение `c`
@@ -115,7 +115,7 @@ theorem PiecewiseConstantWith.congr {f g : ℝ → ℝ} {I : BoundedInterval} {P
   simp [PiecewiseConstantWith]; peel with J hJ
   apply ConstantOn.congr; have := P.contains _ hJ; grind [subset_iff]
 
-/-- Definition 11.2.5 (кусочно-постоянные функции I) -/
+/-- Определение 11.2.5 (кусочно-постоянные функции I) -/
 abbrev PiecewiseConstantOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∃ P : Partition I, PiecewiseConstantWith f P
 
 -- Разворачивает определение `PiecewiseConstantOn f I`: существует разбиение `I`, на каждом элементе которого `f` постоянна
@@ -130,7 +130,7 @@ theorem PiecewiseConstantOn.congr {f g : ℝ → ℝ} {I : BoundedInterval} (h :
 -- Если `f` кусочно-постоянна на `I` и совпадает с `g` на `I`, то `g` тоже кусочно-постоянна на `I`
 theorem PiecewiseConstantOn.congr' {f g : ℝ → ℝ} {I : BoundedInterval} (hf : PiecewiseConstantOn f I) (h : ∀ x ∈ (I : Set ℝ), f x = g x) : PiecewiseConstantOn g I := (congr h).mp hf
 
-/-- Example 11.2.4 / Example 11.2.6 -/
+/-- Пример 11.2.4 / Пример 11.2.6 -/
 noncomputable abbrev f_11_2_4 : ℝ → ℝ := fun x ↦
   if x < 1 then 0 else  -- бросовое значение
     if x < 3 then 7 else
@@ -151,52 +151,52 @@ example : PiecewiseConstantOn f_11_2_4 (Icc 1 6) := by
   . sorry
   sorry
 
-/-- Example 11.2.6 -/
+/-- Пример 11.2.6 -/
 theorem ConstantOn.piecewiseConstantOn {f : ℝ → ℝ} {I : BoundedInterval} (h : ConstantOn f (I : Set ℝ)) :
   PiecewiseConstantOn f I := by sorry
 
-/-- Lemma 11.2.7 / Exercise 11.2.1 -/
+/-- Лемма 11.2.7 / Упражнение 11.2.1 -/
 theorem PiecewiseConstantWith.mono {f : ℝ → ℝ} {I : BoundedInterval} {P P' : Partition I} (hPP' : P ≤ P')
   (hP : PiecewiseConstantWith f P) : PiecewiseConstantWith f P' := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (add). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (add). -/
 theorem PiecewiseConstantOn.add {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (f + g) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (sub). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (sub). -/
 theorem PiecewiseConstantOn.sub {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (f - g) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (max). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (max). -/
 theorem PiecewiseConstantOn.max {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (max f g) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (min). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (min). -/
 theorem PiecewiseConstantOn.min {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (min f g) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (mul). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (mul). -/
 theorem PiecewiseConstantOn.mul {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) : PiecewiseConstantOn (f * g) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (smul). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (smul). -/
 theorem PiecewiseConstantOn.smul {f : ℝ → ℝ} {I : BoundedInterval}
   (c : ℝ) (hf : PiecewiseConstantOn f I) : PiecewiseConstantOn (c • f) I := by
   sorry
 
-/-- Lemma 11.2.8 / Exercise 11.2.2 (div). -/
+/-- Лемма 11.2.8 / Упражнение 11.2.2 (div). -/
 theorem PiecewiseConstantOn.div {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) (hg_ne : ∀ x ∈ I.toSet, g x ≠ 0) :
   PiecewiseConstantOn (f / g) I := by
   sorry
 
-/-- Definition 11.2.9 (кусочно-постоянный интеграл I). -/
+/-- Определение 11.2.9 (кусочно-постоянный интеграл I). -/
 noncomputable abbrev PiecewiseConstantWith.integ (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I)  :
   ℝ := ∑ J ∈ P.intervals, constant_value_on f (J : Set ℝ) * |J|ₗ
 
@@ -206,7 +206,7 @@ theorem PiecewiseConstantWith.integ_congr {f g : ℝ → ℝ} {I : BoundedInterv
   apply Finset.sum_congr rfl; intro J hJ; congr 1; apply constant_value_on_congr
   have := P.contains _ hJ; grind [subset_iff]
 
-/-- Example 11.2.12 -/
+/-- Пример 11.2.12 -/
 noncomputable abbrev f_11_2_12 : ℝ → ℝ := fun x ↦
     if x < 3 then 2 else
       if x = 3 then 4 else
@@ -238,19 +238,19 @@ example : PiecewiseConstantWith f_11_2_12 P_11_2_12' := by
 example : PiecewiseConstantWith.integ f_11_2_12 P_11_2_12' = 10 := by
   sorry
 
-/-- Proposition 11.2.13 (кусочно-постоянный интеграл не зависит от разбиения) / Exercise 11.2.3 -/
+/-- Утверждение 11.2.13 (кусочно-постоянный интеграл не зависит от разбиения) / Упражнение 11.2.3 -/
 theorem PiecewiseConstantWith.integ_eq {f : ℝ → ℝ} {I : BoundedInterval} {P P' : Partition I}
   (hP : PiecewiseConstantWith f P) (hP' : PiecewiseConstantWith f P') : integ f P = integ f P' := by
   sorry
 
 open Classical in
-/-- Definition 11.2.14 (кусочно-постоянный интеграл II)  -/
+/-- Определение 11.2.14 (кусочно-постоянный интеграл II)  -/
 noncomputable abbrev PiecewiseConstantOn.integ (f : ℝ → ℝ) (I : BoundedInterval) :
   ℝ := if h : PiecewiseConstantOn f I then PiecewiseConstantWith.integ f h.choose else 0
 
 noncomputable abbrev PiecewiseConstantOn.integ' {f : ℝ → ℝ} {I : BoundedInterval} (_ : PiecewiseConstantOn f I) := integ f I
 
--- Если `f` кусочно-постоянна относительно разбиения `P`, то интеграл `integ f I` (Definition 11.2.14) совпадает с `PiecewiseConstantWith.integ f P`
+-- Если `f` кусочно-постоянна относительно разбиения `P`, то интеграл `integ f I` (Определение 11.2.14) совпадает с `PiecewiseConstantWith.integ f P`
 theorem PiecewiseConstantOn.integ_def {f : ℝ → ℝ} {I : BoundedInterval} {P : Partition I}
   (h : PiecewiseConstantWith f P) : integ f I = PiecewiseConstantWith.integ f P := by
   have h' : PiecewiseConstantOn f I := by use P
@@ -264,71 +264,71 @@ theorem PiecewiseConstantOn.integ_congr {f g : ℝ → ℝ} {I : BoundedInterval
   rw [PiecewiseConstantWith.integ_congr h, ←integ_def hg.choose_spec, ←integ_def]
   rw [←PiecewiseConstantWith.congr h]; exact hf.choose_spec
 
-/-- Example 11.2.15 -/
+/-- Пример 11.2.15 -/
 example : PiecewiseConstantOn.integ f_11_2_12 (Icc 1 4) = 10 := by
   sorry
 
-/-- Theorem 11.2.16 (a) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (a) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_add {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) :
   integ (f + g) I = integ f I + integ g I := by
   sorry
 
-/-- Theorem 11.2.16 (b) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (b) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_smul {f : ℝ → ℝ} {I : BoundedInterval} (c : ℝ) (hf : PiecewiseConstantOn f I) :
   integ (c • f) I = c * integ f I
    := by
   sorry
 
-/-- Theorem 11.2.16 (c) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (c) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_sub {f g : ℝ → ℝ} {I : BoundedInterval}
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) :
   integ (f - g) I = integ f I - integ g I := by
   sorry
 
-/-- Theorem 11.2.16 (d) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (d) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_of_nonneg {f : ℝ → ℝ} {I : BoundedInterval} (h : ∀ x ∈ I, 0 ≤ f x)
   (hf : PiecewiseConstantOn f I) :
   0 ≤ integ f I := by
   sorry
 
-/-- Theorem 11.2.16 (e) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (e) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_mono {f g : ℝ → ℝ} {I : BoundedInterval} (h : ∀ x ∈ I, f x ≤ g x)
   (hf : PiecewiseConstantOn f I) (hg : PiecewiseConstantOn g I) :
   integ f I ≤ integ g I := by
   sorry
 
 
-/-- Theorem 11.2.16 (f) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (f) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_const (c : ℝ) (I : BoundedInterval) :
   integ (fun _ ↦ c) I = c * |I|ₗ := by
   sorry
 
-/-- Theorem 11.2.16 (f') (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (f') (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_const' {f : ℝ → ℝ} {I : BoundedInterval} (h : ConstantOn f I) :
   integ f I = (constant_value_on f I) * |I|ₗ := by
   sorry
 
 open Classical in
-/-- Theorem 11.2.16 (g) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (g) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.of_extend {I J : BoundedInterval} (hIJ : I ⊆ J)
   {f : ℝ → ℝ} (h : PiecewiseConstantOn f I) :
   PiecewiseConstantOn (fun x ↦ if x ∈ I then f x else 0) J := by
   sorry
 
 open Classical in
-/-- Theorem 11.2.16 (g') (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (g') (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_of_extend {I J : BoundedInterval} (hIJ : I ⊆ J)
   {f : ℝ → ℝ} (h : PiecewiseConstantOn f I) :
   integ (fun x ↦ if x ∈ I then f x else 0) J = integ f I := by
   sorry
 
-/-- Theorem 11.2.16 (h) (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (h) (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.of_join {I J K : BoundedInterval} (hIJK : K.joins I J)
   (f : ℝ → ℝ) : PiecewiseConstantOn f K ↔ PiecewiseConstantOn f I ∧ PiecewiseConstantOn f J := by
   sorry
 
-/-- Theorem 11.2.16 (h') (законы интегрирования) / Exercise 11.2.4 -/
+/-- Теорема 11.2.16 (h') (законы интегрирования) / Упражнение 11.2.4 -/
 theorem PiecewiseConstantOn.integ_of_join {I J K : BoundedInterval} (hIJK : K.joins I J)
   {f : ℝ → ℝ} (h : PiecewiseConstantOn f K) :
   integ f K = integ f I + integ f J := by

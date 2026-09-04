@@ -26,7 +26,7 @@ abbrev Series.nonneg (s : Series) : Prop := ∀ n, s.seq n ≥ 0
 
 abbrev Series.partial_of_nonneg {s : Series} (h : s.nonneg) : Monotone s.partial := by sorry
 
-/-- Proposition 7.3.1 -/
+/-- Утверждение 7.3.1 -/
 theorem Series.converges_of_nonneg_iff {s : Series} (h : s.nonneg) : s.converges ↔ ∃ M, ∀ N, s.partial N ≤ M := by
   -- В целом следует рассуждению из текста, хотя для одного из направлений я предпочёл использовать инструменты Mathlib, а не результаты Главы 6.
   constructor
@@ -67,13 +67,13 @@ theorem Series.sum_of_nonneg {s : Series} (hnon : s.nonneg) : 0 ≤ s.sum := by
   by_cases h : s.converges <;> simp [Series.sum, h]
   exact ge_of_tendsto' h.choose_spec (partial_nonneg hnon)
 
-/-- Corollary 7.3.2 (признак сравнения) / Exercise 7.3.1 -/
+/-- Следствие 7.3.2 (признак сравнения) / Упражнение 7.3.1 -/
 theorem Series.converges_of_le {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hconv : t.converges) : s.absConverges ∧ |s.sum| ≤ s.abs.sum ∧ s.abs.sum ≤ t.sum := by sorry
 
 -- Признак сравнения (обратное направление): если `s` не сходится абсолютно и мажорируется рядом `t`, то `t` расходится
 theorem Series.diverges_of_ge {s t : Series} (hm : s.m = t.m) (hcomp : ∀ n ≥ s.m, |s.seq n| ≤ t.seq n) (hdiv : ¬ s.absConverges) : t.diverges := by sorry
 
-/-- Lemma 7.3.3 (геометрический ряд) / Exercise 7.3.2 -/
+/-- Лемма 7.3.3 (геометрический ряд) / Упражнение 7.3.2 -/
 theorem Series.converges_geom {x : ℝ} (hx : |x| < 1) : (fun n ↦ x ^ n : Series).convergesTo (1 / (1 - x)) := by sorry
 
 -- Геометрический ряд `∑ xⁿ` при `|x| < 1` сходится абсолютно
@@ -85,7 +85,7 @@ theorem Series.diverges_geom {x : ℝ} (hx : |x| ≥ 1) : (fun n ↦ x ^ n : Ser
 -- Геометрический ряд `∑ xⁿ` сходится тогда и только тогда, когда `|x| < 1`
 theorem Series.converges_geom_iff (x : ℝ) : (fun n ↦ x ^ n : Series).converges ↔ |x| < 1 := by sorry
 
-/-- Proposition 7.3.4 (критерий Коши) -/
+/-- Утверждение 7.3.4 (критерий Коши) -/
 theorem Series.cauchy_criterion {s : Series} (hm : s.m = 1) (hs : s.nonneg) (hmono : ∀ n ≥ 1, s.seq (n+1) ≤ s.seq n) : s.converges ↔ (fun k ↦ 2^k * s.seq (2^k) : Series).converges := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set t := (fun k ↦ 2^k * s.seq (2^k) : Series)
@@ -148,7 +148,7 @@ theorem Series.cauchy_criterion {s : Series} (hm : s.m = 1) (hs : s.nonneg) (hmo
     _ ≤ T K := (Lemma_7_3_6 K).1
     _ ≤ M := hM K
 
-/-- Corollary 7.3.7 -/
+/-- Следствие 7.3.7 -/
 theorem Series.converges_qseries (q : ℝ) (hq : q > 0) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ q : Series).converges ↔ (q>1) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   set s := (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ q : Series)
@@ -169,7 +169,7 @@ theorem Series.converges_qseries (q : ℝ) (hq : q > 0) : (mk' (m := 1) fun n �
   rw [abs_of_nonneg, rpow_lt_one_iff_of_pos] <;> try positivity
   simp
 
-/-- Remark 7.3.8 -/
+/-- Замечание 7.3.8 -/
 theorem Series.zeta_eq {q : ℝ} (hq : q > 1) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ q : Series).sum = riemannZeta q := by
   -- `riemannZeta` определена над комплексными числами, поэтому нужна предварительная работа, чтобы специализировать её на вещественные.
   set L := ∑' n : ℕ, 1 / (n+1 : ℝ)^q
@@ -205,7 +205,7 @@ theorem Series.Basel_problem :  (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ 2 : Seri
   simp [Complex.ofReal_ofNat, riemannZeta_two] at this
   simpa [←Complex.ofReal_inj]
 
-/-- Exercise 7.3.3 -/
+/-- Упражнение 7.3.3 -/
 theorem Series.nonneg_sum_zero {a : ℕ → ℝ} (ha : (a : Series).nonneg) (hconv : (a : Series).converges) : (a : Series).sum = 0 ↔ ∀ n, a n = 0 := by sorry
 
 

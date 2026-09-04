@@ -119,7 +119,7 @@ private lemma UnsignedSimpleFunction.toRealSimple {d : ℕ} {g : EuclideanSpace'
       simp only [Set.indicator'_of_notMem hx, mul_zero, EReal.coe_zero,
         EReal.indicator, Real.EReal_fun, MulZeroClass.mul_zero]
 
-/-- Theorem 1.3.20(i) Приближение функций из $L^1$ простыми функциями (вещественный случай) -/
+/-- Теорема 1.3.20(i) Приближение функций из $L^1$ простыми функциями (вещественный случай) -/
 theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℝ), RealSimpleFunction g ∧ RealAbsolutelyIntegrable g ∧
@@ -300,7 +300,7 @@ theorem RealAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace'
   rw [add_comm (↑C.toReal : EReal) (↑ε : EReal)] at h_combined
   exact (EReal.addLECancellable_coe C.toReal).add_le_add_iff_right.mp h_combined
 
-/-- Theorem 1.3.20(i) Приближение функций из $L^1$ простыми функциями (комплексный случай) -/
+/-- Теорема 1.3.20(i) Приближение функций из $L^1$ простыми функциями (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_simple {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), ComplexSimpleFunction g ∧ ComplexAbsolutelyIntegrable g ∧
@@ -387,7 +387,7 @@ def ComplexStepFunction {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop :=
 def RealStepFunction {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop :=
   ∃ (S : Finset (Box d)) (c : S → ℝ), f = ∑ B, (c B • (B.val.toSet).indicator')
 
-/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями -/
+/-- Теорема 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями -/
 
 -- Вспомогательная лемма: индикатор элементарного множества является ступенчатой функцией
 private lemma elementary_indicator_is_step {d : ℕ} {E : Set (EuclideanSpace' d)}
@@ -905,7 +905,7 @@ private lemma RealSimpleFunction.approx_by_step_aux {d : ℕ} {g : EuclideanSpac
                   (∑ j ∈ S, (↑(|v j|) * Lebesgue_outer_measure (symmDiff (A j) (F j)))) :=
                   add_le_add h_single ih.2
 
-/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (вещественный случай) -/
+/-- Теорема 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (вещественный случай) -/
 theorem RealAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
     (ε : ℝ) (hε : 0 < ε) : 
     ∃ (g : EuclideanSpace' d → ℝ), RealStepFunction g ∧ RealAbsolutelyIntegrable g ∧
@@ -919,7 +919,7 @@ theorem RealAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d
   calc PreL1.norm (f - g₂) ≤ ↑(ε / 2) + ↑(ε / 2) := h_combined
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
-/-- Theorem 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (комплексный случай) -/
+/-- Теорема 1.3.20(ii) Приближение функций из $L^1$ ступенчатыми функциями (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_step {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), ComplexStepFunction g ∧ ComplexAbsolutelyIntegrable g ∧
@@ -1365,7 +1365,7 @@ private lemma RealStepFunction.approx_by_continuous_compact_aux {d : ℕ}
                 ∑ B ∈ T', PreL1.norm (diff_term B) :=
                 add_le_add le_rfl ih.2
 
-/-- Theorem 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем -/
+/-- Теорема 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем -/
 theorem RealAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealAbsolutelyIntegrable f)
     (ε : ℝ) (hε : 0 < ε) :
     ∃ (g : EuclideanSpace' d → ℝ), Continuous g ∧ CompactlySupported g ∧
@@ -1382,7 +1382,7 @@ theorem RealAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : Euc
   calc PreL1.norm (f - g) ≤ ↑(ε / 2) + ↑(ε / 2) := h_combined
     _ = (ε : EReal) := by rw [← EReal.coe_add]; congr 1; linarith
 
-/-- Theorem 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем (комплексный случай) -/
+/-- Теорема 1.3.20(iii) Приближение функций из $L^1$ непрерывными функциями с компактным носителем (комплексный случай) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_continuous_compact {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) :
   ∃ (g : EuclideanSpace' d → ℂ), Continuous g ∧ CompactlySupported g ∧
@@ -1491,11 +1491,11 @@ def UniformlyConvergesTo {X Y : Type*} [PseudoMetricSpace Y] (f : ℕ → X → 
 
 def UniformlyConvergesToOn {X Y : Type*} [PseudoMetricSpace Y] (f : ℕ → X → Y) (g : X → Y) (S : Set X) : Prop := UniformlyConvergesTo (fun n (x : S) ↦ f n x.val) (fun x ↦ g x.val)
 
-/-- Definition 1.3.21 (локально равномерная сходимость) -/
+/-- Определение 1.3.21 (локально равномерная сходимость) -/
 def LocallyUniformlyConvergesTo {X Y : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] (f : ℕ → X → Y) (g : X → Y) : Prop :=
   ∀ (K : Set X), Bornology.IsBounded K → UniformlyConvergesToOn f g K
 
-/-- Remark 1.3.22 -/
+/-- Замечание 1.3.22 -/
 theorem LocallyUniformlyConvergesTo.iff {d : ℕ} {Y : Type*} [PseudoMetricSpace Y] (f : ℕ → EuclideanSpace' d → Y) (g : EuclideanSpace' d → Y) : 
   LocallyUniformlyConvergesTo f g ↔
   ∀ x₀, ∃ U : Set (EuclideanSpace' d), x₀ ∈ U ∧ IsOpen U ∧ UniformlyConvergesToOn f g U := by sorry
@@ -1503,24 +1503,24 @@ theorem LocallyUniformlyConvergesTo.iff {d : ℕ} {Y : Type*} [PseudoMetricSpace
 def LocallyUniformlyConvergesToOn {X Y : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] (f : ℕ → X → Y) (g : X → Y) (S : Set X) : Prop :=
   LocallyUniformlyConvergesTo (fun n (x : S) ↦ f n x.val) (fun x ↦ g x.val)
 
-/-- Example 1.3.23 -/
+/-- Пример 1.3.23 -/
 example : LocallyUniformlyConvergesTo (fun n (x : EuclideanSpace' 1) ↦ x.toReal / n) (fun x ↦ 0) := by sorry
 
 example : ¬ UniformlyConvergesTo (fun n (x : EuclideanSpace' 1) ↦ x.toReal / n) (fun x ↦ 0) := by sorry
 
-/-- Example 1.3.24 -/
+/-- Пример 1.3.24 -/
 example : LocallyUniformlyConvergesTo (fun N (x : EuclideanSpace' 1) ↦ ∑ n ∈ Finset.range N, x.toReal^n / n.factorial) (fun x ↦ x.toReal.exp) := by sorry
 
 example : PointwiseConvergesTo (fun N (x : EuclideanSpace' 1) ↦ ∑ n ∈ Finset.range N, x.toReal^n / n.factorial) (fun x ↦ x.toReal.exp) := by sorry
 
 example : ¬ UniformlyConvergesTo (fun N (x : EuclideanSpace' 1) ↦ ∑ n ∈ Finset.range N, x.toReal^n / n.factorial) (fun x ↦ x.toReal.exp) := by sorry
 
-/-- Example 1.3.25 -/
+/-- Пример 1.3.25 -/
 example : PointwiseConvergesTo (fun n (x : EuclideanSpace' 1) ↦ if x.toReal > 0 then 1 / (n * x.toReal) else 0) (fun x ↦ 0) := by sorry
 
 example : ¬ LocallyUniformlyConvergesTo (fun n (x : EuclideanSpace' 1) ↦ if x.toReal > 0 then 1 / (n * x.toReal) else 0) (fun x ↦ 0) := by sorry
 
-/-- Theorem 1.3.26 (теорема Егорова). -/
+/-- Теорема 1.3.26 (теорема Егорова). -/
 theorem PointwiseAeConvergesTo.locallyUniformlyConverges_outside_small {d : ℕ} {f : ℕ → EuclideanSpace' d → ℂ} {g : EuclideanSpace' d → ℂ}
   (hf : ∀ n, ComplexMeasurable (f n))
   (hfg : PointwiseAeConvergesTo f g)
@@ -1537,7 +1537,7 @@ example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSp
       Lebesgue_measure E = 0 →
       ¬ LocallyUniformlyConvergesToOn f g Eᶜ := by sorry
 
-/-- Remark 1.3.27: локально равномерную сходимость в теореме Егорова нельзя усилить до равномерной сходимости -/
+/-- Замечание 1.3.27: локально равномерную сходимость в теореме Егорова нельзя усилить до равномерной сходимости -/
 example : ∃ (d : ℕ) (f : ℕ → EuclideanSpace' d → ℝ) (g : EuclideanSpace' d → ℝ),
     (∀ n, RealMeasurable (f n)) ∧
     PointwiseAeConvergesTo f g ∧
@@ -1558,7 +1558,7 @@ theorem PointwiseAeConvergesTo.uniformlyConverges_outside_small {d : ℕ} {f : �
     Lebesgue_measure E ≤ ε ∧
     UniformlyConvergesToOn f g (S ∩ Eᶜ) := by sorry
 
-/-- Theorem 1.3.28 (теорема Лузина) -/
+/-- Теорема 1.3.28 (теорема Лузина) -/
 theorem ComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1575,7 +1575,7 @@ example : ∃ (d : ℕ) (f : EuclideanSpace' d → ℝ),
 def LocallyComplexAbsolutelyIntegrable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop :=
   ∀ (S : Set (EuclideanSpace' d)), LebesgueMeasurable S ∧ Bornology.IsBounded S → ComplexAbsolutelyIntegrableOn f S
 
-/-- Exercise 1.3.23 (теореме Лузина достаточно локальной абсолютной интегрируемости). -/
+/-- Упражнение 1.3.23 (теореме Лузина достаточно локальной абсолютной интегрируемости). -/
 theorem LocallyComplexAbsolutelyIntegrable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : LocallyComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1591,12 +1591,12 @@ theorem ComplexMeasurable.approx_by_continuous_outside_small {d : ℕ} {f : Eucl
       Lebesgue_measure E ≤ ε ∧
       ∀ x ∉ E, g x = f x := by sorry
 
-/-- Exercise 1.3.24 -/
+/-- Упражнение 1.3.24 -/
 theorem ComplexMeasurable.iff_pointwiseae_of_continuous {d : ℕ} {f : EuclideanSpace' d → ℂ} : 
   ComplexMeasurable f ↔
   ∃ (g : ℕ → EuclideanSpace' d → ℂ), (∀ n, Continuous (g n)) ∧ PointwiseAeConvergesTo g f := by sorry
 
-/-- Remark 1.3.29 -/
+/-- Замечание 1.3.29 -/
 theorem UnsignedMeasurable.approx_by_continuous_outside_small {d : ℕ} {f : EuclideanSpace' d → EReal}
   (hf : UnsignedMeasurable f) (hfin : AlmostAlways (fun x ↦ f x < ⊤))
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1604,7 +1604,7 @@ theorem UnsignedMeasurable.approx_by_continuous_outside_small {d : ℕ} {f : Euc
       Lebesgue_measure E ≤ ε ∧
       ∀ x ∉ E, g x = f x := by sorry
 
-/-- Exercise 1.3.25 (a) (принцип в духе Литлвуда) -/
+/-- Упражнение 1.3.25 (a) (принцип в духе Литлвуда) -/
 theorem ComplexAbsolutelyIntegrable.almost_bounded_support {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 
@@ -1612,7 +1612,7 @@ theorem ComplexAbsolutelyIntegrable.almost_bounded_support {d : ℕ} {f : Euclid
 
 def BoundedOn {X Y : Type*} [PseudoMetricSpace Y] (f : X → Y) (S : Set X) : Prop := Bornology.IsBounded (f '' S)
 
-/-- Exercise 1.3.25 (b) (принцип в духе Литлвуда) -/
+/-- Упражнение 1.3.25 (b) (принцип в духе Литлвуда) -/
 theorem ComplexAbsolutelyIntegrable.almost_bounded {d : ℕ} {f : EuclideanSpace' d → ℂ}
   (hf : ComplexAbsolutelyIntegrable f)
   (ε : ℝ) (hε : 0 < ε) : 

@@ -66,7 +66,7 @@ variable [SetTheory]
 -/
 
 /--
-  Definition 3.3.1. {lean}`Function X Y` —
+  Определение 3.3.1. {lean}`Function X Y` —
   это структура функций из {lean}`X` в {lean}`Y`.
   Аналог типа {lean}`X → Y` из Mathlib.
 -/
@@ -209,7 +209,7 @@ abbrev Function.mk_fn {X Y : Set} (f : X → Y) : Function X Y :=
 -- 2) Функциональный, через вызов `f x`, который на самом деле определён как
 --    `f.to_fn x = (f.unique x).choose` — конкретное значение, выбранное аксиомой выбора.
 --
-/-- Definition 3.3.1 -/
+/-- Определение 3.3.1 -/
 theorem Function.eval {X Y : Set} (f : Function X Y) (x : X) (y : Y) :
   y = f x ↔ f.P x y := by
     -- `(f.unique x).choose_iff y : f.P x y ↔ y = (f.unique x).choose`
@@ -231,13 +231,13 @@ theorem Function.eval_of {X Y : Set} (f : X → Y) (x : X) :
     symm
     rw [eval]
 
-/-- Example 3.3.3. -/
+/-- Пример 3.3.3. -/
 -- Пример из учебника: Функция, которая увеличиваeт натуральное число на единицу.
 abbrev P_3_3_3a : Nat → Nat → Prop :=
   fun x y ↦ (y : ℕ) = (x : ℕ)+1
 
 -- Проверяет, что `P_3_3_3a` (условие «y = x+1»)
--- удовлетворяет требованию `∃!` (функциональности/однозначности) из Definition 3.3.1.
+-- удовлетворяет требованию `∃!` (функциональности/однозначности) из Определения 3.3.1.
 -- Т.е. для каждого `x` существует ровно один `y`, для которого условие выполнено.
 --
 -- Без этой леммы нельзя было бы упаковать `P_3_3_3a` в `Function Nat Nat` —
@@ -251,7 +251,7 @@ theorem SetTheory.Set.P_3_3_3a_existsUnique (x : Nat) : ∃! y : Nat, P_3_3_3a x
   --
   -- Если забыл, что такое nat_equiv, то это то, что делает nat «натуральными числами»:
   -- class SetTheory
-  --   nat_equiv : ℕ ≃ Subtype (mem . nat) -- Axiom 3.8
+  --   nat_equiv : ℕ ≃ Subtype (mem . nat) -- Аксиома 3.8
   --
   -- Если nat_equiv : ℕ → Nat, то nat_equiv.symm : Nat → ℕ
   --
@@ -550,7 +550,7 @@ example : ¬ ∃ f : ℕ → ℕ, ∀ x y, y = f x ↔ y = x ∧ y = x + 1 := by
   omega
 
 /--
-  Example 3.3.4 довольно трудно воспроизвести в текущем формализме,
+  Пример 3.3.4 довольно трудно воспроизвести в текущем формализме,
   так как вещественные числа ещё не построены.
   Вместо этого я предлагаю несколько аналогов на Mathlib,
   использующих Mathlib API для {name}`NNReal` и {lean}`ℝ`.
@@ -616,7 +616,7 @@ example : ∃ f : NNReal → NNReal, ∀ x y, y = f x ↔ y^2 = x := by
   · rw [h, NNReal.sq_sqrt]
   · rw [←h, NNReal.sqrt_sq]
 
-/-- Example 3.3.5:
+/-- Пример 3.3.5:
     Константная функция, всегда возвращает второй аргумент, вне зависимости от первого.
  -/
 abbrev SetTheory.Set.P_3_3_5 : Nat → Nat → Prop := fun _x y ↦ y = 7
@@ -633,7 +633,7 @@ theorem SetTheory.Set.f_3_3_5_eval (x : Nat) : f_3_3_5 x = 7 := by
   symm
   rw [Function.eval]
 
-/-- Definition 3.3.8 (Равенство функций).
+/-- Определение 3.3.8 (Равенство функций).
 
     Две функции называются равными,
     если их области определения и области значения совпадают.
@@ -656,7 +656,7 @@ theorem Function.eq_iff {X Y : Set} (f g : Function X Y) :
       · rwa [←Function.eval, h x, Function.eval]
 
 /--
-  Example 3.3.10 (упрощённый вариант).
+  Пример 3.3.10 (упрощённый вариант).
   Вторую часть примера трудно воспроизвести в этом формализме,
   поэтому вместо неё предлагается аналог на Mathlib.
 -/
@@ -729,7 +729,7 @@ theorem SetTheory.Set.empty_function_unique {X : Set}
     have hxne : x ∉ ∅ := not_mem_empty x
     contradiction
 
-/-- Definition 3.3.13 (Композиция) -/
+/-- Определение 3.3.13 (Композиция) -/
 noncomputable abbrev Function.comp {X Y Z : Set}
   (g : Function Y Z) (f : Function X Y) :
     Function X Z :=
@@ -769,7 +769,7 @@ theorem Function.comp_eq_comp {X Y Z : Set}
       ext
       simp only [Function.comp_eval, Function.comp_apply]
 
-/-- Example 3.3.14 -/
+/-- Пример 3.3.14 -/
 abbrev SetTheory.Set.f_3_3_14 : Function Nat Nat :=
   Function.mk_fn (fun x ↦ (2*x : ℕ))
 
@@ -841,7 +841,7 @@ theorem Function.one_to_one_iff' {X Y : Set} (f : Function X Y) :
     rw [one_to_one_iff]
 
 /--
-  Example 3.3.18. Одна половина примера требует целых чисел,
+  Пример 3.3.18. Одна половина примера требует целых чисел,
   поэтому она выражена через функции Mathlib, а не функции Главы 3.
 -/
 theorem SetTheory.Set.f_3_3_18_one_to_one :
@@ -900,7 +900,7 @@ example : Function.Injective (fun (n : ℕ) ↦ n^2) := by
   have key : a ^ 2 = b ^ 2 ↔ a = b := pow_left_inj₀ ha hb hn
   exact key.mp h
 
-/-- Remark 3.3.19.
+/-- Замечание 3.3.19.
     Если `f` не инъективна, то найдутся два РАЗНЫХ элемента `x`, `x'`,
     отображающиеся в один и тот же элемент — отсюда и название "two-to-one"
     (буквально доказывает отрицание инъективности в явном, конструктивном виде). -/
@@ -927,7 +927,7 @@ theorem SetTheory.Set.two_to_one' {X Y : Set} {f : Function X Y} (h : ¬ f.one_t
     -- Пара `(x, x')` как раз свидетельствует о том, что `hcon` ложно.
     exact hcon ⟨x, x', hxx', hfxfx'⟩
 
-/-- Definition 3.3.20 (Сюръективные функции).
+/-- Определение 3.3.20 (Сюръективные функции).
     Функция называется сюръективной (или сюрьекцией), если
     каждый элемент в Y получается в результате применения f к некоторому элементу в X.
     То есть для каждого y ∈ Y найдется x ∈ X, такой, что f от x = y.
@@ -941,7 +941,7 @@ abbrev Function.onto {X Y : Set} (f : Function X Y) : Prop :=
 theorem Function.onto_iff {X Y : Set} (f : Function X Y) :
   f.onto ↔ Function.Surjective f.to_fn := by rfl
 
-/-- Example 3.3.21 (с использованием Mathlib).
+/-- Пример 3.3.21 (с использованием Mathlib).
   Функция f : ℤ → ℤ, определяемая как f(n) = n^2, не является суррективной,
   так как отрицательные числа не входят в ℤ (образ f).
 -/
@@ -987,7 +987,7 @@ example : Function.Surjective (fun (n : ℤ) ↦ ⟨n^2, by use n⟩ : ℤ → A
   -- Поэтому `simp` сводит цель к `a^2 = b` и закрывает её гипотезой `ha : b = a^2`.
   simp only [ha]
 
-/-- Definition 3.3.23 (Биективные функции) -/
+/-- Определение 3.3.23 (Биективные функции) -/
 abbrev Function.bijective {X Y : Set} (f : Function X Y) : Prop :=
   f.one_to_one ∧ f.onto
 
@@ -996,7 +996,7 @@ theorem Function.bijective_iff {X Y : Set} (f : Function X Y) :
   f.bijective ↔ Function.Bijective f.to_fn := by
     rw [Function.bijective, Function.Bijective, one_to_one_iff', onto_iff]
 
-/-- Example 3.3.24 (с использованием Mathlib).
+/-- Пример 3.3.24 (с использованием Mathlib).
     Эта функция не является инъективной Так как если мы зададим `y = 3`,
     то в `{0,1,2}` найдется более одного `x` такого, что `f(x) = y`.
     Это и есть нарушение инъективности.
@@ -1027,8 +1027,8 @@ abbrev h_3_3_24 : Fin 3 → ({3,4,5} : _root_.Set ℕ) := fun x ↦ match x with
 example : Function.Bijective h_3_3_24 := by decide
 
 /--
-  Example 3.3.25 сформулирован с использованием Mathlib, а не нашей теории множеств,
-  чтобы избежать некоторых утомительных технических сложностей (ср. Exercise 3.3.2)
+  Пример 3.3.25 сформулирован с использованием Mathlib, а не нашей теории множеств,
+  чтобы избежать некоторых утомительных технических сложностей (ср. Упражнение 3.3.2)
 
   Функция `f : ℕ → ℕ{0}`, определяемая `f(n) := n++` является биекцией.
 -/
@@ -1270,7 +1270,7 @@ theorem Function.inverse_eq
       exact hright y
 
 /--
-  Exercise 3.3.1.
+  Упражнение 3.3.1.
   Хотя доказательство, работающее напрямую с функциями, было бы короче,
   суть упражнения — показать это, используя определение {name}`Function.eq_iff`.
 
@@ -1325,7 +1325,7 @@ theorem Function.comp_congr {X Y Z : Set} {f f' : Function X Y}
       rw [Function.comp_eval, Function.comp_eval]
       rw [hff', hgg']
 
-/-- Exercise 3.3.2 -/
+/-- Упражнение 3.3.2 -/
 theorem Function.comp_of_inj {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
   (hf : f.one_to_one) (hg : g.one_to_one) : (g ○ f).one_to_one := by
     rw [Function.one_to_one_iff] at *
@@ -1354,7 +1354,7 @@ theorem Function.comp_of_surj
       rw [hxeqy, hyeqz]
 
 /--
-  Exercise 3.3.3 — заполните sorry в формулировках разумным образом.
+  Упражнение 3.3.3 — заполните sorry в формулировках разумным образом.
 
   Когда пустая функция в заданное множество X инъективнa?
   Ответ: Всегда.
@@ -1437,7 +1437,7 @@ theorem empty_function_bijective_iff'
     tauto
 
 /--
-  Exercise 3.3.4.
+  Упражнение 3.3.4.
   В этом упражнении мы дадим некоторые законы сокращения для композиции.
 -/
 theorem Function.comp_cancel_left
@@ -1560,7 +1560,7 @@ def Function.comp_cancel_right_without_hg : Decidable
     simp at hval
 
 /--
-  Exercise 3.3.5.
+  Упражнение 3.3.5.
   Если композиция `g ○ f` инъективна, то и `f` инъективна:
   если бы `f` отождествляла две разные точки, то и вся композиция отождествляла бы их же.
 -/
@@ -1659,7 +1659,7 @@ def Function.comp_surjective' :
       sorry
 
 /--
-  Exercise 3.3.6. `f.inverse h` — левая обратная к `f`:
+  Упражнение 3.3.6. `f.inverse h` — левая обратная к `f`:
   применив сначала `f`, а затем обратную функцию, возвращаемся к исходному `x`.
 -/
 theorem Function.inverse_comp_self {X Y : Set} {f : Function X Y}
@@ -1693,7 +1693,7 @@ theorem Function.inverse_inverse {X Y : Set} {f : Function X Y} (h : f.bijective
   (f.inverse h).inverse (f.inverse_bijective h) = f := by
     sorry
 
-/-- Exercise 3.3.7. Композиция двух биекций снова является биекцией. -/
+/-- Упражнение 3.3.7. Композиция двух биекций снова является биекцией. -/
 theorem Function.comp_bijective {X Y Z : Set} {f : Function X Y} {g : Function Y Z} (hf : f.bijective)
   (hg : g.bijective) : (g ○ f).bijective := by
     sorry
@@ -1709,7 +1709,7 @@ theorem Function.inv_of_comp {X Y Z : Set} {f : Function X Y} {g : Function Y Z}
       sorry
 
 /--
-  Exercise 3.3.8.
+  Упражнение 3.3.8.
   Функция включения:
 
   Если `X ⊆ Y`, то каждый `x ∈ X` можно рассматривать как элемент `Y` —

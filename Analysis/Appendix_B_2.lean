@@ -28,7 +28,7 @@ noncomputable def NNRealDecimal.toNNReal (d : NNRealDecimal) : NNReal :=
 noncomputable instance NNRealDecimal.instCoeNNReal : Coe NNRealDecimal NNReal where
   coe := toNNReal
 
-/-- Exercise B.2.1 -/
+/-- Упражнение B.2.1 -/
 theorem NNRealDecimal.toNNReal_conv (d : NNRealDecimal) : 
   Summable fun i ↦ (d.fracPart i) * (10 : NNReal) ^ (-i-1 : ℝ) := by
   sorry
@@ -86,7 +86,7 @@ theorem NNRealDecimal.surj (x : NNReal) : ∃ d : NNRealDecimal, x = d := by
     _ ≤ (x * 10^n) * (10 : NNReal)^(-n : ℝ) := by gcongr; grind
     _ = x := by rw [mul_assoc, ←rpow_natCast, ←rpow_add]; simp; norm_num
 
-/-- Proposition B.2.2 -/
+/-- Утверждение B.2.2 -/
 theorem NNRealDecimal.not_inj : (1 : NNReal) = (mk 1 fun _ ↦ 0) ∧ (1 : NNReal) = (mk 0 fun _ ↦ 9) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   simp [toNNReal]
@@ -125,11 +125,11 @@ theorem RealDecimal.surj (x : ℝ) : ∃ d : RealDecimal, x = d := by
   . choose d hd using NNRealDecimal.surj (x.toNNReal); use pos d; simp [←hd, h]
   . choose d hd using NNRealDecimal.surj ((-x).toNNReal); use neg d; simp [←hd, show 0 ≤ -x by linarith]
 
-/-- Exercise B.2.2 -/
+/-- Упражнение B.2.2 -/
 theorem RealDecimal.not_inj_one (d : RealDecimal) : (d : ℝ) = 1 ↔ (d = pos (mk 1 fun _ ↦ 0) ∨ d = pos (mk 0 fun _ ↦ 9)) := by
   sorry
 
-/-- Exercise B.2.3 -/
+/-- Упражнение B.2.3 -/
 abbrev TerminatingDecimal (x : ℝ) : Prop := ∃ (n : ℤ) (m : ℕ), x = n / (10 : ℝ)^m
 
 -- для обрывающейся десятичной дроби `x` существуют ровно два разных десятичных представления, равных `x`
@@ -138,7 +138,7 @@ theorem RealDecimal.not_inj_terminating {x : ℝ} (hx : TerminatingDecimal x) : 
 -- для необрывающейся (нетерминирующей) десятичной дроби `x` десятичное представление единственно
 theorem RealDecimal.inj_nonterminating {x : ℝ} (hx : ¬TerminatingDecimal x) : ∃! d : RealDecimal, d = x := by sorry
 
-/-- Exercise B.2.4.  Это Corollary 8.3.4, но задача — переписать доказательство с использованием
+/-- Упражнение B.2.4.  Это Следствие 8.3.4, но задача — переписать доказательство с использованием
     десятичной системы. -/
 example : Uncountable ℝ := by sorry
 

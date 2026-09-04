@@ -21,7 +21,7 @@ namespace Chapter7
 open BigOperators
 
 /--
-  Definition 7.2.1 (формальный бесконечный ряд). Похоже на последовательность из Главы 6, но
+  Определение 7.2.1 (формальный бесконечный ряд). Похоже на последовательность из Главы 6, но
   обращаются с ним иначе. Как и в Главе 5, по умолчанию ряды будут начинаться с 0.
 -/
 @[ext]
@@ -51,7 +51,7 @@ abbrev Series.mk' {m : ℤ} (a : { n // n ≥ m } → ℝ) : Series where
 theorem Series.eval_mk' {m : ℤ} (a : { n // n ≥ m } → ℝ) {n : ℤ} (h : n ≥ m) :
     (Series.mk' a).seq n = a ⟨ n, h ⟩ := by simp [h]
 
-/-- Definition 7.2.2 (сходимость ряда) -/
+/-- Определение 7.2.2 (сходимость ряда) -/
 noncomputable abbrev Series.partial (s : Series) (N : ℤ) : ℝ := ∑ n ∈ Finset.Icc s.m N, s.seq n
 
 -- Частичная сумма ряда при увеличении верхней границы на 1 растёт на очередной член: `s.partial (N+1) = s.partial N + s.seq (N+1)`
@@ -80,7 +80,7 @@ noncomputable abbrev Series.sum (s : Series) : ℝ := if h : s.converges then h.
 theorem Series.converges_of_convergesTo {s : Series} {L : ℝ} (h : s.convergesTo L) :
     s.converges := by use L
 
-/-- Remark 7.2.3 -/
+/-- Замечание 7.2.3 -/
 theorem Series.sum_of_converges {s : Series} {L : ℝ} (h : s.convergesTo L) : s.sum = L := by
   simp [sum, converges_of_convergesTo h]
   exact tendsto_nhds_unique ((converges_of_convergesTo h).choose_spec) h
@@ -93,7 +93,7 @@ theorem Series.convergesTo_uniq {s : Series} {L L' : ℝ} (h : s.convergesTo L) 
 theorem Series.convergesTo_sum {s : Series} (h : s.converges) : s.convergesTo s.sum := by
   simp [sum, h]; exact h.choose_spec
 
-/-- Example 7.2.4 -/
+/-- Пример 7.2.4 -/
 noncomputable abbrev Series.example_7_2_4 := mk' (m := 1) (fun n ↦ (2 : ℝ)^(-n : ℤ))
 
 -- Пример 7.2.4: частичная сумма ряда `∑ 2⁻ⁿ` равна `1 - 2⁻ᴺ`
@@ -115,12 +115,12 @@ theorem Series.example_7_2_4'a {N : ℤ} (hN : N ≥ 1) : example_7_2_4'.partial
 -- Ряд `∑ 2ⁿ` расходится
 theorem Series.example_7_2_4'b : example_7_2_4'.diverges := by sorry
 
-/-- Proposition 7.2.5 / Exercise 7.2.2 -/
+/-- Утверждение 7.2.5 / Упражнение 7.2.2 -/
 theorem Series.converges_iff_tail_decay (s : Series) : 
     s.converges ↔ ∀ ε > 0, ∃ N ≥ s.m, ∀ p ≥ N, ∀ q ≥ N, |∑ n ∈ Finset.Icc p q, s.seq n| ≤ ε := by
   sorry
 
-/-- Corollary 7.2.6 (признак стремления к нулю) / Exercise 7.2.3 -/
+/-- Следствие 7.2.6 (признак стремления к нулю) / Упражнение 7.2.3 -/
 theorem Series.decay_of_converges {s : Series} (h : s.converges) : 
     Filter.atTop.Tendsto s.seq (nhds 0) := by
   sorry
@@ -130,7 +130,7 @@ theorem Series.diverges_of_nodecay {s : Series} (h : ¬ Filter.atTop.Tendsto s.s
     s.diverges := by
   sorry
 
-/-- Example 7.2.7 -/
+/-- Пример 7.2.7 -/
 theorem Series.example_7_2_7 : ((fun _ : ℕ ↦ (1 : ℝ)) : Series).diverges := by
   apply diverges_of_nodecay
   sorry
@@ -140,14 +140,14 @@ theorem Series.example_7_2_7' : ((fun n : ℕ ↦ (-1 : ℝ)^n) : Series).diverg
   apply diverges_of_nodecay
   sorry
 
-/-- Definition 7.2.8 (абсолютная сходимость) -/
+/-- Определение 7.2.8 (абсолютная сходимость) -/
 abbrev Series.abs (s : Series) : Series := mk' (m:=s.m) (fun n ↦ |s.seq n|)
 
 abbrev Series.absConverges (s : Series) : Prop := s.abs.converges
 
 abbrev Series.condConverges (s : Series) : Prop := s.converges ∧ ¬ s.absConverges
 
-/-- Proposition 7.2.9 (признак абсолютной сходимости) / Exercise 7.2.4 -/
+/-- Утверждение 7.2.9 (признак абсолютной сходимости) / Упражнение 7.2.4 -/
 theorem Series.converges_of_absConverges {s : Series} (h : s.absConverges) : s.converges := by
   sorry
 
@@ -155,7 +155,7 @@ theorem Series.converges_of_absConverges {s : Series} (h : s.absConverges) : s.c
 theorem Series.abs_le {s : Series} (h : s.absConverges) : |s.sum| ≤ s.abs.sum := by
   sorry
 
-/-- Proposition 7.2.12 (признак Лейбница для знакочередующихся рядов) -/
+/-- Утверждение 7.2.12 (признак Лейбница для знакочередующихся рядов) -/
 theorem Series.converges_of_alternating {m : ℤ} {a : { n // n ≥ m} → ℝ} (ha : ∀ n, a n ≥ 0)
   (ha' : Antitone a) :
     ((mk' (fun n ↦ (-1)^(n : ℤ) * a n)).converges ↔ Filter.atTop.Tendsto a (nhds 0)) := by
@@ -196,7 +196,7 @@ theorem Series.converges_of_alternating {m : ℤ} {a : { n // n ≥ m} → ℝ} 
     intro n hn; rw [Real.dist_eq]; linarith [hN n hn N (by simp)]
   exact cauchySeq_tendsto_of_complete this
 
-/-- Example 7.2.13 -/
+/-- Пример 7.2.13 -/
 noncomputable abbrev Series.example_7_2_13 : Series := (mk' (m:=1) (fun n ↦ (-1 : ℝ)^(n : ℤ) / (n : ℤ)))
 
 -- Пример 7.2.13: знакочередующийся ряд `∑ (-1)ⁿ/n` сходится
@@ -224,7 +224,7 @@ theorem Series.add_coe (a b : ℕ → ℝ) : (a : Series) + (b : Series) = (fun 
   change (a : Series).seq n + (b : Series).seq n = _
   by_cases h : n ≥ 0 <;> simp [h]
 
-/-- Proposition 7.2.14 (a) (законы рядов) / Exercise 7.2.5. Форма {name}`convergesTo` может быть удобнее для приложений. -/
+/-- Утверждение 7.2.14 (a) (законы рядов) / Упражнение 7.2.5. Форма {name}`convergesTo` может быть удобнее для приложений. -/
 theorem Series.convergesTo.add {s t : Series} {L M : ℝ} (hs : s.convergesTo L) (ht : t.convergesTo M) : 
     (s + t).convergesTo (L + M) := by
   sorry
@@ -245,7 +245,7 @@ theorem Series.smul_coe (a : ℕ → ℝ) (c : ℝ) : (c • a : Series) = (fun 
   ext n; rfl
   by_cases h : n ≥ 0 <;> simp [h, HSMul.hSMul, SMul.smul]
 
-/-- Proposition 7.2.14 (b) (законы рядов) / Exercise 7.2.5. Форма {name}`convergesTo` может быть удобнее для приложений. -/
+/-- Утверждение 7.2.14 (b) (законы рядов) / Упражнение 7.2.5. Форма {name}`convergesTo` может быть удобнее для приложений. -/
 theorem Series.convergesTo.smul {s : Series} {L c : ℝ} (hs : s.convergesTo L) : 
     (c • s).convergesTo (c * L) := by
   sorry
@@ -279,7 +279,7 @@ theorem Series.sub {s t : Series} (hs : s.converges) (ht : t.converges) :
 
 abbrev Series.from (s : Series) (m₁ : ℤ) : Series := mk' (m := max s.m m₁) (fun n ↦ s.seq (n : ℤ))
 
-/-- Proposition 7.2.14 (c) (Series laws) / Exercise 7.2.5 -/
+/-- Утверждение 7.2.14 (c) (Series laws) / Упражнение 7.2.5 -/
 theorem Series.converges_from (s : Series) (k : ℕ) : s.converges ↔ (s.from (s.m+k)).converges := by
   sorry
 
@@ -288,17 +288,17 @@ theorem Series.sum_from {s : Series} (k : ℕ) (h : s.converges) :
     s.sum = ∑ n ∈ Finset.Ico s.m (s.m+k), s.seq n + (s.from (s.m+k)).sum := by
   sorry
 
-/-- Proposition 7.2.14 (d) (Series laws) / Exercise 7.2.5 -/
+/-- Утверждение 7.2.14 (d) (Series laws) / Упражнение 7.2.5 -/
 theorem Series.shift {s : Series} {x : ℝ} (h : s.convergesTo x) (L : ℤ) : 
     (mk' (m := s.m + L) (fun n ↦ s.seq (n - L))).convergesTo x := by
   sorry
 
-/-- Lemma 7.2.15 (телескопический ряд) / Exercise 7.2.6 -/
+/-- Лемма 7.2.15 (телескопический ряд) / Упражнение 7.2.6 -/
 theorem Series.telescope {a : ℕ → ℝ} (ha : Filter.atTop.Tendsto a (nhds 0)) : 
     ((fun n : ℕ ↦ a n - a (n+1)) : Series).convergesTo (a 0) := by
   sorry
 
-/-- Exercise 7.2.1 -/
+/-- Упражнение 7.2.1 -/
 def Series.exercise_7_2_1_convergent : 
   Decidable ( (mk' (m := 1) (fun n ↦ (-1 : ℝ)^(n : ℤ))).converges ) := by
   -- Первая строка этого доказательства должна быть `apply isTrue` или `apply isFalse`.

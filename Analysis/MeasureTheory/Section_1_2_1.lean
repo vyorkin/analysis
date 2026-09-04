@@ -2583,7 +2583,7 @@ lemma Box.shrink_to_closed {d : ℕ} (B : Box d) (hB : B.toSet.Nonempty) (δ : �
       simp only [B', BoundedInterval.toSet, Set.mem_Icc, le_refl, and_self]
 
 namespace IsElementary
-/-- Elementary measure of empty set is zero (handles proof term mismatch) -/
+/-- Элементарная мера пустого множества равна нулю (обрабатывает несовпадение доказательственных термов) -/
 lemma measure_of_empty_eq {d : ℕ} {E : Set (EuclideanSpace' d)}
     (hE : IsElementary E) (hempty : E = ∅) : hE.measure = 0 := by
   have : hE.measure = (IsElementary.empty d).measure :=

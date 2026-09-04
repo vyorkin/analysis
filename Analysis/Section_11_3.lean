@@ -19,7 +19,7 @@ import Analysis.Section_11_2
 namespace Chapter11
 open BoundedInterval Chapter9
 
-/-- Definition 11.3.1 (мажорирование функций) -/
+/-- Определение 11.3.1 (мажорирование функций) -/
 abbrev MajorizesOn (g f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∀ x ∈ (I : Set ℝ), f x ≤ g x
 
 abbrev MinorizesOn (g f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∀ x ∈ (I : Set ℝ), g x ≤ f x
@@ -27,7 +27,7 @@ abbrev MinorizesOn (g f : ℝ → ℝ) (I : BoundedInterval) : Prop := ∀ x ∈
 -- `MinorizesOn g f I` — это то же самое, что `MajorizesOn f g I`, с переставленными местами `f` и `g`
 theorem MinorizesOn.iff (g f : ℝ → ℝ) (I : BoundedInterval) : MinorizesOn g f I ↔ MajorizesOn f g I := by rfl
 
-/-- Definition 11.3.2 (верхний и нижний интегралы Римана). -/
+/-- Определение 11.3.2 (верхний и нижний интегралы Римана). -/
 noncomputable abbrev upper_integral (f : ℝ → ℝ) (I : BoundedInterval) : ℝ :=
   sInf ((PiecewiseConstantOn.integ · I) '' {g | MajorizesOn g f I ∧ PiecewiseConstantOn g I})
 
@@ -87,7 +87,7 @@ lemma integral_bound_above {f : ℝ → ℝ} {I : BoundedInterval} (h : BddOn f 
     rw [bddAbove_def]; use (integral_bound_upper_nonempty h).some
     intro b hb; exact integral_bound_lower_le_upper (integral_bound_upper_nonempty h).some_mem hb
 
-/-- Lemma 11.3.3. Доказательство несколько реорганизовано по сравнению с учебником. -/
+/-- Лемма 11.3.3. Доказательство несколько реорганизовано по сравнению с учебником. -/
 lemma le_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} {M : ℝ} (h : ∀ x ∈ (I : Set ℝ), |f x| ≤ M) :
   -M * |I|ₗ ≤ lower_integral f I :=
   le_csSup (integral_bound_above (BddOn.of_bounded h)) (integral_bound_lower_of_bounded h)
@@ -134,7 +134,7 @@ lemma gt_of_lt_lower_integral {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddO
   choose Y hY hYX using exists_lt_of_lt_csSup (integral_bound_lower_nonempty hf) hX
   simp at hY; peel hY; simp_all; tauto
 
-/-- Definition 11.3.4 (интеграл Римана)
+/-- Определение 11.3.4 (интеграл Римана)
 Поскольку мы допускаем бросовые значения, простейшее определение интеграла Римана — через верхний интеграл. -/
 noncomputable abbrev integ (f : ℝ → ℝ) (I : BoundedInterval) : ℝ := upper_integral f I
 
@@ -145,12 +145,12 @@ theorem integ_congr {f g : ℝ → ℝ} {I : BoundedInterval} (h : Set.EqOn f g 
 noncomputable abbrev IntegrableOn (f : ℝ → ℝ) (I : BoundedInterval) : Prop :=
   BddOn f I ∧ lower_integral f I = upper_integral f I
 
-/-- Lemma 11.3.7 / Exercise 11.3.3 -/
+/-- Лемма 11.3.7 / Упражнение 11.3.3 -/
 theorem integ_of_piecewise_const {f : ℝ → ℝ} {I : BoundedInterval} (hf : PiecewiseConstantOn f I) :
   IntegrableOn f I ∧ integ f I = hf.integ' := by
   sorry
 
-/-- Remark 11.3.8 -/
+/-- Замечание 11.3.8 -/
 theorem integ_on_subsingleton {f : ℝ → ℝ} {I : BoundedInterval} (hI : |I|ₗ = 0) :
   IntegrableOn f I ∧ integ f I = 0 := by
   observe : Subsingleton I.toSet
@@ -158,14 +158,14 @@ theorem integ_on_subsingleton {f : ℝ → ℝ} {I : BoundedInterval} (hI : |I|�
   convert integ_of_piecewise_const hconst.piecewiseConstantOn
   simp [PiecewiseConstantOn.integ_const' hconst, hI]
 
-/-- Definition 11.3.9 (суммы Римана). Ограничение на положительную длину J не требуется благодаря различным соглашениям о бросовых значениях. -/
+/-- Определение 11.3.9 (суммы Римана). Ограничение на положительную длину J не требуется благодаря различным соглашениям о бросовых значениях. -/
 noncomputable abbrev upper_riemann_sum (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I) : ℝ :=
   ∑ J ∈ P.intervals, (sSup (f '' (J : Set ℝ))) * |J|ₗ
 
 noncomputable abbrev lower_riemann_sum (f : ℝ → ℝ) {I : BoundedInterval} (P : Partition I) : ℝ :=
   ∑ J ∈ P.intervals, (sInf (f '' (J : Set ℝ))) * |J|ₗ
 
-/-- Lemma 11.3.11 / Exercise 11.3.4 -/
+/-- Лемма 11.3.11 / Упражнение 11.3.4 -/
 theorem upper_riemann_sum_le {f g : ℝ → ℝ} {I : BoundedInterval} (P : Partition I)
   (hgf : MajorizesOn g f I) (hg : PiecewiseConstantWith g P) :
   upper_riemann_sum f P ≤ integ g I := by
@@ -177,7 +177,7 @@ theorem lower_riemann_sum_ge {f h : ℝ → ℝ} {I : BoundedInterval} (P : Part
   integ h I ≤ lower_riemann_sum f P := by
    sorry
 
-/-- Proposition 11.3.12 / Exercise 11.3.5 -/
+/-- Утверждение 11.3.12 / Упражнение 11.3.5 -/
 theorem upper_integ_le_upper_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf : BddOn f I)
   (P : Partition I) : upper_integral f I ≤ upper_riemann_sum f P := by
   sorry
@@ -197,17 +197,17 @@ theorem lower_integ_eq_sup_lower_sum {f : ℝ → ℝ} {I : BoundedInterval} (hf
   lower_integral f I = sSup (.range (fun P : Partition I ↦ lower_riemann_sum f P)) := by
   sorry
 
-/-- Exercise 11.3.1 (i) -/
+/-- Упражнение 11.3.1 (i) -/
 theorem MajorizesOn.trans {f g h : ℝ → ℝ} {I : BoundedInterval}
   (hfg : MajorizesOn f g I) (hgh : MajorizesOn g h I) : MajorizesOn f h I := by
   sorry
 
-/-- Exercise 11.3.1 (ii) -/
+/-- Упражнение 11.3.1 (ii) -/
 theorem MajorizesOn.anti_symm {f g : ℝ → ℝ} {I : BoundedInterval} :
   (∀ x ∈ (I : Set ℝ), f x = g x) ↔ MajorizesOn f g I ∧ MajorizesOn g f I := by
   sorry
 
-/-- Exercise 11.3.2 -/
+/-- Упражнение 11.3.2 -/
 def MajorizesOn.of_add : Decidable ( ∀ (f g h : ℝ → ℝ) (I : BoundedInterval) (hfg : MajorizesOn f g I),
  MajorizesOn (f+h) (g+h) I) := by
   -- первой строкой этой конструкции должна быть либо `apply isTrue`, либо `apply isFalse`.

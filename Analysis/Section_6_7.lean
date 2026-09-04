@@ -26,7 +26,7 @@ namespace Chapter6
 
 open Sequence Real
 
-/-- Lemma 6.7.1 (непрерывность возведения в степень) -/
+/-- Лемма 6.7.1 (непрерывность возведения в степень) -/
 lemma ratPow_continuous {x α : ℝ} (hx : x > 0) {q : ℕ → ℚ}
  (hq : ((fun n ↦ (q n : ℝ)) : Sequence).TendsTo α) :
  ((fun n ↦ x^(q n : ℝ)) : Sequence).Convergent := by
@@ -128,7 +128,7 @@ theorem Real.eq_lim_of_rat (α : ℝ) : ∃ q : ℕ → ℚ, ((fun n ↦ (q n : 
   simp only [←hLIM, Equiv.apply_symm_apply] at hcauchy
   convert hcauchy; aesop
 
-/-- Definition 6.7.2 (возведение в вещественную степень) -/
+/-- Определение 6.7.2 (возведение в вещественную степень) -/
 noncomputable abbrev Real.rpow (x : ℝ) (α : ℝ) : ℝ := lim ((fun n ↦ x^((eq_lim_of_rat α).choose n : ℝ)) : Sequence)
 
 -- Значение `rpow x α` совпадает с пределом `x^(q n)` для любой рациональной последовательности `q`, сходящейся к `α`.
@@ -150,11 +150,11 @@ lemma Real.rpow_of_rat_eq_ratPow {x : ℝ} (hx : x > 0) {q : ℚ} :
   convert rpow_eq_lim_ratPow hx (α := q) (lim_of_const _)
   exact (lim_eq.mp (lim_of_const _)).2.symm
 
-/-- Proposition 6.7.3(a) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(a) / Упражнение 6.7.1 -/
 theorem Real.ratPow_nonneg {x : ℝ} (hx : x > 0) (q : ℝ) : rpow x q ≥ 0 := by
   sorry
 
-/-- Proposition 6.7.3(b) -/
+/-- Утверждение 6.7.3(b) -/
 theorem Real.ratPow_add {x : ℝ} (hx : x > 0) (q r : ℝ) : rpow x (q+r) = rpow x q * rpow x r := by
   choose q' hq' using eq_lim_of_rat q
   choose r' hr' using eq_lim_of_rat r
@@ -168,27 +168,27 @@ theorem Real.ratPow_add {x : ℝ} (hx : x > 0) (q r : ℝ) : rpow x (q+r) = rpow
   rcongr n; rw [←rpow_add]; simp; linarith
 
 
-/-- Proposition 6.7.3(b) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(b) / Упражнение 6.7.1 -/
 theorem Real.ratPow_ratPow {x : ℝ} (hx : x > 0) (q r : ℝ) : rpow (rpow x q) r = rpow x (q*r) := by
   sorry
 
-/-- Proposition 6.7.3(c) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(c) / Упражнение 6.7.1 -/
 theorem Real.ratPow_neg {x : ℝ} (hx : x > 0) (q : ℝ) : rpow x (-q) = 1 / rpow x q := by
   sorry
 
-/-- Proposition 6.7.3(d) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(d) / Упражнение 6.7.1 -/
 theorem Real.ratPow_mono {x y : ℝ} (hx : x > 0) (hy : y > 0) {q : ℝ} (h : q > 0) : x > y ↔ rpow x q > rpow y q := by
   sorry
 
-/-- Proposition 6.7.3(e) (основание больше единицы) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(e) (основание больше единицы) / Упражнение 6.7.1 -/
 theorem Real.ratPow_mono_of_gt_one {x : ℝ} (hx : x > 1) {q r : ℝ} : rpow x q > rpow x r ↔ q > r := by
   sorry
 
-/-- Proposition 6.7.3(e) (основание меньше единицы) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(e) (основание меньше единицы) / Упражнение 6.7.1 -/
 theorem Real.ratPow_mono_of_lt_one {x : ℝ} (hx0 : 0 < x) (hx : x < 1) {q r : ℝ} : rpow x q > rpow x r ↔ q < r := by
   sorry
 
-/-- Proposition 6.7.3(f) / Exercise 6.7.1 -/
+/-- Утверждение 6.7.3(f) / Упражнение 6.7.1 -/
 theorem Real.ratPow_mul {x y : ℝ} (hx : x > 0) (hy : y > 0) (q : ℝ) : rpow (x*y) q = rpow x q * rpow y q := by
   sorry
 

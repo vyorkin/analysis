@@ -17,7 +17,7 @@ import Analysis.Section_9_4
 
 namespace Chapter9
 
-/-- Definition 9.5.1.  Мы присваиваем левым и правым пределам "мусорное" значение 0, если предел не существует. -/
+/-- Определение 9.5.1.  Мы присваиваем левым и правым пределам "мусорное" значение 0, если предел не существует. -/
 abbrev RightLimitExists (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : Prop := ∃ L, (nhdsWithin x₀ (X ∩ .Ioi x₀)).Tendsto f (nhds L)
 
 open Classical in
@@ -56,7 +56,7 @@ theorem left_limit.eq' {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : LeftLim
   (nhdsWithin x₀ (X ∩ .Iio x₀)).Tendsto f (nhds (left_limit X f x₀)) := by
   simp [left_limit, h]; exact h.choose_spec
 
-/-- Example 9.5.2.  Вторая часть этого примера больше не актуальна, так как мы присваиваем нашим функциям "мусорные" значения вместо того, чтобы оставлять их неопределёнными. -/
+/-- Пример 9.5.2.  Вторая часть этого примера больше не актуальна, так как мы присваиваем нашим функциям "мусорные" значения вместо того, чтобы оставлять их неопределёнными. -/
 example : right_limit .univ Real.sign 0 = 1 := by sorry
 
 example : left_limit .univ Real.sign 0 = -1 := by sorry
@@ -81,7 +81,7 @@ theorem left_limit.conv {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (had : Adhe
   apply Convergesto.comp _ ha hconv
   rwa [Convergesto.iff, (eq had hL).2]
 
-/-- Proposition 9.5.3 -/
+/-- Утверждение 9.5.3 -/
 theorem ContinuousAt.iff_eq_left_right_limit {X : Set ℝ} {f : ℝ → ℝ} {x₀ : ℝ} (h : x₀ ∈ X)
   (had_left : AdherentPt x₀ (X ∩ .Iio x₀)) (had_right : AdherentPt x₀ (X ∩ .Ioi x₀)) : 
   ContinuousWithinAt f X x₀ ↔ (RightLimitExists X f x₀ ∧ right_limit X f x₀ = f x₀) ∧ (LeftLimitExists X f x₀ ∧ left_limit X f x₀ = f x₀) := by
@@ -122,7 +122,7 @@ example : ¬ HasRemovableDiscontinuity .univ (fun x ↦ 1/x) 0 := by sorry
 
 example : ¬ HasJumpDiscontinuity .univ (fun x ↦ 1/x) 0 := by sorry
 
-/- Exercise 9.5.1: Сформулируйте определение того, что значит для предела функции быть `+∞` или `-∞`, примените его к `fun x ↦ 1/x`, а также сформулируйте и докажите версию Proposition 9.3.9. -/
+/- Упражнение 9.5.1: Сформулируйте определение того, что значит для предела функции быть `+∞` или `-∞`, примените его к `fun x ↦ 1/x`, а также сформулируйте и докажите версию Утверждения 9.3.9. -/
 
 
 end Chapter9

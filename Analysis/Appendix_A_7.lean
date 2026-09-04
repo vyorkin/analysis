@@ -57,7 +57,7 @@ def equality_as_equiv_relation (X : Type) : Setoid X := {
 
 
 open Real in
-/-- Example A.7.1 -/
+/-- Пример A.7.1 -/
 example {x y : ℝ} (h : x = y) : 2*x = 2*y ∧ sin x = sin y ∧ ∀ z, x + z = y + z := by
   split_ands
   . rw [h]
@@ -65,7 +65,7 @@ example {x y : ℝ} (h : x = y) : 2*x = 2*y ∧ sin x = sin y ∧ ∀ z, x + z =
   intro z
   rw [h]
 
-/-- Example A.7.2 -/
+/-- Пример A.7.2 -/
 example {n m : ℤ} (hn : Odd n) (h : n = m) : Odd m := by
   rw [h] at hn
   exact hn
@@ -109,6 +109,6 @@ abbrev NewInt.quot {X : Type} {f : ℤ → X} (hf : f 12 = f 2) : NewInt → X :
 
 example {X : Type} {f : ℤ → X} (hf : f 12 = f 2) (n : ℤ) : NewInt.quot hf (n : NewInt) = f n := rfl
 
-/-- Exercise A.7.1 -/
+/-- Упражнение A.7.1 -/
 example {a b c d : ℝ} (hab : a = b) (hcd : c = d) : a + d = b + c := by
   sorry

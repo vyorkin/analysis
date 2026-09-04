@@ -141,7 +141,7 @@ lemma Lebesgue_measure.Icc_eq (a b : ℝ) (hab : a ≤ b) :
   rw [max_eq_left (sub_nonneg.mpr hab)]
 
 /-- Множество Витали (поднятое в {lean}`EuclideanSpace' 1`) не измеримо по Лебегу.
-    Это и есть суть Proposition 1.2.18. -/
+    Это и есть суть Утверждения 1.2.18. -/
 theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpace' '' VitaliSet) := by
   let E := Real.equiv_EuclideanSpace' '' VitaliSet
   intro hE_meas
@@ -343,7 +343,7 @@ theorem VitaliSet.nonmeasurable : ¬ LebesgueMeasurable (Real.equiv_EuclideanSpa
     have h_three_ne_top : (3 : EReal) ≠ ⊤ := by decide
     exact h_three_ne_top (le_antisymm le_top h_le_three)
 
-/-- Proposition 1.2.18 -/
+/-- Утверждение 1.2.18 -/
 theorem LebesgueMeasurable.nonmeasurable : ∃ E : Set (EuclideanSpace' 1), E ⊆ Real.equiv_EuclideanSpace' '' (Set.Icc 0 1) ∧ ¬ LebesgueMeasurable E := by
   use Real.equiv_EuclideanSpace' '' VitaliSet
   constructor
@@ -353,9 +353,9 @@ theorem LebesgueMeasurable.nonmeasurable : ∃ E : Set (EuclideanSpace' 1), E �
     exact ⟨r, VitaliSet_subset_unit_interval hr, rfl⟩
   · exact VitaliSet.nonmeasurable
 
-/-- Exercise 1.2.26 (внешняя мера не является конечно аддитивной). -/
+/-- Упражнение 1.2.26 (внешняя мера не является конечно аддитивной). -/
 example : ∃ E F : Set (EuclideanSpace' 1), E ∩ F = ∅ ∧ Bornology.IsBounded E ∧ Bornology.IsBounded F ∧ Lebesgue_outer_measure (E ∪ F) ≠ Lebesgue_outer_measure E + Lebesgue_outer_measure F := by
   sorry
 
-/-- Exercise 1.2.27 (проекции измеримых множеств не обязаны быть измеримыми) -/
+/-- Упражнение 1.2.27 (проекции измеримых множеств не обязаны быть измеримыми) -/
 example : ∃ E : Set (EuclideanSpace' 2), LebesgueMeasurable E ∧ ¬ LebesgueMeasurable ((fun x ↦ Real.equiv_EuclideanSpace' (x 0 : ℝ)) '' E) := by sorry

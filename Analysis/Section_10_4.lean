@@ -19,7 +19,7 @@ import Analysis.Section_10_1
 open Chapter9
 namespace Chapter10
 
-/-- Lemma 10.4.1 -/
+/-- Лемма 10.4.1 -/
 theorem _root_.HasDerivWithinAt.of_inverse {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → ℝ}
   (hfXY : ∀ x ∈ X, f x ∈ Y) (hgf : ∀ x ∈ X, g (f x) = x)
   {x₀ y₀ f'x₀ g'y₀ : ℝ} (hx₀ : x₀ ∈ X) (hfx₀ : f x₀ = y₀)
@@ -53,7 +53,7 @@ theorem _root_.HasDerivWithinAt.of_inverse_of_zero_deriv {X Y : Set ℝ} {f : �
 
 example : ¬ DifferentiableWithinAt ℝ (fun x : ℝ ↦ x^(1/3 : ℝ)) (.Ici 0) 0 := by sorry
 
-/-- Theorem 10.4.2 (теорема об обратной функции) -/
+/-- Теорема 10.4.2 (теорема об обратной функции) -/
 theorem inverse_function_theorem {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → ℝ}
   (hfXY : ∀ x ∈ X, f x ∈ Y) (hgYX : ∀ y ∈ Y, g y ∈ X)
   (hgf : ∀ x ∈ X, g (f x) = x) (hfg : ∀ y ∈ Y, f (g y) = y)
@@ -73,27 +73,27 @@ theorem inverse_function_theorem {X Y : Set ℝ} {f : ℝ → ℝ} {g : ℝ → 
     rw [HasDerivWithinAt.iff, ←Convergesto.iff, Convergesto.iff_conv _ _] at hf
     convert (hf _ hx _).inv₀ _ using 2 with n <;> grind
 
-/-- Exercise 10.4.1(a) -/
+/-- Упражнение 10.4.1(a) -/
 example {n : ℕ} : ContinuousOn (fun x : ℝ ↦ x^(1/(n : ℝ))) (.Ioi 0) := by sorry
 
-/-- Exercise 10.4.1(b) -/
+/-- Упражнение 10.4.1(b) -/
 example {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioi 0) : HasDerivWithinAt (fun x : ℝ ↦ x^(1/(n : ℝ)))
   ((n : ℝ)⁻¹ * x^((n : ℝ)⁻¹-1)) (.Ioi 0) x := by sorry
 
-/-- Exercise 10.4.2(a) -/
+/-- Упражнение 10.4.2(a) -/
 example (q : ℚ) {x : ℝ} (hx : x ∈ Set.Ioi 0) : 
   HasDerivWithinAt (fun x : ℝ ↦ x^(q : ℝ)) (q * x^(q-1 : ℝ)) (.Ioi 0) x := by
   sorry
 
-/-- Exercise 10.4.2(b) -/
+/-- Упражнение 10.4.2(b) -/
 example (q : ℚ) : (nhdsWithin 1 (.Ioi 0 \ {1})).Tendsto (fun x : ℝ ↦ (x^(q : ℝ)-1)/(x-1)) (nhds q) := by
   sorry
 
-/-- Exercise 10.4.3(a) -/
+/-- Упражнение 10.4.3(a) -/
 example (α : ℝ) : (nhdsWithin 1 (.Ioi 0 \ {1})).Tendsto (fun x : ℝ ↦ (x^α-1^α)/(x-1)) (nhds α) := by
   sorry
 
-/-- Exercise 10.4.3(b) -/
+/-- Упражнение 10.4.3(b) -/
 example (α : ℝ) {x : ℝ} (hx : x ∈ Set.Ioi 0) : HasDerivWithinAt (fun x : ℝ ↦ x^α) (α * x^(α-1)) (.Ioi 0) x := by
   sorry
 

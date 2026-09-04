@@ -24,7 +24,7 @@ import Analysis.Section_11_8
 namespace Chapter11
 open Chapter9 Chapter10 BoundedInterval
 
-/-- Theorem 11.9.1 (первая фундаментальная теорема анализа). -/
+/-- Теорема 11.9.1 (первая фундаментальная теорема анализа). -/
 theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b)) :
   ContinuousOn (fun x => integ f (Icc a x)) (.Icc a b) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -67,7 +67,7 @@ theorem cts_of_integ {a b : ℝ} {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b
       _ = _ := by field_simp
   exact ContinuousOn.ofUniformContinuousOn F this
 
-/-- Theorem 11.9.1 (первая фундаментальная теорема анализа, дифференцируемость): если `f` непрерывна в точке `x₀`, то `F(x) = ∫ₐˣ f` дифференцируема в `x₀` с производной `f(x₀)`. -/
+/-- Теорема 11.9.1 (первая фундаментальная теорема анализа, дифференцируемость): если `f` непрерывна в точке `x₀`, то `F(x) = ∫ₐˣ f` дифференцируема в `x₀` с производной `f(x₀)`. -/
 theorem deriv_of_integ {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : IntegrableOn f (Icc a b))
   {x₀ : ℝ} (hx₀ : x₀ ∈ Set.Icc a b) (hcts : ContinuousWithinAt f (Icc a b) x₀) : 
   HasDerivWithinAt (fun x => integ f (Icc a x)) (f x₀) (.Icc a b) x₀ := by
@@ -88,13 +88,13 @@ theorem deriv_of_integ {a b : ℝ} (hab : a < b) {f : ℝ → ℝ} (hf : Integra
   . simp
   sorry
 
-/-- Example 11.9.2 -/
+/-- Пример 11.9.2 -/
 theorem IntegrableOn.of_f_9_8_5 : IntegrableOn f_9_8_5 (Icc 0 1) :=
   integ_of_monotone (StrictMonoOn.of_f_9_8_5.mono (by simp)).monotoneOn
 
 noncomputable abbrev F_11_9_2 := fun x ↦ integ f_9_8_5 (Icc 0 x)
 
-/-- Следствие Theorem 11.9.1 для функции `f_9_8_5` из Example 11.9.2: `F_11_9_2` непрерывна на `[0,1]`. -/
+/-- Следствие Теоремы 11.9.1 для функции `f_9_8_5` из Примера 11.9.2: `F_11_9_2` непрерывна на `[0,1]`. -/
 theorem ContinuousOn.of_F_11_9_2 : ContinuousOn F_11_9_2 (.Icc 0 1) := cts_of_integ IntegrableOn.of_f_9_8_5
 
 /-- Следствие `deriv_of_integ` для `F_11_9_2`: в любой иррациональной точке `x ∈ [0,1]` функция `F_11_9_2` дифференцируема. -/
@@ -104,10 +104,10 @@ theorem DifferentiableOn.of_F_11_9_2 {x : ℝ} (hx : ¬ ∃ r : ℚ, x = r) (hx'
   rw [hasDerivWithinAt_iff_hasFDerivWithinAt] at this
   exact ⟨_, this⟩
 
-/-- Exercise 11.9.1 -/
+/-- Упражнение 11.9.1 -/
 theorem DifferentiableOn.of_F_11_9_2' {q : ℚ} (hq : (q : ℝ) ∈ Set.Ioo 0 1) : ¬ DifferentiableWithinAt ℝ F_11_9_2 (.Icc 0 1) q := by sorry
 
-/-- Definition 11.9.3. Мы опускаем требование, чтобы x была предельной точкой — это делает
+/-- Определение 11.9.3. Мы опускаем требование, чтобы x была предельной точкой — это делает
     Lean-рассуждения чуть чище -/
 abbrev AntiderivOn (F f : ℝ → ℝ) (I : BoundedInterval) :=
   DifferentiableOn ℝ F I ∧ ∀ x ∈ I, HasDerivWithinAt F (f x) I x
@@ -117,7 +117,7 @@ theorem AntiderivOn.mono {F f : ℝ → ℝ} {I J : BoundedInterval}
   (h : AntiderivOn F f I) (hIJ : J ⊆ I) : AntiderivOn F f J :=
   ⟨ h.1.mono hIJ, by intro x hx; rw [subset_iff] at hIJ; exact (h.2 x (hIJ hx)).mono hIJ ⟩
 
-/-- Theorem 11.9.4 (вторая фундаментальная теорема анализа) -/
+/-- Теорема 11.9.4 (вторая фундаментальная теорема анализа) -/
 theorem integ_eq_antideriv_sub {a b : ℝ} (h : a ≤ b) {f F : ℝ → ℝ}
   (hf : IntegrableOn f (Icc a b)) (hF : AntiderivOn F f (Icc a b)) :
   integ f (Icc a b) = F b - F a := by
@@ -225,13 +225,13 @@ example : ¬ BddOn (deriv F_11_9) (.Icc (-1) 1) := by sorry
 
 example : AntiderivOn F_11_9 (deriv F_11_9) (Icc (-1) 1) := by sorry
 
-/-- Lemma 11.9.5 / Exercise 11.9.2 -/
+/-- Лемма 11.9.5 / Упражнение 11.9.2 -/
 theorem antideriv_eq_antideriv_add_const {I : BoundedInterval} {f F G : ℝ → ℝ}
   (hfF : AntiderivOn F f I) (hfG : AntiderivOn G f I) : 
    ∃ C, ∀ x ∈ (I : Set ℝ), F x = G x + C := by
     sorry
 
-/-- Exercise 11.9.3 -/
+/-- Упражнение 11.9.3 -/
 example {a b x₀ : ℝ} (hab : a < b) (hx₀ : x₀ ∈ Ioo a b) {f : ℝ → ℝ} (hf : MonotoneOn f (Icc a b)) : 
   DifferentiableWithinAt ℝ (fun x => integ f (Icc a x)) (Icc a b) x₀ ↔
   ContinuousWithinAt f (Icc a b) x₀ := by
@@ -239,7 +239,7 @@ example {a b x₀ : ℝ} (hab : a < b) (hx₀ : x₀ ∈ Ioo a b) {f : ℝ → �
 
 end Chapter11
 
-/-- Exercise 11.6.5, перенесено в раздел 11.9 -/
+/-- Упражнение 11.6.5, перенесено в раздел 11.9 -/
 theorem Chapter7.Series.converges_qseries' (p : ℝ) : (mk' (m := 1) fun n ↦ 1 / (n : ℝ) ^ p : Series).converges ↔ (p>1) := by
   sorry
 

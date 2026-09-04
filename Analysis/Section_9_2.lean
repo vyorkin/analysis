@@ -19,7 +19,7 @@ namespace Chapter9
 open Classical in
 noncomputable abbrev function_example : ℝ → ℝ := fun x ↦ if x ∈ ((fun y : ℚ ↦ (y : ℝ)) '' .univ) then 1 else 0
 
-/-- Definition 9.2.1 (Арифметические операции над функциями). -/
+/-- Определение 9.2.1 (Арифметические операции над функциями). -/
 theorem add_func_eval (f g : ℝ → ℝ) (x : ℝ) : (f + g) x = f x + g x := rfl
 
 -- Поточечное определение разности функций: `(f - g) x = f x - g x`
@@ -56,22 +56,22 @@ example : f_9_2_2 ∘ g_9_2_2 = fun x ↦ 4*x^2 := by grind
 
 example : g_9_2_2 ∘ f_9_2_2 = fun x ↦ 2*x^2 := by grind
 
-/-- Exercise 9.2.1 (a) -/
+/-- Упражнение 9.2.1 (a) -/
 def Exercise_9_2_1a : Decidable (∀ (f g h : ℝ → ℝ), (f+g) ∘ h = f ∘ h + g ∘ h) := by
   -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Exercise 9.2.1 (b) -/
+/-- Упражнение 9.2.1 (b) -/
 def Exercise_9_2_1b : Decidable (∀ (f g h : ℝ → ℝ), f ∘ (g + h) = f ∘ g + f ∘ h) := by
   -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Exercise 9.2.1 (c) -/
+/-- Упражнение 9.2.1 (c) -/
 def Exercise_9_2_1c : Decidable (∀ (f g h : ℝ → ℝ), (f+g) * h = f * h + g * h) := by
   -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Exercise 9.2.1 (d) -/
+/-- Упражнение 9.2.1 (d) -/
 def Exercise_9_2_1d : Decidable (∀ (f g h : ℝ → ℝ), f * (g+h) = f * g + f * h) := by
   -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry

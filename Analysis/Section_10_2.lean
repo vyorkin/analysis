@@ -18,7 +18,7 @@ import Analysis.Section_9_6
 open Chapter9
 namespace Chapter10
 
-/-- Definition 10.2.1 (локальные максимумы и минимумы). Здесь мы используем тип {name}`IsLocalMaxOn`
+/-- Определение 10.2.1 (локальные максимумы и минимумы). Здесь мы используем тип {name}`IsLocalMaxOn`
 из Mathlib. -/
 theorem IsLocalMaxOn.iff (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) : 
   IsLocalMaxOn f X x₀ ↔
@@ -35,7 +35,7 @@ theorem IsLocalMinOn.iff (X : Set ℝ) (f : ℝ → ℝ) (x₀ : ℝ) :
         Metric.eventually_nhds_iff, Real.dist_eq, abs_sub_lt_iff]
   peel 3; constructor <;> intro h _ _ _ <;> apply h <;> grind
 
-/-- Example 10.2.3 -/
+/-- Пример 10.2.3 -/
 abbrev f_10_2_3 : ℝ → ℝ := fun x ↦ x^2 - x^4
 
 example : ¬ IsMinOn f_10_2_3 .univ 0 := by sorry
@@ -44,7 +44,7 @@ example : IsMinOn f_10_2_3 (.Ioo (-1) 1) 0 := by sorry
 
 example : IsLocalMinOn f_10_2_3 .univ 0 := by sorry
 
-/-- Example 10.2.4 -/
+/-- Пример 10.2.4 -/
 example : ¬ ∃ x, IsMaxOn (· : ℝ → ℝ)  ((↑· : ℤ → ℝ) '' .univ) x := by sorry
 
 example : ¬ ∃ x, IsMinOn (· : ℝ → ℝ)  ((↑· : ℤ → ℝ) '' .univ) x := by sorry
@@ -53,7 +53,7 @@ example (n : ℤ) : IsLocalMaxOn (· : ℝ → ℝ)  ((↑· : ℤ → ℝ) '' .
 
 example (n : ℤ) : IsLocalMinOn (· : ℝ → ℝ)  ((↑· : ℤ → ℝ) '' .univ) n := by sorry
 
-/-- Remark 10.2.5 -/
+/-- Замечание 10.2.5 -/
 theorem IsLocalMaxOn.of_restrict {X Y : Set ℝ} (hXY : Y ⊆ X) (f : ℝ → ℝ) (x₀ : ℝ)
   (h : IsLocalMaxOn f X x₀) : IsLocalMaxOn f Y x₀ := by
   sorry
@@ -63,13 +63,13 @@ theorem IsLocalMinOn.of_restrict {X Y : Set ℝ} (hXY : Y ⊆ X) (f : ℝ → �
   (h : IsLocalMinOn f X x₀) : IsLocalMinOn f Y x₀ := by
   sorry
 
-/-- Proposition 10.2.6 (i) (локальные экстремумы стационарны) / Exercise 10.2.1 -/
+/-- Утверждение 10.2.6 (i) (локальные экстремумы стационарны) / Упражнение 10.2.1 -/
 theorem IsLocalMaxOn.deriv_eq_zero {a b : ℝ} {f : ℝ → ℝ} {x₀ : ℝ}
   (hx₀ : x₀ ∈ Set.Ioo a b) (h : IsLocalMaxOn f (.Ioo a b) x₀) {L : ℝ}
   (hderiv : HasDerivWithinAt f L (.Ioo a b) x₀) : L = 0 := by
   sorry
 
-/-- Proposition 10.2.6 (ii) (локальные экстремумы стационарны) / Exercise 10.2.1 -/
+/-- Утверждение 10.2.6 (ii) (локальные экстремумы стационарны) / Упражнение 10.2.1 -/
 theorem IsLocalMinOn.deriv_eq_zero {a b : ℝ} {f : ℝ → ℝ} {x₀ : ℝ}
   (hx₀ : x₀ ∈ Set.Ioo a b) (h : IsLocalMinOn f (.Ioo a b) x₀) {L : ℝ}
   (hderiv : HasDerivWithinAt f L (.Ioo a b) x₀) : L = 0 := by
@@ -81,30 +81,30 @@ theorem IsMaxOn.deriv_eq_zero_counter : ∃ (a b : ℝ) (f : ℝ → ℝ)
   (hderiv : HasDerivWithinAt f L (.Icc a b) x₀), L ≠ 0 := by
   sorry
 
-/-- Theorem 10.2.7 (теорема Ролля) / Exercise 10.2.4 -/
+/-- Теорема 10.2.7 (теорема Ролля) / Упражнение 10.2.4 -/
 theorem _root_.HasDerivWithinAt.exist_zero {a b : ℝ} (hab : a < b) {g : ℝ → ℝ}
   (hcont : ContinuousOn g (.Icc a b)) (hderiv : DifferentiableOn ℝ g (.Ioo a b))
   (hgab : g a = g b) : ∃ x ∈ Set.Ioo a b, HasDerivWithinAt g 0 (.Ioo a b) x := by
   sorry
 
-/-- Corollary 10.2.9 (теорема о среднем значении) / Exercise 10.2.5 -/
+/-- Следствие 10.2.9 (теорема о среднем значении) / Упражнение 10.2.5 -/
 theorem _root_.HasDerivWithinAt.mean_value {a b : ℝ} (hab : a < b) {f : ℝ → ℝ}
   (hcont : ContinuousOn f (.Icc a b)) (hderiv : DifferentiableOn ℝ f (.Ioo a b)) : 
   ∃ x ∈ Set.Ioo a b, HasDerivWithinAt f ((f b - f a) / (b - a)) (.Ioo a b) x := by
   sorry
 
-/-- Exercise 10.2.2 -/
+/-- Упражнение 10.2.2 -/
 example : ∃ f : ℝ → ℝ, ContinuousOn f (.Icc (-1) 1) ∧
   IsMaxOn f (.Icc (-1) 1) 0 ∧ ¬ DifferentiableWithinAt ℝ f (.Icc (-1) 1) 0 := by
   sorry
 
-/-- Exercise 10.2.3 -/
+/-- Упражнение 10.2.3 -/
 example : ∃ f : ℝ → ℝ, DifferentiableOn ℝ f (.Icc (-1) 1) ∧
   HasDerivWithinAt f 0 (.Ioo (-1) 1) 0 ∧
   ¬ IsLocalMaxOn f (.Icc (-1) 1) 0 ∧ ¬ IsLocalMinOn f (.Icc (-1) 1) 0 := by
   sorry
 
-/-- Exercise 10.2.6 -/
+/-- Упражнение 10.2.6 -/
 theorem lipschitz_bound {M a b : ℝ} (hM : M > 0) (hab : a < b) {f : ℝ → ℝ}
   (hcont : ContinuousOn f (.Icc a b))
   (hderiv : DifferentiableOn ℝ f (.Ioo a b))
@@ -113,7 +113,7 @@ theorem lipschitz_bound {M a b : ℝ} (hM : M > 0) (hab : a < b) {f : ℝ → �
   |f x - f y| ≤ M * |x - y| := by
   sorry
 
-/-- Exercise 10.2.7 -/
+/-- Упражнение 10.2.7 -/
 theorem _root_.UniformContinuousOn.of_lipschitz {f : ℝ → ℝ}
   (hcont : ContinuousOn f .univ)
   (hderiv : DifferentiableOn ℝ f .univ)

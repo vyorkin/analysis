@@ -23,7 +23,7 @@ namespace Chapter7
 
 open Filter Real EReal
 
-/-- Theorem 7.5.1(a) (признак Коши). Нужно техническое условие, гарантирующее конечность limsup. -/
+/-- Теорема 7.5.1(a) (признак Коши). Нужно техническое условие, гарантирующее конечность limsup. -/
 theorem Series.root_test_pos {s : Series}
   (h : atTop.limsup (fun n ↦ ((|s.seq n|^(1/(n : ℝ)) : ℝ) : EReal)) < 1) : s.absConverges := by
     -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -76,7 +76,7 @@ theorem Series.root_test_pos {s : Series}
     by_cases hn : n ≥ N <;> simp [hn] <;> grind
 
 
-/-- Theorem 7.5.1(b) (признак Коши) -/
+/-- Теорема 7.5.1(b) (признак Коши) -/
 theorem Series.root_test_neg {s : Series}
   (h : atTop.limsup (fun n ↦ ((|s.seq n|^(1/(n : ℝ)) : ℝ) : EReal)) > 1) : s.diverges := by
     -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -88,17 +88,17 @@ theorem Series.root_test_neg {s : Series}
     rw [show (1 : EReal) = (1 : ℝ) by simp, EReal.coe_lt_coe_iff] at hs
     linarith
 
-/-- Theorem 7.5.1(c) (признак Коши) / Exercise 7.5.3 -/
+/-- Теорема 7.5.1(c) (признак Коши) / Упражнение 7.5.3 -/
 theorem Series.root_test_inconclusive : ∃ s : Series,
   atTop.Tendsto (fun n ↦ |s.seq n|^(1/(n : ℝ))) (nhds 1) ∧ s.diverges := by
     sorry
 
-/-- Theorem 7.5.1 (признак Коши) / Exercise 7.5.3 -/
+/-- Теорема 7.5.1 (признак Коши) / Упражнение 7.5.3 -/
 theorem Series.root_test_inconclusive' : ∃ s : Series,
   atTop.Tendsto (fun n ↦ |s.seq n|^(1/(n : ℝ))) (nhds 1) ∧ s.absConverges := by
     sorry
 
-/-- Lemma 7.5.2 / Exercise 7.5.1 -/
+/-- Лемма 7.5.2 / Упражнение 7.5.1 -/
 theorem Series.ratio_ineq {c : ℤ → ℝ} (m : ℤ) (hpos : ∀ n ≥ m, c n > 0) : 
   atTop.liminf (fun n ↦ ((c (n+1) / c n : ℝ) : EReal)) ≤
     atTop.liminf (fun n ↦ ↑((c n)^(1/(n : ℝ)) : ℝ))
@@ -177,7 +177,7 @@ theorem Series.ratio_ineq {c : ℤ → ℝ} (m : ℤ) (hpos : ∀ n ≥ m, c n >
       . apply (continuous_const_rpow (by positivity)).tendsto'; simp
       exact tendsto_inv_atTop_zero.comp tendsto_intCast_atTop_atTop
 
-/-- Corollary 7.5.3 (признак Даламбера, сходимость). -/
+/-- Следствие 7.5.3 (признак Даламбера, сходимость). -/
 theorem Series.ratio_test_pos {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
   (h : atTop.limsup (fun n ↦ ((|s.seq (n+1)| / |s.seq n| : ℝ) : EReal)) < 1) : s.absConverges := by
     apply Series.root_test_pos (lt_of_le_of_lt _ h)
@@ -185,28 +185,28 @@ theorem Series.ratio_test_pos {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
     convert hnon using 1 with n
     simp
 
-/-- Corollary 7.5.3 (признак Даламбера, расходимость). -/
+/-- Следствие 7.5.3 (признак Даламбера, расходимость). -/
 theorem Series.ratio_test_neg {s : Series} (hnon : ∀ n ≥ s.m, s.seq n ≠ 0)
   (h : atTop.liminf (fun n ↦ ((|s.seq (n+1)| / |s.seq n| : ℝ) : EReal)) > 1) : s.diverges := by
     apply Series.root_test_neg (lt_of_lt_of_le h _)
     convert (ratio_ineq s.m _).1.trans (ratio_ineq s.m _).2.1 with n; rfl
     all_goals convert hnon using 1 with n; simp
 
-/-- Corollary 7.5.3(i) (признак Даламбера неоднозначен, расходится) / Exercise 7.5.3 -/
+/-- Следствие 7.5.3(i) (признак Даламбера неоднозначен, расходится) / Упражнение 7.5.3 -/
 theorem Series.ratio_test_inconclusive : ∃ s : Series, (∀ n ≥ s.m, s.seq n ≠ 0) ∧
   atTop.Tendsto (fun n ↦ |s.seq (n+1)| / |s.seq n|) (nhds 1) ∧ s.diverges := by
     sorry
 
-/-- Corollary 7.5.3(ii) (признак Даламбера неоднозначен, абсолютно сходится) / Exercise 7.5.3 -/
+/-- Следствие 7.5.3(ii) (признак Даламбера неоднозначен, абсолютно сходится) / Упражнение 7.5.3 -/
 theorem Series.ratio_test_inconclusive' : ∃ s : Series, (∀ n ≥ s.m, s.seq n ≠ 0) ∧
   atTop.Tendsto (fun n ↦ |s.seq (n+1)| / |s.seq n|) (nhds 1) ∧ s.absConverges := by
     sorry
 
-/-- Proposition 7.5.4 -/
+/-- Утверждение 7.5.4 -/
 theorem Series.root_self_converges : atTop.Tendsto (fun (n : ℕ) ↦ (n : ℝ)^(1 / (n : ℝ))) (nhds 1) := by
   sorry
 
-/-- Exercise 7.5.2 -/
+/-- Упражнение 7.5.2 -/
 theorem Series.poly_mul_geom_converges {x : ℝ} (hx : |x|<1) (q : ℝ) : (fun n : ℕ ↦ (n : ℝ)^q * x^n : Series).converges
   ∧ atTop.Tendsto (fun n : ℕ ↦ (n : ℝ)^q * x^n) (nhds 0) := by
   sorry

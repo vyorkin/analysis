@@ -44,7 +44,7 @@ structure PreRat where
   denominator : ℤ
   nonzero : denominator ≠ 0
 
-/-- Exercise 4.2.1 -/
+/-- Упражнение 4.2.1 -/
 instance PreRat.instSetoid : Setoid PreRat where
   r a b := a.numerator * b.denominator = b.numerator * a.denominator
   iseqv := {
@@ -66,11 +66,11 @@ abbrev Rat.formalDiv (a b : ℤ) : Rat :=
 
 infix:100 " // " => Rat.formalDiv
 
-/-- Definition 4.2.1 (Рациональные числа, равенство) -/
+/-- Определение 4.2.1 (Рациональные числа, равенство) -/
 theorem Rat.eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) : a // b = c // d ↔ a * d = c * b := by
   simp [formalDiv, hb, hd, Quotient.eq, PreRat.instSetoid]
 
-/-- Definition 4.2.1 (Рациональные числа, существование представления) -/
+/-- Определение 4.2.1 (Рациональные числа, существование представления) -/
 theorem Rat.eq_diff (n : Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
   apply Quotient.ind _ n; intro ⟨ a, b, h ⟩
   refine ⟨ a, b, h, ?_ ⟩
@@ -86,7 +86,7 @@ theorem Rat.eq_diff (n : Rat) : ∃ a b, b ≠ 0 ∧ n = a // b := by
 instance Rat.decidableEq : DecidableEq Rat := by
   sorry
 
-/-- Lemma 4.2.3 (Сложение определено корректно) -/
+/-- Лемма 4.2.3 (Сложение определено корректно) -/
 instance Rat.add_inst : Add Rat where
   add := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*d+b*c) // (b*d)) (by
     intro ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ⟨ a', b', h1' ⟩ ⟨ c', d', h2' ⟩ h3 h4
@@ -94,25 +94,25 @@ instance Rat.add_inst : Add Rat where
     linear_combination d * d' * h3 + b * b' * h4
   )
 
-/-- Definition 4.2.2 (Сложение рациональных чисел) -/
+/-- Определение 4.2.2 (Сложение рациональных чисел) -/
 theorem Rat.add_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) :
     (a // b) + (c // d) = (a*d + b*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
-/-- Lemma 4.2.3 (Умножение определено корректно) -/
+/-- Лемма 4.2.3 (Умножение определено корректно) -/
 instance Rat.mul_inst : Mul Rat where
   mul := Quotient.lift₂ (fun ⟨ a, b, h1 ⟩ ⟨ c, d, h2 ⟩ ↦ (a*c) // (b*d)) (by sorry)
 
-/-- Definition 4.2.2 (Умножение рациональных чисел) -/
+/-- Определение 4.2.2 (Умножение рациональных чисел) -/
 theorem Rat.mul_eq (a c : ℤ) {b d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0) :
     (a // b) * (c // d) = (a*c) // (b*d) := by
   convert Quotient.lift₂_mk _ _ _ _ <;> simp [hb, hd]
 
-/-- Lemma 4.2.3 (Отрицание определено корректно) -/
+/-- Лемма 4.2.3 (Отрицание определено корректно) -/
 instance Rat.neg_inst : Neg Rat where
   neg := Quotient.lift (fun ⟨ a, b, h1 ⟩ ↦ (-a) // b) (by sorry)
 
-/-- Definition 4.2.2 (Отрицание рациональных чисел) -/
+/-- Определение 4.2.2 (Отрицание рациональных чисел) -/
 theorem Rat.neg_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : - (a // b) = (-a) // b := by
   convert Quotient.lift_mk _ _ _ <;> simp [hb]
 
@@ -168,7 +168,7 @@ lemma Rat.inv_eq (a : ℤ) {b : ℤ} (hb : b ≠ 0) : (a // b)⁻¹ = b // a := 
 @[simp]
 theorem Rat.inv_zero : (0 : Rat)⁻¹ = 0 := rfl
 
-/-- Proposition 4.2.4 (законы алгебры, аддитивная группа) / Exercise 4.2.3 -/
+/-- Утверждение 4.2.4 (законы алгебры, аддитивная группа) / Упражнение 4.2.3 -/
 instance Rat.addGroup_inst : AddGroup Rat :=
 AddGroup.ofLeftAxioms (by
   -- это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -185,18 +185,18 @@ AddGroup.ofLeftAxioms (by
 )
  (by sorry) (by sorry)
 
-/-- Proposition 4.2.4 (законы алгебры, аддитивная коммутативная группа) / Exercise 4.2.3 -/
+/-- Утверждение 4.2.4 (законы алгебры, аддитивная коммутативная группа) / Упражнение 4.2.3 -/
 instance Rat.instAddCommGroup : AddCommGroup Rat where
   add_comm := by sorry
 
-/-- Proposition 4.2.4 (законы алгебры, коммутативный моноид) / Exercise 4.2.3 -/
+/-- Утверждение 4.2.4 (законы алгебры, коммутативный моноид) / Упражнение 4.2.3 -/
 instance Rat.instCommMonoid : CommMonoid Rat where
   mul_comm := by sorry
   mul_assoc := by sorry
   one_mul := by sorry
   mul_one := by sorry
 
-/-- Proposition 4.2.4 (законы алгебры, коммутативное кольцо) / Exercise 4.2.3 -/
+/-- Утверждение 4.2.4 (законы алгебры, коммутативное кольцо) / Упражнение 4.2.3 -/
 instance Rat.instCommRing : CommRing Rat where
   left_distrib := by sorry
   right_distrib := by sorry
@@ -232,7 +232,7 @@ instance Rat.instDivInvMonoid : DivInvMonoid Rat where
 -- Разворачивает деление `Rat`: `q / r` определено как `q * r⁻¹`
 theorem Rat.div_eq (q r : Rat) : q/r = q * r⁻¹ := by rfl
 
-/-- Proposition 4.2.4 (законы алгебры, поле) / Exercise 4.2.3 -/
+/-- Утверждение 4.2.4 (законы алгебры, поле) / Упражнение 4.2.3 -/
 instance Rat.instField : Field Rat where
   exists_pair_ne := by sorry
   mul_inv_cancel := by sorry
@@ -260,33 +260,33 @@ def Rat.coe_int_hom : ℤ →+* Rat where
   map_add' := by sorry
   map_mul' := by sorry
 
-/-- Definition 4.2.6 (положительность) -/
+/-- Определение 4.2.6 (положительность) -/
 def Rat.isPos (q : Rat) : Prop := ∃ a b : ℤ, a > 0 ∧ b > 0 ∧ q = a/b
 
-/-- Definition 4.2.6 (отрицательность) -/
+/-- Определение 4.2.6 (отрицательность) -/
 def Rat.isNeg (q : Rat) : Prop := ∃ r : Rat, r.isPos ∧ q = -r
 
-/-- Lemma 4.2.7 (трихотомия рациональных чисел, утверждение) / Exercise 4.2.4 -/
+/-- Лемма 4.2.7 (трихотомия рациональных чисел, утверждение) / Упражнение 4.2.4 -/
 theorem Rat.trichotomous (x : Rat) : x = 0 ∨ x.isPos ∨ x.isNeg := by sorry
 
-/-- Lemma 4.2.7 (трихотомия рациональных чисел, ноль и положительное) / Exercise 4.2.4 -/
+/-- Лемма 4.2.7 (трихотомия рациональных чисел, ноль и положительное) / Упражнение 4.2.4 -/
 theorem Rat.not_zero_and_pos (x : Rat) : ¬(x = 0 ∧ x.isPos) := by sorry
 
-/-- Lemma 4.2.7 (трихотомия рациональных чисел, ноль и отрицательное) / Exercise 4.2.4 -/
+/-- Лемма 4.2.7 (трихотомия рациональных чисел, ноль и отрицательное) / Упражнение 4.2.4 -/
 theorem Rat.not_zero_and_neg (x : Rat) : ¬(x = 0 ∧ x.isNeg) := by sorry
 
-/-- Lemma 4.2.7 (трихотомия рациональных чисел, положительное и отрицательное) / Exercise 4.2.4 -/
+/-- Лемма 4.2.7 (трихотомия рациональных чисел, положительное и отрицательное) / Упражнение 4.2.4 -/
 theorem Rat.not_pos_and_neg (x : Rat) : ¬(x.isPos ∧ x.isNeg) := by sorry
 
-/-- Definition 4.2.8 (Порядок на рациональных числах, строгий) -/
+/-- Определение 4.2.8 (Порядок на рациональных числах, строгий) -/
 instance Rat.instLT : LT Rat where
   lt x y := (x-y).isNeg
 
-/-- Definition 4.2.8 (Порядок на рациональных числах, нестрогий) -/
+/-- Определение 4.2.8 (Порядок на рациональных числах, нестрогий) -/
 instance Rat.instLE : LE Rat where
   le x y := (x < y) ∨ (x = y)
 
--- Разворачивает `<` в определение (Definition 4.2.8): `x < y` означает, что разность `x - y` отрицательна
+-- Разворачивает `<` в определение (Определение 4.2.8): `x < y` означает, что разность `x - y` отрицательна
 theorem Rat.lt_iff (x y : Rat) : x < y ↔ (x-y).isNeg := by rfl
 -- Разворачивает `≤` в определение: `x ≤ y` — это `x < y` или `x = y`
 theorem Rat.le_iff (x y : Rat) : x ≤ y ↔ (x < y) ∨ (x = y) := by rfl
@@ -296,28 +296,28 @@ theorem Rat.gt_iff (x y : Rat) : x > y ↔ (x-y).isPos := by sorry
 -- `x ≥ y` — это `x > y` или `x = y`
 theorem Rat.ge_iff (x y : Rat) : x ≥ y ↔ (x > y) ∨ (x = y) := by sorry
 
-/-- Proposition 4.2.9(a) (трихотомия порядка, утверждение) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(a) (трихотомия порядка, утверждение) / Упражнение 4.2.5 -/
 theorem Rat.trichotomous' (x y : Rat) : x > y ∨ x < y ∨ x = y := by sorry
 
-/-- Proposition 4.2.9(a) (трихотомия порядка, не больше и меньше одновременно) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(a) (трихотомия порядка, не больше и меньше одновременно) / Упражнение 4.2.5 -/
 theorem Rat.not_gt_and_lt (x y : Rat) : ¬ (x > y ∧ x < y):= by sorry
 
-/-- Proposition 4.2.9(a) (трихотомия порядка, не больше и равно одновременно) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(a) (трихотомия порядка, не больше и равно одновременно) / Упражнение 4.2.5 -/
 theorem Rat.not_gt_and_eq (x y : Rat) : ¬ (x > y ∧ x = y):= by sorry
 
-/-- Proposition 4.2.9(a) (трихотомия порядка, не меньше и равно одновременно) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(a) (трихотомия порядка, не меньше и равно одновременно) / Упражнение 4.2.5 -/
 theorem Rat.not_lt_and_eq (x y : Rat) : ¬ (x < y ∧ x = y):= by sorry
 
-/-- Proposition 4.2.9(b) (порядок антисимметричен) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(b) (порядок антисимметричен) / Упражнение 4.2.5 -/
 theorem Rat.antisymm (x y : Rat) : x < y ↔ y > x := by sorry
 
-/-- Proposition 4.2.9(c) (порядок транзитивен) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(c) (порядок транзитивен) / Упражнение 4.2.5 -/
 theorem Rat.lt_trans {x y z : Rat} (hxy : x < y) (hyz : y < z) : x < z := by sorry
 
-/-- Proposition 4.2.9(d) (сложение сохраняет порядок) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(d) (сложение сохраняет порядок) / Упражнение 4.2.5 -/
 theorem Rat.add_lt_add_right {x y : Rat} (z : Rat) (hxy : x < y) : x + z < y + z := by sorry
 
-/-- Proposition 4.2.9(e) (умножение на положительное сохраняет порядок) / Exercise 4.2.5 -/
+/-- Утверждение 4.2.9(e) (умножение на положительное сохраняет порядок) / Упражнение 4.2.5 -/
 theorem Rat.mul_lt_mul_right {x y z : Rat} (hxy : x < y) (hz : z.isPos) : x * z < y * z := by sorry
 
 /-- (Не из учебника) Устанавливает разрешимость этого порядка. -/
@@ -366,7 +366,7 @@ instance Rat.instIsStrictOrderedRing : IsStrictOrderedRing Rat where
   le_of_add_le_add_left := by sorry
   zero_le_one := by sorry
 
-/-- Exercise 4.2.6 -/
+/-- Упражнение 4.2.6 -/
 theorem Rat.mul_lt_mul_right_of_neg (x y z : Rat) (hxy : x < y) (hz : z.isNeg) : x * z > y * z := by
   sorry
 

@@ -19,7 +19,7 @@ import Analysis.Section_5_epilogue
 
 open EReal
 
-/-- Definition 6.2.1 -/
+/-- Определение 6.2.1 -/
 theorem EReal.def (x : EReal) : (∃ (y : Real), y = x) ∨ x = ⊤ ∨ x = ⊥ := by
   revert x
   simp [EReal.forall]
@@ -41,35 +41,35 @@ abbrev EReal.IsInfinite (x : EReal) : Prop := x = ⊤ ∨ x = ⊥
 theorem EReal.infinite_iff_not_finite (x : EReal) : x.IsInfinite ↔ ¬ x.IsFinite := by
   obtain ⟨ y, rfl ⟩ | rfl | rfl := EReal.def x <;> simp [IsFinite, IsInfinite]
 
-/-- Definition 6.2.2 (отрицание расширенных вещественных чисел) -/
+/-- Определение 6.2.2 (отрицание расширенных вещественных чисел) -/
 theorem EReal.neg_of_real (x : Real) : -(x : EReal) = (-x : ℝ) := rfl
 
 #check EReal.neg_top
 #check EReal.neg_bot
 
-/-- Definition 6.2.3 (упорядочивание расширенных вещественных чисел) -/
+/-- Определение 6.2.3 (упорядочивание расширенных вещественных чисел) -/
 theorem EReal.le_iff (x y : EReal) : 
     x ≤ y ↔ (∃ (x' y' : Real), x = x' ∧ y = y' ∧ x' ≤ y') ∨ y = ⊤ ∨ x = ⊥ := by
   obtain ⟨ x', rfl ⟩ | rfl | rfl := EReal.def x <;> obtain ⟨ y', rfl ⟩ | rfl | rfl := EReal.def y <;> simp <;> tauto
 
-/-- Definition 6.2.3 (упорядочивание расширенных вещественных чисел) -/
+/-- Определение 6.2.3 (упорядочивание расширенных вещественных чисел) -/
 theorem EReal.lt_iff (x y : EReal) : x < y ↔ x ≤ y ∧ x ≠ y := lt_iff_le_and_ne
 
 #check EReal.coe_lt_coe_iff
 
-/-- Examples 6.2.4 -/
+/-- Примеры 6.2.4 -/
 example : (3 : EReal) ≤ (5 : EReal) := by rw [le_iff]; left; use (3 : ℝ), (5 : ℝ); norm_cast
 
 
-/-- Examples 6.2.4 -/
+/-- Примеры 6.2.4 -/
 example : (3 : EReal) < ⊤ := by rw [lt_iff]; exact ⟨le_top, real_neq_infty 3⟩
 
 
-/-- Examples 6.2.4 -/
+/-- Примеры 6.2.4 -/
 example : (⊥ : EReal) < ⊤ := bot_lt_top
 
 
-/-- Examples 6.2.4 -/
+/-- Примеры 6.2.4 -/
 example : ¬ (3 : EReal) ≤ ⊥ := by
   by_contra h
   simp at h
@@ -77,28 +77,28 @@ example : ¬ (3 : EReal) ≤ ⊥ := by
 
 #check instCompleteLinearOrderEReal
 
-/-- Proposition 6.2.5(a) / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(a) / Упражнение 6.2.1 -/
 theorem EReal.refl (x : EReal) : x ≤ x := by sorry
 
-/-- Proposition 6.2.5(b) / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(b) / Упражнение 6.2.1 -/
 theorem EReal.trichotomy (x y : EReal) : x < y ∨ x = y ∨ x > y := by sorry
 
-/-- Proposition 6.2.5(b') / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(b') / Упражнение 6.2.1 -/
 theorem EReal.not_lt_and_eq (x y : EReal) : ¬ (x < y ∧ x = y) := by sorry
 
-/-- Proposition 6.2.5(b'') / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(b'') / Упражнение 6.2.1 -/
 theorem EReal.not_gt_and_eq (x y : EReal) : ¬ (x > y ∧ x = y) := by sorry
 
-/-- Proposition 6.2.5(b''') / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(b''') / Упражнение 6.2.1 -/
 theorem EReal.not_lt_and_gt (x y : EReal) : ¬ (x < y ∧ x > y) := by sorry
 
-/-- Proposition 6.2.5(c) / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(c) / Упражнение 6.2.1 -/
 theorem EReal.trans {x y z : EReal} (hxy : x ≤ y) (hyz : y ≤ z) : x ≤ z := by sorry
 
-/-- Proposition 6.2.5(d) / Exercise 6.2.1 -/
+/-- Утверждение 6.2.5(d) / Упражнение 6.2.1 -/
 theorem EReal.neg_of_lt {x y : EReal} (hxy : x ≤ y) : -y ≤ -x := by sorry
 
-/-- Definition 6.2.6 -/
+/-- Определение 6.2.6 -/
 theorem EReal.sup_of_bounded_nonempty {E : Set ℝ} (hbound : BddAbove E) (hnon : E.Nonempty) : 
     sSup ((fun (x : ℝ) ↦ (x : EReal)) '' E) = sSup E := calc
   _ = sSup
@@ -111,7 +111,7 @@ theorem EReal.sup_of_bounded_nonempty {E : Set ℝ} (hbound : BddAbove E) (hnon 
   _ = ((sSup E : ℝ) : WithTop ℝ) := by congr; symm; exact WithTop.coe_sSup' hbound
   _ = _ := rfl
 
-/-- Definition 6.2.6 -/
+/-- Определение 6.2.6 -/
 theorem EReal.sup_of_unbounded_nonempty {E : Set ℝ} (hunbound : ¬ BddAbove E) (hnon : E.Nonempty) : 
     sSup ((fun (x : ℝ) ↦ (x : EReal)) '' E) = ⊤ := by
   erw [sSup_eq_top]
@@ -121,13 +121,13 @@ theorem EReal.sup_of_unbounded_nonempty {E : Set ℝ} (hunbound : ¬ BddAbove E)
   . exact absurd hb (lt_irrefl _)
   exact ⟨↑hnon.choose, Set.mem_image_of_mem _ hnon.choose_spec, bot_lt_coe _⟩
 
-/-- Definition 6.2.6 -/
+/-- Определение 6.2.6 -/
 theorem EReal.sup_of_empty : sSup (∅ : Set EReal) = ⊥ := sSup_empty
 
-/-- Definition 6.2.6 -/
+/-- Определение 6.2.6 -/
 theorem EReal.sup_of_infty_mem {E : Set EReal} (hE : ⊤ ∈ E) : sSup E = ⊤ := csSup_eq_top_of_top_mem hE
 
-/-- Definition 6.2.6 -/
+/-- Определение 6.2.6 -/
 theorem EReal.sup_of_neg_infty_mem {E : Set EReal} : sSup E = sSup (E \ {⊥}) := (sSup_diff_singleton_bot _).symm
 
 -- Инфимум множества `E` выражается через супремум противоположного множества: `sInf E = -sSup (-E)`.
@@ -136,7 +136,7 @@ theorem EReal.inf_eq_neg_sup (E : Set EReal) : sInf E = - sSup (-E) := by
   intro b
   simp [lowerBounds]
 
-/-- Example 6.2.7 -/
+/-- Пример 6.2.7 -/
 abbrev Example_6_2_7 : Set EReal := { x | ∃ n : ℕ, x = -((n+1) : EReal)} ∪ {⊥}
 
 example : sSup Example_6_2_7 = -1 := by
@@ -147,14 +147,14 @@ example : sInf Example_6_2_7 = ⊥ := by
   rw [EReal.inf_eq_neg_sup]
   sorry
 
-/-- Example 6.2.8 -/
+/-- Пример 6.2.8 -/
 abbrev Example_6_2_8 : Set EReal := { x | ∃ n : ℕ, x = (1 - (10 : ℝ)^(-(n : ℤ)-1) : Real)}
 
 example : sInf Example_6_2_8 = (0.9 : ℝ) := by sorry
 
 example : sSup Example_6_2_8 = 1 := by sorry
 
-/-- Example 6.2.9 -/
+/-- Пример 6.2.9 -/
 abbrev Example_6_2_9 : Set EReal := { x | ∃ n : ℕ, x = n+1}
 
 example : sInf Example_6_2_9 = 1 := by sorry
@@ -165,16 +165,16 @@ example : sInf (∅ : Set EReal) = ⊤ := by sorry
 
 example (E : Set EReal) : sSup E < sInf E ↔ E = ∅ := by sorry
 
-/-- Theorem 6.2.11 (a) / Exercise 6.2.2 -/
+/-- Теорема 6.2.11 (a) / Упражнение 6.2.2 -/
 theorem EReal.mem_le_sup (E : Set EReal) {x : EReal} (hx : x ∈ E) : x ≤ sSup E := by sorry
 
-/-- Theorem 6.2.11 (a') / Exercise 6.2.2 -/
+/-- Теорема 6.2.11 (a') / Упражнение 6.2.2 -/
 theorem EReal.mem_ge_inf (E : Set EReal) {x : EReal} (hx : x ∈ E) : sInf E ≤ x := by sorry
 
-/-- Theorem 6.2.11 (b) / Exercise 6.2.2 -/
+/-- Теорема 6.2.11 (b) / Упражнение 6.2.2 -/
 theorem EReal.sup_le_upper (E : Set EReal) {M : EReal} (hM : M ∈ upperBounds E) : sSup E ≤ M := by sorry
 
-/-- Theorem 6.2.11 (c) / Exercise 6.2.2 -/
+/-- Теорема 6.2.11 (c) / Упражнение 6.2.2 -/
 theorem EReal.inf_ge_lower (E : Set EReal) {M : EReal} (hM : M ∈ lowerBounds E) : sInf E ≥ M := by sorry
 
 #check isLUB_iff_sSup_eq

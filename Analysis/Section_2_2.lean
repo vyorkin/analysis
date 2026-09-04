@@ -43,7 +43,7 @@ namespace Chapter2
 Рекурсивное определение сложения.
 -/
 
-/-- Definition 2.2.1. (сложение натуральных чисел).
+/-- Определение 2.2.1. (сложение натуральных чисел).
     Сравните с {name}`Nat.add` из Mathlib -/
 abbrev Nat.add (n m : Nat) : Nat := Nat.recurse (fun _ sum ↦ sum++) m n
 
@@ -164,7 +164,7 @@ example : (2 : Nat) + 3 = 5 := by
 -- Сумма двух натуральных чисел снова является натуральным числом.
 #check (fun (n m : Nat) ↦ n + m)
 
-/-- Lemma 2.2.2 ({lean}`n + 0 = n`). Сравните с {name}`Nat.add_zero` из Mathlib. -/
+/-- Лемма 2.2.2 ({lean}`n + 0 = n`). Сравните с {name}`Nat.add_zero` из Mathlib. -/
 @[simp]
 lemma Nat.add_zero (n : Nat) : n + 0 = n := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -176,7 +176,7 @@ lemma Nat.add_zero (n : Nat) : n + 0 = n := by
       (n++) + 0 = (n + 0)++ := by rfl -- По определению сложения
       _ = n++ := by rw [ih]
 
-/-- Lemma 2.2.3 ({lean}`n+(m++) = (n+m)++`). Сравните с {name}`Nat.add_succ` из Mathlib. -/
+/-- Лемма 2.2.3 ({lean}`n+(m++) = (n+m)++`). Сравните с {name}`Nat.add_succ` из Mathlib. -/
 lemma Nat.add_succ (n m : Nat) : n + (m++) = (n + m)++ := by
   -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   revert n
@@ -208,7 +208,7 @@ theorem Nat.succ_eq_add_one (n : Nat) : n++ = n + 1 := by
     rw [succ_add]
     rw [← ih]
 
-/-- Proposition 2.2.4 (сложение коммутативно). Сравните с {name}`Nat.add_comm` из Mathlib -/
+/-- Утверждение 2.2.4 (сложение коммутативно). Сравните с {name}`Nat.add_comm` из Mathlib -/
 theorem Nat.add_comm (n m : Nat) : n + m = m + n := by
   revert n
   -- Будем использовать индукцию по n
@@ -225,7 +225,7 @@ theorem Nat.add_comm (n m : Nat) : n + m = m + n := by
     rw [ih]           -- (n + m)++ = (n + m)++  : применяем гипотезу индукции
     -- ∎
 
-/-- Proposition 2.2.5 (сложение ассоциативно) / Exercise 2.2.1
+/-- Утверждение 2.2.5 (сложение ассоциативно) / Упражнение 2.2.1
 Сравните с {name}`Nat.add_assoc` из Mathlib. -/
 /-
 Бумажное доказательство.
@@ -279,7 +279,7 @@ theorem Nat.add_assoc' (a b c : Nat) : (a + b) + c = a + (b + c) := by
 
 -- 2.2.6 Закон сокращения
 
-/-- Proposition 2.2.6 (закон сокращения).
+/-- Утверждение 2.2.6 (закон сокращения).
     Сравните с {name}`Nat.add_left_cancel` из Mathlib. -/
 theorem Nat.add_left_cancel (a b c : Nat) (habc : a + b = a + c) : b = c := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -312,13 +312,13 @@ example (a b c d e f : Nat)
         : (a + b + 0 + f) + (e + c + d + 0) + 0 =
         0 + (b + 0 + a + c) + (0 + e + f + d) := by abel
 
-/-- Definition 2.2.7 (положительные натуральные числа). -/
+/-- Определение 2.2.7 (положительные натуральные числа). -/
 def Nat.IsPos (n : Nat) : Prop := n ≠ 0
 
 -- `n` положительно тогда и только тогда, когда `n ≠ 0` — прямое разворачивание определения `Nat.IsPos`
 theorem Nat.isPos_iff (n : Nat) : n.IsPos ↔ n ≠ 0 := by rfl
 
-/-- Proposition 2.2.8 (положительное плюс натуральное — положительно).
+/-- Утверждение 2.2.8 (положительное плюс натуральное — положительно).
     Сравните с {name}`Nat.add_pos_left` из Mathlib. -/
 theorem Nat.add_pos_left {a : Nat} (b : Nat) (ha : a.IsPos) : (a + b).IsPos := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -345,7 +345,7 @@ theorem Nat.add_pos_right' {a : Nat} (b : Nat) (ha : a.IsPos) : (b + a).IsPos :=
   apply add_pos_left -- (b : Nat) (ha : a.IsPos) : (a + b).IsPos
   assumption
 
-/-- Corollary 2.2.9 (если сумма равна нулю, то оба слагаемых равны нулю).
+/-- Следствие 2.2.9 (если сумма равна нулю, то оба слагаемых равны нулю).
 Сравните с {name}`Nat.add_eq_zero` из Mathlib. -/
 theorem Nat.add_eq_zero (a b : Nat) (hab : a + b = 0) : a = 0 ∧ b = 0 := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -410,7 +410,7 @@ API из `Tools/ExistsUnique.Lean`, и в частности метод `existsU
 -- Пусть a ∈ ℕ и a > 0 тогда существует единственное
 -- положительное число b такое, что b++ = a.
 
-/-- Lemma 2.2.10 (единственный предшественник) / Exercise 2.2.2 -/
+/-- Лемма 2.2.10 (единственный предшественник) / Упражнение 2.2.2 -/
 /-
 Бумажное доказательство.
 
@@ -445,7 +445,7 @@ lemma Nat.uniq_succ_eq (a : Nat) (ha : a.IsPos) : ∃! b, b++ = a := by
 Мы говорим, что n ≤ m, если m = n + a для некоторого a ∈ ℕ.
 -/
 
-/-- Definition 2.2.11 (порядок на натуральных числах).
+/-- Определение 2.2.11 (порядок на натуральных числах).
     Здесь определяется нотация {kw (of := «term_≤_»)}`≤` для натуральных чисел. -/
 instance Nat.instLE : LE Nat where
   le n m := ∃ a : Nat, m = n + a
@@ -455,7 +455,7 @@ instance Nat.instLE : LE Nat where
 Мы говорим, что n < m, если n ≤ m и n ≠ m.
 -/
 
-/-- Definition 2.2.11 (порядок на натуральных числах).
+/-- Определение 2.2.11 (порядок на натуральных числах).
     Здесь определяется нотация {kw (of := «term_<_»)}`<` для натуральных чисел. -/
 instance Nat.instLT : LT Nat where
   lt n m := n ≤ m ∧ n ≠ m
@@ -556,7 +556,7 @@ theorem Nat.succ_gt_self (n : Nat) : n++ > n := by
       apply Nat.succ_ne_succ
       assumption
 
-/-- Proposition 2.2.12 (базовые свойства порядка на натуральных числах) / Exercise 2.2.3
+/-- Утверждение 2.2.12 (базовые свойства порядка на натуральных числах) / Упражнение 2.2.3
 
 (a) (порядок рефлексивен). Сравните с {name}`Nat.le_refl` из Mathlib. -/
 /-
@@ -876,7 +876,7 @@ theorem Nat.lt_of_le_of_lt {a b c : Nat} (hab : a ≤ b) (hbc : b < c) : a < c :
   . exact add_pos_right d he1 -- (b : Nat) (ha : a.IsPos) : (b + a).IsPos
   . rw [he2, hd, add_assoc]
 
-/-- Эта лемма была утверждением {lit}`why?` из Proposition 2.2.13,
+/-- Эта лемма была утверждением {lit}`why?` из Утверждения 2.2.13,
 но оказалась полезной и в более широком контексте, поэтому вынесена сюда отдельно. -/
 theorem Nat.zero_le (a : Nat) : 0 ≤ a := by
   rw [le_iff]
@@ -887,7 +887,7 @@ theorem Nat.zero_le (a : Nat) : 0 ≤ a := by
 -- или
 -- Трихотомия для отношения `<`
 
-/-- Proposition 2.2.13 (трихотомия порядка для натуральных чисел) / Exercise 2.2.4
+/-- Утверждение 2.2.13 (трихотомия порядка для натуральных чисел) / Упражнение 2.2.4
     Сравните с {name}`trichotomous` из Mathlib. Части этой теоремы были размещены
     в предыдущих Lean-теоремах. -/
 /-
@@ -1060,7 +1060,7 @@ example (a b c d e : Nat) (hab : a ≤ b) (hbc : b < c) (hde : d < e) :
 -- докажи для m+1" тебе разрешено опираться на свойство сразу для
 -- всех предшественников, а не только для одного.
 
-/-- Proposition 2.2.14 (принцип сильной индукции) / Exercise 2.2.5
+/-- Утверждение 2.2.14 (принцип сильной индукции) / Упражнение 2.2.5
     Сравните с {name}`Nat.strong_induction_on` из Mathlib.
 -/
 theorem Nat.strong_induction {m₀ : Nat} {P : Nat → Prop}
@@ -1154,7 +1154,7 @@ theorem Nat.strong_induction₁ {m₀ : Nat} {P : Nat → Prop}
   have hh := hkey (m++) m
   exact hh hm₀ hlt
 
-/-- Exercise 2.2.6 (обратная индукция)
+/-- Упражнение 2.2.6 (обратная индукция)
     Сравните с {name}`Nat.decreasingInduction` из Mathlib. -/
 theorem Nat.backwards_induction {n : Nat} {P : Nat → Prop}
   (hind : ∀ m, P (m++) → P m) (hn : P n) : ∀ m, m ≤ n → P m := by
@@ -1221,7 +1221,7 @@ theorem Nat.backwards_induction₁ {n : Nat} {P : Nat → Prop}
       exact ih hPn' m hmn
     · exact hn
 
-/-- Exercise 2.2.7 (индукция начиная с заданной точки)
+/-- Упражнение 2.2.7 (индукция начиная с заданной точки)
     Сравните с {name}`Nat.le_induction` из Mathlib. -/
 theorem Nat.induction_from {n : Nat} {P : Nat → Prop}
   (hind : ∀ m, P m → P (m++)) : P n → ∀ m, m ≥ n → P m := by

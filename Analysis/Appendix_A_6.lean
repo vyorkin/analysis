@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 -/
 
-/-- Proposition A.6.1 -/
+/-- Утверждение A.6.1 -/
 example : ∀ ε > (0 : ℝ), ∃ δ > 0, 2 * δ < ε := by
   intro ε hε
   use ε / 3
@@ -21,7 +21,7 @@ example : ¬ ∃ δ > 0, ∀ ε > (0 : ℝ), 2 * δ < ε := by
   sorry
 
 open Real in
-/-- Proposition A.6.2. Доказательство ниже несколько неидиоматично для Lean, но
+/-- Утверждение A.6.2. Доказательство ниже несколько неидиоматично для Lean, но
 иллюстрирует, как реализовать доказательство вида «пусть ε — величина, которую выберем позже». -/
 example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
   use ?eps  -- выберем это позже
@@ -53,7 +53,7 @@ example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
   positivity
 
 open Real in
-/-- Proposition A.6.2: более идиоматичное доказательство -/
+/-- Утверждение A.6.2: более идиоматичное доказательство -/
 example : ∃ ε > 0, ∀ x, 0 < x ∧ x < ε → sin x > x / 2 := by
   use π/3, by positivity
   intro x ⟨ hpos, hx ⟩

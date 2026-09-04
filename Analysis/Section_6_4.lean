@@ -38,41 +38,41 @@ theorem Sequence.limit_point_def (a : Sequence) (x : ℝ) :
 
 noncomputable abbrev Example_6_4_3 : Sequence := (fun (n : ℕ) ↦ 1 - (10 : ℝ)^(-(n : ℤ)-1))
 
-/-- Example 6.4.3 (a) -/
+/-- Пример 6.4.3 (a) -/
 example : (0.1 : ℝ).Adherent Example_6_4_3 0.8 := by sorry
 
-/-- Example 6.4.3 (b) -/
+/-- Пример 6.4.3 (b) -/
 example : ¬ (0.1 : ℝ).ContinuallyAdherent Example_6_4_3 0.8 := by sorry
 
-/-- Example 6.4.3 (c) -/
+/-- Пример 6.4.3 (c) -/
 example : (0.1 : ℝ).ContinuallyAdherent Example_6_4_3 1 := by sorry
 
-/-- Example 6.4.3 (d) -/
+/-- Пример 6.4.3 (d) -/
 example : Example_6_4_3.LimitPoint 1 := by sorry
 
 noncomputable abbrev Example_6_4_4 : Sequence :=
   (fun (n : ℕ) ↦ (-1 : ℝ)^n * (1 + (10 : ℝ)^(-(n : ℤ)-1)))
 
-/-- Example 6.4.4 (a) -/
+/-- Пример 6.4.4 (a) -/
 example : (0.1 : ℝ).Adherent Example_6_4_4 1 := by sorry
 
-/-- Example 6.4.4 (b) -/
+/-- Пример 6.4.4 (b) -/
 example : (0.1 : ℝ).ContinuallyAdherent Example_6_4_4 1 := by sorry
 
-/-- Example 6.4.4 (c) -/
+/-- Пример 6.4.4 (c) -/
 example : Example_6_4_4.LimitPoint 1 := by sorry
 
-/-- Example 6.4.4 (d) -/
+/-- Пример 6.4.4 (d) -/
 example : Example_6_4_4.LimitPoint (-1) := by sorry
 
-/-- Example 6.4.4 (e) -/
+/-- Пример 6.4.4 (e) -/
 example : ¬ Example_6_4_4.LimitPoint 0 := by sorry
 
-/-- Proposition 6.4.5 (a) / Exercise 6.4.1 -/
+/-- Утверждение 6.4.5 (a) / Упражнение 6.4.1 -/
 theorem Sequence.limit_point_of_limit {a : Sequence} {x : ℝ} (h : a.TendsTo x) : a.LimitPoint x := by
   sorry
 
-/-- Proposition 6.4.5 (b) / Exercise 6.4.1 -/
+/-- Утверждение 6.4.5 (b) / Упражнение 6.4.1 -/
 theorem Sequence.limit_point_of_limit_unique {a : Sequence} {x y : ℝ} (h : a.TendsTo x) (hy : a.LimitPoint y) : x = y := by
   sorry
 
@@ -141,7 +141,7 @@ example (n : ℕ) : Example_6_4_10.lowerseq n = n+1 := by sorry
 
 example : Example_6_4_10.liminf = ⊤ := by sorry
 
-/-- Proposition 6.4.12(a) -/
+/-- Утверждение 6.4.12(a) -/
 theorem Sequence.gt_limsup_bounds {a : Sequence} {x : EReal} (h : x > a.limsup) : 
     ∃ N ≥ a.m, ∀ n ≥ N, a n < x := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -154,12 +154,12 @@ theorem Sequence.gt_limsup_bounds {a : Sequence} {x : EReal} (h : x > a.limsup) 
   convert lt_of_le_of_lt ((a.from N).le_sup hn') ha using 1
   grind
 
-/-- Proposition 6.4.12(a') -/
+/-- Утверждение 6.4.12(a') -/
 theorem Sequence.lt_liminf_bounds {a : Sequence} {y : EReal} (h : y < a.liminf) : 
     ∃ N ≥ a.m, ∀ n ≥ N, a n > y := by
   sorry
 
-/-- Proposition 6.4.12(b) -/
+/-- Утверждение 6.4.12(b) -/
 theorem Sequence.lt_limsup_bounds {a : Sequence} {x : EReal} (h : x < a.limsup) {N : ℤ} (hN : N ≥ a.m) : 
     ∃ n ≥ N, a n > x := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -167,74 +167,74 @@ theorem Sequence.lt_limsup_bounds {a : Sequence} {x : EReal} (h : x < a.limsup) 
   choose n hn hxn _ using exists_between_lt_sup hx
   grind
 
-/-- Proposition 6.4.12(b') -/
+/-- Утверждение 6.4.12(b') -/
 theorem Sequence.gt_liminf_bounds {a : Sequence} {x : EReal} (h : x > a.liminf) {N : ℤ} (hN : N ≥ a.m) : 
     ∃ n ≥ N, a n < x := by
   sorry
 
-/-- Proposition 6.4.12(c) / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(c) / Упражнение 6.4.3 -/
 theorem Sequence.inf_le_liminf (a : Sequence) : a.inf ≤ a.liminf := by sorry
 
-/-- Proposition 6.4.12(c') / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(c') / Упражнение 6.4.3 -/
 theorem Sequence.liminf_le_limsup (a : Sequence) : a.liminf ≤ a.limsup := by sorry
 
-/-- Proposition 6.4.12(c'') / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(c'') / Упражнение 6.4.3 -/
 theorem Sequence.limsup_le_sup (a : Sequence) : a.limsup ≤ a.sup := by sorry
 
-/-- Proposition 6.4.12(d) / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(d) / Упражнение 6.4.3 -/
 theorem Sequence.limit_point_between_liminf_limsup {a : Sequence} {c : ℝ} (h : a.LimitPoint c) : 
   a.liminf ≤ c ∧ c ≤ a.limsup := by
   sorry
 
-/-- Proposition 6.4.12(e) / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(e) / Упражнение 6.4.3 -/
 theorem Sequence.limit_point_of_limsup {a : Sequence} {L_plus : ℝ} (h : a.limsup = L_plus) : 
     a.LimitPoint L_plus := by
   sorry
 
-/-- Proposition 6.4.12(e') / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(e') / Упражнение 6.4.3 -/
 theorem Sequence.limit_point_of_liminf {a : Sequence} {L_minus : ℝ} (h : a.liminf = L_minus) : 
     a.LimitPoint L_minus := by
   sorry
 
-/-- Proposition 6.4.12(f) / Exercise 6.4.3 -/
+/-- Утверждение 6.4.12(f) / Упражнение 6.4.3 -/
 theorem Sequence.tendsTo_iff_eq_limsup_liminf {a : Sequence} (c : ℝ) : 
   a.TendsTo c ↔ a.liminf = c ∧ a.limsup = c := by
   sorry
 
-/-- Lemma 6.4.13 (принцип сравнения, sup) / Exercise 6.4.4 -/
+/-- Лемма 6.4.13 (принцип сравнения, sup) / Упражнение 6.4.4 -/
 theorem Sequence.sup_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) :
     a.sup ≤ b.sup := by sorry
 
-/-- Lemma 6.4.13 (принцип сравнения, inf) / Exercise 6.4.4 -/
+/-- Лемма 6.4.13 (принцип сравнения, inf) / Упражнение 6.4.4 -/
 theorem Sequence.inf_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) :
     a.inf ≤ b.inf := by sorry
 
-/-- Lemma 6.4.13 (принцип сравнения, limsup) / Exercise 6.4.4 -/
+/-- Лемма 6.4.13 (принцип сравнения, limsup) / Упражнение 6.4.4 -/
 theorem Sequence.limsup_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) :
     a.limsup ≤ b.limsup := by sorry
 
-/-- Lemma 6.4.13 (принцип сравнения, liminf) / Exercise 6.4.4 -/
+/-- Лемма 6.4.13 (принцип сравнения, liminf) / Упражнение 6.4.4 -/
 theorem Sequence.liminf_mono {a b : Sequence} (hm : a.m = b.m) (hab : ∀ n ≥ a.m, a n ≤ b n) :
     a.liminf ≤ b.liminf := by sorry
 
-/-- Corollary 6.4.14 (признак сжатия) / Exercise 6.4.5 -/
+/-- Следствие 6.4.14 (признак сжатия) / Упражнение 6.4.5 -/
 theorem Sequence.lim_of_between {a b c : Sequence} {L : ℝ} (hm : b.m = a.m ∧ c.m = a.m)
   (hab : ∀ n ≥ a.m, a n ≤ b n ∧ b n ≤ c n) (ha : a.TendsTo L) (hb : c.TendsTo L) : 
     b.TendsTo L := by sorry
 
-/-- Example 6.4.15 (a) -/
+/-- Пример 6.4.15 (a) -/
 example : ((fun (n : ℕ) ↦ 2/(n+1 : ℝ)) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Example 6.4.15 (b) -/
+/-- Пример 6.4.15 (b) -/
 example : ((fun (n : ℕ) ↦ -2/(n+1 : ℝ)) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Example 6.4.15 (c) -/
+/-- Пример 6.4.15 (c) -/
 example : ((fun (n : ℕ) ↦ (-1)^n/(n+1 : ℝ) + 1 / (n+1)^2) : Sequence).TendsTo 0 := by
   sorry
 
-/-- Example 6.4.15 (d) -/
+/-- Пример 6.4.15 (d) -/
 example : ((fun (n : ℕ) ↦ (2 : ℝ)^(-(n : ℤ))) : Sequence).TendsTo 0 := by
   sorry
 
@@ -244,14 +244,14 @@ abbrev Sequence.abs (a : Sequence) : Sequence where
   vanish n hn := by simp [a.vanish n hn]
 
 
-/-- Corollary 6.4.17 (признак нуля для последовательностей) / Exercise 6.4.7 -/
+/-- Следствие 6.4.17 (признак нуля для последовательностей) / Упражнение 6.4.7 -/
 theorem Sequence.tendsTo_zero_iff (a : Sequence) : 
   a.TendsTo (0 : ℝ) ↔ a.abs.TendsTo (0 : ℝ) := by
   sorry
 
 /--
-  Эта вспомогательная лемма, неявно присутствующая в доказательствах Theorem 6.4.18 и
-  Theorem 6.6.8 из учебника, здесь сделана явной.
+  Эта вспомогательная лемма, неявно присутствующая в доказательствах Теоремы 6.4.18 и
+  Теоремы 6.6.8 из учебника, здесь сделана явной.
 -/
 theorem Sequence.finite_limsup_liminf_of_bounded {a : Sequence} (hbound : a.IsBounded) : 
     (∃ L_plus : ℝ, a.limsup = L_plus) ∧ (∃ L_minus : ℝ, a.liminf = L_minus) := by
@@ -275,7 +275,7 @@ theorem Sequence.finite_limsup_liminf_of_bounded {a : Sequence} (hbound : a.IsBo
     contrapose! hlimsup_bound; simp [hlimsup_bound]
   contrapose! hliminf_bound; simp [hliminf_bound, ←coe_neg]
 
-/-- Theorem 6.4.18 (полнота вещественных чисел) -/
+/-- Теорема 6.4.18 (полнота вещественных чисел) -/
 theorem Sequence.Cauchy_iff_convergent (a : Sequence) : 
   a.IsCauchy ↔ a.Convergent := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -304,23 +304,23 @@ theorem Sequence.Cauchy_iff_convergent (a : Sequence) :
   . specialize hup ((L_plus - L_minus)/3) ?_ <;> linarith
   grind
 
-/-- Exercise 6.4.6 -/
+/-- Упражнение 6.4.6 -/
 theorem Sequence.sup_not_strict_mono : ∃ (a b : ℕ → ℝ), (∀ n, a n < b n) ∧ ¬ (a : Sequence).sup < (b : Sequence).sup := by
   sorry
 
-/-- Exercise 6.4.7 -/
+/-- Упражнение 6.4.7 -/
 def Sequence.tendsTo_real_iff : 
   Decidable (∀ (a : Sequence) (x : ℝ), a.TendsTo x ↔ a.abs.TendsTo x) := by
   -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
   sorry
 
-/-- Это определение нужно для Exercises 6.4.8 и 6.4.9. -/
+/-- Это определение нужно для Упражнения 6.4.8 и 6.4.9. -/
 abbrev Sequence.ExtendedLimitPoint (a : Sequence) (x : EReal) : Prop := if x = ⊤ then ¬ a.BddAbove else if x = ⊥ then ¬ a.BddBelow else a.LimitPoint x.toReal
 
-/-- Exercise 6.4.8 (i) -/
+/-- Упражнение 6.4.8 (i) -/
 theorem Sequence.extended_limit_point_of_limsup (a : Sequence) : a.ExtendedLimitPoint a.limsup := by sorry
 
-/-- Exercise 6.4.8 (ii) -/
+/-- Упражнение 6.4.8 (ii) -/
 theorem Sequence.extended_limit_point_of_liminf (a : Sequence) : a.ExtendedLimitPoint a.liminf := by sorry
 
 -- Если `L` — предельная точка последовательности `a` в расширенном смысле, то `L ≤ a.limsup`.
@@ -329,10 +329,10 @@ theorem Sequence.extended_limit_point_le_limsup {a : Sequence} {L : EReal} (h : 
 -- Если `L` — предельная точка последовательности `a` в расширенном смысле, то `L ≥ a.liminf`.
 theorem Sequence.extended_limit_point_ge_liminf {a : Sequence} {L : EReal} (h : a.ExtendedLimitPoint L) : L ≥ a.liminf := by sorry
 
-/-- Exercise 6.4.9 -/
+/-- Упражнение 6.4.9 -/
 theorem Sequence.exists_three_limit_points : ∃ a : Sequence, ∀ L : EReal, a.ExtendedLimitPoint L ↔ L = ⊥ ∨ L = 0 ∨ L = ⊤ := by sorry
 
-/-- Exercise 6.4.10 -/
+/-- Упражнение 6.4.10 -/
 theorem Sequence.limit_points_of_limit_points {a b : Sequence} {c : ℝ} (hab : ∀ n ≥ b.m, a.LimitPoint (b n)) (hbc : b.LimitPoint c) : a.LimitPoint c := by sorry
 
 

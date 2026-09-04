@@ -29,7 +29,7 @@ import Analysis.Section_8_1
 namespace Chapter8
 open Chapter7 Chapter7.Series Finset Function Filter
 
-/-- Definition 8.2.1 (ряды на счётных множествах). Заметьте, что при таком определении функции,
+/-- Определение 8.2.1 (ряды на счётных множествах). Заметьте, что при таком определении функции,
 заданные на конечных множествах, не будут абсолютно сходящимися; для таких случаев следует
 использовать {lit}`AbsConvergent'`. -/
 abbrev AbsConvergent {X : Type} (f : X → ℝ) : Prop := ∃ g : ℕ → X, Bijective g ∧ (f ∘ g : Series).absConverges
@@ -92,7 +92,7 @@ theorem Finset.Icc_eq_cast (N : ℕ) : Icc 0 (N : ℤ) = map Nat.castEmbedding (
 theorem Finset.Icc_empty {N : ℤ} (h : ¬ N ≥ 0) : Icc 0 N = ∅ := by
   ext; simp; intros; contrapose! h; linarith
 
-/-- Theorem 8.2.2, предварительная версия. Аргументы здесь немного переставлены по сравнению с текстом. -/
+/-- Теорема 8.2.2, предварительная версия. Аргументы здесь немного переставлены по сравнению с текстом. -/
 theorem sum_of_sum_of_AbsConvergent_nonneg {f : ℕ × ℕ → ℝ} (hf : AbsConvergent f) (hpos : ∀ n m, 0 ≤ f (n, m)) : 
   (∀ n, ((fun m ↦ f (n, m)) : Series).converges) ∧
   (fun n ↦ ((fun m ↦ f (n, m)) : Series).sum : Series).convergesTo (Sum f) := by
@@ -157,7 +157,7 @@ theorem sum_of_sum_of_AbsConvergent_nonneg {f : ℕ × ℕ → ℝ} (hf : AbsCon
       _ ≤ _ := partial_le_sum_of_nonneg hnon' hconv' _
   simp [a, hconv, ← this, Series.convergesTo_sum hconv']
 
-/-- Theorem 8.2.2, вторая версия -/
+/-- Теорема 8.2.2, вторая версия -/
 theorem sum_of_sum_of_AbsConvergent {f : ℕ × ℕ → ℝ} (hf : AbsConvergent f) : 
   (∀ n, ((fun m ↦ f (n, m)) : Series).absConverges) ∧
   (fun n ↦ ((fun m ↦ f (n, m)) : Series).sum : Series).convergesTo (Sum f) := by
@@ -195,7 +195,7 @@ theorem sum_of_sum_of_AbsConvergent {f : ℕ × ℕ → ℝ} (hf : AbsConvergent
   convert (convergesTo.sub hplus hminus) using 3 with n
   split_ifs with h <;> simp [h, hdiff, HSub.hSub, Sub.sub]
 
-/-- Theorem 8.2.2, третья версия -/
+/-- Теорема 8.2.2, третья версия -/
 theorem sum_of_sum_of_AbsConvergent' {f : ℕ × ℕ → ℝ} (hf : AbsConvergent f) : 
   (∀ m, ((fun n ↦ f (n, m)) : Series).absConverges) ∧
   (fun m ↦ ((fun n ↦ f (n, m)) : Series).sum : Series).convergesTo (Sum f) := by
@@ -207,13 +207,13 @@ theorem sum_of_sum_of_AbsConvergent' {f : ℕ × ℕ → ℝ} (hf : AbsConvergen
   refine ⟨ _, hπ.comp hg, ?_ ⟩
   convert hconv using 2
 
-/-- Theorem 8.2.2, четвёртая версия -/
+/-- Теорема 8.2.2, четвёртая версия -/
 theorem sum_comm {f : ℕ × ℕ → ℝ} (hf : AbsConvergent f) : 
   (fun n ↦ ((fun m ↦ f (n, m)) : Series).sum : Series).sum = (fun m ↦ ((fun n ↦ f (n, m)) : Series).sum : Series).sum := by
   simp [sum_of_converges (sum_of_sum_of_AbsConvergent hf).2,
         sum_of_converges (sum_of_sum_of_AbsConvergent' hf).2]
 
-/-- Lemma 8.2.3 / Exercise 8.2.1 -/
+/-- Лемма 8.2.3 / Упражнение 8.2.1 -/
 theorem AbsConvergent.iff {X : Type} (hX : CountablyInfinite X) (f : X → ℝ) : 
   AbsConvergent f ↔ BddAbove ( (fun A ↦ ∑ x ∈ A, |f x|) '' .univ ) := by
     sorry
@@ -243,7 +243,7 @@ theorem AbsConvergent'.of_countable {X : Type} (hX : CountablyInfinite X) {f : X
     intro n; by_cases h : n ≥ 0 <;> simp [h]
   intro hf; rwa [AbsConvergent.iff hX f] at hf
 
-/-- Lemma 8.2.5 / Exercise 8.2.2 -/
+/-- Лемма 8.2.5 / Упражнение 8.2.2 -/
 theorem AbsConvergent'.countable_supp {X : Type} {f : X → ℝ} (hf : AbsConvergent' f) : 
   AtMostCountable { x | f x ≠ 0 } := by
     sorry
@@ -421,17 +421,17 @@ theorem Sum'.eq_tsum {X : Type} (f : X → ℝ) (h : AbsConvergent' f) :
   all_goals simp [E]
 
 
-/-- Proposition 8.2.6 (a) (законы абсолютно сходящихся рядов) / Exercise 8.2.3 -/
+/-- Утверждение 8.2.6 (a) (законы абсолютно сходящихся рядов) / Упражнение 8.2.3 -/
 theorem Sum'.add {X : Type} {f g : X → ℝ} (hf : AbsConvergent' f) (hg : AbsConvergent' g) : 
   AbsConvergent' (f+g) ∧ Sum' (f + g) = Sum' f + Sum' g := by
   sorry
 
-/-- Proposition 8.2.6 (b) (законы абсолютно сходящихся рядов) / Exercise 8.2.3 -/
+/-- Утверждение 8.2.6 (b) (законы абсолютно сходящихся рядов) / Упражнение 8.2.3 -/
 theorem Sum'.smul {X : Type} {f : X → ℝ} (hf : AbsConvergent' f) (c : ℝ) : 
   AbsConvergent' (c • f) ∧ Sum' (c • f) = c * Sum' f := by
   sorry
 
-/-- Этот закон явно не сформулирован в Proposition 8.2.6, но легко следует из частей (a) и (b). -/
+/-- Этот закон явно не сформулирован в Утверждении 8.2.6, но легко следует из частей (a) и (b). -/
 theorem Sum'.sub {X : Type} {f g : X → ℝ} (hf : AbsConvergent' f) (hg : AbsConvergent' g) : 
   AbsConvergent' (f-g) ∧ Sum' (f - g) = Sum' f - Sum' g := by
   convert add hf (smul hg (-1)).1 using 2
@@ -439,7 +439,7 @@ theorem Sum'.sub {X : Type} {f g : X → ℝ} (hf : AbsConvergent' f) (hg : AbsC
   . congr; simp; abel
   rw [(smul hg (-1)).2]; ring
 
-/-- Proposition 8.2.6 (c) (законы абсолютно сходящихся рядов) / Exercise 8.2.3. Первая
+/-- Утверждение 8.2.6 (c) (законы абсолютно сходящихся рядов) / Упражнение 8.2.3. Первая
     часть этого предложения перенесена в {lean}`AbsConvergent'.subtype`. -/
 theorem Sum'.of_disjoint_union {X : Type} {f : X → ℝ} (hf : AbsConvergent' f) {X₁ X₂ : Set X} (hdisj : Disjoint X₁ X₂) : 
   Sum' (fun x : (X₁ ∪ X₂ : Set X) ↦ f x) = Sum' (fun x : X₁ ↦ f x) + Sum' (fun x : X₂ ↦ f x) := by
@@ -457,14 +457,14 @@ theorem Sum'.of_comp {X Y : Type} {f : X → ℝ} (hf : AbsConvergent' f) {φ : 
   AbsConvergent' (f ∘ φ) ∧ Sum' f = Sum' (f ∘ φ) := by
   sorry
 
-/-- Lemma 8.2.7 / Exercise 8.2.4 -/
+/-- Лемма 8.2.7 / Упражнение 8.2.4 -/
 theorem divergent_parts_of_divergent {a : ℕ → ℝ} (ha : (a : Series).converges)
   (ha' : ¬ (a : Series).absConverges) : 
   ¬ AbsConvergent (fun n : {n | a n ≥ 0} ↦ a n) ∧ ¬ AbsConvergent (fun n : {n | a n < 0} ↦ a n)
   := by
   sorry
 
-/-- Theorem 8.2.8 (теорема Римана о перестановке рядов) / Exercise 8.2.5 -/
+/-- Теорема 8.2.8 (теорема Римана о перестановке рядов) / Упражнение 8.2.5 -/
 theorem permute_convergesTo_of_divergent {a : ℕ → ℝ} (ha : (a : Series).converges)
   (ha' : ¬ (a : Series).absConverges) (L : ℝ) :
   ∃ f : ℕ → ℕ, Bijective f ∧ (a ∘ f : Series).convergesTo L
@@ -503,7 +503,7 @@ theorem permute_convergesTo_of_divergent {a : ℕ → ℝ} (ha : (a : Series).co
   use n'
   refine ⟨ ⟨ hn'_inj, hn'_surj ⟩, ?_ ⟩; convert hsum
 
-/-- Exercise 8.2.6 -/
+/-- Упражнение 8.2.6 -/
 theorem permute_diverges_of_divergent {a : ℕ → ℝ} (ha : (a : Series).converges)
   (ha' : ¬ (a : Series).absConverges)  : 
   ∃ f : ℕ → ℕ,  Bijective f ∧ atTop.Tendsto (fun N ↦ ((a ∘ f : Series).partial N : EReal)) (nhds ⊤) := by

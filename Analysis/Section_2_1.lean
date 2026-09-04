@@ -39,9 +39,9 @@ namespace Chapter2
 -/
 
 /--
-  Assumption 2.6 (Existence of natural numbers). Here we use an explicit construction of the
-  natural numbers (using an inductive type). For a more axiomatic approach, see the epilogue to
-  this chapter.
+  Предположение 2.6 (Существование натуральных чисел). Здесь мы используем явную конструкцию
+  натуральных чисел (через индуктивный тип). Более аксиоматический подход см. в эпилоге
+  этой главы.
 -/
 inductive Nat where
 | zero : Nat
@@ -54,11 +54,11 @@ deriving Repr, DecidableEq  -- это позволяет тактике `decide`
 -- Другими словами, экземпляр DecidableEq α — это способ
 -- решить утверждение a = b для всех a b : α.
 
-/-- Axiom 2.1 (0 является натуральным числом) -/
+/-- Аксиома 2.1 (0 является натуральным числом) -/
 instance Nat.instZero : Zero Nat := ⟨ zero ⟩
 #check (0 : Nat)
 
-/-- Axiom 2.2 (последователь натурального числа — тоже натуральное число) -/
+/-- Аксиома 2.2 (последователь натурального числа — тоже натуральное число) -/
 postfix:100 "++" => Nat.succ
 #check (fun n ↦ n++)
 -- #check ((fun n ↦ n++) 0 : Nat)
@@ -79,7 +79,7 @@ postfix:100 "++" => Nat.succ
 -- Вообще, одно из великих открытий 19 века в том, что числа можно понимать абстрактно,
 -- через аксиомы, не нуждаясь в конкретной модели.
 
-/-- Definition 2.1.3 (определение числительных 0, 1, 2 и т.д.). Замечание: во избежание
+/-- Определение 2.1.3 (определение числительных 0, 1, 2 и т.д.). Замечание: во избежание
   неоднозначности иногда может понадобиться явное приведение типов, например {lean}`(0 : Nat)`,
   {lean}`(1 : Nat)` и т.д., чтобы сослаться именно на версию натуральных чисел из этой главы. -/
 instance Nat.instOfNat {n : _root_.Nat} : OfNat Nat n where
@@ -95,12 +95,12 @@ lemma Nat.zero_succ : 0++ = 1 := by rfl
 lemma Nat.one_succ : 1++ = 2 := by rfl
 #check (2 : Nat)
 
-/-- Proposition 2.1.4 (3 is a natural number) -/
+/-- Утверждение 2.1.4 (3 is a natural number) -/
 lemma Nat.two_succ : 2++ = 3 := by rfl
 #check (3 : Nat)
 
 /--
-  Axiom 2.3 (0 не является последователем никакого натурального числа).
+  Аксиома 2.3 (0 не является последователем никакого натурального числа).
   Сравните со встроенной {name}`Nat.succ_ne_zero` в Lean.
 -/
 theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
@@ -124,7 +124,7 @@ theorem Nat.succ_ne (n : Nat) : n++ ≠ 0 := by
 
 -- По определению тоже самое, что и Nat.succ_ne_zero
 
-/-- Proposition 2.1.6 (4 не равно нулю) -/
+/-- Утверждение 2.1.6 (4 не равно нулю) -/
 theorem Nat.four_ne : (4 : Nat) ≠ 0 := by
   -- По определению 4 = 3++.
   change 3++ ≠ 0
@@ -140,7 +140,7 @@ theorem Nat.four_ne : (4 : Nat) ≠ 0 := by
 -/
 
 /--
-  Axiom 2.4 (разные натуральные числа имеют разных последователей).
+  Аксиома 2.4 (разные натуральные числа имеют разных последователей).
   Сравните с {name}`Nat.succ_inj` из Mathlib.
 -/
 theorem Nat.succ_cancel {n m : Nat} (hnm : n++ = m++) : n = m := by
@@ -150,7 +150,7 @@ theorem Nat.succ_cancel {n m : Nat} (hnm : n++ = m++) : n = m := by
 -- https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D0%B8
 
 /--
-  Axiom 2.4 (разные натуральные числа имеют разных последователей).
+  Аксиома 2.4 (разные натуральные числа имеют разных последователей).
   Сравните с {name}`Nat.succ_ne_succ` из Mathlib.
 -/
 theorem Nat.succ_ne_succ (n m : Nat) : n ≠ m → n++ ≠ m++ := by
@@ -160,7 +160,7 @@ theorem Nat.succ_ne_succ (n m : Nat) : n ≠ m → n++ ≠ m++ := by
   have := succ_cancel h -- по аксиоме 2.4
   exact this
 
-/-- Example 2.1.7 (a) -/
+/-- Пример 2.1.7 (a) -/
 example : 4++ ≠ 4 := by
   -- Такие утверждения проще доказывать через противоречие
   by_contra h
@@ -186,7 +186,7 @@ example : 4++ ≠ 4 := by
   have := Nat.succ_ne 0
   contradiction
 
-/-- Example 2.1.7 (b) -/
+/-- Пример 2.1.7 (b) -/
 -- Тоже самое для второго контрпримера из книги
 example : 4++ ≠ 1 := by
   by_contra h
@@ -196,7 +196,7 @@ example : 4++ ≠ 1 := by
   have := Nat.succ_ne 3
   contradiction
 
-/-- Proposition 2.1.8 (6 не равно 2) -/
+/-- Утверждение 2.1.8 (6 не равно 2) -/
 theorem Nat.six_ne_two : (6 : Nat) ≠ 2 := by
 -- это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra h
@@ -227,7 +227,7 @@ theorem Nat.six_ne_two' : (6 : Nat) ≠ 2 := by
 Это и будет нашей пятой аксиомой.
 -/
 
-/-- Axiom 2.5 (принцип математической индукции). Тактика {tactic}`induction` (или
+/-- Аксиома 2.5 (принцип математической индукции). Тактика {tactic}`induction` (или
   {tactic}`induction'`) из Mathlib служит заменой этой аксиоме. -/
 theorem Nat.induction (P : Nat → Prop) (hbase : P 0) (hind : ∀ n, P n → P (n++)) : ∀ n, P n := by
   intro n
@@ -325,20 +325,20 @@ abbrev Nat.recurse (f : Nat → Nat → Nat) (c : Nat) : Nat → Nat :=
    таким образом исключить "лишние числа" (вроде 0.5, 0.333...).
 -/
 
-/-- Proposition 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_zero` из Mathlib. -/
+/-- Утверждение 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_zero` из Mathlib. -/
 theorem Nat.recurse_zero (f : Nat → Nat → Nat) (c : Nat) : Nat.recurse f c 0 = c := by rfl
 -- ^ c - нулевой эл. числ. посл. или
 --   Nat.recurse натуральному числу 0 сопоставляет число c
 --   По сути это базовый случай сопоставления с образцом в определении `Nat.recurse`.
 -- Такое равенство доказывается одной редукцией Nat.recurse f c 0.
 
-/-- Proposition 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_add_one` из Mathlib. -/
+/-- Утверждение 2.1.16 (рекурсивные определения). Сравните с {name}`Nat.rec_add_one` из Mathlib. -/
 theorem Nat.recurse_succ (f : Nat → Nat → Nat) (c : Nat) (n : Nat) :
     recurse f c (n++) = f n (recurse f c n) := by rfl
 -- ^ Это второй случай сопоставления с образцом в определении `Nat.recurse`.
 -- Тоже доказывается одной редукцией Nat.recurse.
 
-/-- Proposition 2.1.16 (рекурсивные определения). -/
+/-- Утверждение 2.1.16 (рекурсивные определения). -/
 theorem Nat.eq_recurse
         (f : Nat → Nat → Nat)
         (c : Nat)
@@ -361,7 +361,7 @@ theorem Nat.eq_recurse
     · exact recurse_succ _ _
 
 
-/-- Proposition 2.1.16 (рекурсивные определения). -/
+/-- Утверждение 2.1.16 (рекурсивные определения). -/
 theorem Nat.recurse_uniq (f : Nat → Nat → Nat) (c : Nat) :
     ∃! (a : Nat → Nat), a 0 = c ∧ ∀ n, a (n++) = f n (a n) := by
   -- `ExistsUnique.intro` требует указать "свидетеля" (кандидата на единственность),

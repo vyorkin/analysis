@@ -16,10 +16,10 @@ import Analysis.Section_6_5
 
 namespace Chapter6
 
-/-- Definition 6.6.1 -/
+/-- Определение 6.6.1 -/
 abbrev Sequence.subseq (a b : ℕ → ℝ) : Prop := ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, b n = a (f n)
 
-/-- Example 6.6.2 -/
+/-- Пример 6.6.2 -/
 example (a : ℕ → ℝ) : Sequence.subseq a (fun n ↦ a (2 * n)) := by sorry
 
 example {f : ℕ → ℕ} (hf : StrictMono f) : Function.Injective f := by sorry
@@ -34,24 +34,24 @@ example :
     (fun n ↦ (10 : ℝ)^(-(n : ℤ)-1)) := by
   sorry
 
-/-- Lemma 6.6.4 (рефлексивность) / Exercise 6.6.1 -/
+/-- Лемма 6.6.4 (рефлексивность) / Упражнение 6.6.1 -/
 theorem Sequence.subseq_self (a : ℕ → ℝ) : Sequence.subseq a a := by sorry
 
-/-- Lemma 6.6.4 (транзитивность) / Exercise 6.6.1 -/
+/-- Лемма 6.6.4 (транзитивность) / Упражнение 6.6.1 -/
 theorem Sequence.subseq_trans {a b c : ℕ → ℝ} (hab : Sequence.subseq a b) (hbc : Sequence.subseq b c) :
     Sequence.subseq a c := by sorry
 
-/-- Proposition 6.6.5 / Exercise 6.6.4 -/
+/-- Утверждение 6.6.5 / Упражнение 6.6.4 -/
 theorem Sequence.convergent_iff_subseq (a : ℕ → ℝ) (L : ℝ) : 
     (a : Sequence).TendsTo L ↔ ∀ b : ℕ → ℝ, Sequence.subseq a b → (b : Sequence).TendsTo L := by
   sorry
 
-/-- Proposition 6.6.6 / Exercise 6.6.5 -/
+/-- Утверждение 6.6.6 / Упражнение 6.6.5 -/
 theorem Sequence.limit_point_iff_subseq (a : ℕ → ℝ) (L : ℝ) : 
     (a : Sequence).LimitPoint L ↔ ∃ b : ℕ → ℝ, Sequence.subseq a b ∧ (b : Sequence).TendsTo L := by
   sorry
 
-/-- Theorem 6.6.8 (теорема Больцано-Вейерштрасса) -/
+/-- Теорема 6.6.8 (теорема Больцано-Вейерштрасса) -/
 theorem Sequence.convergent_of_subseq_of_bounded {a : ℕ→ ℝ} (ha : (a : Sequence).IsBounded) :
     ∃ b : ℕ → ℝ, Sequence.subseq a b ∧ (b : Sequence).Convergent := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -59,14 +59,14 @@ theorem Sequence.convergent_of_subseq_of_bounded {a : ℕ→ ℝ} (ha : (a : Seq
   have := limit_point_of_limsup hL_plus
   rw [limit_point_iff_subseq] at this; peel 2 this; solve_by_elim
 
-/-- Exercise 6.6.2 -/
+/-- Упражнение 6.6.2 -/
 def Sequence.exist_subseq_of_subseq : 
   Decidable (∃ a b : ℕ → ℝ, a ≠ b ∧ Sequence.subseq a b ∧ Sequence.subseq b a) := by
     -- Первой строкой этой конструкции должна быть `apply isTrue` или `apply isFalse`.
     sorry
 
 /--
-  Exercise 6.6.3. Вам может пригодиться API вокруг {name}`Nat.find` из Mathlib
+  Упражнение 6.6.3. Вам может пригодиться API вокруг {name}`Nat.find` из Mathlib
   (а также {syntax command}`open Classical`, чтобы избежать проблем с разрешимостью)
 -/
 theorem Sequence.subseq_of_unbounded {a : ℕ → ℝ} (ha : ¬ (a : Sequence).IsBounded) : 

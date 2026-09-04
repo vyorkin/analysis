@@ -24,7 +24,7 @@ import Mathlib.Tactic
 
 -/
 
-/-- Proposition 4.4.1 (Расположение целых чисел среди рациональных) / Exercise 4.4.1 -/
+/-- Утверждение 4.4.1 (Расположение целых чисел среди рациональных) / Упражнение 4.4.1 -/
 theorem Rat.between_int (x : ℚ) : ∃! n : ℤ, n ≤ x ∧ x < n+1 := by
   sorry
 
@@ -32,7 +32,7 @@ theorem Rat.between_int (x : ℚ) : ∃! n : ℤ, n ≤ x ∧ x < n+1 := by
 theorem Nat.exists_gt (x : ℚ) : ∃ n : ℕ, n > x := by
   sorry
 
-/-- Proposition 4.4.3 (Расположение рациональных чисел между другими) -/
+/-- Утверждение 4.4.3 (Расположение рациональных чисел между другими) -/
 theorem Rat.exists_between_rat {x y : ℚ} (h : x < y) : ∃ z : ℚ, x < z ∧ z < y := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   -- Читателю предлагается найти более короткие доказательства, например,
@@ -46,16 +46,16 @@ theorem Rat.exists_between_rat {x y : ℚ} (h : x < y) : ∃ z : ℚ, x < z ∧ 
   . convert add_lt_add_right h' (x/2) using 1 <;> ring
   convert add_lt_add_right h' (y/2) using 1 <;> ring
 
-/-- Exercise 4.4.2 (a) -/
+/-- Упражнение 4.4.2 (a) -/
 theorem Nat.no_infinite_descent : ¬ ∃ a : ℕ → ℕ, ∀ n, a (n+1) < a n := by
   sorry
 
-/-- Exercise 4.4.2 (b) -/
+/-- Упражнение 4.4.2 (b) -/
 def Int.infinite_descent : Decidable (∃ a : ℕ → ℤ, ∀ n, a (n+1) < a n) := by
   -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
 
-/-- Exercise 4.4.2 (b') -/
+/-- Упражнение 4.4.2 (b') -/
 def Rat.pos_infinite_descent : Decidable (∃ a : ℕ → {x : ℚ // 0 < x}, ∀ n, a (n+1) < a n) := by
   -- первой строкой этой конструкции должно быть либо `apply isTrue`, либо `apply isFalse`.
   sorry
@@ -73,7 +73,7 @@ theorem Nat.not_even_and_odd (n : ℕ) : ¬ (Even n ∧ Odd n) := by
 
 #check Nat.rec
 
-/-- Proposition 4.4.4 / Exercise 4.4.3  -/
+/-- Утверждение 4.4.4 / Упражнение 4.4.3  -/
 theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
   -- Это доказательство написано так,
   -- чтобы следовать структуре оригинального текста.
@@ -129,7 +129,7 @@ theorem Rat.not_exist_sqrt_two : ¬ ∃ x : ℚ, x^2 = 2 := by
   exact Nat.no_infinite_descent ⟨ a, hlt ⟩
 
 
-/-- Proposition 4.4.5 -/
+/-- Утверждение 4.4.5 -/
 theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ), x^2 < 2 ∧ 2 < (x+ε)^2 := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
   by_contra! h
@@ -144,7 +144,7 @@ theorem Rat.exist_approx_sqrt_two {ε : ℚ} (hε : ε>0) : ∃ x ≥ (0 : ℚ),
   rw [gt_iff_lt, div_lt_iff₀', mul_comm, ←sq_lt_sq₀] at hn <;> try positivity
   grind
 
-/-- Example 4.4.6 -/
+/-- Пример 4.4.6 -/
 example :
   let ε : ℚ := 1/1000
   let x : ℚ := 1414/1000

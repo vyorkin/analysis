@@ -18,73 +18,73 @@ import Analysis.Section_11_3
 namespace Chapter11
 open Chapter9
 
-/-- Theorem 11.4.1(a) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(a) / Упражнение 11.4.1 -/
 theorem IntegrableOn.add {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f + g) I ∧ integ (f + g) I = integ f I + integ g I := by
   sorry
 
-/-- Theorem 11.4.1(b) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(b) / Упражнение 11.4.1 -/
 theorem IntegrableOn.smul {I : BoundedInterval} (c : ℝ) {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
   IntegrableOn (c • f) I ∧ integ (c • f) I = c * integ f I := by
   sorry
 
-/-- Следствие Theorem 11.4.1(b) при `c = -1`: интегрируемость и значение интеграла сохраняются при переходе к `-f`. -/
+/-- Следствие Теоремы 11.4.1(b) при `c = -1`: интегрируемость и значение интеграла сохраняются при переходе к `-f`. -/
 theorem IntegrableOn.neg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) :
   IntegrableOn (-f) I ∧ integ (-f) I = -integ f I := by have := IntegrableOn.smul (-1) hf; aesop
 
-/-- Theorem 11.4.1(c) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(c) / Упражнение 11.4.1 -/
 theorem IntegrableOn.sub {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f - g) I ∧ integ (f - g) I = integ f I - integ g I := by
   sorry
 
-/-- Theorem 11.4.1(d) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(d) / Упражнение 11.4.1 -/
 theorem IntegrableOn.nonneg {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) (hf_nonneg : ∀ x ∈ I, 0 ≤ f x) : 
   0 ≤ integ f I := by
   sorry
 
-/-- Theorem 11.4.1(e) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(e) / Упражнение 11.4.1 -/
 theorem IntegrableOn.mono {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I)
   (h : MajorizesOn g f I) : 
   integ f I ≤ integ g I := by
   sorry
 
-/-- Theorem 11.4.1(f) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(f) / Упражнение 11.4.1 -/
 theorem IntegrableOn.const (c : ℝ) (I : BoundedInterval) : 
   IntegrableOn (fun _ ↦ c) I ∧ integ (fun _ ↦ c) I = c * |I|ₗ := by
   sorry
 
-/-- Theorem 11.4.1(f') / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(f') / Упражнение 11.4.1 -/
 theorem IntegrableOn.const' {I : BoundedInterval} {f : ℝ → ℝ} (hf : ConstantOn f I) : 
   IntegrableOn f I ∧ integ f I = (constant_value_on f I) * |I|ₗ := by
   sorry
 
 
 open Classical in
-/-- Theorem 11.4.1(g) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(g) / Упражнение 11.4.1 -/
 theorem IntegrableOn.of_extend {I J : BoundedInterval} (hIJ : I ⊆ J)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : 
   IntegrableOn (fun x ↦ if x ∈ I then f x else 0) J := by
   sorry
 
 open Classical in
-/-- Theorem 11.4.1(g') / Exercise 11.4.1 -/
+/-- Теорема 11.4.1(g') / Упражнение 11.4.1 -/
 theorem IntegrableOn.of_extend' {I J : BoundedInterval} (hIJ : I ⊆ J)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : 
   integ (fun x ↦ if x ∈ I then f x else 0) J = integ f I := by
   sorry
 
-/-- Theorem 11.4.1 (h) (Laws of integration) / Exercise 11.4.1 -/
+/-- Теорема 11.4.1 (h) (Laws of integration) / Упражнение 11.4.1 -/
 theorem IntegrableOn.join {I J K : BoundedInterval} (hIJK : K.joins I J)
   {f : ℝ → ℝ} (h : IntegrableOn f K) : 
   IntegrableOn f I ∧ IntegrableOn f J ∧ integ f K = integ f I + integ f J := by
   sorry
 
-/-- Вариант Theorem 11.4.1(h), который пригодится в следующих разделах. -/
+/-- Вариант Теоремы 11.4.1(h), который пригодится в следующих разделах. -/
 theorem IntegrableOn.mono' {I J : BoundedInterval} (hIJ : J ⊆ I)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : IntegrableOn f J := by
   sorry
 
-/-- Ещё один вариант Theorem 11.4.1(h), который пригодится в следующих разделах. -/
+/-- Ещё один вариант Теоремы 11.4.1(h), который пригодится в следующих разделах. -/
 theorem IntegrableOn.eq {I J : BoundedInterval} (hIJ : J ⊆ I)
   (ha : J.a = I.a) (hb : J.b = I.b)
   {f : ℝ → ℝ} (h : IntegrableOn f I) : integ f J = integ f I := by
@@ -98,7 +98,7 @@ lemma nonneg_of_le_const_mul_eps {x C : ℝ} (h : ∀ ε>0, x ≤ C * ε) : x �
     linarith
   specialize h 1 ?_ <;> grind
 
-/-- Theorem 11.4.3 (максимум и минимум сохраняют интегрируемость). -/
+/-- Теорема 11.4.3 (максимум и минимум сохраняют интегрируемость). -/
 theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) :
   IntegrableOn (f ⊔ g) I  := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -144,19 +144,19 @@ theorem IntegrableOn.max {I : BoundedInterval} {f g : ℝ → ℝ} (hf : Integra
 
 
 
-/-- Theorem 11.4.5 / Exercise 11.4.3. Цель здесь — получить более короткое доказательство, чем приведённое выше. -/
+/-- Теорема 11.4.5 / Упражнение 11.4.3. Цель здесь — получить более короткое доказательство, чем приведённое выше. -/
 theorem IntegrableOn.min {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) : 
   IntegrableOn (f ⊓ g) I  := by
   sorry
 
-/-- Corollary 11.4.4 -/
+/-- Следствие 11.4.4 -/
 theorem IntegrableOn.abs {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) : 
   IntegrableOn (abs f) I := by
   have := (IntegrableOn.const 0 I).1
   convert ((hf.max this).sub (hf.min this)).1 using 1
   ext x; obtain h | h := (show f x ≤ 0 ∨ f x ≥ 0 by grind) <;> simp [h]
 
-/-- Theorem 11.4.5 (произведение сохраняет интегрируемость по Риману).
+/-- Теорема 11.4.5 (произведение сохраняет интегрируемость по Риману).
 Удобно сначала установить неотрицательный случай. -/
 theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I)
   (hf_nonneg : MajorizesOn f 0 I) (hg_nonneg : MajorizesOn g 0 I) :
@@ -260,7 +260,7 @@ theorem integ_of_mul_nonneg {I : BoundedInterval} {f g : ℝ → ℝ} (hf : Inte
   exact ⟨ hmul_bound, by linarith [nonneg_of_le_const_mul_eps this] ⟩
 
 
-/-- Theorem 11.4.5 (общий случай): произведение `f * g` двух интегрируемых по Риману функций тоже интегрируемо, без предположения о неотрицательности. -/
+/-- Теорема 11.4.5 (общий случай): произведение `f * g` двух интегрируемых по Риману функций тоже интегрируемо, без предположения о неотрицательности. -/
 theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableOn f I) (hg : IntegrableOn g I) :
   IntegrableOn (f * g) I := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -287,7 +287,7 @@ theorem integ_of_mul {I : BoundedInterval} {f g : ℝ → ℝ} (hf : IntegrableO
   exact ((hfplusgplus.add (hfplusgminus.neg.1.sub hfminusgplus).1).1.add hfminusgminus).1
 open BoundedInterval
 
-/-- Exercise 11.4.2 -/
+/-- Упражнение 11.4.2 -/
 theorem IntegrableOn.split {I : BoundedInterval} {f : ℝ → ℝ} (hf : IntegrableOn f I) (P : Partition I) : 
   integ f I = ∑ J ∈ P.intervals, integ f J := by
     sorry

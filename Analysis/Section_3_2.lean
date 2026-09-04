@@ -32,7 +32,7 @@ export SetTheory (Set Object)
 variable [SetTheory]
 
 /--
-Axiom 3.9 (универсальная спецификация):
+Аксиома 3.9 (универсальная спецификация):
 
 Для любого утверждения {lit}`P` существует множество {lit}`A` такое,
 что если элемент {lit}`x` принадлежит этому множеству ({lit}`x ∈ A`),
@@ -97,7 +97,7 @@ theorem Russells_paradox : ¬ axiom_of_universal_specification := by
     contradiction
 
 /--
-Axiom 3.10 (регулярность):
+Аксиома 3.10 (регулярность):
 
 То же утверждение, что и {lit}`regularity_axiom` из раздела 3.1,
 но переформулированное в терминах {lit}`Set`/{lit}`∈` вместо {lit}`Object`/{lit}`mem`,
@@ -152,7 +152,7 @@ theorem SetTheory.Set.axiom_of_regularity {A : Set} (h : A ≠ ∅) :
     exact ⟨x2, ⟨hx2inA, hx2inS⟩⟩
 
 /--
-Exercise 3.2.1.
+Упражнение 3.2.1.
 
 Здесь необходимо показать, что из аксиомы универсальной спецификации
 вытекают аксиомы 3.3, 3.4, 3.5, 3.6 и 3.7.
@@ -190,7 +190,7 @@ theorem SetTheory.Set.emptyset_exists (h : axiom_of_universal_specification) :
     intro x hx
     exact (hA x).mp hx
 
-/-- Exercise 3.2.1 -/
+/-- Упражнение 3.2.1 -/
 theorem SetTheory.Set.singleton_exists
   (h : axiom_of_universal_specification) (x : Object) :
     -- Существование одноэлементного множества.
@@ -203,7 +203,7 @@ theorem SetTheory.Set.singleton_exists
       unfold P at h; replace h : ∀ y, y ∈ A ↔ y = x := h
       use A, h
 
-/-- Exercise 3.2.1 -/
+/-- Упражнение 3.2.1 -/
 theorem SetTheory.Set.pair_exists
   (h : axiom_of_universal_specification) (x₁ x₂ : Object) :
     -- Существование множества-пары.
@@ -215,7 +215,7 @@ theorem SetTheory.Set.pair_exists
       unfold P at h
       use A
 
-/-- Exercise 3.2.1 -/
+/-- Упражнение 3.2.1 -/
 theorem SetTheory.Set.union_exists
   (h : axiom_of_universal_specification) (A B : Set) :
     -- Существованиe объединения.
@@ -232,7 +232,7 @@ theorem SetTheory.Set.union_exists
       exact ⟨Z, h⟩
 
 /--
-Exercise 3.2.1
+Упражнение 3.2.1
 
 ```
 theorem SetTheory.Set.specification_axiom''
@@ -251,7 +251,7 @@ theorem SetTheory.Set.specify_exists
       unfold Q at hZ
       exact ⟨Z, hZ⟩
 
-/-- Exercise 3.2.1 -/
+/-- Упражнение 3.2.1 -/
 theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A : Set)
   (P : A → Object → Prop) (_hP : ∀ x y y', P x y ∧ P x y' → y = y') :
     ∃ (Z : Set), ∀ y, y ∈ Z ↔ ∃ a : A, P a y := by
@@ -265,7 +265,7 @@ theorem SetTheory.Set.replace_exists (h : axiom_of_universal_specification) (A :
       use Z
 
 /--
-Exercise 3.2.2 (no set contains itself).
+Упражнение 3.2.2 (no set contains itself).
 
 Используйте аксиому регулярности и аксиому одноэлементного множества,
 чтобы показать, что если A — множество, то A ∉ A.
@@ -300,7 +300,7 @@ theorem SetTheory.Set.not_mem_self (A : Set) : (A : Object) ∉ A := by
   contradiction
 
 /--
-Exercise 3.2.2 (no two sets contain each other).
+Упражнение 3.2.2 (no two sets contain each other).
 
 Кроме того, покажите, что если A и B — два множества,
 то либо A ∉ B, либо B ∉ A, либо оба условия одновременно.
@@ -334,11 +334,11 @@ theorem SetTheory.Set.not_mem_mem (A B : Set) : (A : Object) ∉ B ∨ (B : Obje
     -- значит, `A` является их общим элементом, что противоречит предыдущему шагу.
     exact h' ⟨(A : Object), hmemA, hAB⟩
 
-/-- Exercise 3.2.3 (universal specification) -/
+/-- Упражнение 3.2.3 (universal specification) -/
 theorem SetTheory.Set.univ_iff : axiom_of_universal_specification ↔
   ∃ (U : Set), ∀ x, x ∈ U := by sorry
 
-/-- Exercise 3.2.3 (there is no universal set) -/
+/-- Упражнение 3.2.3 (there is no universal set) -/
 theorem SetTheory.Set.no_univ : ¬ ∃ (U : Set), ∀ (x : Object), x ∈ U := by sorry
 
 

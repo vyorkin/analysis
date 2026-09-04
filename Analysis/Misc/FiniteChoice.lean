@@ -1,6 +1,6 @@
 import Mathlib.Tactic
 
-/-! Реализация конечного выбора, см. https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Theorem.20for.20.22finite.20choice.22.3F/with/529925010 -/
+/-! Реализация конечного выбора, см. https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Теорема.20for.20.22finite.20choice.22.3F/with/529925010 -/
 
 -- Конечный выбор: если для каждого `n < N` существует прообраз `f x = n`, то существует единая
 -- функция выбора `g : Fin N → X`, дающая `f (g n) = n` сразу для всех `n`

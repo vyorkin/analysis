@@ -18,14 +18,14 @@ import Analysis.Section_9_4
 
 namespace Chapter9
 
-/-- Definition 9.6.1 -/
+/-- Определение 9.6.1 -/
 abbrev BddAboveOn (f : ℝ → ℝ) (X : Set ℝ) : Prop := ∃ M, ∀ x ∈ X, f x ≤ M
 
 abbrev BddBelowOn (f : ℝ → ℝ) (X : Set ℝ) : Prop := ∃ M, ∀ x ∈ X, -M ≤ f x
 
 abbrev BddOn (f : ℝ → ℝ) (X : Set ℝ) : Prop := ∃ M, ∀ x ∈ X, |f x| ≤ M
 
-/-- Remark 9.6.2 -/
+/-- Замечание 9.6.2 -/
 theorem BddOn.iff (f : ℝ → ℝ) (X : Set ℝ) : BddOn f X ↔ BddAboveOn f X ∧ BddBelowOn f X := by
   sorry
 
@@ -49,7 +49,7 @@ example : ¬ BddOn (fun x : ℝ ↦ 1/x) (.Ioo 0 1) := by sorry
 -- Для строго монотонной `n : ℕ → ℕ` (например, индексов подпоследовательности) верно `n j ≥ j`
 theorem why_7_6_3 {n : ℕ → ℕ} (hn : StrictMono n) (j : ℕ) : n j ≥ j := by sorry
 
-/-- Lemma 9.6.3 -/
+/-- Лемма 9.6.3 -/
 theorem BddOn.of_continuous_on_compact {a b : ℝ} (_h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b) ) : 
   BddOn f (.Icc a b) := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -75,17 +75,17 @@ theorem BddOn.of_continuous_on_compact {a b : ℝ} (_h : a < b) {f : ℝ → ℝ
   have : n j ≥ (j : ℝ) := by simp [why j]
   linarith
 
-/- Definition 9.6.5.  Используйте тип `IsMaxOn` из Mathlib. -/
+/- Определение 9.6.5.  Используйте тип `IsMaxOn` из Mathlib. -/
 #check isMaxOn_iff
 #check isMinOn_iff
 
-/-- Remark 9.6.6 -/
+/-- Замечание 9.6.6 -/
 theorem BddAboveOn.isMaxOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsMaxOn f X x₀) : BddAboveOn f X := by sorry
 
 -- Если `f` достигает минимума в `x₀` на `X`, то `f` ограничена снизу на `X`
 theorem BddBelowOn.isMinOn {f : ℝ → ℝ} {X : Set ℝ} {x₀ : ℝ} (h : IsMinOn f X x₀) : BddBelowOn f X := by sorry
 
-/-- Proposition 9.6.7 (Принцип максимума) -/
+/-- Утверждение 9.6.7 (Принцип максимума) -/
 theorem IsMaxOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : 
   ∃ xmax ∈ Set.Icc a b, IsMaxOn f (.Icc a b) xmax := by
   -- Это доказательство написано так, чтобы следовать структуре оригинального текста.
@@ -129,7 +129,7 @@ theorem IsMaxOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → �
 
 
 
--- Аналог принципа максимума (Proposition 9.6.7) для минимума: непрерывная на `[a,b]` функция достигает наименьшего значения
+-- Аналог принципа максимума (Утверждение 9.6.7) для минимума: непрерывная на `[a,b]` функция достигает наименьшего значения
 theorem IsMinOn.of_continuous_on_compact {a b : ℝ} (h : a < b) {f : ℝ → ℝ} (hf : ContinuousOn f (.Icc a b)) : 
   ∃ xmin ∈ Set.Icc a b, IsMinOn f (.Icc a b) xmin := by
   sorry
@@ -162,28 +162,28 @@ theorem sInf.of_continuous_on_compact {a b : ℝ} (h : a < b) (f : ℝ → ℝ) 
   choose x hx h' using IsMinOn.of_continuous_on_compact h hf
   grind [sInf.of_isMinOn]
 
-/-- Exercise 9.6.1 a) -/
+/-- Упражнение 9.6.1 a) -/
 example : ∃ f : ℝ → ℝ, ContinuousOn f (.Ioo 1 2) ∧ BddOn f (.Ioo 1 2) ∧
   ∃ x₀ ∈ Set.Ioo 1 2, IsMinOn f (.Ioo 1 2) x₀ ∧
   ¬ ∃ x₀ ∈ Set.Ioo 1 2, IsMaxOn f (.Ioo 1 2) x₀
   := by sorry
 
-/-- Exercise 9.6.1 b) -/
+/-- Упражнение 9.6.1 b) -/
 example : ∃ f : ℝ → ℝ, ContinuousOn f (.Ici 0) ∧ BddOn f (.Ici 0) ∧
   ∃ x₀ ∈ Set.Ici 0, IsMaxOn f (.Ici 0) x₀ ∧
   ¬ ∃ x₀ ∈ Set.Ici 0, IsMinOn f (.Ici 0) x₀
   := by sorry
 
-/-- Exercise 9.6.1 c) -/
+/-- Упражнение 9.6.1 c) -/
 example : ∃ f : ℝ → ℝ, BddOn f (.Icc (-1) 1) ∧
   (¬ ∃ x₀ ∈ Set.Icc (-1) 1, IsMinOn f (.Icc (-1) 1) x₀) ∧
   (¬ ∃ x₀ ∈ Set.Icc (-1) 1, IsMaxOn f (.Icc (-1) 1) x₀)
   := by sorry
 
-/-- Exercise 9.6.1 d) -/
+/-- Упражнение 9.6.1 d) -/
 example : ∃ f : ℝ → ℝ, ¬ BddAboveOn f (.Icc (-1) 1) ∧ ¬ BddBelowOn f (.Icc (-1) 1) := by sorry
 
-/-- Exercise 9.6.2 -/
+/-- Упражнение 9.6.2 -/
 theorem BddOn.add (f g : ℝ → ℝ) (X : Set ℝ) (hf : BddOn f X) (hg : BddOn g X) : 
     BddOn (f + g) X := by sorry
 

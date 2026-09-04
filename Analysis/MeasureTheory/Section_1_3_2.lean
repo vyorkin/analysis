@@ -14,7 +14,7 @@ def Unsigned {X Y : Type*} [LE Y] [Zero Y] (f : X → Y) : Prop := ∀ x, f x �
 
 def PointwiseConvergesTo {X Y : Type*} [TopologicalSpace Y] (f : ℕ → X → Y) (g : X → Y) : Prop := ∀ x, Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x))
 
-/-- Definition 1.3.8 (беззнаково измеримая функция) -/
+/-- Определение 1.3.8 (беззнаково измеримая функция) -/
 def UnsignedMeasurable {d : ℕ} (f : EuclideanSpace' d → EReal) : Prop := Unsigned f ∧ ∃ (g : ℕ → EuclideanSpace' d → EReal), (∀ n, UnsignedSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
 def EReal.BoundedFunction {X : Type*} (f : X → EReal) : Prop := ∃ M : NNReal, ∀ x, (f x).abs ≤ M
@@ -24,7 +24,7 @@ def FiniteMeasureSupport {d : ℕ} {Y : Type*} [Zero Y] (f : EuclideanSpace' d �
 def PointwiseAeConvergesTo {d : ℕ} {Y : Type*} [TopologicalSpace Y] (f : ℕ → (EuclideanSpace' d → Y)) (g : EuclideanSpace' d → Y) : Prop := AlmostAlways (fun x ↦ Filter.atTop.Tendsto (fun n ↦ f n x) (nhds (g x)))
 
 /-!
-## Вспомогательные леммы для Lemma 1.3.9
+## Вспомогательные леммы для Леммы 1.3.9
 
 Доказательство следует цепочке импликаций из книги. Мы устанавливаем явные "рёбра", а
 `tfae_finish` вычисляет их транзитивное замыкание.
@@ -1682,7 +1682,7 @@ private lemma v_to_xi_imp_iv (hf : Unsigned f) (hvi : stmt_vi f) (hvii : stmt_vi
 
 end UnsignedMeasurable.TFAE_helpers
 
-/-- Lemma 1.3.9 (эквивалентные понятия измеримости). В формулировку внесены небольшие изменения,
+/-- Лемма 1.3.9 (эквивалентные понятия измеримости). В формулировку внесены небольшие изменения,
     чтобы утверждения было проще сформулировать. -/
 theorem UnsignedMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : 
     [
@@ -1717,49 +1717,49 @@ theorem UnsignedMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → EReal} (hf 
   tfae_have 5 → 4 := fun hv => v_to_xi_imp_iv hf (v_imp_vi hv) (vi_imp_vii (v_imp_vi hv))
   tfae_finish
 
-/-- Exercise 1.3.3(i) -/
+/-- Упражнение 1.3.3(i) -/
 theorem Continuous.UnsignedMeasurable {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Continuous f) (hnonneg : Unsigned f) : UnsignedMeasurable f := by sorry
 
-/-- Exercise 1.3.3(ii) -/
+/-- Упражнение 1.3.3(ii) -/
 theorem UnsignedSimpleFunction.unsignedMeasurable {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedSimpleFunction f) : UnsignedMeasurable f := by sorry
 
-/-- Exercise 1.3.3(iii) -/
+/-- Упражнение 1.3.3(iii) -/
 theorem UnsignedMeasurable.sup {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iSup (fun n ↦ f n x)) := by sorry
 
-/-- Exercise 1.3.3(iii) -/
+/-- Упражнение 1.3.3(iii) -/
 theorem UnsignedMeasurable.inf {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ iInf (fun n ↦ f n x)) := by sorry
 
-/-- Exercise 1.3.3(iii) -/
+/-- Упражнение 1.3.3(iii) -/
 theorem UnsignedMeasurable.limsup {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.limsup (fun n ↦ f n x) ) := by sorry
 
-/-- Exercise 1.3.3(iii) -/
+/-- Упражнение 1.3.3(iii) -/
 theorem UnsignedMeasurable.liminf {d : ℕ} {f : ℕ → EuclideanSpace' d → EReal} (hf : ∀ n, UnsignedMeasurable (f n)) : UnsignedMeasurable (fun x ↦ Filter.atTop.liminf (fun n ↦ f n x) ) := by sorry
 
-/-- Exercise 1.3.3(iv) -/
+/-- Упражнение 1.3.3(iv) -/
 theorem UnsignedMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : Unsigned g) (heq : AlmostEverywhereEqual f g) : UnsignedMeasurable g := by sorry
 
-/-- Exercise 1.3.3(v) -/
+/-- Упражнение 1.3.3(v) -/
 theorem UnsignedMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → EReal} (g : ℕ → EuclideanSpace' d → EReal) (hf : ∀ n, UnsignedMeasurable (g n)) (hfn : Unsigned f) (heq : PointwiseAeConvergesTo g f) : UnsignedMeasurable f := by sorry
 
-/-- Exercise 1.3.3(vi) -/
+/-- Упражнение 1.3.3(vi) -/
 theorem UnsignedMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) {φ : EReal → EReal} (hφ : Continuous φ) (hφnn : ∀ x ≥ 0, φ x ≥ 0) : UnsignedMeasurable (φ ∘ f) := by sorry
 
-/-- Exercise 1.3.3(vii) -/
+/-- Упражнение 1.3.3(vii) -/
 theorem UnsignedMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) (hg : UnsignedMeasurable g) : UnsignedMeasurable (f + g) := by sorry
 
 def UniformConvergesTo {X : Type*} (f : ℕ → X → EReal) (g : X → EReal) : Prop := ∀ ε : NNReal, ε > 0 → ∃ N : ℕ, ∀ n ≥ N, ∀ x, f n x > g x - ε ∧ f n x < g x + ε
 
-/-- Exercise 1.3.4 -/
+/-- Упражнение 1.3.4 -/
 theorem UnsignedMeasurable.bounded_iff {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : UnsignedMeasurable f ∧ EReal.BoundedFunction f ↔ ∃ g : ℕ → EuclideanSpace' d → EReal, (∀ n, UnsignedSimpleFunction (g n) ∧ EReal.BoundedFunction (g n)) ∧ UniformConvergesTo g f := by sorry
 
-/-- Exercise 1.3.5 -/
+/-- Упражнение 1.3.5 -/
 theorem UnsignedSimpleFunction.iff {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : Unsigned f) : UnsignedSimpleFunction f ↔ UnsignedMeasurable f ∧ Finite (f '' Set.univ) := by sorry
 
-/-- Exercise 1.3.6 -/
+/-- Упражнение 1.3.6 -/
 theorem UnsignedMeasurable.measurable_graph {d : ℕ} {f : EuclideanSpace' d → EReal} (hf : UnsignedMeasurable f) : LebesgueMeasurable { p | ∃ x, ∃ t : ℝ, EuclideanSpace'.prod_equiv d 1 p = ⟨ x, t ⟩ ∧ 0 ≤ t ∧ t ≤ f x } := by sorry
 
 /-!
-## Remark 1.3.10: у измеримых функций прообразы могут быть неизмеримы
+## Замечание 1.3.10: у измеримых функций прообразы могут быть неизмеримы
 
 Мы строим пример, показывающий, что даже для измеримой функции f: ℝ^d → \[0, +∞\)
 прообраз f⁻¹(E) измеримого по Лебегу множества E не обязан быть измеримым по Лебегу.
@@ -1777,7 +1777,7 @@ theorem UnsignedMeasurable.measurable_graph {d : ℕ} {f : EuclideanSpace' d →
 
 Функция f из учебника НЕ монотонна на \[0,1\] (например, f(0.4) > 0, но f(0.5) = 0).
 Наша f монотонна на всём \[0,1\], что упрощает доказательство измеримости:
-множества подуровня — интервалы, а значит измеримы по Lemma 1.3.9(viii).
+множества подуровня — интервалы, а значит измеримы по Лемме 1.3.9(viii).
 
 Обе версии подходят для теоремы, потому что:
 - Обе инъективны на A (недиадические числа имеют единственное двоичное разложение)
@@ -3015,7 +3015,7 @@ lemma sublevel_set_measurable (t : EReal) (ht_pos : 0 < t) (ht_lt_one : t < 1) :
 
 /-- `f_lifted` беззнаково измерима. -/
 lemma f_lifted_measurable : UnsignedMeasurable f_lifted := by
-  -- Применяем Lemma 1.3.9(viii): f измерима тогда и только тогда, когда ∀ t множество {x | f(x) ≤ t} измеримо
+  -- Применяем Лемму 1.3.9(viii): f измерима тогда и только тогда, когда ∀ t множество {x | f(x) ≤ t} измеримо
   have h_iff : UnsignedMeasurable f_lifted ↔ (∀ t, LebesgueMeasurable {x | f_lifted x ≤ t}) :=
     (UnsignedMeasurable.TFAE f_lifted_unsigned).out 0 7
   apply h_iff.mpr
@@ -3110,7 +3110,7 @@ lemma exists_nonmeasurable_with_cantor_image :
 
 end Remark_1_3_10
 
-/-- Remark 1.3.10: прообраз измеримого по Лебегу множества относительно измеримой функции
+/-- Замечание 1.3.10: прообраз измеримого по Лебегу множества относительно измеримой функции
     не обязан быть измеримым по Лебегу.
     Доказательство: пусть f = {name}`Remark_1_3_10.binaryToTernary` (отображает \[0,1\] в множество Кантора),
     F ⊆ \[0,1\] неизмеримо (Витали). Положим E = f(F) ⊆ множество Кантора. Тогда E — нулевое множество
@@ -3211,7 +3211,7 @@ example : ∃ (f : EuclideanSpace' 1 → EReal) (_hf : UnsignedMeasurable f) (E 
     rw [this]
     exact LebesgueMeasurable.inter h_meas hA'_meas
 
-/-- Definition 1.3.11 (комплексная измеримость). -/
+/-- Определение 1.3.11 (комплексная измеримость). -/
 def ComplexMeasurable {d : ℕ} (f : EuclideanSpace' d → ℂ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℂ), (∀ n, ComplexSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
 
 def RealMeasurable {d : ℕ} (f : EuclideanSpace' d → ℝ) : Prop := ∃ (g : ℕ → EuclideanSpace' d → ℝ), (∀ n, RealSimpleFunction (g n)) ∧ (PointwiseConvergesTo g f)
@@ -3270,7 +3270,7 @@ theorem ComplexMeasurable.iff {d : ℕ} {f : EuclideanSpace' d → ℂ} : Comple
       simp only [Pi.add_apply, Pi.smul_apply, Real.complex_fun, smul_eq_mul]
       exact h_sum
 
-/-- Exercise 1.3.7 -/
+/-- Упражнение 1.3.7 -/
 theorem RealMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℝ} : 
     [
       RealMeasurable f,
@@ -3281,7 +3281,7 @@ theorem RealMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℝ} :
     ].TFAE
   := by sorry
 
-/-- Комплексный аналог `RealMeasurable.TFAE`: эквивалентные характеризации комплексной измеримости (Exercise 1.3.7 для ℂ). -/
+/-- Комплексный аналог `RealMeasurable.TFAE`: эквивалентные характеризации комплексной измеримости (Упражнение 1.3.7 для ℂ). -/
 theorem ComplexMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℂ} : 
     [
       ComplexMeasurable f,
@@ -3293,19 +3293,19 @@ theorem ComplexMeasurable.TFAE {d : ℕ} {f : EuclideanSpace' d → ℂ} :
     ].TFAE
   := by sorry
 
-/-- Exercise 1.3.8(i) -/
+/-- Упражнение 1.3.8(i) -/
 theorem Continuous.RealMeasurable {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : Continuous f) : RealMeasurable f := by sorry
 
 /-- Комплексный аналог `Continuous.RealMeasurable`: непрерывная функция комплексно измерима. -/
 theorem Continuous.ComplexMeasurable {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : Continuous f) : ComplexMeasurable f := by sorry
 
-/-- Exercise 1.3.8(ii) -/
+/-- Упражнение 1.3.8(ii) -/
 theorem RealSimpleFunction.iff {d:ℕ} {f: EuclideanSpace' d → ℝ} : RealSimpleFunction f ↔ RealMeasurable f ∧ Finite (f '' Set.univ) := by sorry
 
 /-- Комплексный аналог `RealSimpleFunction.iff`: `f` — простая функция тогда и только тогда, когда она измерима и принимает конечное число значений. -/
 theorem ComplexSimpleFunction.iff {d:ℕ} {f: EuclideanSpace' d → ℂ} : ComplexSimpleFunction f ↔ ComplexMeasurable f ∧ Finite (f '' Set.univ) := by sorry
 
-/-- Exercise 1.3.8(iii) -/
+/-- Упражнение 1.3.8(iii) -/
 theorem RealMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f)
     (heq : AlmostEverywhereEqual f g) : RealMeasurable g := by sorry
 
@@ -3313,7 +3313,7 @@ theorem RealMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf :
 theorem ComplexMeasurable.aeEqual {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f)
     (heq : AlmostEverywhereEqual f g) : ComplexMeasurable g := by sorry
 
-/-- Exercise 1.3.8(iv) -/
+/-- Упражнение 1.3.8(iv) -/
 theorem RealMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → ℝ} (g : ℕ → EuclideanSpace' d → ℝ)
     (hf : ∀ n, RealMeasurable (g n))
     (heq : PointwiseAeConvergesTo g f) : RealMeasurable f := by sorry
@@ -3323,25 +3323,25 @@ theorem ComplexMeasurable.aeLimit {d : ℕ} {f : EuclideanSpace' d → ℂ} (g :
     (hf : ∀ n, ComplexMeasurable (g n))
     (heq : PointwiseAeConvergesTo g f) : ComplexMeasurable f := by sorry
 
-/-- Exercise 1.3.8(v) -/
+/-- Упражнение 1.3.8(v) -/
 theorem RealMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) {φ : ℝ → ℝ} (hφ : Continuous φ)  : RealMeasurable (φ ∘ f) := by sorry
 
 /-- Комплексный аналог `RealMeasurable.comp_cts`: композиция измеримой функции с непрерывной измерима. -/
 theorem ComplexMeasurable.comp_cts {d : ℕ} {f : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) {φ : ℂ → ℂ} (hφ : Continuous φ)  : ComplexMeasurable (φ ∘ f) := by sorry
 
-/-- Exercise 1.3.8(vi) (сумма измеримых функций) -/
+/-- Упражнение 1.3.8(vi) (сумма измеримых функций) -/
 theorem RealMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f + g) := by sorry
 
 /-- Комплексный аналог `RealMeasurable.add`: сумма измеримых функций измерима. -/
 theorem ComplexMeasurable.add {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f + g) := by sorry
 
-/-- Exercise 1.3.8(vi') (разность измеримых функций) -/
+/-- Упражнение 1.3.8(vi') (разность измеримых функций) -/
 theorem RealMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f - g) := by sorry
 
 /-- Комплексный аналог `RealMeasurable.sub`: разность измеримых функций измерима. -/
 theorem ComplexMeasurable.sub {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : ComplexMeasurable f) (hg : ComplexMeasurable g) : ComplexMeasurable (f - g) := by sorry
 
-/-- Exercise 1.3.8(vi'') (произведение измеримых функций) -/
+/-- Упражнение 1.3.8(vi'') (произведение измеримых функций) -/
 theorem RealMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℝ} (hf : RealMeasurable f) (hg : RealMeasurable g) : RealMeasurable (f * g) := by sorry
 
 /-- Комплексный аналог `RealMeasurable.mul`: произведение измеримых функций измеримо. -/
@@ -3349,5 +3349,5 @@ theorem ComplexMeasurable.mul {d : ℕ} {f g : EuclideanSpace' d → ℂ} (hf : 
 
 
 open Classical in
-/-- Exercise 1.3.9 -/
+/-- Упражнение 1.3.9 -/
 theorem RealMeasurable.riemann_integrable {f : ℝ → ℝ} {I : BoundedInterval} (hf : RiemannIntegrableOn f I) : RealMeasurable ((fun x ↦ if x ∈ I.toSet then f x else 0) ∘ EuclideanSpace'.equiv_Real) := by sorry
